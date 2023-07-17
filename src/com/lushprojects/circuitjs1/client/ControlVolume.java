@@ -3,6 +3,8 @@ package com.lushprojects.circuitjs1.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 
+import java.util.*;
+
 public class ControlVolume {
     public Component parent;
     public int element_index;
@@ -119,25 +121,23 @@ public class ControlVolume {
 
 
     public void magnetize() {
-        //TODO: inform user
-        Component p = (Component) this.parent;
-        if (!p.material.magnetocaloric) {
-            return;
+        // TO DO: inform user
 
-        }
-        double s = 0.0;
+        Vector<Double> dTheatcool = new Vector<Double>();
+        double dT = 0.0;
         double T = 0.0;
-        if (!p.material.field) {
-            s = ModelMethods.linInterp(this.temperature, p.material.temperaturesST, p.material.lowFieldEntropies);
-            T = ModelMethods.linInterp(s, p.material.highFieldEntropies, p.material.temperaturesST);
-            this.temperature = T;
-            this.temperature_old = T;
+        Component p = (Component)this.parent;
+        if (!p.field) {
+            dTheatcool = p.material.dTheating.get(p.fieldIndex - 1);
+            dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
+            T = this.temperature + dT;
+            this.temperature = T; this.temperature_old = T;
         }
-        if (p.material.field) {
-            s = ModelMethods.linInterp(this.temperature, p.material.temperaturesST, p.material.highFieldEntropies);
-            T = ModelMethods.linInterp(s, p.material.lowFieldEntropies, p.material.temperaturesST);
-            this.temperature = T;
-            this.temperature_old = T;
+        if (p.field) {
+            dTheatcool = p.material.dTcooling.get(p.fieldIndex - 1);
+            dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
+            T = this.temperature - dT;
+            this.temperature = T; this.temperature_old = T;
         }
     }
 

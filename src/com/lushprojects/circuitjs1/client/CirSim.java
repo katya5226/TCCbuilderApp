@@ -838,10 +838,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         setColors(positiveColor, negativeColor, neutralColor, selectColor, currentColor);
 
-        // **************** Katni ************************
-        // readThermalFile("k");
-        // ***********************************************
-
         if (startCircuitText != null) {
             getSetupList(false);
             readCircuit(startCircuitText);
@@ -926,7 +922,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.dt = maxTimeStep * 1000;
         this.total_time = timeStep;
         this.reach_steady = false;
-        this.cyclic = false;
+        this.cyclic = true;
         this.time = 0.0;
         this.cycle = 0;
         this.printing_interval = 1;
@@ -1060,7 +1056,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int n = heatCircuit.num_cvs;
         double[] temps = new double[n];
         Arrays.fill(temps, 290.0);
-        heatCircuit.set_starting_temps(temps);
+        heatCircuit.setTemperatures(temps);
     }
 
     void setHeatSim() {
@@ -1075,9 +1071,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cycleParts.add(new CyclePart(0, 0, this));
         cycleParts.add(new CyclePart(1, 3, this));
         cycleParts.add(new CyclePart(2, 0, this));
-        cycleParts.get(0).duration = 2.0;
+        cycleParts.get(0).duration = 0.5;
         cycleParts.get(1).duration = 0.0;
-        cycleParts.get(2).duration = 2.0;
+        //cycleParts.get(1).components.add(simComponents.get(1));
+        cycleParts.get(2).duration = 0.5;
         numCycleParts = this.cycleParts.size();
         cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
@@ -1109,7 +1106,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             for (int i = 0; i < this.num_cvs; i++) {
                 this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
             }
-            // flag = hf.compamare(x_mod, x_prev, pa.tolerance)
+            // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
             this.x_prev = this.x_mod;
             if (flag) {
@@ -1130,22 +1127,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
         this.time += this.dt;
-    }
-
-    public void heat_transfer(int p) {
-        for (int con_step = 0; con_step < this.num_cpart_steps[p]; con_step++) {
-            this.heat_transfer_step();
-        }
-    }
-
-    public void do_process_type(String ptype, int p) { // p is the index of a cycle part in the list of parts
-        if (ptype.equals("transfer")) {
-            this.heat_transfer(p);
-        } else {
-            String pt = ptype;
-            int ud_f = Integer.parseInt(pt.replaceAll("[\\D]", "")) - 1;
-            // this.user_defined_functions[ud_f]()
-        }
     }
 
     // **************************************************************************************

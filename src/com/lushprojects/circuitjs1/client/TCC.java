@@ -126,10 +126,10 @@ public class TCC {
         }
     }
 
-    public void set_starting_temps(double[] start_temps) {
+    public void setTemperatures(double[] temps) {
         for (int i = 0; i < this.num_cvs; i++) {
-            this.cvs.get(i).temperature = start_temps[i];
-            this.cvs.get(i).temperature_old = start_temps[i];
+            this.cvs.get(i).temperature = temps[i];
+            this.cvs.get(i).temperature_old = temps[i];
         }
     }
 

@@ -46,6 +46,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     public boolean isDisabled;  // I am guessing this refers to the external magnetic field
     public boolean field;
+    public int fieldIndex;
 
     public Component(int xx, int yy) {
         super(xx, yy);
@@ -64,6 +65,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         isDisabled = false;  // This would be an opposite value of field. When this is false, field is true.
         field = false;
+        fieldIndex = 1;
     }
 
     public Component(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -79,6 +81,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
+        field = false;
+        fieldIndex = 1;
     }
 
     public void initializeComponent() {
