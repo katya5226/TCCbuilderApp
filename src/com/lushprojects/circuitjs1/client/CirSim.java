@@ -1128,7 +1128,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.append_new_temps();
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
-        this.time += this.dt;
     }
 
     // **************************************************************************************
