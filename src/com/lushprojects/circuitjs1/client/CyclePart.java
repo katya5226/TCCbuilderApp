@@ -58,9 +58,7 @@ public class CyclePart {
 
             //components.get(i).magnetize();
         }
-        for (int i = 0; i < sim.simComponents.size(); i++) {
-            sim.simComponents.get(i).set_starting_temps(293.0);
-        }
+        sim.simComponents.get(0).magnetize();  // Katni test!!
     }
 
     void electricFieldChange() {

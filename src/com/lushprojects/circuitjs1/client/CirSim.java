@@ -1068,6 +1068,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         left_boundary = heatCircuit.left_boundary;
         right_boundary = heatCircuit.right_boundary;
         start_temperatures = new double[this.num_cvs];
+        // Katni test!!! **********
         cycleParts.add(new CyclePart(0, 0, this));
         cycleParts.add(new CyclePart(1, 3, this));
         cycleParts.add(new CyclePart(2, 0, this));
@@ -1075,6 +1076,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cycleParts.get(1).duration = 0.0;
         //cycleParts.get(1).components.add(simComponents.get(1));
         cycleParts.get(2).duration = 0.5;
+        // *************************
         numCycleParts = this.cycleParts.size();
         cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;

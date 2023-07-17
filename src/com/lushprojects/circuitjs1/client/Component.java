@@ -64,7 +64,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
             material.readFiles();
 
         isDisabled = false;  // This would be an opposite value of field. When this is false, field is true.
-        field = false;
+        this.field = false;
         fieldIndex = 1;
     }
 
@@ -81,7 +81,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
-        field = false;
+        this.field = false;
         fieldIndex = 1;
     }
 
@@ -114,6 +114,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     public void buildComponent() {
+        this.cvs.clear();
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.add(new ControlVolume(i));
         }
@@ -378,11 +379,10 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public void magnetize() {
         // Check if given component's' material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
-        Iterator i = cvs.iterator();
-        while (i.hasNext()) {
-            ControlVolume cv = (ControlVolume) i.next();
-            cv.magnetize();
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).magnetize();
         }
+        // GWT.log("Finished (de)magnetization.");
         this.field = !this.field;
     }
 

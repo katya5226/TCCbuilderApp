@@ -132,11 +132,15 @@ public class ControlVolume {
             dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
             T = this.temperature + dT;
             this.temperature = T; this.temperature_old = T;
+            GWT.log("Field = " + String.valueOf(p.field));
+            GWT.log("dT = " + String.valueOf(dT));
         }
         if (p.field) {
             dTheatcool = p.material.dTcooling.get(p.fieldIndex - 1);
             dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
             T = this.temperature - dT;
+            GWT.log("Field = " + String.valueOf(p.field));
+            GWT.log("dT = -" + String.valueOf(dT));
             this.temperature = T; this.temperature_old = T;
         }
     }
