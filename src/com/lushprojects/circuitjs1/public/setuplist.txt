@@ -1,0 +1,4 @@
+### setuplist.txt first line must be a comments
++Basics
+resistors.txt Resistors 
+KlinarDiode.txt MC_transient_Klinar

@@ -1,0 +1,75 @@
+package com.lushprojects.circuitjs1.client;
+
+import java.util.Vector;
+
+public class CyclePart {
+    int partIndex;
+    int partType;
+    Vector<Component> components;
+    CirSim sim;
+    double duration;
+
+    public CyclePart(int index, int type, CirSim sim) {
+        this.partIndex = index;
+        this.partType = type;
+        this.components = new Vector<Component>();
+        this.sim = sim;
+        this.duration = 0;
+    }
+
+    public void execute() {
+        switch (this.partType) {
+            case 0:
+                sim.heat_transfer_step();
+                break;
+            case 1:
+                heatInput();
+                break;
+            case 2:
+                mechanicDisplacement();
+                break;
+            case 3:
+                magneticFieldChange();
+                break;
+            case 4:
+                electricFieldChange();
+                break;
+            case 5:
+                pressureChange();
+                break;
+            case 6:
+                shearStressChange();
+                break;
+            default:
+                break;
+        }
+    }
+
+    void heatInput() {
+    }
+
+    void mechanicDisplacement() {
+    }
+
+    void magneticFieldChange() {
+        for (int i = 0; i < this.components.size(); i++) {
+            // Check if given component's' material's magnetocaloric flag is TRUE;
+            // if not, abort and inform the user.
+
+            //components.get(i).magnetize();
+        }
+        for (int i = 0; i < sim.simComponents.size(); i++) {
+            sim.simComponents.get(i).set_starting_temps(293.0);
+        }
+    }
+
+    void electricFieldChange() {
+    }
+
+    void pressureChange() {
+    }
+
+    void shearStressChange() {
+    }
+
+}
