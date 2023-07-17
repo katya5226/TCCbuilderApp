@@ -19,17 +19,12 @@
 
 package com.lushprojects.circuitjs1.client;
 
+import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
 import java.util.*;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 
 public class Component extends CircuitElm implements Comparable<Component> {
@@ -46,8 +41,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public Component right_neighbour;
     public int left_boundary;
     public int right_boundary;
-    public boolean field;
-    public int fieldIndex;
 
     public Vector<ControlVolume> cvs;
 
@@ -56,12 +49,18 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public Component(int xx, int yy) {
         super(xx, yy);
         initializeComponent();
-        if (!material.isLoaded)
-            material.readThermalFiles();
-
         buildComponent();
 
-        this.index = 0;
+        this.index = -1;
+        for (Component c : sim.simComponents) {
+            if (c.index > index)
+                index = c.index;
+        }
+        this.index++;
+        this.material = sim.materialHashMap.get("100001-Inox");
+        if (!material.isLoaded())
+            material.readFiles();
+
         isDisabled = false;
     }
 
@@ -69,10 +68,14 @@ public class Component extends CircuitElm implements Comparable<Component> {
         super(xa, ya, xb, yb, f);
         initializeComponent();
         buildComponent();
-        if (!material.isLoaded)
-            material.readThermalFiles();
 
         this.index = Integer.parseInt(st.nextToken());
+        this.material = sim.materialHashMap.get(st.nextToken(" "));
+        if (!material.isLoaded()) {
+            material.readFiles();
+        }
+
+        this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
     }
 
@@ -89,13 +92,11 @@ public class Component extends CircuitElm implements Comparable<Component> {
         this.right_neighbour = null;
         this.left_boundary = 51;
         this.right_boundary = 52;
-        this.material = sim.materialHashMap.get("test_inox");
-        this.field = false;
-        this.fieldIndex = 1;
         double tmpDx = this.length / this.num_cvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             this.set_dx(tmpDx);
             sim.simComponents.add(this);
+            Collections.sort(sim.trackedTemperatures);
             sim.trackedTemperatures.add(this);
         }
     }
@@ -119,18 +120,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.get(i).temperature = start_temp;
             this.cvs.get(i).temperature_old = start_temp;
-        }
-    }
-
-    public void updateModes() {
-        for (int i = 0; i < this.num_cvs; i++) {
-            ControlVolume cv = this.cvs.get(i);
-            if (cv.temperature >= cv.temperature_old) {
-                cv.mode = 1;
-            }
-            else if (cv.temperature < cv.temperature_old) {
-                cv.mode = -1;
-            }
         }
     }
 
@@ -278,8 +267,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 break;
             case 2:
                 this.material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-                if (!this.material.isLoaded)
-                    this.material.readThermalFiles();
+                if (!this.material.isLoaded())
+                    this.material.readFiles();
                 break;
             case 3:
                 this.num_cvs = (int) ei.value;
@@ -311,7 +300,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
             isDisabled = false;
         }
 
-        if (material.isLoaded && sim.simIsRunning())
+        if (material.isLoaded() && sim.simIsRunning())
             sim.resetAction();
 
     }
@@ -379,17 +368,4 @@ public class Component extends CircuitElm implements Comparable<Component> {
             this.cvs.get(this.num_cvs - 1).right_resistance = r;
         }
     }
-
-    public void magnetize() {
-        // Check if given component's' material's magnetocaloric flag is TRUE;
-        // if not, abort and inform the user.
-        Iterator i = cvs.iterator();
-        while (i.hasNext()) {
-            ControlVolume cv = (ControlVolume) i.next();
-            cv.magnetize();
-        }
-        this.field = !this.field;
-    }
-
-
 }
