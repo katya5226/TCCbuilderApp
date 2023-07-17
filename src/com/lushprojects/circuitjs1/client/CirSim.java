@@ -922,7 +922,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.dt = maxTimeStep * 1000;
         this.total_time = timeStep;
         this.reach_steady = false;
-        this.cyclic = true;
+        this.cyclic = false;
         this.time = 0.0;
         this.cycle = 0;
         this.printing_interval = 1;
