@@ -908,43 +908,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         colorChoices = new Vector<String>();
         simComponents = new Vector<Component>();
         this.simTCEs = new Vector<TCE>();
-        // this.c   ircuit = circuit;
-
-        // this.MCMs = New
-        // this.ECMs = []
-        // this.ElCMs = []
-        // this.BCMs = []
-        // this.PCMs = []
-        // this.TEMs = []
-        // for (TCE el : this.circuit.TCEs) {
-        // for (Component cp : el.components) {
-        // if(cp instanceof MC_component) {
-        // this.num_MCMs += 1;
-        // }
-        // }
-        // for (Component cp : el.components) {
-        // if(cp instanceof EC_component) {
-        // this.num_ECMs += 1;
-        // }
-        // } // and so on
-        // }
-        // this.MCMs = new MC_component[this.num_MCMs];
-        // int i_mcm = 0;
-        // for (TCE el : this.circuit.TCEs) {
-        // for (Component cp : el.components) {
-        // if (cp instanceof MC_component) {
-        // this.MCMs[i_mcm] = cp;
-        // i_mcm++;
-        // } // and same for ECM, ElCM, BCM, PCM, TEM
-        // }
-        // }
         this.num_cvs = 0;// this.circuit.num_cvs;
         // this.special_boundaries = []
-        // this.sim_cvs = hf.merge_cvs_global(self)
-        // this.underdiag = new double[this.num_cvs];
-        // this.diag = new double[this.num_cvs];
-        // this.upperdiag = new double[this.num_cvs];
-        // this.rhs = new double[this.num_cvs];
         this.left_boundary = 41;
         this.right_boundary = 42;
         this.h_left = 100000.0;
@@ -1121,22 +1086,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         reach_steady = false;
     }
 
-
-    // def print_attributes(self, f):
-    // f.write("\nData directory: %s" % pa.directory)
-    // f.write("\nTime step dt: %.8f" % pa.dt)
-    // f.write("\nInner loop tolerance: %f" % pa.tolerance)
-    // if self.cyclic == 1:
-    // f.write("\nCycle parts and durations:\n")
-    // for part in self.cycle_parts:
-    // part_name = part[0]
-    // f.write("%s\t" % part_name)
-    // f.write("\n")
-    // hf.print_darray_row(self.cparts_duration, f, 4)
-    // f.write("\nStarting indeces of cycle parts:\n")
-    // for row in self.cycle_part_start_indeces:
-    // hf.print_darray_row(row, f, 0)
-
     public void append_new_temps() {
         Double[] ttemps = new Double[this.num_cvs];
         for (int i = 0; i < this.num_cvs; i++) {
@@ -1198,106 +1147,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             // this.user_defined_functions[ud_f]()
         }
     }
-
-/*
-public void check_params() {
-        if (this.cyclic) {
-            if (this.cycle_parts.size() == 0) {
-                // throw new InputMismatchException("Please define cycle parts.");
-            }
-            this.num_cycle_parts = this.cycle_parts.size();
-            if (this.cparts_duration.size() != this.cycle_parts.size()) {
-                // throw new InputMismatchException("Please define duration for all parts of a
-                // cycle.");
-            }
-            this.num_cpart_steps = new int[this.num_cycle_parts];
-            for (int i = 0; i < this.num_cycle_parts; i++) {
-                this.num_cpart_steps[i] = (int) (this.cparts_duration.get(i) / this.dt + 0.5);
-            }
-        }
-        for (int i = 0; i < this.cparts_duration.size(); i++) {
-            // if (this.cycle_parts[i][0].equals("transfer") && this.cparts_duration.get(i)
-            // < this.dt) {
-            // throw new InvalidParameterException("Cycle part duration too short!");
-            // Window.alert(Locale.LS("Cycle part duration too short!"));
-            // }
-
-            // Number of time steps for each part of the cycle.
-            // this.cycle_part_start_indeces = new int [this.num_cycle_parts][?];
-        }
-        // Check if t_transfer is bigger than time step, check for boundary conditions,
-        // check for ...
-        if (this.total_time < this.dt) {
-            // throw new InvalidParameterException("Time step too large!");
-        }
-        // # for i in range(0, self.TCE.num_cvs):
-        // # if i != 0 and i != self.TCE.num_cvs - 1:
-        // # if self.TCE.cvs[i].left_resistance != self.TCE.cvs[i - 1].right_resistance
-        // or \
-        // # self.TCE.cvs[i].right_resistance != self.TCE.cvs[i + 1].left_resistance:
-        // # raise ValueError("Contact resistances do not match!")
-    }
-    public void run_cycle(int interval) {
-        for (int p = 0; p < this.num_cycle_parts; p++) {
-            // this.cycle_part_start_indeces[p].append(len(this.temperatures))
-            this.cycle_part = this.cycle_parts.get(p);
-            this.do_process_type(this.cycle_parts.get(p), p);
-            if (this.cycle % interval == 0 && this.cparts_duration.get(p) != 0.0) {
-                // hf.print_temperatures(this.cycle, this.time, this.cycle_parts[p],
-                // this.temperatures[-1], this.sim_file, 2)
-            }
-        }
-    }
-    public boolean user_defined_check() {
-        return true;
-    }
-
-   public void run_simulation() {
-        this.check_params();
-        // this.TCE.initialize()
-        // this.num_cvs = sum(len(TCE.cvs) for TCE in this.TCEs)
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.start_temperatures[i] = heatCircuit.cvs.get(i).temperature;
-        }
-        if (this.cyclic) {
-            this.cycle = 0;
-            if (this.reach_steady) {
-                boolean check = false;
-                while (!check) {
-                    this.cycle += 1;
-                    this.run_cycle(this.printing_interval);
-                    if (this.time > this.total_time) {
-                        check = this.user_defined_check();
-                    }
-                }
-            }
-            if (!this.reach_steady) {
-                while (this.time < this.total_time) {
-                    this.cycle += 1;
-                    this.run_cycle(this.printing_interval);
-                }
-            }
-        }
-        if (!this.cyclic) {
-            if (this.reach_steady) {
-                boolean check = false;
-                while (!check) {
-                    this.cycle += 1;
-                    this.heat_transfer_step();
-                    if (this.time > this.total_time) {
-                        check = this.user_defined_check();
-                    }
-                }
-            }
-            if (!this.reach_steady) {
-                while (this.time < this.total_time) {
-                    this.heat_transfer_step();
-                }
-            }
-        }
-        // this.print_attributes(this.sim_file)
-        // this.circuit.print_attributes(this.sim_file)
-    }*/
 
     // **************************************************************************************
 

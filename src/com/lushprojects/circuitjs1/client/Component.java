@@ -44,7 +44,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     public Vector<ControlVolume> cvs;
 
-    public boolean isDisabled;
+    public boolean isDisabled;  // I am guessing this refers to the external magnetic field
+    public boolean field;
 
     public Component(int xx, int yy) {
         super(xx, yy);
@@ -61,7 +62,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
         if (!material.isLoaded())
             material.readFiles();
 
-        isDisabled = false;
+        isDisabled = false;  // This would be an opposite value of field. When this is false, field is true.
+        field = false;
     }
 
     public Component(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -368,4 +370,16 @@ public class Component extends CircuitElm implements Comparable<Component> {
             this.cvs.get(this.num_cvs - 1).right_resistance = r;
         }
     }
+
+    public void magnetize() {
+        // Check if given component's' material's magnetocaloric flag is TRUE;
+        // if not, abort and inform the user.
+        Iterator i = cvs.iterator();
+        while (i.hasNext()) {
+            ControlVolume cv = (ControlVolume) i.next();
+            cv.magnetize();
+        }
+        this.field = !this.field;
+    }
+
 }
