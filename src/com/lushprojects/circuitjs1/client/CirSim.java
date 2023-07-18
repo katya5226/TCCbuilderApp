@@ -106,9 +106,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem conventionCheckItem;
     CheckboxMenuItem noEditCheckItem;
     CheckboxMenuItem mouseWheelEditCheckItem;
-    private Label titleLabel;
-    private Scrollbar speedBar;
-    private ListBox scale;
+    Label titleLabel;
+    Scrollbar speedBar;
+    ListBox scale;
+    HTML cyclicOperationLabel;
 
     MenuBar elmMenuBar;
     MenuItem elmEditMenuItem;
@@ -749,15 +750,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Label l;
         verticalPanel.add(l = new Label(Locale.LS("Simulation Speed")));
         l.addStyleName("aroundSpace");
-        // was max of 140
+
         verticalPanel.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
         speedBar.addStyleName("aroundSpace");
         verticalPanel.add(l = new Label(Locale.LS("Scale")));
+        l.addStyleName("aroundSpace");
         scale = new ListBox();
         scale.addItem("micrometer");
         scale.addItem("millimeter");
         scale.addItem("centimeter");
         scale.addItem("meter");
+        scale.addStyleName("aroundSpace");
+        scale.setWidth("75%");
         switch (selectedLengthUnit) {
             case MICROMETER:
                 scale.setSelectedIndex(0);
@@ -796,11 +800,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     resetAction();
             }
         });
-
         verticalPanel.add(scale);
-        scale.addStyleName("aroundSpace");
-        scale.setWidth("75%");
-        l.addStyleName("aroundSpace");
+        cyclicOperationLabel = new HTML();
+
+        cyclicOperationLabel.addStyleName("aroundSpace");
+        cyclicOperationLabel.setWidth("100%");
+        verticalPanel.add(cyclicOperationLabel);
+
+
         // l.setFont(f);
         titleLabel = new Label("Label");
         // titleLabel.setFont(f);
@@ -1844,7 +1851,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (int i = 0; i < numberOfLines; i++) {
             ctx.beginPath();
             double y = YOffset + ((double) h / numberOfLines) * i;
-            String text =NumberFormat.getFormat("#.00").format(((Math.max(temp_left, temp_right) - (tempDiff / numberOfLines) * i)));
+            String text = NumberFormat.getFormat("#.00").format(((Math.max(temp_left, temp_right) - (tempDiff / numberOfLines) * i)));
 
             ctx.moveTo(XOffSet * .75, y);
             ctx.lineTo(circuitArea.width - XOffSet * .25, circuitArea.height - h + ((double) h / numberOfLines) * i);

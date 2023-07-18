@@ -36,7 +36,6 @@ public class StartDialog extends Dialog {
     DoubleBox rightConvectionCoefficient;
     ListBox leftBoundary;
     ListBox rightBoundary;
-    //ListBox scale;
     ListBox dimensionality;
 
     HorizontalPanel leftHorizontalPanel;
@@ -69,8 +68,9 @@ public class StartDialog extends Dialog {
         rightBoundary.addItem("Convective");
 
         cyclic = new Checkbox("Cyclic");
-        cyclicButton = new Button("Add Cyclic Parts");
-        cyclicButton.setEnabled(false);
+        cyclic.setState(sim.cyclic);
+        cyclicButton = new Button("Add Cyclic Part");
+        cyclicButton.setEnabled(cyclic.getState());
         cyclicContainer = new HorizontalPanel();
         cyclicContainer.setWidth("100%");
         cyclicContainer.add(cyclic);
@@ -84,14 +84,14 @@ public class StartDialog extends Dialog {
 
 
         timeStep = new DoubleBox();
-        timeStep.setValue(sim.dt*1e3);
+        timeStep.setValue(sim.dt * 1e3);
 
         startTemperature = new DoubleBox();
         startTemperature.setValue(sim.startTemp);
 
-        inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m^2 )"));
+        inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));
-        leftConvectionCoefficientLabel = new Label(Locale.LS("Left Convection Coefficient ( W/(m^2K) )"));
+        leftConvectionCoefficientLabel = new Label(Locale.LS("Left Convection Coefficient ( W/(m²K) )"));
         inletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.qIn);
         leftTemperature = new DoubleBox();
@@ -99,9 +99,9 @@ public class StartDialog extends Dialog {
         leftConvectionCoefficient = new DoubleBox();
         leftConvectionCoefficient.setValue(sim.h_left);
 
-        outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m^2 )"));
+        outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m² )"));
         rightTemperatureLabel = new Label(Locale.LS("Right Temperature ( K )"));
-        rightConvectionCoefficientLabel = new Label(Locale.LS("Right Convection Coefficient ( W/(m^2K) )"));
+        rightConvectionCoefficientLabel = new Label(Locale.LS("Right Convection Coefficient ( W/(m²K) )"));
         outletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.qOut);
         rightTemperature = new DoubleBox();
@@ -149,9 +149,7 @@ public class StartDialog extends Dialog {
         vp.add(includingRadiaton);
         vp.add(new Label(Locale.LS("Dimensionality: ")));
         vp.add(dimensionality);
-        //vp.add(scale);
 
-        vp.add(new Label(Locale.LS("Scale: ")));
         vp.setSpacing(1);
 
         applyButton = new Button(Locale.LS("Apply"));
@@ -166,8 +164,6 @@ public class StartDialog extends Dialog {
         applyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-
-
                 double dtValue = timeStep.getValue();
                 if (!(dtValue >= 0.001) || !(dtValue <= 1000)) {
                     Window.alert("Time Step not between 1μs and 1s");
@@ -196,7 +192,7 @@ public class StartDialog extends Dialog {
                 }
                 if (leftConvectionCoefficient.isVisible()) {
                     double leftConvCoeffValue = leftConvectionCoefficient.getValue();
-                    if(!(leftConvCoeffValue >= 0.0)) {
+                    if (!(leftConvCoeffValue >= 0.0)) {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
@@ -204,7 +200,7 @@ public class StartDialog extends Dialog {
                 }
                 if (rightConvectionCoefficient.isVisible()) {
                     double rightConvCoeffValue = rightConvectionCoefficient.getValue();
-                    if(!(rightConvCoeffValue >= 0.0)) {
+                    if (!(rightConvCoeffValue >= 0.0)) {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
@@ -212,7 +208,7 @@ public class StartDialog extends Dialog {
                 }
                 if (inletHeatFlux.isVisible()) {
                     double qInValue = inletHeatFlux.getValue();
-                    if(!(qInValue >= 0.0)) {
+                    if (!(qInValue >= 0.0)) {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
@@ -220,7 +216,7 @@ public class StartDialog extends Dialog {
                 }
                 if (outletHeatFlux.isVisible()) {
                     double qOutValue = outletHeatFlux.getValue();
-                    if(!(qOutValue >= 0.0)) {
+                    if (!(qOutValue >= 0.0)) {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
@@ -228,8 +224,8 @@ public class StartDialog extends Dialog {
                 }
                 sim.dt = dtValue / 1e3;
                 sim.startTemp = startTempValue;
-                sim.left_boundary = (int)(10 * (leftBoundary.getSelectedIndex() + 1) + 1);
-                sim.right_boundary = (int)(10 * (rightBoundary.getSelectedIndex() + 1) + 2);
+                sim.left_boundary = (int) (10 * (leftBoundary.getSelectedIndex() + 1) + 1);//what is this (o_O)
+                sim.right_boundary = (int) (10 * (rightBoundary.getSelectedIndex() + 1) + 2);//what is this (o_O)
                 // GWT.log("Left Boundary: " + String.valueOf(sim.left_boundary));
                 // GWT.log("Left Temperature: " + String.valueOf(sim.temp_left));
                 // GWT.log("Left Convection coeff: " + String.valueOf(sim.h_left));
@@ -238,11 +234,11 @@ public class StartDialog extends Dialog {
                 // GWT.log("Right Temperature: " + String.valueOf(sim.temp_right));
                 // GWT.log("Right Convection coeff: " + String.valueOf(sim.h_right));
                 // GWT.log("Outlet heat flux: " + String.valueOf(sim.qOut));
+                GWT.log("Cycle parts: ");
                 for (int cpi = 0; cpi < sim.cycleParts.size(); cpi++) {
-                    GWT.log("Cycle parts: ");
                     GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
-                    GWT.log("------");
                 }
+                GWT.log("------");
 
                 apply();
                 closeDialog();
@@ -260,19 +256,16 @@ public class StartDialog extends Dialog {
                 }
                 switch (selectedItem) {
                     case "Constant Heat Flux":
-                        GWT.log(String.valueOf(leftBoundary.getSelectedIndex()));
                         inletHeatFluxLabel.setVisible(true);
                         inletHeatFlux.setVisible(true);
                         inletHeatFlux.setValue(sim.qIn);
                         break;
                     case "Constant Temperature":
-                        GWT.log(String.valueOf(leftBoundary.getSelectedIndex()));
                         leftTemperatureLabel.setVisible(true);
                         leftTemperature.setVisible(true);
                         leftTemperature.setValue(sim.temp_left);
                         break;
                     case "Convective":
-                        GWT.log(String.valueOf(leftBoundary.getSelectedIndex()));
                         leftTemperatureLabel.setVisible(true);
                         leftTemperature.setVisible(true);
                         leftTemperature.setValue(sim.temp_left);
@@ -323,6 +316,7 @@ public class StartDialog extends Dialog {
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                //sim.cyclic = !sim.cyclic;
                 cyclicButton.setEnabled(cyclic.getState());
             }
 
@@ -362,7 +356,22 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-        if (!sim.simComponents.isEmpty())
+        if (!sim.simComponents.isEmpty()) {
+
+            sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<b>Cyclic Operation:</b><br>");
+            for (CyclePart cp : sim.cycleParts) {
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cycle Part:</b> "+cp.partType+"<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
+                for (Component c : cp.components) {
+                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + c.index);
+                }
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Field Strength:</b> ###<br>" );
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Duration:</b>"+cp.duration+"s<br>" );
+
+            }
+
             sim.resetAction();
+        }
     }
 }

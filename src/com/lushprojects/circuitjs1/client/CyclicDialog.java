@@ -2,7 +2,6 @@ package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.ListBox;
@@ -20,13 +19,13 @@ public class CyclicDialog extends Dialog {
 
     DoubleBox heatFlux, heatFluxDuration, newComponentIndexes, magneticFieldDuration, electricFieldStrength, electricFieldDuration, pressureFieldStrength, shearStressFieldStrength;
     Label heatFluxLabel, heatFluxDurationLabel, newComponentIndexesLabel, magneticFieldStrengthLabel, magneticFieldDurationLabel, electricFieldStrengthLabel, electricFieldDurationLabel, pressureFieldStrengthLabel, shearStressFieldStrengthLabel;
-    ListBox components, magneticFieldStrength;
+    ListBox magneticComponents, magneticFieldStrength;
     Label componentsLabel;
 
     List<Widget> inputWidgets;
 
     CyclePart cyclePart;
-    List<Integer> componentIndeces;
+    List<Integer> componentIndices;
     Component chosenComponent;
 
     public CyclicDialog(CirSim sim) {
@@ -37,7 +36,7 @@ public class CyclicDialog extends Dialog {
         this.sim = sim;
 
         cyclePart = sim.cycleParts.get(sim.cycleParts.size() - 1);
-        componentIndeces = new ArrayList<Integer>();
+        componentIndices = new ArrayList<Integer>();
 
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
@@ -74,16 +73,17 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(heatFlux);
 
         componentsLabel = new Label(Locale.LS("Choose components: "));
-        components = new ListBox();
-        componentIndeces.clear();
+        magneticComponents = new ListBox();
+        magneticComponents.addItem("< Choose Component >");
+        componentIndices.clear();
         for (int i = 0; i < sim.simComponents.size(); i++) {
-            if (sim.simComponents.get(i).material.magnetocaloric) {  // This has to be modified, the flag will depend on the chosen cycle part type.
-                componentIndeces.add(i);
-                components.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+            if (sim.simComponents.get(i).material.magnetocaloric) {  // TODO: This has to be modified, the flag will depend on the chosen cycle part type.
+                componentIndices.add(i);
+                magneticComponents.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
             }
         }
         inputWidgets.add(componentsLabel);
-        inputWidgets.add(components);
+        inputWidgets.add(magneticComponents);
 
         heatFluxDurationLabel = new Label(Locale.LS("Duration (s): "));
         heatFluxDuration = new DoubleBox();
@@ -153,23 +153,16 @@ public class CyclicDialog extends Dialog {
         });
         applyButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                // if (electricFieldDuration.getText().equals("")) {
-
-                //     return;
-
-                // }
-                if (components.isVisible()) {
+                if (magneticComponents.isVisible()) {
                     if (magneticFieldStrength.isVisible()) {
                         cyclePart.partType = 3;
                         chosenComponent.fieldIndex = magneticFieldStrength.getSelectedIndex();
                     }
                     if (magneticFieldDuration.isVisible()) {
-                        cyclePart.duration = magneticFieldDuration.getValue();
+                        cyclePart.duration = magneticFieldDuration.getText().equals("") ? 0 : magneticFieldDuration.getValue();
                         // Only 0.0 is allowed at the moment.
                     }
-
                 }
-
                 closeDialog();
             }
         });
@@ -197,7 +190,6 @@ public class CyclicDialog extends Dialog {
 // Add other duration keyup handlers for pressureFieldStrength, shearStressFieldStrength, etc.
 
 
-
         addBox.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -219,7 +211,7 @@ public class CyclicDialog extends Dialog {
                         break;
                     case "Magnetic Field Change":
                         componentsLabel.setVisible(true);
-                        components.setVisible(true);
+                        magneticComponents.setVisible(true);
                         // magneticFieldStrengthLabel.setVisible(true);
                         // magneticFieldStrength.setVisible(true);
                         magneticFieldDurationLabel.setVisible(true);
@@ -247,19 +239,25 @@ public class CyclicDialog extends Dialog {
             }
         });
 
-        components.addChangeHandler(new ChangeHandler() {
+        magneticComponents.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                int chosen = components.getSelectedIndex();
+                int chosen = magneticComponents.getSelectedIndex() - 1;
+                if (chosen < 0) {
+                    magneticFieldStrengthLabel.setVisible(false);
+                    magneticFieldStrength.setVisible(false);
+                    return;
+                }
                 GWT.log("Chosen: " + String.valueOf(chosen));
-                GWT.log("Indeces size: " + String.valueOf(componentIndeces.size()));
-                int ci = componentIndeces.get(chosen);
+                GWT.log("Indeces size: " + String.valueOf(componentIndices.size()));
+                int ci = componentIndices.get(chosen);
                 for (int i = 0; i < sim.simComponents.size(); i++) {
                     GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
                 }
                 chosenComponent = sim.simComponents.get(ci);
                 GWT.log("Chosen component: " + chosenComponent.name);
                 cyclePart.components.add(chosenComponent);
+                magneticFieldStrength.clear();
                 for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
                     magneticFieldStrength.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
                 }
@@ -269,6 +267,7 @@ public class CyclicDialog extends Dialog {
         });
 
     }
+
     private void validateDurationInput(DoubleBox durationBox) {
         try {
             Double dbl = Double.parseDouble(durationBox.getText());
