@@ -1,5 +1,6 @@
 package com.lushprojects.circuitjs1.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
@@ -17,10 +18,16 @@ public class CyclicDialog extends Dialog {
     HorizontalPanel buttonPanel;
     ListBox addBox;
 
-    DoubleBox heatFlux, heatFluxDuration, newComponentIndexes, magneticFieldStrength, magneticFieldDuration, electricFieldStrength, electricFieldDuration, pressureFieldStrength, shearStressFieldStrength;
+    DoubleBox heatFlux, heatFluxDuration, newComponentIndexes, magneticFieldDuration, electricFieldStrength, electricFieldDuration, pressureFieldStrength, shearStressFieldStrength;
     Label heatFluxLabel, heatFluxDurationLabel, newComponentIndexesLabel, magneticFieldStrengthLabel, magneticFieldDurationLabel, electricFieldStrengthLabel, electricFieldDurationLabel, pressureFieldStrengthLabel, shearStressFieldStrengthLabel;
+    ListBox components, magneticFieldStrength;
+    Label componentsLabel;
 
     List<Widget> inputWidgets;
+
+    CyclePart cyclePart;
+    List<Integer> componentIndeces;
+    Component chosenComponent;
 
     public CyclicDialog(CirSim sim) {
         super();
@@ -29,20 +36,33 @@ public class CyclicDialog extends Dialog {
         closeOnEnter = true;
         this.sim = sim;
 
+        cyclePart = sim.cycleParts.get(sim.cycleParts.size() - 1);
+        componentIndeces = new ArrayList<Integer>();
+
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
         vp = new VerticalPanel();
         setWidget(vp);
 
+        // CyclePart types:
+        //      - 0 heat transfer
+        //      - 1 heat input
+        //      - 2 mechanic displacement
+        //      - 3 magnetic field change
+        //      - 4 electric field change
+        //      - 5 pressure change
+        //      - 6 shear stress change
+        //      - 7 properties change 
+
         addBox = new ListBox();
         vp.add(addBox);
-        addBox.addItem("Heat Input");
         addBox.addItem("Heat Transfer");
-        addBox.addItem("Magnetic Field");
+        addBox.addItem("Heat Input");
         addBox.addItem("Mechanic Displacement");
-        addBox.addItem("Electric Field");
-        addBox.addItem("Pressure");
-        addBox.addItem("Shear Stress");
+        addBox.addItem("Magnetic Field Change");
+        addBox.addItem("Electric Field Change");
+        addBox.addItem("Pressure change");
+        addBox.addItem("Shear Stress Change");
         addBox.addItem("Properties Change");
 
 
@@ -52,6 +72,18 @@ public class CyclicDialog extends Dialog {
         heatFlux = new DoubleBox();
         inputWidgets.add(heatFluxLabel);
         inputWidgets.add(heatFlux);
+
+        componentsLabel = new Label(Locale.LS("Choose components: "));
+        components = new ListBox();
+        componentIndeces.clear();
+        for (int i = 0; i < sim.simComponents.size(); i++) {
+            if (sim.simComponents.get(i).material.magnetocaloric) {  // This has to be modified, the flag will depend on the chosen cycle part type.
+                componentIndeces.add(i);
+                components.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+            }
+        }
+        inputWidgets.add(componentsLabel);
+        inputWidgets.add(components);
 
         heatFluxDurationLabel = new Label(Locale.LS("Duration (s): "));
         heatFluxDuration = new DoubleBox();
@@ -64,7 +96,7 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(newComponentIndexes);
 
         magneticFieldStrengthLabel = new Label(Locale.LS("Field Strength (T): "));
-        magneticFieldStrength = new DoubleBox();
+        magneticFieldStrength = new ListBox();
         inputWidgets.add(magneticFieldStrengthLabel);
         inputWidgets.add(magneticFieldStrength);
 
@@ -121,9 +153,20 @@ public class CyclicDialog extends Dialog {
         });
         applyButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                if (electricFieldDuration.getText().equals("")) {
+                // if (electricFieldDuration.getText().equals("")) {
 
-                    return;
+                //     return;
+
+                // }
+                if (components.isVisible()) {
+                    if (magneticFieldStrength.isVisible()) {
+                        cyclePart.partType = 3;
+                        chosenComponent.fieldIndex = magneticFieldStrength.getSelectedIndex();
+                    }
+                    if (magneticFieldDuration.isVisible()) {
+                        cyclePart.duration = magneticFieldDuration.getValue();
+                        // Only 0.0 is allowed at the moment.
+                    }
 
                 }
 
@@ -174,29 +217,57 @@ public class CyclicDialog extends Dialog {
                         newComponentIndexesLabel.setVisible(true);
                         newComponentIndexes.setVisible(true);
                         break;
-                    case "Magnetic Field":
-                        magneticFieldStrengthLabel.setVisible(true);
-                        magneticFieldStrength.setVisible(true);
+                    case "Magnetic Field Change":
+                        componentsLabel.setVisible(true);
+                        components.setVisible(true);
+                        // magneticFieldStrengthLabel.setVisible(true);
+                        // magneticFieldStrength.setVisible(true);
                         magneticFieldDurationLabel.setVisible(true);
                         magneticFieldDuration.setVisible(true);
                         break;
-                    case "Electric Field":
+                    case "Electric Field Change":
                         electricFieldStrengthLabel.setVisible(true);
                         electricFieldStrength.setVisible(true);
                         electricFieldDurationLabel.setVisible(true);
                         electricFieldDuration.setVisible(true);
                         break;
-                    case "Pressure":
+                    case "Pressure Change":
                         pressureFieldStrengthLabel.setVisible(true);
                         pressureFieldStrength.setVisible(true);
                         break;
-                    case "Shear Stress":
+                    case "Shear Stress Change":
                         shearStressFieldStrengthLabel.setVisible(true);
                         shearStressFieldStrength.setVisible(true);
+                        break;
+                    case "Properties Change":
+                        // shearStressFieldStrengthLabel.setVisible(true);
+                        // shearStressFieldStrength.setVisible(true);
                         break;
                 }
             }
         });
+
+        components.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                int chosen = components.getSelectedIndex();
+                GWT.log("Chosen: " + String.valueOf(chosen));
+                GWT.log("Indeces size: " + String.valueOf(componentIndeces.size()));
+                int ci = componentIndeces.get(chosen);
+                for (int i = 0; i < sim.simComponents.size(); i++) {
+                    GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+                }
+                chosenComponent = sim.simComponents.get(ci);
+                GWT.log("Chosen component: " + chosenComponent.name);
+                cyclePart.components.add(chosenComponent);
+                for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
+                    magneticFieldStrength.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
+                }
+                magneticFieldStrengthLabel.setVisible(true);
+                magneticFieldStrength.setVisible(true);
+            }
+        });
+
     }
     private void validateDurationInput(DoubleBox durationBox) {
         try {

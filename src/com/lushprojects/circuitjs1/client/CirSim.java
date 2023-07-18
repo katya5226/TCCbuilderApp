@@ -270,10 +270,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public double[] rhs;
     public int left_boundary;
     public int right_boundary;
-    public double h_left = 100000.0;
-    public double h_right = 100000.0;
-    public double temp_left = 291.0;
-    public double temp_right = 290.0;
+    public double h_left;
+    public double h_right;
+    public double temp_left;
+    public double temp_right;
+    public double qIn;
+    public double qOut;
+    public double startTemp;
     public double ambient_temperature;
     public double[] start_temperatures;
     public ArrayList<Double> times;
@@ -912,6 +915,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.h_right = 100000.0;
         this.temp_left = 291.0;
         this.temp_right = 290.0;
+        this.qIn = 0.0;
+        this.qOut = 0.0;
+        this.startTemp = 290.0;
         this.ambient_temperature = 293.0;
         // this.start_temperatures = new double[this.num_cvs];
         this.times = new ArrayList<Double>();
@@ -919,7 +925,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.multipl = 1000;
         this.tt = 0;
         this.cpart_t = 0.0;
-        this.dt = maxTimeStep * 1000;
+        this.dt = maxTimeStep * 1e3;
         this.total_time = timeStep;
         this.reach_steady = false;
         this.cyclic = false;
@@ -1055,7 +1061,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         heatCircuit.initializeMatrix();
         int n = heatCircuit.num_cvs;
         double[] temps = new double[n];
-        Arrays.fill(temps, 290.0);
+        Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
     }
 
@@ -1069,16 +1075,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         right_boundary = heatCircuit.right_boundary;
         start_temperatures = new double[this.num_cvs];
         // Katni test!!! **********
-        cycleParts.add(new CyclePart(0, 0, this));
-        cycleParts.add(new CyclePart(1, 3, this));
-        cycleParts.add(new CyclePart(2, 0, this));
-        cycleParts.get(0).duration = 0.5;
-        cycleParts.get(1).duration = 0.0;
-        //cycleParts.get(1).components.add(simComponents.get(1));
-        cycleParts.get(2).duration = 0.5;
+        // cycleParts.add(new CyclePart(0, 0, this));
+        // cycleParts.add(new CyclePart(1, 3, this));
+        // cycleParts.add(new CyclePart(2, 0, this));
+        // cycleParts.get(0).duration = 0.5;
+        // cycleParts.get(1).duration = 0.0;
+        // //cycleParts.get(1).components.add(simComponents.get(1));
+        // cycleParts.get(2).duration = 0.5;
         // *************************
         numCycleParts = this.cycleParts.size();
-        cyclePart = this.cycleParts.get(0);
+        //cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
         printing_interval = 1;
         total_time = 1.0;

@@ -9,9 +9,9 @@ public class CyclePart {
     CirSim sim;
     double duration;
 
-    public CyclePart(int index, int type, CirSim sim) {
+    public CyclePart(int index, CirSim sim) {
         this.partIndex = index;
-        this.partType = type;
+        this.partType = 0;
         this.components = new Vector<Component>();
         this.sim = sim;
         this.duration = 0;
@@ -39,6 +39,9 @@ public class CyclePart {
                 break;
             case 6:
                 shearStressChange();
+                break;
+            case 7:
+                propertiesChange();
                 break;
             default:
                 break;
@@ -68,6 +71,9 @@ public class CyclePart {
     }
 
     void shearStressChange() {
+    }
+
+    void propertiesChange() {
     }
 
 }
