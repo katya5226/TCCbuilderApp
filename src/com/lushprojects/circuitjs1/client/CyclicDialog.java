@@ -17,6 +17,8 @@ public class CyclicDialog extends Dialog {
     HorizontalPanel buttonPanel;
     ListBox addBox;
 
+    DoubleBox heatTransferDuration;
+    Label heatTransferDurationLabel;
     DoubleBox heatFlux, heatFluxDuration, newComponentIndexes, magneticFieldDuration, electricFieldStrength, electricFieldDuration, pressureFieldStrength, shearStressFieldStrength;
     Label heatFluxLabel, heatFluxDurationLabel, newComponentIndexesLabel, magneticFieldStrengthLabel, magneticFieldDurationLabel, electricFieldStrengthLabel, electricFieldDurationLabel, pressureFieldStrengthLabel, shearStressFieldStrengthLabel;
     ListBox magneticComponents, magneticFieldStrength;
@@ -55,6 +57,7 @@ public class CyclicDialog extends Dialog {
 
         addBox = new ListBox();
         vp.add(addBox);
+        addBox.addItem("< Choose Cycle Part >");
         addBox.addItem("Heat Transfer");
         addBox.addItem("Heat Input");
         addBox.addItem("Mechanic Displacement");
@@ -84,6 +87,11 @@ public class CyclicDialog extends Dialog {
         }
         inputWidgets.add(componentsLabel);
         inputWidgets.add(magneticComponents);
+
+        heatTransferDurationLabel = new Label(Locale.LS("Duration (s): "));
+        heatTransferDuration = new DoubleBox();
+        inputWidgets.add(heatTransferDurationLabel);
+        inputWidgets.add(heatTransferDuration);
 
         heatFluxDurationLabel = new Label(Locale.LS("Duration (s): "));
         heatFluxDuration = new DoubleBox();
@@ -131,10 +139,10 @@ public class CyclicDialog extends Dialog {
         }
 
         //enable for heat flux
-        heatFluxLabel.setVisible(true);
-        heatFlux.setVisible(true);
-        heatFluxDurationLabel.setVisible(true);
-        heatFluxDuration.setVisible(true);
+        heatFluxLabel.setVisible(false);
+        heatFlux.setVisible(false);
+        heatFluxDurationLabel.setVisible(false);
+        heatFluxDuration.setVisible(false);
 
         buttonPanel = new HorizontalPanel();
         buttonPanel.setWidth("100%");
@@ -159,9 +167,13 @@ public class CyclicDialog extends Dialog {
                         chosenComponent.fieldIndex = magneticFieldStrength.getSelectedIndex();
                     }
                     if (magneticFieldDuration.isVisible()) {
-                        cyclePart.duration = magneticFieldDuration.getText().equals("") ? 0 : magneticFieldDuration.getValue();
+                        // cyclePart.duration = magneticFieldDuration.getText().equals("") ? 0 : magneticFieldDuration.getValue();
+                        cyclePart.duration = 0.0;
                         // Only 0.0 is allowed at the moment.
                     }
+                }
+                if (heatTransferDuration.isVisible()) {
+                    cyclePart.duration = heatTransferDuration.getValue();
                 }
                 closeDialog();
             }
@@ -200,10 +212,8 @@ public class CyclicDialog extends Dialog {
                 }
                 switch (addBox.getSelectedItemText()) {
                     case "Heat Transfer":
-                        heatFluxLabel.setVisible(true);
-                        heatFlux.setVisible(true);
-                        heatFluxDurationLabel.setVisible(true);
-                        heatFluxDuration.setVisible(true);
+                        heatTransferDurationLabel.setVisible(true);
+                        heatTransferDuration.setVisible(true);
                         break;
                     case "Mechanic Displacement":
                         newComponentIndexesLabel.setVisible(true);

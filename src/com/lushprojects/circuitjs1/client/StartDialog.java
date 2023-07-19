@@ -316,7 +316,7 @@ public class StartDialog extends Dialog {
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                //sim.cyclic = !sim.cyclic;
+                sim.cyclic = !sim.cyclic;
                 cyclicButton.setEnabled(cyclic.getState());
             }
 
@@ -359,12 +359,13 @@ public class StartDialog extends Dialog {
         if (!sim.simComponents.isEmpty()) {
 
             sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<b>Cyclic Operation:</b><br>");
+            sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cyclic</b> "+String.valueOf(sim.cyclic)+"<br>");
             for (CyclePart cp : sim.cycleParts) {
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cycle Part:</b> "+cp.partType+"<br>");
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
-                for (Component c : cp.components) {
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + c.index);
-                }
+                // for (Component c : cp.components) {
+                //     sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + c.index);
+                // }
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Field Strength:</b> ###<br>" );
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Duration:</b>"+cp.duration+"s<br>" );

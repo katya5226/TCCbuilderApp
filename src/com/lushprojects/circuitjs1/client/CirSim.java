@@ -1091,7 +1091,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // cycleParts.get(2).duration = 0.5;
         // *************************
         numCycleParts = this.cycleParts.size();
-        //cyclePart = this.cycleParts.get(0);
+        cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
         printing_interval = 1;
         total_time = 1.0;
@@ -3145,7 +3145,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         stampCircuit();
         //Window.alert(String.valueOf(didAnalyze));
 
-
         for (iter = 1; ; iter++) {
 
             // *************************** Katni *******************************
@@ -3153,6 +3152,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 heat_transfer_step();
                 time += dt;
             } else if (this.cyclic == true) {
+                GWT.log(String.valueOf(cyclePartIndex));
                 this.cyclePart.execute();
                 if (this.cyclePart.duration > 0.0) {
                     time += dt;
