@@ -3972,7 +3972,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             voltsCheckItem.setState(true);
             showValuesCheckItem.setState(true);
             setGrid();
-            speedBar.setValue(117); // 57
+            speedBar.setValue(57); // 57
             CircuitElm.voltageRange = 5;
             lastIterTime = 0;
 
@@ -4178,7 +4178,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double sp = Double.parseDouble(st.nextToken());
         int sp2 = (int) (Math.log(10 * sp) * 24 + 61.5);
         // int sp2 = (int) (Math.log(sp)*24+1.5);
-        speedBar.setValue(sp2);
+        speedBar.setValue(57);
         CircuitElm.voltageRange = Double.parseDouble(st.nextToken());
 
         try {
