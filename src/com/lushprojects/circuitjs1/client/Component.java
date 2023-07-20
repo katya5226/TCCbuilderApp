@@ -197,7 +197,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         arr[0] = this.name;
         // getBasicInfo(arr);
         arr[1] = "Component index = " + String.valueOf(this.index);
-        arr[2] = "Material = " + this.material.name;
+        arr[2] = "Material = " + this.material.materialName;
 
         double tmpLength = this.length;
         if (tmpLength < 1e-3) { // less than 1 millimeter
@@ -243,7 +243,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 for (String m : sim.materialNames) {
                     ei.choice.add(m);
                 }
-                ei.choice.select(sim.materialNames.indexOf(this.material.name));
+                ei.choice.select(sim.materialNames.indexOf(this.material.materialName));
                 return ei;
             case 3:
                 return new EditInfo("Number of control volumes", (double) this.num_cvs);

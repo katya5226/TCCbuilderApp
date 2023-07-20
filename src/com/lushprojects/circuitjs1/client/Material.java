@@ -2,9 +2,6 @@ package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.dev.jjs.ast.JField;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.json.client.JSONObject;
@@ -13,7 +10,6 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 // edited
@@ -45,7 +41,7 @@ public class Material {
     public Vector<Vector<Double>> cpCooling;
     public Vector<Double> fields;
 
-    public String name;
+    public String materialName;
     public String label;
 
 
@@ -71,7 +67,7 @@ public class Material {
     boolean field;
 
     public Material(String materialName, CirSim sim) {
-        this.name = materialName;
+        this.materialName = materialName;
         this.sim = sim;
         this.field = false;
         this.interpTemps = new Vector<Double>();
@@ -92,7 +88,7 @@ public class Material {
 
 
     private void setFlags(String text) {
-        RegExp pattern = RegExp.compile(name.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)") + ".*");
+        RegExp pattern = RegExp.compile(materialName.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)") + ".*");
         MatchResult matcher = pattern.exec(text);
         if (matcher != null) {
             String[] line = matcher.getGroup(0).split(",", -1);
@@ -108,15 +104,19 @@ public class Material {
             //GWT.log(Arrays.toString(line));
             //GWT.log(line.length+" "+invariant +" "+thermoelectric +" "+hysteresis+" "+nonInvariant+" "+temperatureInducedPhaseChange+" "+electrocaloric+" "+magnetocaloric+" "+barocaloric+" "+elastocaloric);
         } else
-            GWT.log("No entry found in flag file for material \"" + name + "\"");
+            GWT.log("No entry found in flag file for material \"" + materialName + "\"");
     }
 
     void readFiles() {
-        String url_info = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/info.txt";
-        String url_properties = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/RT_properties.txt";
-        String url_ranges = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/Ranges.txt";
-        String url_rho = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/rho.txt";
-        String url_k = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/k.txt";
+        String CORSproxy = "https://corsproxy.io/?";
+        //String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+        String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
+        GWT.log(baseURL);
+        String url_info = baseURL + materialName + "/info.txt";
+        String url_properties = baseURL + materialName + "/RT_properties.txt";
+        String url_ranges = baseURL + materialName + "/Ranges.txt";
+        String url_rho = baseURL + materialName + "/rho.txt";
+        String url_k = baseURL + materialName + "/k.txt";
 
         sim.awaitedResponses.add(url_info);
         sim.awaitedResponses.add(url_properties);
@@ -131,7 +131,7 @@ public class Material {
         fillVectorFromURL(url_k, k);
 
         if (invariant) {
-            String url_cp = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/cp.txt";
+            String url_cp = baseURL + materialName + "/cp.txt";
             sim.awaitedResponses.add(url_cp);
             Vector<Double> vector = new Vector<Double>();
             fillVectorFromURL(url_cp, vector);
@@ -139,7 +139,7 @@ public class Material {
 
         }
         if (magnetocaloric) {
-            String url_fields = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/Fields.txt";
+            String url_fields = baseURL + materialName + "/Fields.txt";
             sim.awaitedResponses.add(url_fields);
             loadFieldsFromUrl(url_fields, new Callback() {
                 @Override
@@ -148,7 +148,7 @@ public class Material {
                     String url_cp, url_dT;
                     for (double field : fields) {
                         String fieldName = NumberFormat.getFormat("#0.0").format(field);
-                        url_cp = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/cp_" + fieldName + "T.txt";
+                        url_cp = baseURL + materialName + "/cp_" + fieldName + "T.txt";
                         Vector<Double> field_cp = new Vector<Double>();
                         sim.awaitedResponses.add(url_cp);
                         fillVectorFromURL(url_cp, field_cp);
@@ -156,12 +156,12 @@ public class Material {
 
                         if (field != 0) {
                             Vector<Double> field_dT = new Vector<Double>();
-                            url_dT = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/dT_" + fieldName + "T_cooling.txt";
+                            url_dT = baseURL + materialName + "/dT_" + fieldName + "T_cooling.txt";
                             sim.awaitedResponses.add(url_dT);
                             fillVectorFromURL(url_dT, field_dT);
                             dTcooling.add(field_dT);
 
-                            url_dT = GWT.getModuleBaseURL() + "material_data/materials_library/" + name + "/dT_" + fieldName + "T_heating.txt";
+                            url_dT = baseURL + materialName + "/dT_" + fieldName + "T_heating.txt";
                             field_dT = new Vector<Double>();
                             sim.awaitedResponses.add(url_dT);
                             fillVectorFromURL(url_dT, field_dT);

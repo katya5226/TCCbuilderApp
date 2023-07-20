@@ -311,7 +311,7 @@ public class CyclicDialog extends Dialog {
                 GWT.log("Chosen component: " + chosenComponent.name);
                 cyclePart.components.add(chosenComponent);
                 magneticFieldStrength.clear();
-                GWT.log("Material name: " + chosenComponent.material.name);
+                GWT.log("Material name: " + chosenComponent.material.materialName);
                 GWT.log("Fields size: " + String.valueOf(chosenComponent.material.fields.size()));
                 for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
                     magneticFieldStrength.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));

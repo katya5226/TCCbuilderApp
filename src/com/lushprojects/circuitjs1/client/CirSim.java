@@ -3654,7 +3654,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             for (Component component : tce.components) {
                 dump += "Component name: " + component.name + "\n" +
                         "Component index: " + component.index + "\n" +
-                        "Material: " + component.material.name + "\n" +
+                        "Material: " + component.material.materialName + "\n" +
                         "Number of control volumes:  " + component.num_cvs + "\n" +
                         "Control volume length: " + component.cvs.get(0).dx + " m\n" +
                         "Constant density:" + "kg/m^3\n" +
