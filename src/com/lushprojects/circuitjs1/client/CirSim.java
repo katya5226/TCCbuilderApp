@@ -108,7 +108,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem mouseWheelEditCheckItem;
     Label titleLabel;
     Scrollbar speedBar;
-    ListBox scale;
+    ListBox scale,dimensionality;
     HTML cyclicOperationLabel;
 
     MenuBar elmMenuBar;
@@ -762,20 +762,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         scale.addItem("meter");
         scale.addStyleName("aroundSpace");
         scale.setWidth("75%");
-        switch (selectedLengthUnit) {
-            case MICROMETER:
-                scale.setSelectedIndex(0);
-                break;
-            case MILLIMETER:
-                scale.setSelectedIndex(1);
-                break;
-            case CENTIMETER:
-                scale.setSelectedIndex(2);
-                break;
-            case METER:
-                scale.setSelectedIndex(3);
-                break;
-        }
+        verticalPanel.add(scale);
+        verticalPanel.add(l = new Label(Locale.LS("Dimensionality")));
+        l.addStyleName("aroundSpace");
+        dimensionality = new ListBox();
+        dimensionality.addItem("1D");
+        dimensionality.addItem("2D");
+        dimensionality.addStyleName("aroundSpace");
+        dimensionality.setWidth("75%");
+        verticalPanel.add(dimensionality);
+
         scale.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -800,7 +796,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     resetAction();
             }
         });
-        verticalPanel.add(scale);
         cyclicOperationLabel = new HTML();
 
         cyclicOperationLabel.addStyleName("aroundSpace");

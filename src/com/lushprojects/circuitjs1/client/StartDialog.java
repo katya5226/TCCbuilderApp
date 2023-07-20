@@ -36,7 +36,6 @@ public class StartDialog extends Dialog {
     DoubleBox rightConvectionCoefficient;
     ListBox leftBoundary;
     ListBox rightBoundary;
-    ListBox dimensionality;
 
     HorizontalPanel leftHorizontalPanel;
     HorizontalPanel rightHorizontalPanel;
@@ -77,10 +76,6 @@ public class StartDialog extends Dialog {
         cyclicContainer.add(cyclicButton);
 
         includingRadiaton = new Checkbox("Including radiation");
-
-        dimensionality = new ListBox();
-        dimensionality.addItem("1D");
-        dimensionality.addItem("2D");
 
 
         timeStep = new DoubleBox();
@@ -128,6 +123,7 @@ public class StartDialog extends Dialog {
         vp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
         vp.add(startTemperature);
         vp.add(new Label(Locale.LS("Left Boundary Condition: ")));
+
         vp.add(leftBoundary);
         vp.add(inletHeatFluxLabel);
         vp.add(inletHeatFlux);
@@ -147,8 +143,6 @@ public class StartDialog extends Dialog {
         vp.add(cyclicContainer);
 
         vp.add(includingRadiaton);
-        vp.add(new Label(Locale.LS("Dimensionality: ")));
-        vp.add(dimensionality);
 
         vp.setSpacing(1);
 
