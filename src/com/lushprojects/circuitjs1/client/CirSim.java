@@ -108,7 +108,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem mouseWheelEditCheckItem;
     Label titleLabel;
     Scrollbar speedBar;
-    ListBox scale,dimensionality;
+    ListBox scale, dimensionality;
     HTML cyclicOperationLabel;
 
     MenuBar elmMenuBar;
@@ -309,6 +309,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     double[] x_mod;
 
     boolean viewTempsInGraph = true;
+    double minTemp, maxTemp;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
     int testCounter = 0;
@@ -403,6 +404,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // applet = a;
         // useFrame = false;
         theSim = this;
+
     }
 
     String startCircuit = null;
@@ -1058,7 +1060,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         heatCircuit.h_right = h_right;
         heatCircuit.temp_left = temp_left;
         heatCircuit.temp_right = temp_right;
-
+        maxTemp = Double.MIN_VALUE;
+        minTemp = Double.MAX_VALUE;
         heatCircuit.build_TCC();
         heatCircuit.initializeMatrix();
         int n = heatCircuit.num_cvs;
@@ -1824,7 +1827,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ? trackedTemperatures.size() * maxElementHeight
                 : 200);
         h = 250;
-
+        if(heatCircuit==null)
+            return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
         double elementHeight = h;
@@ -1840,13 +1844,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //ctx.fillRect(XOffSet, YOffset, circuitArea.width, h);
         ctx.setStrokeStyle(Color.lightGray.getHexValue());
         ctx.setLineWidth(0.5);
-        double tempDiff = Math.abs(temp_left - temp_right);
+
+            for (ControlVolume cv : heatCircuit.cvs) {
+                minTemp = Math.min(minTemp, cv.temperature);
+                maxTemp = Math.max(maxTemp, cv.temperature);
+            }
+
+        double tempDiff = Math.abs(maxTemp - minTemp);
 
         int numberOfLines = 10;
         for (int i = 0; i < numberOfLines; i++) {
             ctx.beginPath();
             double y = YOffset + ((double) h / numberOfLines) * i;
-            String text = NumberFormat.getFormat("#.00").format(((Math.max(temp_left, temp_right) - (tempDiff / numberOfLines) * i)));
+            String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / numberOfLines) * i));
 
             ctx.moveTo(XOffSet * .75, y);
             ctx.lineTo(circuitArea.width - XOffSet * .25, circuitArea.height - h + ((double) h / numberOfLines) * i);
@@ -1885,23 +1895,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     double temp = temps[i];
 
                     double[] tmp;
-                    boolean isTempRightGreaterThanLeft = (temp_right > temp_left);
-
                     if (i == 0) {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                                isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                                maxTemp,
+                                minTemp,
                                 prevColor.getHexValue());
                     } else {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                                isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                                maxTemp,
+                                minTemp,
                                 component.color.getHexValue());
                     }
 
                     tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                            isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                            isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                            maxTemp,
+                            minTemp,
                             component.color.getHexValue());
 
                     prevX = tmp[0];
@@ -3147,7 +3155,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 heat_transfer_step();
                 time += dt;
             } else if (this.cyclic == true) {
-                if(this.cycleParts.size() == 0) {
+                if (this.cycleParts.size() == 0) {
                     Window.alert("Sim set to cyclic but cycle parts undefined");
                 }
                 GWT.log(String.valueOf(cyclePartIndex));
