@@ -345,6 +345,35 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
     }
 
+    public void setConstProperties(Vector<Double> newProps) {
+        if (newProps.size() != 3) {
+            GWT.log("Vector of new properties must contain three values.");
+        }
+        for (int i = 0; i < this.num_cvs; i++) {
+            this.cvs.get(i).const_rho = newProps.get(0);
+            this.cvs.get(i).const_cp = newProps.get(1);
+            this.cvs.get(i).const_k = newProps.get(2);
+        }
+    }
+
+    public void setConstProperty(String property, double value) {
+        if (property.equals("rho")) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_rho = value;
+            }
+        }
+        if (property.equals("cp")) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_cp = value;
+            }
+        }
+        if (property.equals("k")) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_k = value;
+            }
+        }
+    }
+
     public void set_dx(double dx) {
 
         for (ControlVolume cv : this.cvs) {

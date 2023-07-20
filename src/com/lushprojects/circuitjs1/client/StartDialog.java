@@ -239,6 +239,7 @@ public class StartDialog extends Dialog {
                     GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
                 }
                 GWT.log("------");
+                GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).cvs.get(0).const_k));
 
                 apply();
                 closeDialog();

@@ -3152,6 +3152,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 heat_transfer_step();
                 time += dt;
             } else if (this.cyclic == true) {
+                if(this.cycleParts.size() == 0) {
+                    Window.alert("Sim set to cyclic but cycle parts undefined");
+                }
                 GWT.log(String.valueOf(cyclePartIndex));
                 this.cyclePart.execute();
                 if (this.cyclePart.duration > 0.0) {

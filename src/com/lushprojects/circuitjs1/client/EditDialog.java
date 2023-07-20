@@ -98,7 +98,7 @@ class EditDialog extends Dialog {
         });
         componentButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                new ComponentConstantsDialog((Component) elm).show();
+                new ComponentConstantsDialog((Component) elm, cframe).show();
             }
         });
 

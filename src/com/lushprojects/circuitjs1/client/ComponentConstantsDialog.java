@@ -16,9 +16,9 @@ public class ComponentConstantsDialog extends Dialog {
     private Map<String, DoubleBox> valueMap;
     private Button applyButton, cancelButton;
 
-    public ComponentConstantsDialog(Component component) {
+    public ComponentConstantsDialog(Component component, CirSim sim) {
         this.component = component;
-        this.sim = this.component.sim;
+        this.sim = sim;
 
         setText(Locale.LS("Set Constant Parameters"));
         closeOnEnter = true;
@@ -112,13 +112,13 @@ public class ComponentConstantsDialog extends Dialog {
             double value = doubleBox.getValue();
             // Apply the value to the component or perform necessary actions
             // For example:
-/*            if (selectedValue.equals("Density")) {
-                component.material.set(value);
+            if (selectedValue.equals("Density")) {
+                component.setConstProperty("rho", value);
             } else if (selectedValue.equals("Specific Heat Capacity")) {
-                component.material.setSpecificHeatCapacity(value);
+                component.setConstProperty("cp", value);
             } else if (selectedValue.equals("Thermal Conductivity")) {
-                component.material.setThermalConductivity(value);
-            }*/
+                component.setConstProperty("k", value);
+            }
         }
     }
 

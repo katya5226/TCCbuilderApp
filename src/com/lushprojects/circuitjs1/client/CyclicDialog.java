@@ -1,13 +1,13 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.google.gwt.user.client.ui.ListBox;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CyclicDialog extends Dialog {
 
@@ -17,12 +17,12 @@ public class CyclicDialog extends Dialog {
     HorizontalPanel buttonPanel;
     ListBox addBox;
 
-    DoubleBox heatTransferDuration;
-    Label heatTransferDurationLabel;
+    DoubleBox heatTransferDuration, propsChangeDuration, newRho, newCp, newK;
+    Label heatTransferDurationLabel, propsChangeDurationLabel;
     DoubleBox heatFlux, heatFluxDuration, newComponentIndexes, magneticFieldDuration, electricFieldStrength, electricFieldDuration, pressureFieldStrength, shearStressFieldStrength;
     Label heatFluxLabel, heatFluxDurationLabel, newComponentIndexesLabel, magneticFieldStrengthLabel, magneticFieldDurationLabel, electricFieldStrengthLabel, electricFieldDurationLabel, pressureFieldStrengthLabel, shearStressFieldStrengthLabel;
-    ListBox magneticComponents, magneticFieldStrength;
-    Label componentsLabel;
+    ListBox availableComponents, magneticComponents, magneticFieldStrength;
+    Label componentsLabel, rhoLabel, cpLabel, kLabel;
 
     List<Widget> inputWidgets;
 
@@ -88,10 +88,37 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(componentsLabel);
         inputWidgets.add(magneticComponents);
 
+        availableComponents = new ListBox();
+        availableComponents.addItem("< Choose Component >");
+        for (int i = 0; i < sim.simComponents.size(); i++) {
+            availableComponents.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+        }
+        inputWidgets.add(availableComponents);
+
         heatTransferDurationLabel = new Label(Locale.LS("Duration (s): "));
         heatTransferDuration = new DoubleBox();
         inputWidgets.add(heatTransferDurationLabel);
         inputWidgets.add(heatTransferDuration);
+
+        propsChangeDurationLabel = new Label(Locale.LS("Duration (s): "));
+        propsChangeDuration = new DoubleBox();
+        inputWidgets.add(propsChangeDurationLabel);
+        inputWidgets.add(propsChangeDuration);
+
+        rhoLabel = new Label(Locale.LS("Input new density (kg/m^3): "));
+        newRho = new DoubleBox();
+        inputWidgets.add(rhoLabel);
+        inputWidgets.add(newRho);
+
+        cpLabel = new Label(Locale.LS("Input new specific heat capacity (J/kg/K): "));
+        newCp = new DoubleBox();
+        inputWidgets.add(cpLabel);
+        inputWidgets.add(newCp);
+
+        kLabel = new Label(Locale.LS("Input new thermal conductivity (W/m/K): "));
+        newK = new DoubleBox();
+        inputWidgets.add(kLabel);
+        inputWidgets.add(newK);
 
         heatFluxDurationLabel = new Label(Locale.LS("Duration (s): "));
         heatFluxDuration = new DoubleBox();
@@ -173,7 +200,21 @@ public class CyclicDialog extends Dialog {
                     }
                 }
                 if (heatTransferDuration.isVisible()) {
+                    cyclePart.partType = 0;
                     cyclePart.duration = heatTransferDuration.getValue();
+                }
+                if (propsChangeDuration.isVisible()) {
+                    cyclePart.partType = 7;
+                    // cyclePart.duration = propsChangeDuration.getValue();
+                    cyclePart.duration = 0.0;
+                    // Only 0.0 is allowed at the moment.
+                    if (newRho.getValue() == 0 || newCp.getValue() == 0 || newK.getValue() == 0) {
+                        Window.alert("Value must be -1 or greater than 0.001!");
+                        sim.cycleParts.remove(sim.cycleParts.size()-1);
+                    }
+                    cyclePart.newProperties.get(0).add(newRho.getValue());
+                    cyclePart.newProperties.get(0).add(newCp.getValue());
+                    cyclePart.newProperties.get(0).add(newK.getValue());
                 }
                 closeDialog();
             }
@@ -242,8 +283,10 @@ public class CyclicDialog extends Dialog {
                         shearStressFieldStrength.setVisible(true);
                         break;
                     case "Properties Change":
-                        // shearStressFieldStrengthLabel.setVisible(true);
-                        // shearStressFieldStrength.setVisible(true);
+                        componentsLabel.setVisible(true);
+                        availableComponents.setVisible(true);
+                        propsChangeDurationLabel.setVisible(true);
+                        propsChangeDuration.setVisible(true);   
                         break;
                 }
             }
@@ -268,11 +311,40 @@ public class CyclicDialog extends Dialog {
                 GWT.log("Chosen component: " + chosenComponent.name);
                 cyclePart.components.add(chosenComponent);
                 magneticFieldStrength.clear();
+                GWT.log("Material name: " + chosenComponent.material.name);
+                GWT.log("Fields size: " + String.valueOf(chosenComponent.material.fields.size()));
                 for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
                     magneticFieldStrength.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
                 }
                 magneticFieldStrengthLabel.setVisible(true);
                 magneticFieldStrength.setVisible(true);
+            }
+        });
+
+        availableComponents.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                int chosen = availableComponents.getSelectedIndex() - 1;
+                if (chosen < 0) {
+                    return;
+                }
+                GWT.log("Chosen: " + String.valueOf(chosen));
+                for (int i = 0; i < sim.simComponents.size(); i++) {
+                    GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+                }
+                chosenComponent = sim.simComponents.get(chosen);
+                GWT.log("Chosen component: " + chosenComponent.name);
+                cyclePart.components.add(chosenComponent);
+                cyclePart.newProperties.add(new Vector<Double>());
+                newRho.setValue(chosenComponent.cvs.get(0).const_rho);
+                newCp.setValue(chosenComponent.cvs.get(0).const_cp);
+                newK.setValue(chosenComponent.cvs.get(0).const_k);
+                rhoLabel.setVisible(true);
+                newRho.setVisible(true);
+                cpLabel.setVisible(true);
+                newCp.setVisible(true);
+                kLabel.setVisible(true);
+                newK.setVisible(true);             
             }
         });
 
