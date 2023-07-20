@@ -1,11 +1,28 @@
 package com.lushprojects.circuitjs1.client;
+
 import com.google.gwt.core.client.GWT;
 
 import java.util.Vector;
 
 public class CyclePart {
+    public enum PartType {
+        HEAT_TRANSFER,
+        HEAT_INPUT,
+        MECHANIC_DISPLACEMENT,
+        MAGNETIC_FIELD_CHANGE,
+        ELECTRIC_FIELD_CHANGE,
+        PRESSURE_CHANGE,
+        SHEAR_STRESS_CHANGE,
+        PROPERTIES_CHANGE;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase().replace("_", " ");
+        }
+    }
+
     int partIndex;
-    int partType;
+    PartType partType;
     Vector<Component> components;
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
     // rho, cp and k. In Cyclic dialog, the value of const_x (x = rho, cp or k) is set to -1 if a constant value needs not be set.
@@ -14,7 +31,7 @@ public class CyclePart {
 
     public CyclePart(int index, CirSim sim) {
         this.partIndex = index;
-        this.partType = 0;
+        this.partType = PartType.HEAT_TRANSFER;
         this.components = new Vector<Component>();
         this.newProperties = new Vector<Vector<Double>>();
         this.sim = sim;
@@ -23,28 +40,28 @@ public class CyclePart {
 
     public void execute() {
         switch (this.partType) {
-            case 0:
+            case HEAT_TRANSFER:
                 sim.heat_transfer_step();
                 break;
-            case 1:
+            case HEAT_INPUT:
                 heatInput();
                 break;
-            case 2:
+            case MECHANIC_DISPLACEMENT:
                 mechanicDisplacement();
                 break;
-            case 3:
+            case MAGNETIC_FIELD_CHANGE:
                 magneticFieldChange();
                 break;
-            case 4:
+            case ELECTRIC_FIELD_CHANGE:
                 electricFieldChange();
                 break;
-            case 5:
+            case PRESSURE_CHANGE:
                 pressureChange();
                 break;
-            case 6:
+            case SHEAR_STRESS_CHANGE:
                 shearStressChange();
                 break;
-            case 7:
+            case PROPERTIES_CHANGE:
                 propertiesChange();
                 break;
             default:
