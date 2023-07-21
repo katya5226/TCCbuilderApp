@@ -1060,14 +1060,28 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         heatCircuit.h_right = h_right;
         heatCircuit.temp_left = temp_left;
         heatCircuit.temp_right = temp_right;
-        maxTemp = Double.MIN_VALUE;
-        minTemp = Double.MAX_VALUE;
+
         heatCircuit.build_TCC();
         heatCircuit.initializeMatrix();
         int n = heatCircuit.num_cvs;
         double[] temps = new double[n];
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
+
+        double maxValue = 0;
+        for (Component c : simComponents) {
+            if (c.material.magnetocaloric) {
+                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
+                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
+                }
+
+                for (Vector<Double> dTheatingVector : c.material.dTheating) {
+                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
+                }
+            }
+        }
+        minTemp = startTemp - maxValue;
+        maxTemp = startTemp + maxValue;
     }
 
     void setHeatSim() {
@@ -1827,7 +1841,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ? trackedTemperatures.size() * maxElementHeight
                 : 200);
         h = 250;
-        if(heatCircuit==null)
+        if (heatCircuit == null)
             return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
@@ -1844,11 +1858,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //ctx.fillRect(XOffSet, YOffset, circuitArea.width, h);
         ctx.setStrokeStyle(Color.lightGray.getHexValue());
         ctx.setLineWidth(0.5);
-
-            for (ControlVolume cv : heatCircuit.cvs) {
-                minTemp = Math.min(minTemp, cv.temperature);
-                maxTemp = Math.max(maxTemp, cv.temperature);
-            }
 
         double tempDiff = Math.abs(maxTemp - minTemp);
 
