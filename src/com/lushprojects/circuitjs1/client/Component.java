@@ -130,6 +130,18 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
     }
 
+    public void updateModes() {
+        for (int i = 0; i < this.num_cvs; i++) {
+            ControlVolume cv = this.cvs.get(i);
+            if (cv.temperature >= cv.temperature_old) {
+                cv.mode = 1;
+            }
+            else if (cv.temperature < cv.temperature_old) {
+                cv.mode = -1;
+            }
+        }
+    }
+
     @Override
     public int compareTo(Component o) {
         return this.index - o.index;

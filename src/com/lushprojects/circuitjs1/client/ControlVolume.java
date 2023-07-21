@@ -27,9 +27,8 @@ public class ControlVolume {
     public double const_rho;
     public double const_cp;
     public double const_k;
-
-
-    public double eps; // permittivity at low frequencies
+    public double eps;
+    public int mode;
 
     //public ControlVolume(Component parent, int index) {
     public ControlVolume(int index) {
@@ -55,6 +54,7 @@ public class ControlVolume {
         this.const_cp = -1;
         this.const_k = -1;
         this.eps = 1.0;
+        this.mode = 0;
     }
 
     double rho() {
@@ -67,14 +67,27 @@ public class ControlVolume {
         return rho;
     }
 
-    double cp() {
+    double cp(){
         double cp = 0.0;
-        if (this.const_cp != -1)
+        Material m = this.parent.material;
+        int fI = 0;
+        if (this.const_cp != -1) {
             cp = this.const_cp;
-        else if (this.const_cp == -1) {
-            //TODO: implement correctly
-            cp = ModelMethods.linInterp(this.temperature, this.parent.material.interpTemps, this.parent.material.cp.get(0));
         }
+        else {
+            if (this.parent.field == true) {
+                fI = this.parent.fieldIndex;
+            }
+            if (m.cpThysteresis == false) {
+                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cp.get(fI));
+            }
+            else if (m.cpThysteresis == true && this.mode == 1){
+                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpHeating.get(fI));
+            }
+            else if (m.cpThysteresis == true && this.mode == -1){
+                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpCooling.get(fI));
+            }
+        } 
         return cp;
     }
 

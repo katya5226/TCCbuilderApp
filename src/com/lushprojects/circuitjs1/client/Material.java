@@ -25,6 +25,7 @@ public class Material {
     public boolean invariant;
     public boolean thermoelectric;
     public boolean hysteresis;
+    public boolean cpThysteresis;  // !!!
     public boolean nonInvariant;
     public boolean temperatureInducedPhaseChange;
     public boolean magnetocaloric;
@@ -88,6 +89,7 @@ public class Material {
         this.cpCooling = new Vector<Vector<Double>>();
         this.fields = new Vector<Double>();
         setFlags(sim.materialFlagText);
+        this.cpThysteresis = false;  // SHOULD BE ALSO READ FROM FLAGTEXT !!!
     }
 
 

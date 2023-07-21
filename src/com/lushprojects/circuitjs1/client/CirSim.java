@@ -1112,7 +1112,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (int i = 0; i < this.num_cvs; i++) {
             this.x_prev[i] = heatCircuit.cvs.get(i).temperature_old;
         }
-        while (true) {
+        //while (true) {
+        for (int k = 0; k < 3; k++) { 
             // heatCircuit.neighbours()
             heatCircuit.calc_conduct_lr();
             heatCircuit.makeMatrix(this.dt);
@@ -1124,9 +1125,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
             this.x_prev = this.x_mod;
-            if (flag) {
-                break;
+            for (int i = 0; i < simComponents.size(); i++) {
+                if (simComponents.get(i).material.cpThysteresis == true)
+                simComponents.get(i).updateModes();
             }
+            // if (flag) {
+            //     break;
+            // }
         }
 
         heatCircuit.calc_conduct_lr();
