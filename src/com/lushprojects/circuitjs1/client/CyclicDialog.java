@@ -356,34 +356,32 @@ public class CyclicDialog extends Dialog {
         if (sim.cycleParts.size() == 1) {
             if (sim.cyclicOperationLabel.getHTML().equals("")) {
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<b>Cyclic Operation:</b><br>");
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cyclic</b> " + String.valueOf(sim.cyclic) + "<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;<b>Cyclic</b> " + String.valueOf(sim.cyclic) + "<br>");
             } else {
                 sim.cyclicOperationLabel.setHTML("");
             }
         }
 
-        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cycle Part:</b> " + cp.partType + "<br>");
+        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;<b>Cycle Part:</b> " + cp.partType + "<br>");
         switch (cp.partType) {
             case HEAT_TRANSFER:
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components: all</b>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Components: all</b>");
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#.0000").format(cp.duration) + " s<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#.0000").format(cp.duration) + " s<br>");
                 break;
             case HEAT_INPUT:
                 break;
             case MECHANIC_DISPLACEMENT:
                 break;
             case MAGNETIC_FIELD_CHANGE:
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Components:</b>");
                 for (Component c : cp.components)
                     sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + " " + c.index);
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Field Strength:</b> </br> ");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Magnetic Field Strength:</b> </br> ");
                 for (Component c : cp.components)
                     sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + c.material.fields.get(c.fieldIndex) + "T for " + c.name + "</br>");
-
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
             case ELECTRIC_FIELD_CHANGE:
                 break;
@@ -392,13 +390,18 @@ public class CyclicDialog extends Dialog {
             case SHEAR_STRESS_CHANGE:
                 break;
             case PROPERTIES_CHANGE:
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Components:</b>");
                 for (Component c : cp.components)
                     sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + " " + c.index);
                 sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Changed properties:</b></br>");
+                if (newRho.getValue() != -1)
+                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;&emsp;Rho:" + newRho.getValue() + "<br>");
+                if (newCp.getValue() != -1)
+                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;&emsp;Cp:" + newCp.getValue() + "<br>");
+                if (newK.getValue() != -1)
+                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;&emsp;K:" + newK.getValue() + "<br>");
+                sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
         }
 
