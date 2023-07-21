@@ -539,7 +539,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         aboutItem.setScheduledCommand(new MyCommand("file", "about"));
 
         int width = (int) RootLayoutPanel.get().getOffsetWidth();
-        VERTICALPANELWIDTH = width / 5;
+        VERTICALPANELWIDTH = width / 4;
 /*        if (VERTICALPANELWIDTH > 166)
             VERTICALPANELWIDTH = 166;
         if (VERTICALPANELWIDTH < 128)

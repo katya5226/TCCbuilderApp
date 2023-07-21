@@ -321,7 +321,6 @@ public class StartDialog extends Dialog {
         cyclicButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                sim.cycleParts.add(new CyclePart(sim.cycleParts.size(), sim));
                 new CyclicDialog(CirSim.theSim).show();
             }
         });
