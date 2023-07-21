@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 
 interface Editable {
     EditInfo getEditInfo(int n);
+
     void setEditValue(int n, EditInfo ei);
 }
 
@@ -98,6 +99,7 @@ class EditDialog extends Dialog {
         });
         componentButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
+                closeDialog();
                 new ComponentConstantsDialog((Component) elm, cframe).show();
             }
         });
@@ -171,19 +173,31 @@ class EditDialog extends Dialog {
                 }
                 if (ei.text == null) {
                     if (ei.name.equals("Length (" + CircuitElm.sim.selectedLengthUnit.unitName + ")"))
-                        ei.textf.setText(ei.value * CircuitElm.sim.selectedLengthUnit.conversionFactor  + "");
+                        ei.textf.setText(ei.value * CircuitElm.sim.selectedLengthUnit.conversionFactor + "");
                     else
-                        ei.textf.setText(ei.value+"");
+                        ei.textf.setText(ei.value + "");
                 }
             }
         }
-        l = new Label(Locale.LS("Set Constant Parameters"));
-        l.setStyleName("topSpace");
+
 
         componentButton.setStyleName("topSpace");
         if (elm instanceof Component) {
-            vp.insert(l, vp.getWidgetCount() - 1);
+            vp.insert(l = new Label(Locale.LS("Set Constant Parameters")), vp.getWidgetCount() - 1);
             vp.insert(componentButton, vp.getWidgetCount() - 1);
+            l.setStyleName("topSpace");
+            if (((Component) elm).cvs.get(0).const_rho != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Density: ") + ((Component) elm).cvs.get(0).const_rho), vp.getWidgetCount() - 1);
+                l.setStyleName("topSpace");
+            }
+            if (((Component) elm).cvs.get(0).const_cp != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + ((Component) elm).cvs.get(0).const_cp), vp.getWidgetCount() - 1);
+                l.setStyleName("topSpace");
+            }
+            if (((Component) elm).cvs.get(0).const_k != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + ((Component) elm).cvs.get(0).const_k), vp.getWidgetCount() - 1);
+                l.setStyleName("topSpace");
+            }
         }
         einfocount = i;
 

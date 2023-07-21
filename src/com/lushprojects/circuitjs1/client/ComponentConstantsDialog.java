@@ -1,5 +1,6 @@
 package com.lushprojects.circuitjs1.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
@@ -84,6 +85,7 @@ public class ComponentConstantsDialog extends Dialog {
             @Override
             public void onClick(ClickEvent event) {
                 applyValues();
+                new EditDialog(component, sim);
                 hide();
             }
         });
@@ -112,14 +114,21 @@ public class ComponentConstantsDialog extends Dialog {
             double value = doubleBox.getValue();
             // Apply the value to the component or perform necessary actions
             // For example:
-            if (selectedValue.equals("Density")) {
-                component.setConstProperty("rho", value);
-            } else if (selectedValue.equals("Specific Heat Capacity")) {
-                component.setConstProperty("cp", value);
-            } else if (selectedValue.equals("Thermal Conductivity")) {
-                component.setConstProperty("k", value);
+            switch (selectedValue) {
+                case "Density":
+                    component.setConstProperty("rho", value);
+                    break;
+                case "Specific Heat Capacity":
+                    component.setConstProperty("cp", value);
+                    break;
+                case "Thermal Conductivity":
+                    component.setConstProperty("k", value);
+                    break;
             }
         }
+        GWT.log(component.cvs.get(0).k()+"");
+        GWT.log(component.cvs.get(0).rho()+"");
+        GWT.log(component.cvs.get(0).cp()+"");
     }
 
     public void showDialog() {

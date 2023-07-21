@@ -44,7 +44,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     public Vector<ControlVolume> cvs;
 
-    public boolean isDisabled;  // I am guessing this refers to the external magnetic field
+    public boolean isDisabled;
     public boolean field;
     public int fieldIndex;
 
@@ -63,7 +63,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         if (!material.isLoaded())
             material.readFiles();
 
-        isDisabled = false;  // This would be an opposite value of field. When this is false, field is true.
+        isDisabled = false;
         this.field = false;
         fieldIndex = 1;
     }
