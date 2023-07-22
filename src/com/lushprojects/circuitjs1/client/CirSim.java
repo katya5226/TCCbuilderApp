@@ -1093,21 +1093,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         left_boundary = heatCircuit.left_boundary;
         right_boundary = heatCircuit.right_boundary;
         start_temperatures = new double[this.num_cvs];
-        // Katni test!!! **********
-        // cycleParts.add(new CyclePart(0, 0, this));
-        // cycleParts.add(new CyclePart(1, 3, this));
-        // cycleParts.add(new CyclePart(2, 0, this));
-        // cycleParts.get(0).duration = 0.5;
-        // cycleParts.get(1).duration = 0.0;
-        // //cycleParts.get(1).components.add(simComponents.get(1));
-        // cycleParts.get(2).duration = 0.5;
-        // *************************
         numCycleParts = this.cycleParts.size();
         cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
         printing_interval = 1;
         total_time = 1.0;
         reach_steady = false;
+    }
+
+    void resetHeatSim() {
+        times.clear();
+        temperatures.clear();
+        numCycleParts = 0;
+        cyclic = false;
+        time = 0.0;
+        cycleParts.clear();
     }
 
     public void append_new_temps() {
@@ -3889,8 +3889,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         allowSave(false);
         unsavedChanges = false;
         resetAction();
-
-
     }
 
     void loadFileFromURL(String url) {
@@ -5146,6 +5144,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 // Katni *******************************************************************
                 if (ce instanceof Component) {
                     simComponents.remove((Component) ce);
+                    resetHeatSim();
                     trackedTemperatures.remove(ce);
                     Collections.sort(trackedTemperatures);
                 }
