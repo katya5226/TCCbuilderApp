@@ -413,7 +413,7 @@ public class CyclicDialog extends Dialog {
         label.setHTML(label.getHTML() + "&emsp;<b>Cycle Part:</b> " + cp.partType + "<br>");
         switch (cp.partType) {
             case HEAT_TRANSFER:
-                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b>/br>");
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
             case HEAT_INPUT:
@@ -423,7 +423,7 @@ public class CyclicDialog extends Dialog {
             case MAGNETIC_FIELD_CHANGE:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components:</b></br>");
                 for (Component c : cp.components)
-                    label.setHTML(label.getHTML() + " " + c.name + " " + c.index);
+                    label.setHTML(label.getHTML() + "&emsp;&emsp;&emsp;" + c.name + " " + c.index);
                 label.setHTML(label.getHTML() + "<br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Magnetic Field Strength:</b> </br> ");
                 for (Component c : cp.components)
