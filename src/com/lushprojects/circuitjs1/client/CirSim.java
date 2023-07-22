@@ -108,7 +108,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem mouseWheelEditCheckItem;
     Label titleLabel;
     Scrollbar speedBar;
-    ListBox scale;
+    ListBox scale, dimensionality;
     HTML cyclicOperationLabel;
 
     MenuBar elmMenuBar;
@@ -309,6 +309,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     double[] x_mod;
 
     boolean viewTempsInGraph = true;
+    double minTemp, maxTemp;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
     int testCounter = 0;
@@ -403,6 +404,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // applet = a;
         // useFrame = false;
         theSim = this;
+
     }
 
     String startCircuit = null;
@@ -537,7 +539,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         aboutItem.setScheduledCommand(new MyCommand("file", "about"));
 
         int width = (int) RootLayoutPanel.get().getOffsetWidth();
-        VERTICALPANELWIDTH = width / 5;
+        VERTICALPANELWIDTH = width / 4;
 /*        if (VERTICALPANELWIDTH > 166)
             VERTICALPANELWIDTH = 166;
         if (VERTICALPANELWIDTH < 128)
@@ -762,20 +764,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         scale.addItem("meter");
         scale.addStyleName("aroundSpace");
         scale.setWidth("75%");
-        switch (selectedLengthUnit) {
-            case MICROMETER:
-                scale.setSelectedIndex(0);
-                break;
-            case MILLIMETER:
-                scale.setSelectedIndex(1);
-                break;
-            case CENTIMETER:
-                scale.setSelectedIndex(2);
-                break;
-            case METER:
-                scale.setSelectedIndex(3);
-                break;
-        }
+        verticalPanel.add(scale);
+        verticalPanel.add(l = new Label(Locale.LS("Dimensionality")));
+        l.addStyleName("aroundSpace");
+        dimensionality = new ListBox();
+        dimensionality.addItem("1D");
+        dimensionality.addItem("2D");
+        dimensionality.addStyleName("aroundSpace");
+        dimensionality.setWidth("75%");
+        verticalPanel.add(dimensionality);
+
         scale.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -800,7 +798,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     resetAction();
             }
         });
-        verticalPanel.add(scale);
         cyclicOperationLabel = new HTML();
 
         cyclicOperationLabel.addStyleName("aroundSpace");
@@ -1070,6 +1067,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double[] temps = new double[n];
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
+
+        double maxValue = 0;
+        for (Component c : simComponents) {
+            if (c.material.magnetocaloric) {
+                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
+                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
+                }
+
+                for (Vector<Double> dTheatingVector : c.material.dTheating) {
+                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
+                }
+            }
+        }
+        minTemp = startTemp - maxValue;
+        maxTemp = startTemp + maxValue;
     }
 
     void setHeatSim() {
@@ -1834,7 +1846,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ? trackedTemperatures.size() * maxElementHeight
                 : 200);
         h = 250;
-
+        if (heatCircuit == null)
+            return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
         double elementHeight = h;
@@ -1850,13 +1863,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //ctx.fillRect(XOffSet, YOffset, circuitArea.width, h);
         ctx.setStrokeStyle(Color.lightGray.getHexValue());
         ctx.setLineWidth(0.5);
-        double tempDiff = Math.abs(temp_left - temp_right);
+
+        double tempDiff = Math.abs(maxTemp - minTemp);
 
         int numberOfLines = 10;
         for (int i = 0; i < numberOfLines; i++) {
             ctx.beginPath();
             double y = YOffset + ((double) h / numberOfLines) * i;
-            String text = NumberFormat.getFormat("#.00").format(((Math.max(temp_left, temp_right) - (tempDiff / numberOfLines) * i)));
+            String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / numberOfLines) * i));
 
             ctx.moveTo(XOffSet * .75, y);
             ctx.lineTo(circuitArea.width - XOffSet * .25, circuitArea.height - h + ((double) h / numberOfLines) * i);
@@ -1895,23 +1909,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     double temp = temps[i];
 
                     double[] tmp;
-                    boolean isTempRightGreaterThanLeft = (temp_right > temp_left);
-
                     if (i == 0) {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                                isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                                maxTemp,
+                                minTemp,
                                 prevColor.getHexValue());
                     } else {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                                isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                                maxTemp,
+                                minTemp,
                                 component.color.getHexValue());
                     }
 
                     tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                            isTempRightGreaterThanLeft ? this.temp_left : this.temp_right,
-                            isTempRightGreaterThanLeft ? this.temp_right : this.temp_left,
+                            maxTemp,
+                            minTemp,
                             component.color.getHexValue());
 
                     prevX = tmp[0];
@@ -3157,7 +3169,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 heat_transfer_step();
                 time += dt;
             } else if (this.cyclic == true) {
-                if(this.cycleParts.size() == 0) {
+                if (this.cycleParts.size() == 0) {
                     Window.alert("Sim set to cyclic but cycle parts undefined");
                 }
                 GWT.log(String.valueOf(cyclePartIndex));
@@ -3664,7 +3676,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             for (Component component : tce.components) {
                 dump += "Component name: " + component.name + "\n" +
                         "Component index: " + component.index + "\n" +
-                        "Material: " + component.material.name + "\n" +
+                        "Material: " + component.material.materialName + "\n" +
                         "Number of control volumes:  " + component.num_cvs + "\n" +
                         "Control volume length: " + component.cvs.get(0).dx + " m\n" +
                         "Constant density:" + "kg/m^3\n" +
@@ -3974,7 +3986,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             voltsCheckItem.setState(true);
             showValuesCheckItem.setState(true);
             setGrid();
-            speedBar.setValue(117); // 57
+            speedBar.setValue(57); // 57
             CircuitElm.voltageRange = 5;
             lastIterTime = 0;
 
@@ -4180,7 +4192,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double sp = Double.parseDouble(st.nextToken());
         int sp2 = (int) (Math.log(10 * sp) * 24 + 61.5);
         // int sp2 = (int) (Math.log(sp)*24+1.5);
-        speedBar.setValue(sp2);
+        speedBar.setValue(57);
         CircuitElm.voltageRange = Double.parseDouble(st.nextToken());
 
         try {
