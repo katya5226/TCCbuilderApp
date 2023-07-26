@@ -98,7 +98,6 @@ public class TCC {
             this.TCEs.get(0).components.get(0).left_neighbour = null;
             this.TCEs.get(n1 - 1).components.get(m1 - 1).right_neighbour = null;
         }
-
         for (int i = 1; i < this.num_el - 1; i++) {
             this.TCEs.get(i).right_neighbour = this.TCEs.get(i + 1);
             this.TCEs.get(i).left_neighbour = this.TCEs.get(i - 1);

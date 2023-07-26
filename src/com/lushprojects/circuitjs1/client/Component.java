@@ -61,6 +61,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
         this.index++;
         this.material = sim.materialHashMap.get("100001-Inox");
+
         if (!material.isLoaded())
             material.readFiles();
 
@@ -76,12 +77,16 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         this.index = Integer.parseInt(st.nextToken());
         this.material = sim.materialHashMap.get(st.nextToken(" "));
+
         if (!material.isLoaded()) {
+
             material.readFiles();
         }
 
         this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         this.length = Double.parseDouble(st.nextToken());
+        this.name = st.nextToken();
+        this.num_cvs = Integer.parseInt(st.nextToken());
         isDisabled = false;
         this.field = false;
         fieldIndex = 1;
@@ -154,7 +159,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     String dump() {
-        return "520 " + point1.x + " " + point1.y + " " + point2.x + " " + point2.y + " 0 " + index + " " + material.materialName + " " + Color.colorToIndex(color) + " " + this.length + "\n";
+        return "520 " + point1.x + " " + point1.y + " " + point2.x + " " + point2.y + " 0 " + index + " " + material.materialName + " " + Color.colorToIndex(color) + " " + this.length + " " + this.name + " " + this.num_cvs + "\n";
     }
 
     Point ps3, ps4;
@@ -320,9 +325,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
             buildComponent();
             isDisabled = false;
         }
-
-        if (material.isLoaded() && sim.simIsRunning())
-            sim.resetAction();
 
     }
 

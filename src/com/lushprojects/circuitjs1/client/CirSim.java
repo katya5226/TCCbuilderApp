@@ -1088,6 +1088,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             minTemp = startTemp - maxValue;
             maxTemp = startTemp + maxValue;
         }
+
     }
 
     void setHeatSim() {
@@ -3777,8 +3778,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     if (line.charAt(0) == '>')
                         first = true;
                     String file = line.substring(first ? 1 : 0, i);
-                    currentMenuBar
-                            .addItem(new MenuItem(title, new MyCommand("circuits", "setup " + file + " " + title)));
+                    currentMenuBar.addItem(new MenuItem(title, new MyCommand("circuits", "setup " + file + " " + title)));
                     if (file.equals(startCircuit) && startLabel == null) {
                         startLabel = title;
                         titleLabel.setText(title);
@@ -3819,6 +3819,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (title != null)
             titleLabel.setText(title);
         unsavedChanges = false;
+
     }
 
     void preloadMaterials() {
@@ -4096,8 +4097,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             p += l;
 
         }
-        enableItems();
         if ((flags & RC_RETAIN) == 0) {
+            enableItems();
             // create sliders as needed
             for (i = 0; i < adjustables.size(); i++) {
                 if (!adjustables.get(i).createSlider(this))
@@ -5685,8 +5686,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new TextElm(x1, y1, x2, y2, f, st);
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
-            case 521:
-                return new MCComponent(x1, y1, x2, y2, f, st);
         }
         return null;
     }

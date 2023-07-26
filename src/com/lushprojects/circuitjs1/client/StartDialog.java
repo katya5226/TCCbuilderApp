@@ -237,7 +237,6 @@ public class StartDialog extends Dialog {
                 GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).cvs.get(0).const_k));
 
                 apply();
-                closeDialog();
             }
         });
         leftBoundary.addChangeHandler(new ChangeHandler() {
@@ -352,9 +351,9 @@ public class StartDialog extends Dialog {
     @Override
     void apply() {
         if (!sim.simComponents.isEmpty()) {
-
             sim.resetAction();
         }
+        closeDialog();
     }
 
     /*private void printCycleParts() {

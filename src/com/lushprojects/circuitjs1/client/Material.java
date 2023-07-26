@@ -113,7 +113,6 @@ public class Material {
         String CORSproxy = "https://corsproxy.io/?";
         //String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
         String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        GWT.log(baseURL);
         String url_info = baseURL + materialName + "/info.txt";
         String url_properties = baseURL + materialName + "/RT_properties.txt";
         String url_ranges = baseURL + materialName + "/Ranges.txt";
@@ -138,7 +137,6 @@ public class Material {
             Vector<Double> vector = new Vector<Double>();
             fillVectorFromURL(url_cp, vector);
             cp.add(vector);
-
         }
         if (magnetocaloric) {
             String url_fields = baseURL + materialName + "/Fields.txt";
@@ -183,7 +181,16 @@ public class Material {
     }
 
     boolean isLoaded() {
-        return cp.size() > 0 && k.size() > 0 && rho.size() > 0;
+        boolean isLoaded = true;
+        isLoaded = isLoaded && k.size() > 0;
+        isLoaded = isLoaded && rho.size() > 0;
+        isLoaded = isLoaded && cp.size() > 0;
+        if (magnetocaloric) {
+            isLoaded = isLoaded && fields != null && fields.size() > 0;
+            isLoaded = isLoaded && dTcooling != null && dTcooling.size() > 0;
+            isLoaded = isLoaded && dTheating != null && dTheating.size() > 0;
+        }
+        return isLoaded;
     }
 
     void readRTPropertiesFromURL(String url) {

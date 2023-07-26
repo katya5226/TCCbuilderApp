@@ -1,6 +1,7 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
@@ -80,33 +81,35 @@ public class TCE implements Comparable<TCE> {
     }
 
     public void build_TCE() {
+        CirSim.debugger();
         Collections.sort(this.components);
-        int n1 = this.num_components;
-        int n2 = this.components.get(n1 - 1).num_cvs;
+        GWT.log(Arrays.toString(components.toArray()));
+        int num_components1 = this.num_components;
+        int num_cvs1 = this.components.get(num_components1 - 1).num_cvs;
         if (this.left_neighbour == null) {
             this.components.get(0).left_neighbour = null;
             this.components.get(0).cvs.get(0).left_neighbour = this.components.get(0).cvs.get(0);
-        }
-        if (this.right_neighbour == null) {
-            this.components.get(n1 - 1).right_neighbour = null;
-            this.components.get(n1 - 1).cvs.get(n2 - 1).right_neighbour = this.components.get(n1 - 1).cvs.get(n2 - 1);
-        }
-        if (this.left_neighbour != null) {
+        } else {
             int m1 = this.left_neighbour.num_components;
             int m2 = this.left_neighbour.components.get(m1 - 1).num_cvs;
             this.components.get(0).left_neighbour = this.left_neighbour.components.get(m1 - 1);
             this.components.get(0).cvs.get(0).left_neighbour = this.left_neighbour.components.get(m1 - 1).cvs.get(m2 - 1);
         }
-        if (this.right_neighbour != null) {
-            this.components.get(n1 - 1).right_neighbour = this.right_neighbour.components.get(0);
-            this.components.get(n1 - 1).cvs.get(n2 - 1).right_neighbour = this.right_neighbour.components.get(0).cvs.get(0);
+
+        if (this.right_neighbour == null) {
+            this.components.get(num_components1 - 1).right_neighbour = null;
+            this.components.get(num_components1 - 1).cvs.get(num_cvs1 - 1).right_neighbour = this.components.get(num_components1 - 1).cvs.get(num_cvs1 - 1);
+        } else {
+            this.components.get(num_components1 - 1).right_neighbour = this.right_neighbour.components.get(0);
+            this.components.get(num_components1 - 1).cvs.get(num_cvs1 - 1).right_neighbour = this.right_neighbour.components.get(0).cvs.get(0);
         }
-        for (int i = 0; i < n1 - 1; i++) {
+
+        for (int i = 0; i < num_components1 - 1; i++) {
             this.components.get(i).right_boundary = 52;
             this.components.get(i).right_neighbour = this.components.get(i + 1);
             this.components.get(i + 1).left_neighbour = this.components.get(i);
         }
-        for (int i = 1; i < n1; i++) {
+        for (int i = 1; i < num_components1; i++) {
             this.components.get(i).left_boundary = 51;
             int l = this.components.get(i - 1).num_cvs;
             this.components.get(i - 1).cvs.get(l - 1).right_neighbour = this.components.get(i).cvs.get(0);
@@ -114,9 +117,9 @@ public class TCE implements Comparable<TCE> {
         }
         this.cvs.clear();
         int TCE_index = 0;
-        for (int i = 0; i < n1; i++) {
+        for (int i = 0; i < num_components1; i++) {
             this.components.get(0).left_boundary = this.left_boundary;
-            this.components.get(n1 - 1).right_boundary = this.right_boundary;
+            this.components.get(num_components1 - 1).right_boundary = this.right_boundary;
             this.components.get(i).cvs.get(0).left_resistance = this.components.get(i).left_resistance;
             this.components.get(i).cvs.get(components.get(i).num_cvs - 1).right_resistance = this.components.get(i).right_resistance;
             for (int j = 0; j < this.components.get(i).num_cvs; j++) {
