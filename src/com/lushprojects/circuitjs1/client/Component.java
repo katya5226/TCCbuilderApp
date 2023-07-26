@@ -123,6 +123,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.get(i).parent = this;
         }
+        this.cvs.get(0).left_resistance = this.left_resistance;
+        this.cvs.get(this.num_cvs - 1).right_resistance = this.right_resistance;
     }
 
     public void set_starting_temps(double start_temp) {
@@ -271,6 +273,10 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 return ei2;
             case 5:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", this.length);
+            case 6:
+                return new EditInfo("Left contact resistance (mK/W)", this.left_resistance);
+            case 7:
+                return new EditInfo("Right contact resistance (mK/W)", this.right_resistance);
             default:
                 return null;
         }
@@ -305,7 +311,12 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 point2.x = (point1.x + deltaX);
                 point2.x = sim.snapGrid(point2.x);
                 break;
-
+            case 6:
+		        this.left_resistance = ei.value;
+		        break;
+		    case 7:
+		        this.right_resistance = ei.value;
+                break;
         }
 
         //TODO: Implement this with better functionality
