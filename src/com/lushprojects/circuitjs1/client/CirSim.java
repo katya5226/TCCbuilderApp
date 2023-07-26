@@ -242,7 +242,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int canvasWidth, canvasHeight;
 
     static final int MENUBARHEIGHT = 30;
-    static int VERTICALPANELWIDTH = 166; // default
+    static int VERTICALPANELWIDTH = 240; // default
     static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
     final Timer timer = new Timer() {
@@ -493,6 +493,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         layoutPanel = new DockLayoutPanel(Unit.PX);
 
         fileMenuBar = new MenuBar(true);
+
         if (isElectron())
             fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"),
                     new MyCommand("file", "newwindow")));
@@ -539,7 +540,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         aboutItem.setScheduledCommand(new MyCommand("file", "about"));
 
         int width = (int) RootLayoutPanel.get().getOffsetWidth();
-        VERTICALPANELWIDTH = width / 4;
 /*        if (VERTICALPANELWIDTH > 166)
             VERTICALPANELWIDTH = 166;
         if (VERTICALPANELWIDTH < 128)
@@ -547,11 +547,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         menuBar = new MenuBar();
         menuBar.addItem(Locale.LS("File"), fileMenuBar);
-        verticalPanel = new VerticalPanel();
 
+        verticalPanel = new VerticalPanel();
+        verticalPanel.addStyleName("mainVertical");
         // make buttons side by side if there's room
         buttonPanel = (VERTICALPANELWIDTH >= 166) ? new HorizontalPanel() : new VerticalPanel();
-        buttonPanel.setStyleName("flexEven");
+        buttonPanel.addStyleName("buttonPanel");
         m = new MenuBar(true);
         m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", Locale.LS(ctrlMetaKey + "Z"),
                 new MyCommand("edit", "undo")));
@@ -731,14 +732,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 setSimRunning(!simIsRunning());
             }
         });
-        quickResetButton.setStylePrimaryName("topButton");
-        resetButton.setStylePrimaryName("topButton");
-        testButton.setStylePrimaryName("topButton");
-        runStopButton.setStylePrimaryName("topButton");
-        quickResetButton.setWidth("100%");
-        resetButton.setWidth("100%");
-        testButton.setWidth("100%");
-        runStopButton.setWidth("100%");
+
         /*
          * dumpMatrixButton = new Button("Dump Matrix");
          * dumpMatrixButton.addClickHandler(new ClickHandler() { public void
@@ -751,28 +745,26 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         Label l;
         verticalPanel.add(l = new Label(Locale.LS("Simulation Speed")));
-        l.addStyleName("aroundSpace");
+        l.addStyleName("topSpace");
 
         verticalPanel.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
-        speedBar.addStyleName("aroundSpace");
+        speedBar.addStyleName("topSpace");
         verticalPanel.add(l = new Label(Locale.LS("Scale")));
-        l.addStyleName("aroundSpace");
+        l.addStyleName("topSpace");
         scale = new ListBox();
         scale.addItem("micrometer");
         scale.addItem("millimeter");
         scale.addItem("centimeter");
         scale.addItem("meter");
-        scale.addStyleName("aroundSpace");
-        scale.setWidth("75%");
+        scale.addStyleName("topSpace");
         scale.setSelectedIndex(1);
         verticalPanel.add(scale);
         verticalPanel.add(l = new Label(Locale.LS("Dimensionality")));
-        l.addStyleName("aroundSpace");
+        l.addStyleName("topSpace");
         dimensionality = new ListBox();
         dimensionality.addItem("1D");
         dimensionality.addItem("2D");
-        dimensionality.addStyleName("aroundSpace");
-        dimensionality.setWidth("75%");
+        dimensionality.addStyleName("topSpace");
         verticalPanel.add(dimensionality);
 
         scale.addChangeHandler(new ChangeHandler() {
@@ -801,7 +793,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         });
         cyclicOperationLabel = new HTML();
 
-        cyclicOperationLabel.addStyleName("aroundSpace");
+        cyclicOperationLabel.addStyleName("topSpace");
         cyclicOperationLabel.setWidth("100%");
         verticalPanel.add(cyclicOperationLabel);
 
@@ -1548,12 +1540,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     return;
                 simRunning = true;
                 runStopButton.setHTML(Locale.LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
-                runStopButton.setStylePrimaryName("topButton");
+                runStopButton.removeStyleName("topButton-red");
                 timer.scheduleRepeating(FASTTIMER);
             } else {
                 simRunning = false;
                 runStopButton.setHTML(Locale.LSHTML("Run&nbsp;/&nbsp;<strong>STOP</strong>"));
-                runStopButton.setStylePrimaryName("topButton-red");
+                runStopButton.addStyleName("topButton-red");
                 timer.cancel();
                 repaint();
             }
@@ -1617,12 +1609,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             CircuitElm.whiteColor = Color.black;
             CircuitElm.lightGrayColor = Color.black;
             g.setColor(Color.white);
-            cv.getElement().getStyle().setBackgroundColor("#fff");
+            cv.getElement().getStyle().setBackgroundColor(Color.white.getHexValue());
         } else {
             CircuitElm.whiteColor = Color.white;
             CircuitElm.lightGrayColor = Color.lightGray;
             g.setColor(Color.black);
-            cv.getElement().getStyle().setBackgroundColor("#000");
+            cv.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
         }
 
         // Clear the frame
