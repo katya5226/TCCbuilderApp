@@ -1101,7 +1101,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         right_boundary = heatCircuit.right_boundary;
         start_temperatures = new double[this.num_cvs];
         numCycleParts = this.cycleParts.size();
-        cyclePart = this.cycleParts.get(0);
+        if (cycleParts.size() > 0)
+            cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
         printing_interval = 1;
         total_time = 1.0;
@@ -1135,9 +1136,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
             heatCircuit.calc_conduct_lr();
+
             heatCircuit.makeMatrix(this.dt);
-            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
-                    heatCircuit.rhs);
+            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,heatCircuit.rhs);
             for (int i = 0; i < this.num_cvs; i++) {
                 this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
             }
@@ -3162,7 +3163,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             lastIterTime = tm;
             return;
         }
-
         // Check if we don't need to run simulation (for very slow simulation speeds).
         // If the circuit changed, do at least one iteration to make sure everything is consistent.
         if (1000 >= steprate * (tm - lastIterTime) && !didAnalyze)
@@ -3174,17 +3174,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //Window.alert(String.valueOf(didAnalyze));
 
         for (iter = 1; ; iter++) {
-
             // *************************** Katni *******************************
-            if (this.cyclic == false) {
+            if (!this.cyclic) {
                 heat_transfer_step();
                 time += dt;
-            } else if (this.cyclic == true) {
+            } else {
+                //CirSim.debugger();
                 if (this.cycleParts.size() == 0) {
                     Window.alert("Sim set to cyclic but cycle parts undefined");
                 }
-                GWT.log(String.valueOf(cyclePartIndex));
                 this.cyclePart.execute();
+
                 if (this.cyclePart.duration > 0.0) {
                     time += dt;
                 }

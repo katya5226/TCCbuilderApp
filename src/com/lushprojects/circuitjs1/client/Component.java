@@ -55,7 +55,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public Component(int xx, int yy) {
         super(xx, yy);
         initializeComponent();
-        buildComponent();
 
         this.index = -1;
         for (Component c : sim.simComponents) {
@@ -71,18 +70,17 @@ public class Component extends CircuitElm implements Comparable<Component> {
         isDisabled = false;
         this.field = false;
         fieldIndex = 1;
+        buildComponent();
+
     }
 
     public Component(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         initializeComponent();
-        buildComponent();
 
         this.index = Integer.parseInt(st.nextToken());
         this.material = sim.materialHashMap.get(st.nextToken(" "));
-
         if (!material.isLoaded()) {
-
             material.readFiles();
         }
 
@@ -93,6 +91,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
         isDisabled = false;
         this.field = false;
         fieldIndex = 1;
+        buildComponent();
+
     }
 
     public void initializeComponent() {
@@ -127,28 +127,23 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     public void buildComponent() {
+        GWT.log("Building component "+name + " " + index);
         this.cvs.clear();
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.add(new ControlVolume(i));
-        }
-        for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.get(i).parent = this;
-        }
-        if (this.constRho != -1) {
-            for (int i = 0; i < this.num_cvs; i++) {
+
+            if (this.constRho != -1) {
                 this.cvs.get(i).const_rho = this.constRho;
             }
-        }
-        if (this.constCp != -1) {
-            for (int i = 0; i < this.num_cvs; i++) {
+            if (this.constCp != -1) {
                 this.cvs.get(i).const_cp = this.constCp;
             }
-        }
-        if (this.constK != -1) {
-            for (int i = 0; i < this.num_cvs; i++) {
+            if (this.constK != -1) {
                 this.cvs.get(i).const_k = this.constK;
             }
         }
+
         this.cvs.get(0).left_resistance = this.left_resistance;
         this.cvs.get(this.num_cvs - 1).right_resistance = this.right_resistance;
     }
@@ -338,10 +333,10 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 point2.x = sim.snapGrid(point2.x);
                 break;
             case 6:
-		        this.left_resistance = ei.value;
-		        break;
-		    case 7:
-		        this.right_resistance = ei.value;
+                this.left_resistance = ei.value;
+                break;
+            case 7:
+                this.right_resistance = ei.value;
                 break;
         }
 

@@ -81,9 +81,7 @@ public class TCE implements Comparable<TCE> {
     }
 
     public void build_TCE() {
-        CirSim.debugger();
         Collections.sort(this.components);
-        GWT.log(Arrays.toString(components.toArray()));
         int num_components1 = this.num_components;
         int num_cvs1 = this.components.get(num_components1 - 1).num_cvs;
         if (this.left_neighbour == null) {
@@ -117,8 +115,8 @@ public class TCE implements Comparable<TCE> {
         }
         this.cvs.clear();
         int TCE_index = 0;
-        for (int i = 0; i < num_components1; i++) {
             this.components.get(0).left_boundary = this.left_boundary;
+        for (int i = 0; i < num_components1; i++) {
             this.components.get(num_components1 - 1).right_boundary = this.right_boundary;
             this.components.get(i).cvs.get(0).left_resistance = this.components.get(i).left_resistance;
             this.components.get(i).cvs.get(components.get(i).num_cvs - 1).right_resistance = this.components.get(i).right_resistance;
