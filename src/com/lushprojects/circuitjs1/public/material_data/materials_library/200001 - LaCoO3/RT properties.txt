@@ -1,0 +1,4 @@
+Density	1000.0
+Specific heat capacity	293.0
+Thermal conductivity	1.5
+Emissivity	0.1

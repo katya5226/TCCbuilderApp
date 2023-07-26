@@ -1,0 +1,4 @@
+Density	0 - 2000
+Specific heat capacity	0 - 2000
+Thermal conductivity	0 - 200
+Emissivity 0 - 2000
