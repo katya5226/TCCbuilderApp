@@ -1080,8 +1080,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 }
             }
         }
-        minTemp = startTemp - maxValue;
-        maxTemp = startTemp + maxValue;
+        if (maxValue == 0) {
+            minTemp = Math.min(startTemp, Math.min(temp_left, temp_right));
+            maxTemp = Math.max(startTemp, Math.max(temp_left, temp_right));
+        } else {
+            minTemp = startTemp - maxValue;
+            maxTemp = startTemp + maxValue;
+        }
     }
 
     void setHeatSim() {
@@ -1125,7 +1130,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             this.x_prev[i] = heatCircuit.cvs.get(i).temperature_old;
         }
         //while (true) {
-        for (int k = 0; k < 3; k++) { 
+        for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
             heatCircuit.calc_conduct_lr();
             heatCircuit.makeMatrix(this.dt);
@@ -1139,7 +1144,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             this.x_prev = this.x_mod;
             for (int i = 0; i < simComponents.size(); i++) {
                 if (simComponents.get(i).material.cpThysteresis == true)
-                simComponents.get(i).updateModes();
+                    simComponents.get(i).updateModes();
             }
             // if (flag) {
             //     break;
@@ -1371,13 +1376,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
 
 
         MenuBar otherMenuBar = new MenuBar(true);
@@ -1856,7 +1861,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
-        double elementHeight = h;
+        double elementHeight = h * .9;
 
         double YOffset = circuitArea.height - h;
         double XOffSet = 100;
@@ -1873,25 +1878,23 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double tempDiff = Math.abs(maxTemp - minTemp);
 
         int numberOfLines = 10;
-        for (int i = 0; i < numberOfLines; i++) {
+        for (int i = 0; i < numberOfLines+1; i++) {
             ctx.beginPath();
-            double y = YOffset + ((double) h / numberOfLines) * i;
-            String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / numberOfLines) * i));
+            double y = YOffset + ((elementHeight / numberOfLines) * i);
+            String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / (numberOfLines)) * i));
 
             ctx.moveTo(XOffSet * .75, y);
-            ctx.lineTo(circuitArea.width - XOffSet * .25, circuitArea.height - h + ((double) h / numberOfLines) * i);
+            ctx.lineTo(circuitArea.width - XOffSet * .25, YOffset + ((elementHeight / numberOfLines) * i));
             ctx.stroke();
 
-
-            double fontSize = Math.min(XOffSet / text.length(), ((double) h / numberOfLines) / 2);
+            double fontSize = Math.min(XOffSet / text.length(), (elementHeight / numberOfLines) / 2);
             ctx.setFont(fontSize + "px sans-serif");
 
             TextMetrics metrics = ctx.measureText(text);
             double textWidth = metrics.getWidth();
 
             double textX = 0 + (XOffSet - textWidth) / 2;
-            double textY = y - (((double) h / numberOfLines) + (fontSize) / 2);
-            textY = y + (fontSize) / 2;
+            double textY = y + (fontSize) / 2;
             ctx.fillText(text, textX, textY);
         }
 
@@ -1901,7 +1904,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (Component component : trackedTemperatures) {
             try {
                 double[] temps = component.listTemps();
-                double tempHeight = elementHeight;
+                double tempHeight = elementHeight ;
                 double innerY = YOffset;
 
 /*                if (trackedTemperatures.size() > 1) {
@@ -1917,19 +1920,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     double[] tmp;
                     if (i == 0) {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                maxTemp,
                                 minTemp,
+                                maxTemp,
                                 prevColor.getHexValue());
                     } else {
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                                maxTemp,
                                 minTemp,
+                                maxTemp,
                                 component.color.getHexValue());
                     }
 
                     tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
-                            maxTemp,
                             minTemp,
+                            maxTemp,
                             component.color.getHexValue());
 
                     prevX = tmp[0];
