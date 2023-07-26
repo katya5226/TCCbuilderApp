@@ -23,6 +23,7 @@ import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
+import java.text.MessageFormat;
 import java.util.*;
 
 import com.google.gwt.user.client.Window;
@@ -80,6 +81,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
 
         this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
+        this.length = Double.parseDouble(st.nextToken());
         isDisabled = false;
         this.field = false;
         fieldIndex = 1;
@@ -135,8 +137,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
             ControlVolume cv = this.cvs.get(i);
             if (cv.temperature >= cv.temperature_old) {
                 cv.mode = 1;
-            }
-            else if (cv.temperature < cv.temperature_old) {
+            } else if (cv.temperature < cv.temperature_old) {
                 cv.mode = -1;
             }
         }
@@ -153,7 +154,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     String dump() {
-        return super.dump() + " " + resistance;
+        return "520 " + point1.x + " " + point1.y + " " + point2.x + " " + point2.y + " 0 " + index + " " + material.materialName + " " + Color.colorToIndex(color) + " " + this.length + "\n";
     }
 
     Point ps3, ps4;
@@ -302,6 +303,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 double ratio = length / prevLength;
                 int deltaX = (int) ((point2.x - point1.x) * ratio);
                 point2.x = (point1.x + deltaX);
+                point2.x = sim.snapGrid(point2.x);
                 break;
 
         }

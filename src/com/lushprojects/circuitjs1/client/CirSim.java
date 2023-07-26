@@ -551,7 +551,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // make buttons side by side if there's room
         buttonPanel = (VERTICALPANELWIDTH >= 166) ? new HorizontalPanel() : new VerticalPanel();
-
+        buttonPanel.setStyleName("flexEven");
         m = new MenuBar(true);
         m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", Locale.LS(ctrlMetaKey + "Z"),
                 new MyCommand("edit", "undo")));
@@ -706,8 +706,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         verticalPanel.add(buttonPanel);
         //buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
         buttonPanel.add(resetButton = new Button(Locale.LS("Build TCC")));
-        buttonPanel.add(quickResetButton = new Button(Locale.LS("Quick build")));
-        buttonPanel.add(testButton = new Button(Locale.LS("Test")));
+        buttonPanel.add(quickResetButton = new Button(Locale.LS("Reset TCC")));
+        testButton = new Button(Locale.LS("Test"));
         resetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 new StartDialog(theSim).show();
@@ -764,6 +764,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         scale.addItem("meter");
         scale.addStyleName("aroundSpace");
         scale.setWidth("75%");
+        scale.setSelectedIndex(1);
         verticalPanel.add(scale);
         verticalPanel.add(l = new Label(Locale.LS("Dimensionality")));
         l.addStyleName("aroundSpace");
@@ -1878,7 +1879,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double tempDiff = Math.abs(maxTemp - minTemp);
 
         int numberOfLines = 10;
-        for (int i = 0; i < numberOfLines+1; i++) {
+        for (int i = 0; i < numberOfLines + 1; i++) {
             ctx.beginPath();
             double y = YOffset + ((elementHeight / numberOfLines) * i);
             String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / (numberOfLines)) * i));
@@ -1904,7 +1905,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (Component component : trackedTemperatures) {
             try {
                 double[] temps = component.listTemps();
-                double tempHeight = elementHeight ;
+                double tempHeight = elementHeight;
                 double innerY = YOffset;
 
 /*                if (trackedTemperatures.size() > 1) {
@@ -3896,9 +3897,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Collections.sort(points);
         GWT.log(materialHashMap.get("100001-Inox").cp.get(0).get(0) + "");
         String text = "$ 1 5.0E-6 10 50 5.0\n" +
-                "520 " + points.get(0) + " 192 " + points.get(1) + " 192 0 0 " + material0 + " 4\n" +
-                "520 " + points.get(1) + " 192 " + points.get(2) + " 192 0 1 " + material1 + "  8\n" +
-                "520 " + points.get(2) + " 192 " + points.get(3) + " 192 0 2 " + material2 + " 10\n";
+                "520 " + points.get(0) + " 192 " + points.get(1) + " 192 0 0 " + material0 + " 4 " + Math.abs(points.get(0) - points.get(1)) + "\n" +
+                "520 " + points.get(1) + " 192 " + points.get(2) + " 192 0 1 " + material1 + "  8 " + Math.abs(points.get(1) - points.get(2)) + "\n" +
+                "520 " + points.get(2) + " 192 " + points.get(3) + " 192 0 2 " + material2 + " 10 " + Math.abs(points.get(2) - points.get(3)) + "\n";
         readCircuit(text, RC_KEEP_TITLE);
         allowSave(false);
         unsavedChanges = false;

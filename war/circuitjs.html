@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  
+<head>
+
     <!-- Properties can be specified to influence deferred binding -->
     <meta name='gwt:property' content='locale=en_UK'>
-    
-    
+
+
     <!-- Titles are optional, but useful -->
     <title></title>
 
-<style>
+    <style>
+.flexEven{
+  display: flex;
+  justify-content: space-between;
+}
+
+
 .disabled {
 	color: lightgray
 }
@@ -148,26 +154,30 @@
 	margin-right: 15px;
 }
 
-</style>
 
-<link rel="stylesheet" href="font/fontello.css">
+
+
+
+    </style>
+
+    <link rel="stylesheet" href="font/fontello.css">
 
 </head>
-  <body>
-  <!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
-  <!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
+<body>
+<!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
+<!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
 
-  <script language="javascript" src="lz-string.min.js"></script>
-   
-    <!-- This script tag is what actually loads the GWT module.  The -->
-    <!-- 'nocache.js' file (also called a "selection script") is     -->
-    <!-- produced by the GWT compiler in the module output directory -->
-    <!-- or generated automatically in development mode.             -->
-    <script language="javascript" src="circuitjs1/circuitjs1.nocache.js"></script>
-    
-    <!-- Include a history iframe to enable full GWT history support -->
-    <!-- (the id must be exactly as shown)                           -->
-    <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
-    
-  </body>
- </html>
+<script language="javascript" src="lz-string.min.js"></script>
+
+<!-- This script tag is what actually loads the GWT module.  The -->
+<!-- 'nocache.js' file (also called a "selection script") is     -->
+<!-- produced by the GWT compiler in the module output directory -->
+<!-- or generated automatically in development mode.             -->
+<script language="javascript" src="circuitjs1/circuitjs1.nocache.js"></script>
+
+<!-- Include a history iframe to enable full GWT history support -->
+<!-- (the id must be exactly as shown)                           -->
+<iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+
+</body>
+</html>
