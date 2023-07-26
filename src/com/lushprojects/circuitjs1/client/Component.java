@@ -42,6 +42,9 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public Component right_neighbour;
     public int left_boundary;
     public int right_boundary;
+    public double constRho;
+    public double constCp;
+    public double constK;
 
     public Vector<ControlVolume> cvs;
 
@@ -105,6 +108,9 @@ public class Component extends CircuitElm implements Comparable<Component> {
         this.right_neighbour = null;
         this.left_boundary = 51;
         this.right_boundary = 52;
+        this.constRho = -1;
+        this.constCp = -1;
+        this.constK = -1;
         double tmpDx = this.length / this.num_cvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             this.set_dx(tmpDx);
@@ -128,6 +134,23 @@ public class Component extends CircuitElm implements Comparable<Component> {
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.get(i).parent = this;
         }
+        if (this.constRho != -1) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_rho = this.constRho;
+            }
+        }
+        if (this.constCp != -1) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_cp = this.constCp;
+            }
+        }
+        if (this.constK != -1) {
+            for (int i = 0; i < this.num_cvs; i++) {
+                this.cvs.get(i).const_k = this.constK;
+            }
+        }
+        this.cvs.get(0).left_resistance = this.left_resistance;
+        this.cvs.get(this.num_cvs - 1).right_resistance = this.right_resistance;
     }
 
     public void set_starting_temps(double start_temp) {
@@ -276,6 +299,10 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 return ei2;
             case 5:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", this.length);
+            case 6:
+                return new EditInfo("Left contact resistance (mK/W)", this.left_resistance);
+            case 7:
+                return new EditInfo("Right contact resistance (mK/W)", this.right_resistance);
             default:
                 return null;
         }
@@ -310,7 +337,12 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 point2.x = (point1.x + deltaX);
                 point2.x = sim.snapGrid(point2.x);
                 break;
-
+            case 6:
+		        this.left_resistance = ei.value;
+		        break;
+		    case 7:
+		        this.right_resistance = ei.value;
+                break;
         }
 
         //TODO: Implement this with better functionality

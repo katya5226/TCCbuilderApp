@@ -116,19 +116,19 @@ public class ComponentConstantsDialog extends Dialog {
             // For example:
             switch (selectedValue) {
                 case "Density":
-                    component.setConstProperty("rho", value);
+                    component.constRho = value;
                     break;
                 case "Specific Heat Capacity":
-                    component.setConstProperty("cp", value);
+                    component.constCp = value;
                     break;
                 case "Thermal Conductivity":
-                    component.setConstProperty("k", value);
+                    component.constK = value;
                     break;
             }
         }
-        GWT.log(component.cvs.get(0).k()+"");
-        GWT.log(component.cvs.get(0).rho()+"");
-        GWT.log(component.cvs.get(0).cp()+"");
+        GWT.log(component.constRho+"");
+        GWT.log(component.constCp+"");
+        GWT.log(component.constK+"");
     }
 
     public void showDialog() {
