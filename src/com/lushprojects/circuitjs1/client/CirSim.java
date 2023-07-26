@@ -1371,7 +1371,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
-        //mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add MC Component"), "MC Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "Component"));
 
 
         MenuBar otherMenuBar = new MenuBar(true);
@@ -3692,6 +3698,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (int i = 0; i < temperatures.size(); i++) {
             dump += ModelMethods.printTemps(times.get(i), temperatures.get(i));
             dump += "\n";
+        }
+        dump += "\nFluxes:\n";
+        heatCircuit.calculateHeatFluxes();
+        for (int i = 0; i < heatCircuit.num_cvs; i++) {
+            dump += String.valueOf(heatCircuit.fluxes[i]) + "\t";
         }
         return dump;
     }

@@ -30,6 +30,8 @@ public class TCC {
     public double temp_left, temp_right;
     public double h_left, h_right;
 
+    public double[] fluxes;
+
     public TCC(String name, Vector<TCE> TCEs) {
         //this.parent_sim = null;
         this.name = name;
@@ -55,6 +57,8 @@ public class TCC {
         this.temp_right = 0.0;
         this.h_left = 500.0;
         this.h_right = 500.0;
+
+        this.fluxes = new double[this.num_cvs];
     }
 
     public void cv_neighbours() {
@@ -201,5 +205,15 @@ public class TCC {
         // txt += "\n\nTCE: " + String.valueOf(el.name);
         // el.print_attributes(f);
         return txt;
+    }
+
+    // This is a temporary method that needs to be modified in the future
+    public void calculateHeatFluxes() {
+        for (int i = 0; i < this.num_cvs - 1; i++) {
+            ControlVolume cv = this.cvs.get(i);
+            ControlVolume cvR = this.cvs.get(i).right_neighbour;
+            fluxes[i] = Math.round(cv.k_right * (cv.temperature - cvR.temperature) / cv.dx);
+        }
+        fluxes[this.num_cvs - 1] = 0.0;
     }
 }

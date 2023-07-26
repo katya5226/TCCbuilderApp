@@ -69,9 +69,6 @@ public class ModelMethods {
     }
 
     public static String printTemps(Double time, Double[] temps) {
-
-
-
         String s = String.valueOf(Math.round(time * 1.0e6)/1.0e6) + "\t";
         Double t;
         for (double temp : temps) {

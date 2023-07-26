@@ -58,6 +58,7 @@ public class ControlVolume {
     }
 
     double rho() {
+        //GWT.log("Calculating rho");
         double rho = 0.0;
         if (this.const_rho != -1)
             rho = this.const_rho;
@@ -71,6 +72,7 @@ public class ControlVolume {
         double cp = 0.0;
         Material m = this.parent.material;
         int fI = 0;
+        //GWT.log("Calculating cp");
         if (this.const_cp != -1) {
             cp = this.const_cp;
         }
@@ -92,6 +94,7 @@ public class ControlVolume {
     }
 
     double k() {
+        //GWT.log("Calculating k");
         double k = 0.01;
         if (this.const_k != -1)
             k = this.const_k;
