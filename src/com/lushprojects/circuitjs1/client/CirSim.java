@@ -2544,7 +2544,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    // take list of unconnected nodes, which we identified earlier, and connect them
+    // take list of unconnected nodes, which we identifie222211d earlier, and connect them
     // to ground
     // with a big resistor. otherwise we will get matrix errors. The resistor has to
     // be big,

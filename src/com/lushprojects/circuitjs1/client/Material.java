@@ -160,7 +160,7 @@ public class Material {
                         sim.awaitedResponses.remove(url_fields);
                         String url_cp, url_dT;
                         for (double field : fields) {
-                            String fieldName = NumberFormat.getFormat("#0.0").format(field);
+                            String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
                             url_cp = baseURL + materialName + "/cp_" + fieldName + "T.txt";
                             Vector<Double> field_cp = new Vector<Double>();
                             sim.awaitedResponses.add(url_cp);
@@ -352,6 +352,7 @@ public class Material {
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         String text = response.getText();
+                        GWT.log(text);
                         for (String line : text.split("\n"))
                             fields.add(Double.parseDouble(line));
                         callback.onSuccess(response);
