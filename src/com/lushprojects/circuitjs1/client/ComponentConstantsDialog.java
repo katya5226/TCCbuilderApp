@@ -29,7 +29,7 @@ public class ComponentConstantsDialog extends Dialog {
 
         dropdown = new ListBox();
         vp.add(dropdown);
-        dropdown.setStyleName("topSpace");
+        dropdown.addStyleName("topSpace");
 
         // Dropdown values
         String[] dropdownValues = {"Density", "Specific Heat Capacity", "Thermal Conductivity"};
@@ -51,7 +51,7 @@ public class ComponentConstantsDialog extends Dialog {
                     validateInput(doubleBox);
                 }
             });
-            doubleBox.setStyleName("topSpace");
+            doubleBox.addStyleName("topSpace");
             valueMap.put(value, doubleBox);
         }
 
@@ -64,7 +64,7 @@ public class ComponentConstantsDialog extends Dialog {
         buttonPanel.add(cancelButton);
         buttonPanel.add(applyButton);
         vp.add(buttonPanel);
-        buttonPanel.setStyleName("topSpace");
+        buttonPanel.addStyleName("topSpace");
 
         // Event handlers
         dropdown.addChangeHandler(new ChangeHandler() {
