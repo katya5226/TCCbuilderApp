@@ -1,0 +1,277 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+
+* {
+    font-family: "Roboto", sans-serif;
+    color: var(--white);
+    box-sizing: border-box;
+}
+
+:root {
+    --black: #0D121F;
+    --deep-blue: #19223a;
+    --blue: #273459;
+    --blue: #273459;
+    --white: #F2F2F2;
+    --red: #D93B3B;
+    --yellow: #F2A71B;
+    --deep-yellow: #cf8f18;
+    --gray: #404B59;
+    --light-gray: #5d6e83;
+}
+
+table {
+    border-spacing: 0;
+}
+
+input {
+    color: var(--black);
+}
+
+div.gwt-DialogBox {
+    border: 0.125rem solid var(--deep-blue);
+}
+
+div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>* {
+    width: 100%;
+    font-size: 0.75rem;
+
+}
+
+
+div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>input[type="text"] {
+    margin-bottom: 0.5rem;
+}
+
+div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>select {
+    margin-bottom: 0.5rem;
+}
+
+div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>.gwt-Label {
+    margin-bottom: 0.5rem;
+}
+
+div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>span {
+    display: inline-block;
+}
+
+.Caption {
+    margin-bottom: 1rem;
+    font-weight: 900;
+}
+
+.dialogHeading {
+    margin-top: 1rem;
+    font-weight: 700;
+}
+
+.dialogButtonPanel{
+    margin-top: 1rem;
+}
+
+.gwt-ListBox {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 0.125rem;
+    color: var(--white);
+    background-color: var(--yellow);
+}
+
+.gwt-ListBox:hover {
+    background-color: var(--white);
+    color: var(--gray);
+}
+
+.gwt-ListBox:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.gwt-ListBox option {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 0.125rem;
+    background-color: var(--white);
+    color: var(--gray);
+}
+
+.gwt-ListBox option:hover {
+    box-shadow: 0 0 10px 100px #000 inset;
+
+}
+
+.disabled {
+    color: var(--light-gray)
+}
+
+.topSpace {
+    margin-top: 12px;
+}
+
+.aroundSpace {
+    margin: 12px;
+}
+
+.cursorPointer {
+    cursor: default;
+}
+
+.cursorCross {
+    cursor: crosshair;
+}
+
+.cursorSplitter {
+    cursor: row-resize;
+}
+
+.gwt-MenuBar {
+    background-color: var(--blue);
+    color: var(--gray);
+    border: 0.125rem solid var(--deep-blue);
+}
+
+.gwt-MenuItem {
+    background-color: var(--blue);
+    font-size: 0.8rem;
+    height: 26px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    cursor: pointer;
+}
+
+.gwt-MenuItem:hover {
+    background-color: var(--black);
+}
+
+.gwt-MenuItem-disabled {
+    cursor: auto;
+    background-color: var(--gray);
+}
+
+.gwt-DialogBox {
+    background-color: var(--blue);
+    padding: 1rem;
+}
+
+
+.offScreen {
+    position: absolute;
+    right: 101%;
+    overflow: hidden;
+}
+
+.gwt-Frame {
+    border: 0px !important;
+}
+
+.gwt-TextArea {
+    color: var(--black);
+}
+
+.gwt-Label-selected {
+    font-size: 1.3em;
+    font-weight: 700;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.gwt-Label-1off {
+    color: DarkGray;
+}
+
+.gwt-Label-2off {
+    font-size: 0.8em;
+    color: LightGray;
+}
+
+.gwt-TextBox.scalebox {
+    width: 100px;
+}
+
+.gwt-Button {
+    font-family: 'Roboto', sans-serif;
+    border: none;
+    color: var(--white);
+    background-color: var(--yellow);
+    border: 0.125rem solid var(--deep-yellow);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.gwt-Button:hover {
+    background-color: var(--white);
+    color: var(--gray);
+    border-color: var(--gray);
+}
+
+.gwt-Button:disabled {
+    background-color: var(--light-gray);
+    color: var(--light-gray);
+    border: 0.125rem solid var(--gray);
+
+}
+
+.topButton-red {
+    background-color: var(--red);
+    border: 0.125rem solid var(--red);
+}
+
+.topButton-red:hover {
+    background-color: var(--white);
+    color: var(--gray);
+}
+
+.mainVertical {
+    box-sizing: border-box;
+    padding: 1rem;
+    background-color: var(--deep-blue);
+}
+
+.buttonPanel {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.buttonPanel>tbody>tr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.buttonPanel>tbody>tr>td {
+    height: 100%;
+    width: 33%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.buttonPanel>tbody>tr>td>* {
+    height: 100%;
+}
+
+.cyclicContainer {
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+
+}
+
+.cyclicContainer>tbody>tr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cyclicContainer>tbody>tr>td {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.radioPanel label {
+    margin-right: 15px;
+}
