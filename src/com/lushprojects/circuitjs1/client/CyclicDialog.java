@@ -181,6 +181,7 @@ public class CyclicDialog extends Dialog {
         buttonPanel = new HorizontalPanel();
         buttonPanel.setWidth("100%");
         buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        buttonPanel.addStyleName("dialogButtonPanel");
         buttonPanel.add(cancelButton);
         buttonPanel.add(applyButton);
         this.center();
@@ -341,6 +342,8 @@ public class CyclicDialog extends Dialog {
                         cyclePart.partType = CyclePart.PartType.PROPERTIES_CHANGE;
                         break;
                 }
+                center();
+
             }
         });
 
@@ -371,6 +374,8 @@ public class CyclicDialog extends Dialog {
                 GWT.log("Chosen component: " + chosenComponent.name);
                 GWT.log("Material name: " + chosenComponent.material.materialName);
                 GWT.log("Fields size: " + String.valueOf(chosenComponent.material.fields.size()));
+                center();
+
             }
         });
 
@@ -395,6 +400,8 @@ public class CyclicDialog extends Dialog {
                 for (int i = 0; i < sim.simComponents.size(); i++)
                     GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
                 GWT.log("Chosen component: " + chosenComponent.name);
+                center();
+
             }
         });
 
@@ -453,8 +460,7 @@ public class CyclicDialog extends Dialog {
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
         }
-
-
+        center();
     }
 
     private void validateDurationInput(DoubleBox durationBox) {

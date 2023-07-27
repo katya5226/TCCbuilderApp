@@ -72,7 +72,7 @@ public class StartDialog extends Dialog {
         cyclicButton = new Button("Add Cyclic Part");
         cyclicButton.setEnabled(cyclic.getState());
         cyclicContainer = new HorizontalPanel();
-        cyclicContainer.setWidth("100%");
+        cyclicContainer.addStyleName("cyclicContainer");
         cyclicContainer.add(cyclic);
         cyclicContainer.add(cyclicButton);
 
@@ -118,13 +118,13 @@ public class StartDialog extends Dialog {
         rightToggleables.add(rightTemperatureLabel);
         rightToggleables.add(rightConvectionCoefficient);
         rightToggleables.add(rightConvectionCoefficientLabel);
-
+        Label l;
         vp.add(new Label(Locale.LS("Enter Time Step (ms): ")));
         vp.add(timeStep);
         vp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
         vp.add(startTemperature);
-        vp.add(new Label(Locale.LS("Left Boundary Condition: ")));
-
+        vp.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
+        l.addStyleName("dialogHeading");
         vp.add(leftBoundary);
         vp.add(inletHeatFluxLabel);
         vp.add(inletHeatFlux);
@@ -133,7 +133,9 @@ public class StartDialog extends Dialog {
         vp.add(leftConvectionCoefficientLabel);
         vp.add(leftConvectionCoefficient);
 
-        vp.add(new Label(Locale.LS("Right Boundary Condition: ")));
+        vp.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
+        l.addStyleName("dialogHeading");
+
         vp.add(rightBoundary);
         vp.add(outletHeatFluxLabel);
         vp.add(outletHeatFlux);
@@ -229,7 +231,7 @@ public class StartDialog extends Dialog {
                 // GWT.log("Right Temperature: " + String.valueOf(sim.temp_right));
                 // GWT.log("Right Convection coeff: " + String.valueOf(sim.h_right));
                 // GWT.log("Outlet heat flux: " + String.valueOf(sim.qOut));
-                if(sim.cyclic) {
+                if (sim.cyclic) {
                     GWT.log("Cycle parts: ");
                     for (int cpi = 0; cpi < sim.cycleParts.size(); cpi++) {
                         GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
@@ -273,6 +275,7 @@ public class StartDialog extends Dialog {
 
                         break;
                 }
+                center();
             }
         });
         rightBoundary.addChangeHandler(new ChangeHandler() {
@@ -307,6 +310,7 @@ public class StartDialog extends Dialog {
                     default:
                         break;
                 }
+                center();
             }
         });
         cyclic.addClickHandler(new ClickHandler() {
@@ -335,7 +339,7 @@ public class StartDialog extends Dialog {
         buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         buttonPanel.add(cancelButton);
         buttonPanel.add(applyButton);
-
+        buttonPanel.addStyleName("dialogButtonPanel");
         vp.add(buttonPanel);
         this.center();
     }

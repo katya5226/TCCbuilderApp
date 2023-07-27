@@ -68,13 +68,16 @@ class EditDialog extends Dialog {
 //		noCommaFormat.setMaximumFractionDigits(10);
 //		noCommaFormat.setGroupingUsed(false);
         hp = new HorizontalPanel();
-        hp.setWidth("50%");
+        hp.setWidth("100%");
+        hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        hp.addStyleName("dialogButtonPanel");
         vp.add(hp);
 
         applyButton = new Button(Locale.LS("Apply"));
         componentButton = new Button(Locale.LS("Add"));
 
         hp.add(applyButton);
+
         applyButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 apply();
@@ -88,7 +91,6 @@ class EditDialog extends Dialog {
             }
         });
 
-        hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         hp.add(cancelButton = new Button(Locale.LS("Cancel")));
         cancelButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {

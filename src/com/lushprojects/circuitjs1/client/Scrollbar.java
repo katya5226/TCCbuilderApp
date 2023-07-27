@@ -55,10 +55,10 @@ public class Scrollbar extends Composite implements
         ClickHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler,
         MouseWheelHandler, TouchStartHandler, TouchCancelHandler, TouchEndHandler, TouchMoveHandler {
 
-    static int HORIZONTAL = 1;
+    static int HORIZONTAL = 5;
     static int HMARGIN = 2;
-    static int SCROLLHEIGHT = 18;
-    static int BARWIDTH = 3;
+    static int SCROLLHEIGHT = 16;
+    static int BARWIDTH = 16;
     static int BARMARGIN = 3;
 
     Canvas can;
@@ -119,23 +119,27 @@ public class Scrollbar extends Composite implements
     void draw() {
         g.setStrokeStyle(Color.lightGray.getHexValue());
         g.setFillStyle(Color.deepBlue.getHexValue());
-        g.setLineWidth(1.0);
+        g.setLineWidth(3);
         g.fillRect(0, 0, CirSim.VERTICALPANELWIDTH, SCROLLHEIGHT);
         g.setFillStyle(Color.white.getHexValue());
+
+        //arrows
         g.beginPath();
         g.moveTo(HMARGIN + SCROLLHEIGHT - 3, 0);
-        g.lineTo(HMARGIN, SCROLLHEIGHT / 2);
+        g.lineTo(HMARGIN, (double) (SCROLLHEIGHT / 2));
         g.lineTo(HMARGIN + SCROLLHEIGHT - 3, SCROLLHEIGHT);
+
         g.moveTo((CirSim.VERTICALPANELWIDTH) - HMARGIN - SCROLLHEIGHT + 3, 0);
-        g.lineTo((CirSim.VERTICALPANELWIDTH) - HMARGIN, SCROLLHEIGHT / 2);
+        g.lineTo((CirSim.VERTICALPANELWIDTH) - HMARGIN, (double) (SCROLLHEIGHT / 2));
         g.lineTo((CirSim.VERTICALPANELWIDTH) - HMARGIN - SCROLLHEIGHT + 3, SCROLLHEIGHT);
         g.stroke();
+
         if (enabled)
             g.setStrokeStyle(Color.gray.getHexValue());
         g.beginPath();
         g.setLineWidth(5.0);
-        g.moveTo(HMARGIN + SCROLLHEIGHT + BARMARGIN, SCROLLHEIGHT / 2);
-        g.lineTo(CirSim.VERTICALPANELWIDTH - HMARGIN - SCROLLHEIGHT - BARMARGIN, SCROLLHEIGHT / 2);
+        g.moveTo(HMARGIN + SCROLLHEIGHT + BARMARGIN, (double) (SCROLLHEIGHT / 2));
+        g.lineTo(CirSim.VERTICALPANELWIDTH - HMARGIN - SCROLLHEIGHT - BARMARGIN, (double) (SCROLLHEIGHT / 2));
         g.stroke();
         double p = HMARGIN + SCROLLHEIGHT + BARMARGIN + (((CirSim.VERTICALPANELWIDTH) - 2 * (HMARGIN + SCROLLHEIGHT + BARMARGIN)) * ((double) (val - min))) / (max - min);
         if (enabled) {
@@ -144,8 +148,8 @@ public class Scrollbar extends Composite implements
             else
                 g.setStrokeStyle(Color.red.getHexValue());
             g.beginPath();
-            g.moveTo(HMARGIN + SCROLLHEIGHT + BARMARGIN, SCROLLHEIGHT / 2);
-            g.lineTo(p, SCROLLHEIGHT / 2);
+            g.moveTo(HMARGIN + SCROLLHEIGHT + BARMARGIN, (double) (SCROLLHEIGHT / 2));
+            g.lineTo(p, (double) (SCROLLHEIGHT / 2));
             g.stroke();
             g.setStrokeStyle(Color.black.getHexValue());
 //			g.beginPath();
@@ -153,7 +157,6 @@ public class Scrollbar extends Composite implements
 //			g.lineTo(p, SCROLLHEIGHT);
             g.setLineWidth(2.0);
             g.fillRect(p - 2, 2, 5, SCROLLHEIGHT - 4);
-            g.strokeRect(p - 2, 2, 5, SCROLLHEIGHT - 4);
 //			g.stroke();
         }
 

@@ -686,7 +686,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (hideSidebar)
             VERTICALPANELWIDTH = 0;
         else
-            layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
+            layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH+32);
         RootLayoutPanel.get().add(layoutPanel);
 
         cv = Canvas.createIfSupported();
@@ -792,9 +792,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
         cyclicOperationLabel = new HTML();
-
-        cyclicOperationLabel.addStyleName("topSpace");
-        cyclicOperationLabel.setWidth("100%");
         verticalPanel.add(cyclicOperationLabel);
 
 
@@ -1883,7 +1880,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             ctx.stroke();
 
             double fontSize = Math.min(XOffSet / text.length(), (elementHeight / numberOfLines) / 2);
-            ctx.setFont(fontSize + "px sans-serif");
+            ctx.setFont(fontSize + "px Roboto");
 
             TextMetrics metrics = ctx.measureText(text);
             double textWidth = metrics.getWidth();
@@ -1999,7 +1996,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // Set the font size according to the rectangle size
         double fontSize = Math.min(width / text.length(), height / 2);
-        ctx.setFont("bold " + fontSize + "px sans-serif");
+        ctx.setFont("bold " + fontSize + "px Roboto");
 
         // Measure the text width
         TextMetrics metrics = ctx.measureText(text);

@@ -86,6 +86,7 @@ public class Graphics {
 	}
 
 	public void drawString(String s, int x, int y) {
+		context.setFont("400 14px Roboto");
 		context.fillText(s, x, y);
 	}
 

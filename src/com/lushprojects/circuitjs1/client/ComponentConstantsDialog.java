@@ -57,6 +57,7 @@ public class ComponentConstantsDialog extends Dialog {
 
         // Apply and Cancel buttons
         HorizontalPanel buttonPanel = new HorizontalPanel();
+        buttonPanel.addStyleName("dialogButtonPanel");
         buttonPanel.setWidth("100%");
         buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         applyButton = new Button(Locale.LS("Apply"));
@@ -65,6 +66,8 @@ public class ComponentConstantsDialog extends Dialog {
         buttonPanel.add(applyButton);
         vp.add(buttonPanel);
         buttonPanel.addStyleName("topSpace");
+
+
 
         // Event handlers
         dropdown.addChangeHandler(new ChangeHandler() {
@@ -77,6 +80,7 @@ public class ComponentConstantsDialog extends Dialog {
         cancelButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                new EditDialog(component, sim);
                 hide();
             }
         });
