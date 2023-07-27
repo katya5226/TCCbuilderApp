@@ -686,7 +686,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (hideSidebar)
             VERTICALPANELWIDTH = 0;
         else
-            layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH+32);
+            layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH + 32);
         RootLayoutPanel.get().add(layoutPanel);
 
         cv = Canvas.createIfSupported();
@@ -1127,7 +1127,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             heatCircuit.calc_conduct_lr();
 
             heatCircuit.makeMatrix(this.dt);
-            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,heatCircuit.rhs);
+            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
             for (int i = 0; i < this.num_cvs; i++) {
                 this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
             }
@@ -1199,12 +1199,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
-        final String edithtml = "<div style=\"white-space:nowrap\"><div style=\"display:inline-block;width:100%;\"><i class=\"cirjsicon-";
-        String nbsp = "&nbsp;";
-        if (icon == "")
-            nbsp = "";
-        String sn = edithtml + icon + "\"></i>" + nbsp + Locale.LS(text) + "</div>" + shortcut + "</div>";
-        return new MenuItem(SafeHtmlUtils.fromTrustedString(sn), cmd);
+        final String html =
+                "<div style=\"display : flex; align-items:center; justify-content:space-between; \">" +
+                        "<div style=\"text-align:left;\">" +
+                        "<i class=\"cirjsicon-" + icon + "\"></i>" +
+                        Locale.LS(text) +
+                        "</div>" +
+                        "<div style=\"text-align:right;\">" +
+                        shortcut +
+                        "</div>" +
+                        "</div>";
+
+        return new MenuItem(SafeHtmlUtils.fromTrustedString(html), cmd);
     }
 
     MenuItem iconMenuItem(String icon, String text, Command cmd) {
@@ -1394,7 +1400,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 otherMenuBar);
 
         mainMenuBar.addItem(mi = getClassCheckItem(Locale.LS("Select/Drag Sel."), "Select"));
-        mi.setShortcut(Locale.LS("(space/Shift-drag)"));
     }
 
     void composeSubcircuitMenu() {
