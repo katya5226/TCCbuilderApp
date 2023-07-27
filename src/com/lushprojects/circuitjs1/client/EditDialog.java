@@ -68,9 +68,7 @@ class EditDialog extends Dialog {
 //		noCommaFormat.setMaximumFractionDigits(10);
 //		noCommaFormat.setGroupingUsed(false);
         hp = new HorizontalPanel();
-        hp.setWidth("100%");
-        hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        hp.setStyleName("topSpace");
+        hp.setWidth("50%");
         vp.add(hp);
 
         applyButton = new Button(Locale.LS("Apply"));
@@ -181,7 +179,6 @@ class EditDialog extends Dialog {
         }
 
 
-        componentButton.setStyleName("topSpace");
         if (elm instanceof Component) {
             vp.insert(l = new Label(Locale.LS("Set Constant Parameters")), vp.getWidgetCount() - 1);
             vp.insert(componentButton, vp.getWidgetCount() - 1);

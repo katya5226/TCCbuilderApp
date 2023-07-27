@@ -68,28 +68,25 @@ public class ControlVolume {
         return rho;
     }
 
-    double cp(){
+    double cp() {
         double cp = 0.0;
         Material m = this.parent.material;
         int fI = 0;
         //GWT.log("Calculating cp");
         if (this.const_cp != -1) {
             cp = this.const_cp;
-        }
-        else {
+        } else {
             if (this.parent.field == true) {
                 fI = this.parent.fieldIndex;
             }
             if (m.cpThysteresis == false) {
                 cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cp.get(fI));
-            }
-            else if (m.cpThysteresis == true && this.mode == 1){
+            } else if (m.cpThysteresis == true && this.mode == 1) {
                 cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpHeating.get(fI));
-            }
-            else if (m.cpThysteresis == true && this.mode == -1){
+            } else if (m.cpThysteresis == true && this.mode == -1) {
                 cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpCooling.get(fI));
             }
-        } 
+        }
         return cp;
     }
 
@@ -137,17 +134,18 @@ public class ControlVolume {
 
 
     public void magnetize() {
-        // TO DO: inform user
+        // TODO: inform user
 
         Vector<Double> dTheatcool = new Vector<Double>();
         double dT = 0.0;
         double T = 0.0;
-        Component p = (Component)this.parent;
+        Component p = (Component) this.parent;
         if (!p.field) {
             dTheatcool = p.material.dTheating.get(p.fieldIndex - 1);
             dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
             T = this.temperature + dT;
-            this.temperature = T; this.temperature_old = T;
+            this.temperature = T;
+            this.temperature_old = T;
             GWT.log("Field = " + String.valueOf(p.field));
             GWT.log("dT = " + String.valueOf(dT));
         }
@@ -157,7 +155,8 @@ public class ControlVolume {
             T = this.temperature - dT;
             GWT.log("Field = " + String.valueOf(p.field));
             GWT.log("dT = -" + String.valueOf(dT));
-            this.temperature = T; this.temperature_old = T;
+            this.temperature = T;
+            this.temperature_old = T;
         }
     }
 

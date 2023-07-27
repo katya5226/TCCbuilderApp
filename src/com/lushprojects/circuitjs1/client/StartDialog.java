@@ -229,13 +229,14 @@ public class StartDialog extends Dialog {
                 // GWT.log("Right Temperature: " + String.valueOf(sim.temp_right));
                 // GWT.log("Right Convection coeff: " + String.valueOf(sim.h_right));
                 // GWT.log("Outlet heat flux: " + String.valueOf(sim.qOut));
-                GWT.log("Cycle parts: ");
-                for (int cpi = 0; cpi < sim.cycleParts.size(); cpi++) {
-                    GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
+                if(sim.cyclic) {
+                    GWT.log("Cycle parts: ");
+                    for (int cpi = 0; cpi < sim.cycleParts.size(); cpi++) {
+                        GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
+                    }
+                    GWT.log("------");
+                    GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).cvs.get(0).const_k));
                 }
-                GWT.log("------");
-                GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).cvs.get(0).const_k));
-
                 apply();
             }
         });
@@ -311,7 +312,7 @@ public class StartDialog extends Dialog {
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                sim.cyclic = !sim.cyclic;
+                sim.cyclic = cyclic.getState();
                 cyclicButton.setEnabled(cyclic.getState());
             }
 

@@ -119,65 +119,78 @@ public class Material {
         String url_rho = baseURL + materialName + "/rho.txt";
         String url_k = baseURL + materialName + "/k.txt";
 
-        sim.awaitedResponses.add(url_info);
-        sim.awaitedResponses.add(url_properties);
-        sim.awaitedResponses.add(url_ranges);
-        sim.awaitedResponses.add(url_rho);
-        sim.awaitedResponses.add(url_k);
+        if (!sim.awaitedResponses.contains(url_info)) {
+            sim.awaitedResponses.add(url_info);
+            readInfoFromURL(url_info);
+        }
+        if (!sim.awaitedResponses.contains(url_properties)) {
+            sim.awaitedResponses.add(url_properties);
+            readRTPropertiesFromURL(url_properties);
+        }
+        if (!sim.awaitedResponses.contains(url_ranges)) {
+            sim.awaitedResponses.add(url_ranges);
+            readRangesFromURL(url_ranges);
+        }
+        if (!sim.awaitedResponses.contains(url_rho)) {
+            sim.awaitedResponses.add(url_rho);
+            fillVectorFromURL(url_rho, rho);
+        }
+        if (!sim.awaitedResponses.contains(url_k)) {
+            sim.awaitedResponses.add(url_k);
+            fillVectorFromURL(url_k, k);
+        }
 
-        readInfoFromURL(url_info);
-        readRTPropertiesFromURL(url_properties);
-        readRangesFromURL(url_ranges);
-        fillVectorFromURL(url_rho, rho);
-        fillVectorFromURL(url_k, k);
 
         if (invariant) {
             String url_cp = baseURL + materialName + "/cp.txt";
-            sim.awaitedResponses.add(url_cp);
-            Vector<Double> vector = new Vector<Double>();
-            fillVectorFromURL(url_cp, vector);
-            cp.add(vector);
+            if (!sim.awaitedResponses.contains(url_cp)) {
+                sim.awaitedResponses.add(url_cp);
+                Vector<Double> vector = new Vector<Double>();
+                fillVectorFromURL(url_cp, vector);
+                cp.add(vector);
+            }
         }
         if (magnetocaloric) {
             String url_fields = baseURL + materialName + "/Fields.txt";
-            sim.awaitedResponses.add(url_fields);
-            loadFieldsFromUrl(url_fields, new Callback() {
-                @Override
-                public void onSuccess(Object result) {
-                    sim.awaitedResponses.remove(url_fields);
-                    String url_cp, url_dT;
-                    for (double field : fields) {
-                        String fieldName = NumberFormat.getFormat("#0.0").format(field);
-                        url_cp = baseURL + materialName + "/cp_" + fieldName + "T.txt";
-                        Vector<Double> field_cp = new Vector<Double>();
-                        sim.awaitedResponses.add(url_cp);
-                        fillVectorFromURL(url_cp, field_cp);
-                        cp.add(field_cp);
+            if (!sim.awaitedResponses.contains(url_fields)) {
+                sim.awaitedResponses.add(url_fields);
+                loadFieldsFromUrl(url_fields, new Callback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        sim.awaitedResponses.remove(url_fields);
+                        String url_cp, url_dT;
+                        for (double field : fields) {
+                            String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
+                            url_cp = baseURL + materialName + "/cp_" + fieldName + "T.txt";
+                            Vector<Double> field_cp = new Vector<Double>();
+                            sim.awaitedResponses.add(url_cp);
+                            fillVectorFromURL(url_cp, field_cp);
+                            cp.add(field_cp);
 
-                        if (field != 0) {
-                            Vector<Double> field_dT = new Vector<Double>();
-                            url_dT = baseURL + materialName + "/dT_" + fieldName + "T_cooling.txt";
-                            sim.awaitedResponses.add(url_dT);
-                            fillVectorFromURL(url_dT, field_dT);
-                            dTcooling.add(field_dT);
+                            if (field != 0) {
+                                Vector<Double> field_dT = new Vector<Double>();
+                                url_dT = baseURL + materialName + "/dT_" + fieldName + "T_cooling.txt";
+                                sim.awaitedResponses.add(url_dT);
+                                fillVectorFromURL(url_dT, field_dT);
+                                dTcooling.add(field_dT);
 
-                            url_dT = baseURL + materialName + "/dT_" + fieldName + "T_heating.txt";
-                            field_dT = new Vector<Double>();
-                            sim.awaitedResponses.add(url_dT);
-                            fillVectorFromURL(url_dT, field_dT);
-                            dTheating.add(field_dT);
+                                url_dT = baseURL + materialName + "/dT_" + fieldName + "T_heating.txt";
+                                field_dT = new Vector<Double>();
+                                sim.awaitedResponses.add(url_dT);
+                                fillVectorFromURL(url_dT, field_dT);
+                                dTheating.add(field_dT);
+                            }
                         }
+
                     }
 
-                }
-
-                @Override
-                public void onFailure(Object reason) {
-                    sim.awaitedResponses.remove(url_fields);
-                }
-            });
+                    @Override
+                    public void onFailure(Object reason) {
+                        sim.awaitedResponses.remove(url_fields);
+                    }
+                });
+            }
         }
-
     }
 
     boolean isLoaded() {
@@ -339,6 +352,7 @@ public class Material {
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         String text = response.getText();
+                        GWT.log(text);
                         for (String line : text.split("\n"))
                             fields.add(Double.parseDouble(line));
                         callback.onSuccess(response);

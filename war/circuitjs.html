@@ -1,183 +1,221 @@
 <!DOCTYPE html>
 <html>
-<head>
+	<head>
+		<!-- Properties can be specified to influence deferred binding -->
+		<meta name="gwt:property" content="locale=en_UK" />
 
-    <!-- Properties can be specified to influence deferred binding -->
-    <meta name='gwt:property' content='locale=en_UK'>
+		<!-- Titles are optional, but useful -->
+		<title>TCC Builder</title>
+
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
+
+			* {
+				font-family: "Roboto", sans-serif;
+				color: var(--white);
+			}
+
+					:root {
+						--black:#0D121F;
+					  --deep-blue: #19223a;
+					  --blue: #273459;
+					  --blue: #273459;
+					  --white: #F2F2F2;
+					  --red: #D93B3B;
+					  --yellow: #F2A71B;
+					  --deep-yellow: #cf8f18;
+					  --gray: #404B59;
+					}
+					table{
+						border-spacing: 0;
+					}
+					input{
+						color: var(--black);
+					}
+					div.gwt-DialogBox{
+						border: 0.125rem solid var(--deep-blue);
+					}
+					body > div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr> td{
+						padding-top: 0.25rem;
+						display: flex;
+						justify-content: flex-start;
+
+					}
+
+					.gwt-ListBox {
+					  border: none;
+					  cursor: pointer;
+					  width: 100%;
+					  text-align: left;
+					  padding: 0.125rem;
+					  color: var(--white);
+					  background-color: var(--yellow);
+					}
+
+					.gwt-ListBox:hover {
+					  background-color: var(--white);
+					  color: var(--gray);
+					}
+					.gwt-ListBox:focus {
+					  outline: none;
+					  box-shadow: none;
+					}
+
+					.gwt-ListBox option {
+					  border: none;
+					  cursor: pointer;
+					  width: 100%;
+					  text-align: left;
+					  padding: 0.125rem;
+					  background-color: var(--white);
+					  color: var(--gray);
+					}
+
+					.gwt-ListBox option:hover {
+					  box-shadow: 0 0 10px 100px #000 inset;
+
+					}
+
+					.disabled {
+						color: lightgray
+					}
+					.topSpace {
+						margin-top: 12px;
+					}
+					.aroundSpace{
+					    margin: 12px;
+					}
+					.cursorPointer {
+					   cursor: default;
+					}
+					.cursorCross {
+					   cursor: crosshair;
+					}
+
+					.cursorSplitter {
+					   cursor: row-resize;
+					}
+					.gwt-MenuBar{
+						background-color: var(--blue);
+						color: var(--gray);
+						border: 0.125rem solid var(--deep-blue);
+					}
+
+					.gwt-MenuItem{
+						background-color: var(--blue);
+						font-size: 0.8rem;
+						height: 30px;
+						padding-left:0.5rem;
+						padding-right:0.5rem;
+						cursor: pointer;
+			        }
+
+			        .gwt-MenuItem:hover{
+			        	background-color: var(--black);
+			        }
+
+					.gwt-MenuItem-disabled {
+						cursor: auto;
+						background-color: var(--gray);
+					}
+					.gwt-DialogBox{
+						background-color: var(--blue);
+						padding: 1rem;
+					}
+					.offScreen {
+						position: absolute;
+						right: 101%;
+						overflow: hidden;
+					}
+					.gwt-Frame{
+						scrolling="no";
+						border: 0px !important;
+					}
 
 
-    <!-- Titles are optional, but useful -->
-    <title></title>
+					.gwt-Label-selected {
+						font-size: 1.3em;
+						font-weight: 700;
+						border-top: 1px solid black;
+						border-bottom: 1px solid black;
+					}
+					.gwt-Label-1off {
+						color: DarkGray;
+					}
 
-    <style>
-.flexEven{
-  display: flex;
-  justify-content: space-between;
-}
-
-
-.disabled {
-	color: lightgray
-}
-.topSpace {
-	margin-top: 12px;
-}
-.aroundSpace{
-    margin: 12px;
-}
-.cursorPointer {
-   cursor: default;
-}
-.cursorCross {
-   cursor: crosshair;
-}
-
-.cursorSplitter {
-   cursor: row-resize;
-}
-
-.gwt-MenuItem-disabled {
-	color: lightgray;
-}
-.offScreen {
-	position: absolute;
-	right: 101%;
-	overflow: hidden;
-}
-.gwt-Frame{
-	scrolling="no";
-	border: 0px !important;
-}
-
-.gwt-MenuItem {
-	font-size: 12px !important;
-}
-
-.gwt-MenuBar-horizontal {
-	font-size: 12px !important;
-	}
-	
-.gwt-Label-selected {
-	font-size: 1.3em;
-	font-weight: 700;
-	border-top: 1px solid black;
-	border-bottom: 1px solid black;
-}
-.gwt-Label-1off {
-	color: DarkGray;
-}
-
-.gwt-Label-2off {
-	font-size:0.8em;
-	color: LightGray;
-}
-
-.gwt-Label-current {
-}
-
-.gwt-Button.chbut {
-	padding:3px;
-	margin: 3px;
-}
-
-.gwt-Button.chbut.chsel {
-	font-weight: bold;
-}
-
-.gwt-Button.chbut-black {
-	background: black;
-	color: white;
-}
-
-.gwt-Button.chbut-white {
-	background: white;
-	color: black;
-}
-
-.gwt-TextBox.scalebox {
-	width: 100px;
-}
-
-.gwt-Button.expand-but {
-	line-height: 0;
-	font-size: 13px;
-	margin-right: 5px;
-	border-radius:0px;
-	display: inline-block;
-	text-align: center;
-	width: 15px;
-	height: 15px;
-	padding-left: 0;
-	padding-right: 0;
-	padding-bottom:1px;
-	padding-top:0;
-	margin-bottom:1px;
-	background:gray;
-	color:white;
-}
-
-
-.topButton-red {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left:5px;
-    padding: 5px 7px;
-    text-decoration: none;
-    color: #ffffff;
-    cursor: pointer;
-    cursor: hand;
-    font-size: small;
-    background-color: #ff0000; 
-    border: 1px solid #bbb;
-    border-bottom: 1px solid #a0a0a0;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-}
-
-.topButton {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left:5px;
-    padding: 5px 7px;
-    text-decoration: none;
-    cursor: pointer;
-    cursor: hand;
-    font-size: small;
-    background-color: #e7e7e7; 
-    border: 1px solid #bbb;
-    border-bottom: 1px solid #a0a0a0;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-}
-
-.radioPanel label {
-	margin-right: 15px;
-}
+					.gwt-Label-2off {
+						font-size:0.8em;
+						color: LightGray;
+					}
 
 
 
+					.gwt-TextBox.scalebox {
+						width: 100px;
+					}
+
+					.gwt-Button {
+			            font-family: 'Roboto', sans-serif;
+			                     border: none;
+			                     color: var(--white);
+			                     background-color: var(--deep-yellow);
+			                     cursor: pointer;
+			                     color: var(--white);
+			                     cursor: pointer;
+			                     text-align: left;
+			                     padding: 0.25rem;
+					}
+			              .gwt-Button:hover{
+			                  background-color: var(--white);
+			                  color: var(--gray);
+			              }
+					.gwt-Button:disabled{
+						background-color: var(--gray);
+						color: lightgray;
+					}
+					.mainVertical{
+						background-color: var(--deep-blue);
+					}
+					.mainVertical>tbody>tr>td{
+					}
+					.buttonPanel{
+						width: 100%;
+					}
+					.buttonPanel>tbody>tr>td{
+						text-align: center;
+					}
+					
+					.topButton-red {
+			                     background-color: var(--red);
+					}
+			              .topButton-red:hover{
+			                  background-color: var(--white);
+			                  color: var(--gray);
+			              }
 
 
-    </style>
 
-    <link rel="stylesheet" href="font/fontello.css">
+					.radioPanel label {
+						margin-right: 15px;
+					}
+		</style>
 
-</head>
-<body>
-<!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
-<!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
+		<link rel="stylesheet" href="font/fontello.css" />
+	</head>
+	<body>
+		<!-- Include the next line to allow support for dropbox import/export. You will need your own app key. -->
+		<!--<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_KEY"></script>-->
 
-<script language="javascript" src="lz-string.min.js"></script>
+		<script language="javascript" src="lz-string.min.js"></script>
 
-<!-- This script tag is what actually loads the GWT module.  The -->
-<!-- 'nocache.js' file (also called a "selection script") is     -->
-<!-- produced by the GWT compiler in the module output directory -->
-<!-- or generated automatically in development mode.             -->
-<script language="javascript" src="circuitjs1/circuitjs1.nocache.js"></script>
+		<!-- This script tag is what actually loads the GWT module.  The -->
+		<!-- 'nocache.js' file (also called a "selection script") is     -->
+		<!-- produced by the GWT compiler in the module output directory -->
+		<!-- or generated automatically in development mode.             -->
+		<script language="javascript" src="circuitjs1/circuitjs1.nocache.js"></script>
 
-<!-- Include a history iframe to enable full GWT history support -->
-<!-- (the id must be exactly as shown)                           -->
-<iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
-
-</body>
+		<!-- Include a history iframe to enable full GWT history support -->
+		<!-- (the id must be exactly as shown)                           -->
+		<iframe src="javascript:''" id="__gwt_historyFrame" style="width: 0; height: 0; border: 0"></iframe>
+	</body>
 </html>
