@@ -893,6 +893,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // ***************************** Katni **************************************
         initHeatSimulation();
         // ***************************************************************************
+
         setSimRunning(running);
     }
 
@@ -1376,6 +1377,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
@@ -4879,6 +4881,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         try {
             dragElm = constructElement(mouseModeStr, x0, y0);
         } catch (Exception ex) {
+            GWT.log(mouseModeStr + "");
             debugger();
         }
     }
@@ -5682,39 +5685,41 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new TextElm(x1, y1, x2, y2, f, st);
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
+            case 521:
+                return new TwoDimComponent(x1, y1, x2, y2, f, st);
         }
         return null;
     }
 
     public static CircuitElm constructElement(String n, int x1, int y1) {
-
-
-        //TODO: figure out if LabeledNodeElm is needed
-        if (n.equals("LabeledNodeElm"))
-            return (CircuitElm) new LabeledNodeElm(x1, y1);
-
-
-        if (n.equals("BoxElm"))
-            return (CircuitElm) new BoxElm(x1, y1);
-        if (n.equals("GroundElm"))
-            return (CircuitElm) new GroundElm(x1, y1);
-        if (n.equals("CurrentElm"))
-            return (CircuitElm) new CurrentElm(x1, y1);
-        if (n.equals("ResistorElm"))
-            return (CircuitElm) new ResistorElm(x1, y1);
-        if (n.equals("DCVoltageElm") || n.equals("VoltageElm"))
-            return (CircuitElm) new DCVoltageElm(x1, y1);
-        if (n.equals("WireElm"))
-            return (CircuitElm) new WireElm(x1, y1);
-        if (n.equals("TextElm"))
-            return (CircuitElm) new TextElm(x1, y1);
-        if (n.equals("Component"))
-            return (CircuitElm) new Component(x1, y1);
-        if (n.equals("MC Component"))
-            return (CircuitElm) new MCComponent(x1, y1);
-
-        return null;
+        switch (n) {
+            // TODO: figure out if LabeledNodeElm is needed
+            case "LabeledNodeElm":
+                return new LabeledNodeElm(x1, y1);
+            case "BoxElm":
+                return new BoxElm(x1, y1);
+            case "GroundElm":
+                return new GroundElm(x1, y1);
+            case "CurrentElm":
+                return new CurrentElm(x1, y1);
+            case "ResistorElm":
+                return new ResistorElm(x1, y1);
+            case "DCVoltageElm":
+            case "VoltageElm":
+                return new DCVoltageElm(x1, y1);
+            case "WireElm":
+                return new WireElm(x1, y1);
+            case "TextElm":
+                return new TextElm(x1, y1);
+            case "Component":
+                return new Component(x1, y1);
+            case "2DComponent":
+                return new TwoDimComponent(x1, y1);
+            default:
+                return null;
+        }
     }
+
 
     public void updateModels() {
         int i;

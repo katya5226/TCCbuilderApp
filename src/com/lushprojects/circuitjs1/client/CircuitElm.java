@@ -909,6 +909,8 @@ public abstract class CircuitElm implements Editable {
         g.setLineWidth(3.0);
     }
 
+
+
     static void drawThickPolygon(Graphics g, int xs[], int ys[], int c) {
         // int i;
         // for (i = 0; i != c-1; i++)
@@ -1152,7 +1154,6 @@ public abstract class CircuitElm implements Editable {
     double getPower() {
         return getVoltageDiff() * current;
     }
-
 
 
     int getScopeUnits(int x) {
