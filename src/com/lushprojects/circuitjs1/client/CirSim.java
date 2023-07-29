@@ -260,8 +260,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public TCC heatCircuit;
     public Vector<Component> simComponents;
     public Vector<TCE> simTCEs;
-
-
     public int num_cvs;
     // public int[] special_boundaries;
     public ControlVolume[] sim_cvs;
@@ -314,6 +312,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     ArrayList<String> awaitedResponses;
     int testCounter = 0;
     Timer testTimer;
+
+    // Two-dimensional choice
+    int simDimensionality = 1;
+    Vector<TwoDimComponent> simTwoDimComponents;
+    TwoDimTCE twoDimTCE;
+    TwoDimEqSys twoDimES;
 
 
     public enum LengthUnit {
@@ -414,8 +418,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // String baseURL = "http://www.falstad.com/circuit/";
 
     public void init() {
-
-        // Katni
 
         boolean printable = false;
         boolean convention = true;
@@ -930,9 +932,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.cyclePartTime = 0.0;
         this.cyclePartIndex = 0;
 
-        // this.num_cpart_steps = new double[];
-        // this.sim_file = open("results/simulation.txt", "w", encoding = "utf-8")
-        // this.temperatures_file = open("results/temperatures.txt", "w", encoding = "utf-8")
+        // 2D
+        simTwoDimComponents = new Vector<TwoDimComponent>();
+
         this.ud = 0;
         // this.user_defined_functions = new String[this.num_cvs];
         this.x_prev = new double[this.num_cvs];
