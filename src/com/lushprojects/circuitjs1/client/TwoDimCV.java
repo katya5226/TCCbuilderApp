@@ -12,7 +12,7 @@ public class TwoDimCV {
     int TCEindex;
     int globalIndex;
     double dx, dy;
-    double x, y;
+    double x, y, xGlobal, yGlobal;
     double temperature, temperatureOld;
     TwoDimCV [] neighbours; 
     double [] resistances;
