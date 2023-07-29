@@ -261,6 +261,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public Vector<Component> simComponents;
     public Vector<TCE> simTCEs;
 
+    public Vector<TwoDimComponent> simTwoDimComponents;
 
     public int num_cvs;
     // public int[] special_boundaries;
