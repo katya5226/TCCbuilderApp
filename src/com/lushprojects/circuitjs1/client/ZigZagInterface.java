@@ -31,12 +31,12 @@ public class ZigZagInterface extends TwoDimComponent {
             material2.readFiles();
     }
 
-    double yTilde(int ci, double xT) {
+    double yTilde(int ci, double xT, double hT) {
         double yT;
         if (ci % 2 == 0)
-            yT = ((ci + 1) * height) - ((height / length) * xT);
+            yT = ((ci + 1) * hT) - ((hT / length) * xT);
         else
-            yT = (ci * height) + ((height / length) * xT);
+            yT = (ci * hT) + ((hT / length) * xT);
         return yT;
     }
 
@@ -78,12 +78,12 @@ public class ZigZagInterface extends TwoDimComponent {
                     int k = (i * n) + j;
                     TwoDimCV cv = cvs.get(k);
                     if (ci % 2 == 0) {
-                        if (cv.y <= yTilde(ci, cv.x))
+                        if (cv.y <= yTilde(ci, cv.x, hT))
                             cv.material = material;
                         else
                             cv.material = material2;
                     } else {
-                        if (cv.y >= yTilde(ci, cv.x))
+                        if (cv.y >= yTilde(ci, cv.x, hT))
                             cv.material = material;
                         else
                             cv.material = material2;
@@ -104,7 +104,7 @@ public class ZigZagInterface extends TwoDimComponent {
     void calculateLengthHeight() {
         super.calculateLengthHeight();
         try {
-            makeZigZag(2);
+            makeZigZag(8);
         } catch (Exception ignore) {
         }
     }
