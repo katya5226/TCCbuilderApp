@@ -16,11 +16,12 @@ public class ZigZagInterface extends TwoDimComponent {
     }
 
     public ZigZagInterface(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
+        super(xa, ya, xb, yb, f, st);
     }
 
     double yTilde(int ci, double xT) {
-        if(ci % 2 == 0)
+        double yT;
+        if (ci % 2 == 0)
             yT = (ci + 1) * height - (height / length) * xT;
         else
             yT = ci * height + (height / length) * xT;
@@ -37,16 +38,15 @@ public class ZigZagInterface extends TwoDimComponent {
         if (c == 0) {
             for (int hInd = 0; hInd < m; hInd++) {
                 for (int lInd = 0; lInd < n; lInd++) {
-                    int k = hInd * n + lIind;
-                    ControlVolume cv = cvs.get(k);
+                    int k = hInd * n + lInd;
+                    TwoDimCV cv = cvs.get(k);
                     if (lInd < middleInd)
                         cv.material = mA;
                     else
                         cv.material = mB;
                 }
             }
-        }
-        else {
+        } else {
             double hT = height / c;
             if (m % c != 0) {
                 Window.alert("Discretisation number in y-direction must be divisible by zigzag number c!");
@@ -55,15 +55,14 @@ public class ZigZagInterface extends TwoDimComponent {
             for (int hInd = 0; hInd < m; hInd++) {
                 int ci = (int) (hInd / (hT / dy));
                 for (int lInd = 0; lInd < n; lInd++) {
-                    int k = hInd * n + lIind;
+                    int k = hInd * n + lInd;
                     TwoDimCV cv = cvs.get(k);
                     if (ci % 2 == 0) {
                         if (cv.y <= yTilde(ci, cv.x))
                             cv.material = mA;
                         else
                             cv.material = mB;
-                    }
-                    else {
+                    } else {
                         if (cv.y >= yTilde(ci, cv.x))
                             cv.material = mA;
                         else
