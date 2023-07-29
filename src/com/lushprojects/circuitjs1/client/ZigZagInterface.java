@@ -28,11 +28,11 @@ public class ZigZagInterface extends TwoDimComponent {
     }
 
     void makeZigZag(int c, Material mA, Material mB) {
-        for (TwoDimControlVolume cv : cvs) {
+        for (TwoDimCV cv : cvs) {
             cv.setxy(0.0, 0.0);
         }
         double dy = cvs.get(0).dy;
-        int middelInd = (int) (n / 2);
+        int middleInd = (int) (n / 2);
 
         if (c == 0) {
             for (int hInd = 0; hInd < m; hInd++) {
@@ -56,7 +56,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 int ci = (int) (hInd / (hT / dy));
                 for (int lInd = 0; lInd < n; lInd++) {
                     int k = hInd * n + lIind;
-                    ControlVolume cv = cvs.get(k);
+                    TwoDimCV cv = cvs.get(k);
                     if (ci % 2 == 0) {
                         if (cv.y <= yTilde(ci, cv.x))
                             cv.material = mA;
