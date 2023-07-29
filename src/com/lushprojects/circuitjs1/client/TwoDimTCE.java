@@ -86,15 +86,16 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
 //        for comp in components:
 //        if comp.m != components.get(0].m:
 //        raise ValueError("Components must be of the same height and have the same y-discretisation!")
-        this.numComponents = components.size();
-        this.numCvs = n = length = 0;
+        numComponents = components.size();
+        numCvs = n = 0;
+        length = 0.0;
         m = components.get(0).m;  // TODO: check if all are of the same height and m
         height = components.get(0).height;
-        for (Component c : components) {
-            this.numCvs += c.numCvs;
+        for (TwoDimComponent c : components) {
+            numCvs += c.numCvs;
             n += c.n;
         }
-        Collections.sort(this.components);
+        Collections.sort(components);
         if (neighbours[0] == null)
             components.get(0).neighbours[0] = null;
         if (neighbours[1] == null)
@@ -115,7 +116,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         }
         components.get(0).boundaries[0] = boundaries[0];
         components.get(-1).boundaries[1] = boundaries[1];
-        cvTCEind = 0;
+        int cvTCEind = 0;
         cvs.clear();
         for (int j = 0; j < m; j++) {
             for (int k = 0; k < numComponents; k++) {
@@ -148,7 +149,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
     }
 
     @Override
-    public int compareTo(TCE e) {
+    public int compareTo(TwoDimTCE e) {
         return this.index - e.index;
     }
 }

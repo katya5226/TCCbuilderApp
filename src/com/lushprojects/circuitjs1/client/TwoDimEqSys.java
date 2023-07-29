@@ -8,7 +8,7 @@ import java.util.*;
 
 public class TwoDimEqSys {
     TwoDimTCE aTCE;
-    TwoDimControlVolume currCV;
+    TwoDimCV currCV;
     double[] kd;
     double[] ad;
     double[] hd;
@@ -22,10 +22,10 @@ public class TwoDimEqSys {
     double[] rhs;
     double h;
 
-    public TwoDimEquationSystem(TwoDimTCE obj) {
+    public TwoDimEqSys(TwoDimTCE obj) {
         aTCE = obj;
         currCV = obj.cvs.get(0);
-        n = obj.n, m = obj.m;
+        n = obj.n; m = obj.m;
         numCvs = n * m;
         dt = 0.01;
         matrix = new double[n * m][n * m];
@@ -44,20 +44,20 @@ public class TwoDimEqSys {
         dx = currCV.dx;
         dy = currCV.dy;
         tempOld = currCV.temperatureOld;
-        rcp = currCV.rho() * currCV.cp() * pow(dx, 2) * pow(dy, 2);
-        gen = currCV.qGen * dt * pow(dx, 2) * pow(dy, 2);
+        rcp = currCV.rho() * currCV.cp() * Math.pow(dx, 2) * Math.pow(dy, 2);
+        gen = currCV.qGen * dt * Math.pow(dx, 2) * Math.pow(dy, 2);
         currCV.calculateConductivities();
         for (int i = 0; i < 4; i++) {
             kd[i] = currCV.kd[i];
         }
-        hd[0] = pow(dy, 2 ) * dt * h * dx;
-        hd[1] = pow(dy, 2 ) * dt * h * dx;
-        hd[2] = pow(dx, 2 ) * dt * h * dy;
-        hd[3] = pow(dx, 2 ) * dt * h * dy;
-        ad[0] = pow(dy, 2 ) * dt * kd[0];
-        ad[1] = pow(dy, 2 ) * dt * kd[1];
-        ad[2] = pow(dx, 2 ) * dt * kd[2];
-        ad[3] = pow(dx, 2 ) * dt * kd[3];
+        hd[0] = Math.pow(dy, 2 ) * dt * h * dx;
+        hd[1] = Math.pow(dy, 2 ) * dt * h * dx;
+        hd[2] = Math.pow(dx, 2 ) * dt * h * dy;
+        hd[3] = Math.pow(dx, 2 ) * dt * h * dy;
+        ad[0] = Math.pow(dy, 2 ) * dt * kd[0];
+        ad[1] = Math.pow(dy, 2 ) * dt * kd[1];
+        ad[2] = Math.pow(dx, 2 ) * dt * kd[2];
+        ad[3] = Math.pow(dx, 2 ) * dt * kd[3];
     }
 
     void conductionMatrix() {
@@ -153,7 +153,7 @@ public class TwoDimEqSys {
                 matrix[j][j + 1] = -ad[1];
                 matrix[j][j - n] = -ad[2];
                 matrix[j][j + n] = -ad[3];
-                rhs[j] = rcp * tempOld + gen
+                rhs[j] = rcp * tempOld + gen;
             }
         }
     }

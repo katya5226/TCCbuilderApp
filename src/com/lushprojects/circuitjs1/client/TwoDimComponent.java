@@ -26,7 +26,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     boolean field;
     int fieldIndex;
 
-    public TwoDimComponent(int xx, int yy) {
+    TwoDimComponent(int xx, int yy) {
         super(xx, yy);
         initializeComponent();
         index = -1;
@@ -47,7 +47,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     }
 
-    public TwoDimComponent(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
+    TwoDimComponent(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         initializeComponent();
 
@@ -68,7 +68,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     }
 
-    public void initializeComponent() {
+    void initializeComponent() {
         resistance = 1000;
         color = Color.green;
         calculateLengthHeight();
@@ -92,7 +92,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void calculateLengthHeight() {
+    void calculateLengthHeight() {
         // TODO: 2Dcomponent can only be made horizontaly,
         // as a rectangle with edge coordinates {(x, y), (x2, y), (x2, y2), (x, y2)},
         // where difference between x-es is length and difference between y-s is height. 
@@ -152,7 +152,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void buildComponent() {
+    void buildComponent() {
         cvs.clear();
         for (int i = 0; i < numCvs; i++) {
             cvs.add(new TwoDimCV(i, this));
@@ -189,20 +189,20 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void setTemperatures(double temp) {
+    void setTemperatures(double temp) {
         for (int i = 0; i < numCvs; i++) {
             cvs.get(i).temperature = temp;
             cvs.get(i).temperatureOld = temp;
         }
     }
 
-    public void setxy(double xOffset, double yOffset) {
+    void setxy(double xOffset, double yOffset) {
         for (int i = 0; i < numCvs; i++) {
             cvs.get(i).setxy(xOffset, yOffset);
         }
     }
 
-    public void updateModes() {
+    void updateModes() {
         for (int i = 0; i < numCvs; i++) {
             TwoDimCV cv = cvs.get(i);
             if (cv.temperature >= cv.temperatureOld) {
@@ -417,7 +417,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         resistance = r;
     }
 
-    public void setConstProperties(Vector<Double> newProps) {
+    void setConstProperties(Vector<Double> newProps) {
         if (newProps.size() != 3) {
             GWT.log("Vector of new properties must contain three values.");
         }
@@ -428,7 +428,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void setConstProperty(String property, double value) {
+    void setConstProperty(String property, double value) {
         if (property.equals("rho")) {
             for (int i = 0; i < numCvs; i++) {
                 cvs.get(i).constRho = value;
@@ -446,20 +446,20 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void setDxDy(double dx, double dy) {
+    void setDxDy(double dx, double dy) {
         for (TwoDimCV cv : cvs) {
             cv.dx = dx;
             cv.dy = dy;
         }
     }
 
-    public void setQgen(double qGen) {
+    void setQgen(double qGen) {
         for (TwoDimCV cv : cvs) {
             cv.qGen = qGen;
         }
     }
 
-    public void setConstactResistance(String side, double r) {
+    void setConstactResistance(String side, double r) {
         if (side.equals("west")) {
             resistances[0] = r;
             for (int j = 0; j < m; j++) {
@@ -486,7 +486,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
-    public void magnetize() {
+    void magnetize() {
         // Check if given component's' material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
         for (int i = 0; i < cvs.size(); i++) {
