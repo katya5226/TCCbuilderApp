@@ -786,9 +786,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         selectedLengthUnit = CirSim.LengthUnit.METER;
                         break;
                 }
-                for (Component c : simComponents) {
+                for (Component c : simComponents)
                     c.calculateLength();
-                }
+
+                for (TwoDimComponent c : simTwoDimComponents)
+                    c.calculateLengthHeight();
+
                 if (simRunning)
                     resetAction();
             }
@@ -1378,6 +1381,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
@@ -1725,9 +1729,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // draw handles for elm we're dragging
         if (dragElm != null && (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2)) {
             dragElm.draw(g);
-            if (dragElm instanceof Component) {
+            if (dragElm instanceof ZigZagInterface)
+                ((TwoDimComponent) dragElm).calculateLengthHeight();
+            if (dragElm instanceof TwoDimComponent)
+                ((TwoDimComponent) dragElm).calculateLengthHeight();
+            if (dragElm instanceof Component)
                 ((Component) dragElm).calculateLength();
-            }
 
 
             dragElm.drawHandles(g, CircuitElm.selectColor);
@@ -4274,7 +4281,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case MODE_DRAG_POST:
                 if (mouseElm != null) {
                     dragPost(snapGrid(gx), snapGrid(gy), e.isShiftKeyDown());
-                    if (mouseElm instanceof Component)
+                    if (mouseElm instanceof TwoDimComponent)
+                        ((TwoDimComponent) mouseElm).calculateLengthHeight();
+                    else if (mouseElm instanceof Component)
                         ((Component) mouseElm).calculateLength();
                     changed = true;
                 }
@@ -4881,8 +4890,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         try {
             dragElm = constructElement(mouseModeStr, x0, y0);
         } catch (Exception ex) {
-            GWT.log(mouseModeStr + "");
-            debugger();
+            GWT.log(ex.toString());
         }
     }
 
@@ -5687,6 +5695,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new Component(x1, y1, x2, y2, f, st);
             case 521:
                 return new TwoDimComponent(x1, y1, x2, y2, f, st);
+            case 522:
+                return new ZigZagInterface(x1, y1, x2, y2, f, st);
         }
         return null;
     }
@@ -5715,6 +5725,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new Component(x1, y1);
             case "2DComponent":
                 return new TwoDimComponent(x1, y1);
+            case "ZigZagInterface":
+                return new ZigZagInterface(x1, y1);
             default:
                 return null;
         }

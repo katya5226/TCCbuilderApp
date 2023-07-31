@@ -15,7 +15,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     String name;
     int index;
     Material material;
-    int numCvs, n, m; // total # of CVs and # of CVs in x and y directions
+    int numCvs;
+    int n;
+    int m; // total # of CVs and # of CVs in x and y directions
     double[] resistances;
     TwoDimComponent[] neighbours;
     int[] boundaries;
@@ -45,7 +47,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         field = false;
         fieldIndex = 1;
         buildComponent();
-        GWT.log("2d built");
     }
 
     TwoDimComponent(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -73,11 +74,12 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         resistance = 1000;
         color = Color.blue;
         color2 = Color.red;
-        zigzagFactor = 4;
         calculateLengthHeight();
+        zigzagFactor = 2;
         name = "TwoDimComponent";
-        n = m = 3;
-        numCvs = 9;
+        n = 24;
+        m = 48;
+        numCvs = n * m;
         cvs = new Vector<TwoDimCV>();
         resistances = new double[]{0.0, 0.0, 0.0, 0.0};
         neighbours = new TwoDimComponent[4];
@@ -85,26 +87,31 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         constRho = -1;
         constCp = -1;
         constK = -1;
+        sim.simTwoDimComponents.add(this);  // TODO
+        Collections.sort(sim.trackedTemperatures);
         double tmpDx = length / n;
         double tmpDy = height / m;
+/*
         if ((!(tmpDx < 1e-6) || tmpDx == 0) && (!(tmpDy < 1e-6) || tmpDy == 0)) {
-            setDxDy(tmpDx, tmpDy);
-            sim.simTwoDimComponents.add(this);  // TODO
-            Collections.sort(sim.trackedTemperatures);  // TODO
-            //sim.trackedTemperatures.add(this);  // TODO
+            //sim.trackedTemperatures.add(this);
         }
+*/
 
     }
 
     void calculateLengthHeight() {
-        // TODO: 2Dcomponent can only be made horizontaly,
         // as a rectangle with edge coordinates {(x, y), (x2, y), (x2, y2), (x, y2)},
-        // where difference between x-es is length and difference between y-s is height. 
-        length = (x2 - x) / sim.selectedLengthUnit.conversionFactor;
-        height = (y2 - y) / sim.selectedLengthUnit.conversionFactor;
+        // where difference between x-es is length and difference between y-s is height.
+        if (point3 == null | point4 == null)
+            return;
+        length = Math.abs(point1.x - point2.x) / sim.selectedLengthUnit.conversionFactor;
+        height = Math.abs(point1.y - point4.y) / sim.selectedLengthUnit.conversionFactor;
         //gridSize px = 1 unit of measurement
         length /= sim.gridSize;
         height /= sim.gridSize;
+
+        setDxDy(length / n, height / m);
+
     }
 
     void cvNeighbours() {
@@ -174,9 +181,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         for (int i = (m - 1) * n; i < numCvs; i++) {
             cvs.get(i).resistances[3] = resistances[3];
         }
-/*        cvNeighbours();
-        calculateConductivities();
-        setxy(0.0, 0.0);*/
+        cvNeighbours();
+        //calculateConductivities();
+        setxy(0.0, 0.0);
     }
 
     void calculateConductivities() {
@@ -230,6 +237,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         return 'r';
     }
 
+    @Override
     String dump() {  // TODO
         return "521 " + point1.x + " " + point1.y + " " + point2.x + " " +
                 point2.y + " 0 " + index + " " + material.materialName + " " +
@@ -237,17 +245,18 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
+    @Override
     void draw(Graphics g) {
         boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
-        double tmpDx = length / numCvs;
+        drawRect(g, point1, point4, color.getHexValue());
+        double tmpDx = length / n;
+        double tmpDy = length / m;
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
-            drawZigZagPattern(g, point1, point4, zigzagFactor, color.getHexValue(), color2.getHexValue());
             isDisabled = true;
         } else {
-            drawZigZagPattern(g, point1, point4, zigzagFactor, color.getHexValue(), color2.getHexValue());
             isDisabled = false;
-            setDxDy(tmpDx, 0.01);
+            setDxDy(tmpDx, tmpDy);
         }
 
         doDots(g);
@@ -279,31 +288,25 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         // getBasicInfo(arr);
         arr[1] = "TwoDimComponent index = " + String.valueOf(index);
         arr[2] = "Material = " + material.materialName;
+        arr[3] = "Length = " + formatLength(length);
+        arr[4] = "Height = " + formatLength(height);
+        arr[5] = "#CVs = " + numCvs;
+        arr[6] = "CV dx = " + formatLength(cvs.get(0).dx);
+        arr[7] = "CV dy = " + formatLength(cvs.get(0).dy);
+    }
 
-        double tmpLength = length;
-        if (tmpLength < 1e-3) { // less than 1 millimeter
-            tmpLength = length * 1e6; // convert to micrometers
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " µm";
-        } else if (tmpLength < 1) { // less than 1 meter
-            tmpLength = length * 1e3; // convert to millimeters
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " mm";
+    private String formatLength(double value) {
+        if (value < 1e-3) { // less than 1 millimeter
+            value *= 1e6; // convert to micrometers
+            return (Math.round(value * 1000) / 1000.0) + " µm";
+        } else if (value < 1) { // less than 1 meter
+            value *= 1e3; // convert to millimeters
+            return (Math.round(value * 1000) / 1000.0) + " mm";
         } else {
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " m";
-        }
-
-        arr[4] = "#CVs = " + numCvs;
-
-        double dx = cvs.get(0).dx; // dx is in meters
-        if (dx < 1e-3) { // less than 1 millimeter
-            dx = dx * 1e6; // convert to micrometers
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " µm";
-        } else if (dx < 1) { // less than 1 meter
-            dx = dx * 1e3; // convert to millimeters
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " mm";
-        } else {
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " m";
+            return (Math.round(value * 1000) / 1000.0) + " m";
         }
     }
+
 
     @Override
     String getScopeText(int v) {
@@ -415,7 +418,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             buildComponent();
         }*/
 
-        setDxDy(length / numCvs, 0.01);
+        setDxDy(length / n, height / m);
         buildComponent();
     }
 
@@ -517,46 +520,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         int width = Math.abs(pa.x - pb.x);
         int height = Math.abs(pa.y - pb.y);
 
-        g.context.setStrokeStyle(color);
-        g.context.strokeRect(x, y, width, height);
-        g.context.setLineWidth(3.0);
-        g.setLineWidth(3.0);
-    }
-
-    static void drawZigZagPattern(Graphics g, Point pa, Point pb, int n, String color1, String color2) {
-        Context2d ctx = g.context;
-        double x = Math.min(pa.x, pb.x);
-        double y = Math.min(pa.y, pb.y);
-        double width = Math.abs(pa.x - pb.x);
-        double height = Math.abs(pa.y - pb.y);
-        double lineSpacing = (double) height / (n);
-        ctx.setFillStyle(color1);
-        ctx.setStrokeStyle(Color.white.getHexValue());
-        ctx.strokeRect(x, y, width, height);
-        ctx.fillRect(x, y, width, height);
-        ctx.beginPath();
-        if (n == 0) {
-            ctx.setFillStyle(color2);
-            ctx.fillRect(x, y, width / 2, height);
-            return;
-        }
-        for (int i = 1; i <= n + 1; i++) {
-            double startX = x + width;
-            double startY = y + i * lineSpacing;
-            if (i % 2 == 0) {
-                double endX = x;
-                ctx.lineTo(endX, startY - lineSpacing);
-            } else {
-                double endX = x + width;
-                ctx.lineTo(startX, startY - lineSpacing);
-            }
-        }
-        if (n % 2 == 0)
-            ctx.lineTo(x + width, y);
-        else
-            ctx.lineTo(x, y);
-
-        ctx.setFillStyle(color2);
-        ctx.fill();
+        g.context.setFillStyle(color);
+        g.context.fillRect(x, y, width, height);
     }
 }
