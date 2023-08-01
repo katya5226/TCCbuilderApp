@@ -20,6 +20,7 @@
 // Test by Oskar
 
 package com.lushprojects.circuitjs1.client;
+import com.lushprojects.circuitjs1.client.math3.linear.RealVector;
 
 // GWT conversion (c) 2015 by Iain Sharp
 
@@ -1174,6 +1175,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     // **************************************************************************************
+
+    public void twoDimHeatTransferStep() {  // need a new library for matrices here
+        twoDimES.conductionMatrix();
+        LUDecomposition solver = new LUDecomposition(twoDimES.matrix);
+        RealVector solutionVector = solver.getSolver().solve(twoDimES.rhs);
+        for (int i = 0; i < twoDimTCE.numCvs; i++) {
+            twoDimTCE.cvs.get(i).temperature = solutionVector.getEntry(i);
+        }
+        // update modes
+        // calculate again
+        // set new temperatures
+        // replace old with new
+    }
 
     void setColors(String positiveColor, String negativeColor, String neutralColor, String selectColor,
                    String currentColor) {
