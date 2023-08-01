@@ -69,6 +69,10 @@ import com.google.gwt.storage.client.Storage;
 
 import static com.google.gwt.event.dom.client.KeyCodes.*;
 
+import com.lushprojects.circuitjs1.client.math3.analysis.UnivariateFunction;
+import com.lushprojects.circuitjs1.client.math3.analysis.interpolation.SplineInterpolator;
+import com.lushprojects.circuitjs1.client.math3.analysis.interpolation.UnivariateInterpolator;
+import com.lushprojects.circuitjs1.client.math3.linear.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.lushprojects.circuitjs1.client.util.PerfMonitor;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -826,15 +830,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         elmMenuBar.addItem(elmEditMenuItem = new MenuItem(Locale.LS("Edit..."), new MyCommand("elm", "edit")));
-        elmMenuBar.addItem(elmTempsMenuItem = new MenuItem(Locale.LS("Toggle in Temperature Display"),
-                new MyCommand("elm", "viewTemps")));
+        elmMenuBar.addItem(elmTempsMenuItem = new MenuItem(Locale.LS("Toggle in Temperature Display"), new MyCommand("elm", "viewTemps")));
         elmMenuBar.addItem(elmCutMenuItem = new MenuItem(Locale.LS("Cut"), new MyCommand("elm", "cut")));
         elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(Locale.LS("Copy"), new MyCommand("elm", "copy")));
         elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(Locale.LS("Delete"), new MyCommand("elm", "delete")));
         elmMenuBar.addItem(new MenuItem(Locale.LS("Duplicate"), new MyCommand("elm", "duplicate")));
         elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(Locale.LS("Swap Terminals"), new MyCommand("elm", "flip")));
-        elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", Locale.LS(ctrlMetaKey + "click"),
-                new MyCommand("elm", "split")));
+        elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut("", "Split Wire", Locale.LS(ctrlMetaKey + "click"), new MyCommand("elm", "split")));
         elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(Locale.LS("Sliders..."), new MyCommand("elm", "sliders")));
 
 
@@ -898,6 +900,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // ***************************************************************************
 
         setSimRunning(running);
+/*        double x[] = { 0.0, 1.0, 2.0 };
+        double y[] = { 1.0, -1.0, 2.0};
+        UnivariateInterpolator interpolator = new SplineInterpolator();
+        UnivariateFunction function = interpolator.interpolate(x, y);
+        RealMatrix coefficientMatrix = new Array2DRowRealMatrix(3, 3);
+        RealVector rhsVector = new ArrayRealVector(new double[]{1.0, 2.0, 3.0});
+        LUDecomposition solver = new LUDecomposition(coefficientMatrix);
+        RealVector solutionVector = solver.getSolver().solve(rhsVector);*/
     }
 
     // ***********************************Katni**********************************************
