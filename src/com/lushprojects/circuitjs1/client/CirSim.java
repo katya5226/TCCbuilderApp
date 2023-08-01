@@ -324,6 +324,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
 
+    public enum Property {  // TODO: implement in code
+        DENSITY,
+        HEATCAPACITY,
+        THCONDUCTIVITY,
+        EMISSIVITY
+    }
+
+    public enum BC {
+        ADIABATIC,
+        CONSTHEATFLUX,
+        CONSTTEMP,
+        CONVECTIVE
+    }
+
 
     public enum LengthUnit {
         MICROMETER(1e6, "µm"),
@@ -1095,6 +1109,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             maxTemp = startTemp + maxValue;
         }
 
+    }
+
+    void setTwoDimSim() {
+        twoDimES = new TwoDimEqSys(twoDimTCE);
     }
 
     void setHeatSim() {

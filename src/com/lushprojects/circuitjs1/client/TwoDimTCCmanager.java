@@ -78,7 +78,7 @@ public class TwoDimTCCmanager {
         }
     }
 
-    public static <T> void setConstactResistance(T obj, double[] r) {
+    public static <T> void setContactResistance(T obj, double[] r) {
         obj.resistances[0] = r[0];
         obj.resistances[1] = r[1];
         obj.resistances[2] = r[2];

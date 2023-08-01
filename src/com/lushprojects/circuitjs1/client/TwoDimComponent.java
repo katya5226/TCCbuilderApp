@@ -186,33 +186,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         setxy(0.0, 0.0);
     }
 
-    void calculateConductivities() {
-        for (TwoDimCV cv : cvs) {
-            cv.calculateConductivities();
-        }
-    }
-
-    void setTemperatures(double temp) {
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).temperature = temp;
-            cvs.get(i).temperatureOld = temp;
-        }
-    }
-
-    void setxy(double xOffset, double yOffset) {
+    void setxy(double xOffset, double yOffset) {  // TO MOVE
         for (int i = 0; i < numCvs; i++) {
             cvs.get(i).setxy(xOffset, yOffset);
-        }
-    }
-
-    void updateModes() {
-        for (int i = 0; i < numCvs; i++) {
-            TwoDimCV cv = cvs.get(i);
-            if (cv.temperature >= cv.temperatureOld) {
-                cv.mode = 1;
-            } else if (cv.temperature < cv.temperatureOld) {
-                cv.mode = -1;
-            }
         }
     }
 
@@ -275,7 +251,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
-    double[] listTemps() {
+    double[] listTemps() {  // TO MOVE
         double[] temps = new double[numCvs];
         for (int i = 0; i < temps.length; i++) {
             temps[i] = Math.round(cvs.get(i).temperature * 100) / 100.0;
@@ -435,83 +411,11 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         resistance = r;
     }
 
-    void setConstProperties(Vector<Double> newProps) {
-        if (newProps.size() != 3) {
-            GWT.log("Vector of new properties must contain three values.");
-        }
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).constRho = newProps.get(0);
-            cvs.get(i).constCp = newProps.get(1);
-            cvs.get(i).constK = newProps.get(2);
-        }
-    }
-
-    void setConstProperty(String property, double value) {
-        if (property.equals("rho")) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).constRho = value;
-            }
-        }
-        if (property.equals("cp")) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).constCp = value;
-            }
-        }
-        if (property.equals("k")) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).constK = value;
-            }
-        }
-    }
-
-    void setDxDy(double dx, double dy) {
+    void setDxDy(double dx, double dy) {  // TO MOVE
         for (TwoDimCV cv : cvs) {
             cv.dx = dx;
             cv.dy = dy;
         }
-    }
-
-    void setQgen(double qGen) {
-        for (TwoDimCV cv : cvs) {
-            cv.qGen = qGen;
-        }
-    }
-
-    void setConstactResistance(String side, double r) {
-        if (side.equals("west")) {
-            resistances[0] = r;
-            for (int j = 0; j < m; j++) {
-                cvs.get(j * n).resistances[0] = resistances[0];
-            }
-        }
-        if (side.equals("east")) {
-            resistances[1] = r;
-            for (int j = 0; j < m; j++) {
-                cvs.get((j + 1) * n - 1).resistances[1] = resistances[1];
-            }
-        }
-        if (side.equals("south")) {
-            resistances[2] = r;
-            for (int i = 0; i < n; i++) {
-                cvs.get(i).resistances[2] = resistances[2];
-            }
-        }
-        if (side.equals("north")) {
-            resistances[3] = r;
-            for (int i = (m - 1) * n; i < numCvs; i++) {
-                cvs.get(i).resistances[3] = resistances[3];
-            }
-        }
-    }
-
-    void magnetize() {
-        // Check if given component's' material's magnetocaloric flag is TRUE;
-        // if not, abort and inform the user.
-        for (int i = 0; i < cvs.size(); i++) {
-            cvs.get(i).magnetize();
-        }
-        // GWT.log("Finished (de)magnetization.");
-        field = !field;
     }
 
     static void drawRect(Graphics g, Point pa, Point pb, String color) {
