@@ -131,7 +131,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         }
         cvNeighbours();
         setGlobalXY();
-        //hf.calc_length(self);
+        length = TwoDimTCCmanager.calcLength(cvs);
     }
 
     void setGlobalXY() {

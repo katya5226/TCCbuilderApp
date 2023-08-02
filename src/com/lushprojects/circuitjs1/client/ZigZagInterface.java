@@ -48,9 +48,9 @@ public class ZigZagInterface extends TwoDimComponent {
         double dy = cvs.get(0).dy;
         int middleInd = (int) (n / 2);
         if (c == 0) {
-            for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
                 for (int lInd = 0; lInd < n; lInd++) {
-                    int k = i * n + lInd;
+                    int k = j * n + lInd;
                     TwoDimCV cv = cvs.get(k);
                     if (lInd < middleInd)
                         cv.material = material;
@@ -72,10 +72,10 @@ public class ZigZagInterface extends TwoDimComponent {
                 }
             }*/
             double hT = height / c;
-            for (int i = 0; i < m; i++) {
-                int ci = (int) Math.floor(i / (hT / dy));
-                for (int j = 0; j < n; j++) {
-                    int k = (i * n) + j;
+            for (int j = 0; j < m; j++) {
+                int ci = (int) Math.floor(j / (hT / dy));
+                for (int i = 0; i < n; i++) {
+                    int k = (j * n) + i;
                     TwoDimCV cv = cvs.get(k);
                     if (ci % 2 == 0) {
                         if (cv.y <= yTilde(ci, cv.x, hT))
@@ -91,7 +91,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 }
             }
             int count= 0;
-            for (TwoDimCV cv: cvs                 ) {
+            for (TwoDimCV cv: cvs) {
                 if(cv.material==material)
                     count++;
             }
@@ -104,50 +104,50 @@ public class ZigZagInterface extends TwoDimComponent {
     void calculateLengthHeight() {
         super.calculateLengthHeight();
         try {
-            makeZigZag(8);
+            makeZigZag(4);
         } catch (Exception ignore) {
         }
     }
 
-    @Override
-    void draw(Graphics g) {
-        boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
-        double tmpDx = length / n;
-        double tmpDy = height / m;
-        drawRect(g, point1, point4, color.getHexValue());
-        drawCVs(g, point1, point4, color.getHexValue(), color2.getHexValue());
-        if (tmpDx < 1e-6 && tmpDx != 0) {
-            //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
-            isDisabled = true;
-        } else {
-            isDisabled = false;
-        }
-        setDxDy(tmpDx, tmpDy);
+    // @Override
+    // void draw(Graphics g) {
+    //     boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
+    //     double tmpDx = length / n;
+    //     double tmpDy = height / m;
+    //     drawRect(g, point1, point4, color.getHexValue());
+    //     drawCVs(g, point1, point4, color.getHexValue(), color2.getHexValue());
+    //     if (tmpDx < 1e-6 && tmpDx != 0) {
+    //         //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
+    //         isDisabled = true;
+    //     } else {
+    //         isDisabled = false;
+    //     }
+    //     TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
-        doDots(g);
-        drawPosts(g);
+    //     doDots(g);
+    //     drawPosts(g);
 
-    }
+    // }
 
-    void drawCVs(Graphics g, Point pa, Point pb, String color1, String color2) {
-        Context2d ctx = g.context;
-        double x = Math.min(pa.x, pb.x);
-        double y = Math.min(pa.y, pb.y);
-        double width = Math.abs(pa.x - pb.x);
-        double cvWidth = width / n;
-        double height = Math.abs(pa.y - pb.y);
-        double cvHeight = height / m;
-        ctx.setStrokeStyle(Color.white.getHexValue());
-        ctx.strokeRect(x, y, width, height);
-        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+    // void drawCVs(Graphics g, Point pa, Point pb, String color1, String color2) {
+    //     Context2d ctx = g.context;
+    //     double x = Math.min(pa.x, pb.x);
+    //     double y = Math.min(pa.y, pb.y);
+    //     double width = Math.abs(pa.x - pb.x);
+    //     double cvWidth = width / n;
+    //     double height = Math.abs(pa.y - pb.y);
+    //     double cvHeight = height / m;
+    //     ctx.setStrokeStyle(Color.white.getHexValue());
+    //     ctx.strokeRect(x, y, width, height);
+    //     ctx.setStrokeStyle(Color.deepBlue.getHexValue());
 
-        for (TwoDimCV cv : cvs) {
-            double cvX = x + cv.xIndex * cvWidth;
-            double cvY = y + cv.yIndex * cvHeight;
-            String cvColor = cv.material.equals(material) ? color1 : color2;
-            ctx.setFillStyle(cvColor);
-            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
-            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
-        }
-    }
+    //     for (TwoDimCV cv : cvs) {
+    //         double cvX = x + cv.xIndex * cvWidth;
+    //         double cvY = y + cv.yIndex * cvHeight;
+    //         String cvColor = cv.material.equals(material) ? color1 : color2;
+    //         ctx.setFillStyle(cvColor);
+    //         ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+    //         ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+    //     }
+    // }
 }

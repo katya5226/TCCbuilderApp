@@ -109,9 +109,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         //gridSize px = 1 unit of measurement
         length /= sim.gridSize;
         height /= sim.gridSize;
-
-        setDxDy(length / n, height / m);
-
+        TwoDimTCCmanager.setdxdy(this.cvs, length / n, height / m);
     }
 
     void cvNeighbours() {
@@ -183,14 +181,14 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
         cvNeighbours();
         //calculateConductivities();
-        setxy(0.0, 0.0);
+        TwoDimTCCmanager.setxy(cvs, 0.0, 0.0);
     }
 
-    void setxy(double xOffset, double yOffset) {  // TO MOVE
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).setxy(xOffset, yOffset);
-        }
-    }
+    // void setxy(double xOffset, double yOffset) {  // TO MOVE
+    //     for (int i = 0; i < numCvs; i++) {
+    //         cvs.get(i).setxy(xOffset, yOffset);
+    //     }
+    // }
 
     @Override
     public int compareTo(TwoDimComponent o) {
@@ -221,23 +219,65 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
+    // @Override
+    // void draw(Graphics g) {
+    //     boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
+    //     drawRect(g, point1, point4, color.getHexValue());
+    //     double tmpDx = length / n;
+    //     double tmpDy = length / m;
+    //     if (tmpDx < 1e-6 && tmpDx != 0) {
+    //         //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
+    //         isDisabled = true;
+    //     } else {
+    //         isDisabled = false;
+    //         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
+    //     }
+
+    //     doDots(g);
+    //     drawPosts(g);
+
+    // }
+
     @Override
     void draw(Graphics g) {
         boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
-        drawRect(g, point1, point4, color.getHexValue());
         double tmpDx = length / n;
-        double tmpDy = length / m;
+        double tmpDy = height / m;
+        drawRect(g, point1, point4, color.getHexValue());
+        drawCVs(g, point1, point4, color.getHexValue(), color2.getHexValue());
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
             isDisabled = true;
         } else {
             isDisabled = false;
-            setDxDy(tmpDx, tmpDy);
         }
+        TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
         doDots(g);
         drawPosts(g);
 
+    }
+
+    void drawCVs(Graphics g, Point pa, Point pb, String color1, String color2) {
+        Context2d ctx = g.context;
+        double x = Math.min(pa.x, pb.x);
+        double y = Math.min(pa.y, pb.y);
+        double width = Math.abs(pa.x - pb.x);
+        double cvWidth = width / n;
+        double height = Math.abs(pa.y - pb.y);
+        double cvHeight = height / m;
+        ctx.setStrokeStyle(Color.white.getHexValue());
+        ctx.strokeRect(x, y, width, height);
+        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+
+        for (TwoDimCV cv : cvs) {
+            double cvX = x + cv.xIndex * cvWidth;
+            double cvY = y + cv.yIndex * cvHeight;
+            String cvColor = cv.material.equals(material) ? color1 : color2;
+            ctx.setFillStyle(cvColor);
+            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+        }
     }
 
     void calculateCurrent() {
@@ -248,15 +288,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     void stamp() {
         sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
-
-
-    double[] listTemps() {  // TO MOVE
-        double[] temps = new double[numCvs];
-        for (int i = 0; i < temps.length; i++) {
-            temps[i] = Math.round(cvs.get(i).temperature * 100) / 100.0;
-        }
-        return temps;
     }
 
     void getInfo(String[] arr) {
@@ -288,8 +319,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     String getScopeText(int v) {
         return Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
     }
-
-    /*  */
 
     public EditInfo getEditInfo(int n) {
         switch (n) {
@@ -394,7 +423,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             buildComponent();
         }*/
 
-        setDxDy(length / n, height / m);
+        TwoDimTCCmanager.setdxdy(cvs, length / n, height / m);
         buildComponent();
     }
 
@@ -409,13 +438,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     void setResistance(double r) {
         resistance = r;
-    }
-
-    void setDxDy(double dx, double dy) {  // TO MOVE
-        for (TwoDimCV cv : cvs) {
-            cv.dx = dx;
-            cv.dy = dy;
-        }
     }
 
     static void drawRect(Graphics g, Point pa, Point pb, String color) {

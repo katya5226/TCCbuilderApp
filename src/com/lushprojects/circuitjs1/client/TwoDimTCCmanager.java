@@ -3,112 +3,114 @@ package com.lushprojects.circuitjs1.client;
 // import com.google.gwt.core.client.GWT;
 // import com.google.gwt.user.client.Window;
 
-// import java.util.*;
+import java.util.*;
 
 public class TwoDimTCCmanager {
 
-    public static <T> void setConstParam(T obj, Property param, double value) {
+    static void setConstParam(Vector<TwoDimCV> cvs, HeatSimProps.Property param, double value) {
         switch (param) {
             case DENSITY:
-                for (TwoDimCV cv : obj.cvs) {
+                for (TwoDimCV cv : cvs) {
                     cv.constRho = value;
                 }
                 break;
             case HEATCAPACITY:
-                for (TwoDimCV cv : obj.cvs) {
+                for (TwoDimCV cv : cvs) {
                     cv.constCp = value;
                 }
                 break;
             case THCONDUCTIVITY:
-                for (TwoDimCV cv : obj.cvs) {
+                for (TwoDimCV cv : cvs) {
                     cv.constK = value;
                 }
                 break;
         }
     }
 
-    public static <T> void setdxdy(T obj, double dx, double dy) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void setdxdy(Vector<TwoDimCV> cvs, double dx, double dy) {
+        for (TwoDimCV cv : cvs) {
             cv.dx = dx;
             cv.dy = dy;
         }
     }
 
-    public static <T> void setxy(T obj, double xOffset, double yOffset) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void setxy(Vector<TwoDimCV> cvs, double xOffset, double yOffset) {
+        for (TwoDimCV cv : cvs) {
             cv.setxy(xOffset, yOffset);
         }
     }
 
-    public static <T> void calcLength(T obj) {
-        obj.length = 0.0;
-        for (TwoDimCV cv : obj.cvs) {
-            obj.length += cv.dx;
+    static double calcLength(Vector<TwoDimCV> cvs) {
+        double length = 0.0;
+        for (TwoDimCV cv : cvs) {
+            length += cv.dx;
         }
+        return length;
     }
 
-    public static <T> void calcHeight(T obj) {
-        obj.height = 0.0;
-        for (TwoDimCV cv : obj.cvs) {
-            obj.height += cv.dy;
+    static double calcHeight(Vector<TwoDimCV> cvs) {
+        double height = 0.0;
+        for (TwoDimCV cv : cvs) {
+            height += cv.dy;
         }
+        return height;
     }
 
-    public static <T> void setTemperatures(T obj, double temp, boolean old) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void setTemperatures(Vector<TwoDimCV> cvs, double temp, boolean old) {
+        for (TwoDimCV cv : cvs) {
             cv.temperature = temp;
             if (old)
                 cv.temperatureOld = temp;
         }
     }
 
-    public static <T> void setTemperatureList(T obj, double[] temps, boolean old) {
+    static void setTemperatureList(Vector<TwoDimCV> cvs, double[] temps, boolean old) {
         //if (temps.length != obj.NumCvs) log error
-        for (int i = 0; i < obj.numCvs; i++) {
-            TwoDimCV cv = obj.cvs.get(i);
+        for (int i = 0; i < cvs.size(); i++) {
+            TwoDimCV cv = cvs.get(i);
             cv.temperature = temps[i];
             if (old)
                 cv.temperatureOld = temps[i];
         }
     }
 
-    public static <T> void setQgen(T obj, double qGen) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void setQgen(Vector<TwoDimCV> cvs, double qGen) {
+        for (TwoDimCV cv : cvs) {
             cv.qGen = qGen;
         }
     }
 
-    public static <T> void setContactResistance(T obj, double[] r) {
-        obj.resistances[0] = r[0];
-        obj.resistances[1] = r[1];
-        obj.resistances[2] = r[2];
-        obj.resistances[3] = r[3];
-        for (int j = 0; j < obj.m; j++) {
-            obj.cvs.get(j * n).resistances[0] = r[0];
-            obj.cvs.get((j + 1) * n - 1).resistances[1] = r[1];
+    static void setContactResistance(Vector<TwoDimCV> cvs, int n, int m, double[] resistances, double[] r) {
+        resistances[0] = r[0];
+        resistances[1] = r[1];
+        resistances[2] = r[2];
+        resistances[3] = r[3];
+        for (int j = 0; j < m; j++) {
+            cvs.get(j * n).resistances[0] = r[0];
+            cvs.get((j + 1) * n - 1).resistances[1] = r[1];
         }
-        for (int i = 0; i < obj.n; i++) {
-            obj.cvs.get(i).resistances[2] = r[2];
+        for (int i = 0; i < n; i++) {
+            cvs.get(i).resistances[2] = r[2];
         }
-        for (int i = (obj.m - 1) * obj.n; i < obj.numCvs; i++) {
-            obj.cvs.get(i).resistances[3] = r[3];
+        for (int i = (m - 1) * n; i < cvs.size(); i++) {
+            cvs.get(i).resistances[3] = r[3];
         }
     }
 
-    public static <T> void calcConductivities(T obj) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void calcConductivities(Vector<TwoDimCV> cvs) {
+        for (TwoDimCV cv : cvs) {
             cv.calculateConductivities();
         }
     }
 
-    public static <T> void replaceOldNew(T obj) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void replaceOldNew(Vector<TwoDimCV> cvs) {
+        for (TwoDimCV cv : cvs) {
             cv.temperatureOld = cv.temperature;
         }
     }
 
-    public static <T> void updateModes(T obj) {
-        for (TwoDimCV cv : obj.cvs) {
+    static void updateModes(Vector<TwoDimCV> cvs) {
+        for (TwoDimCV cv : cvs) {
             if(cv.temperature >= cv.temperatureOld)
                 cv.mode = 1;
             else if(cv.temperature < cv.temperatureOld)
@@ -116,13 +118,21 @@ public class TwoDimTCCmanager {
         }
     }
 
-    public static <T> void magnetize(T obj) {
+    static void magnetize(Vector<TwoDimCV> cvs) {
         // Check if given component's' material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
-        for (TwoDimCV cv : obj.cvs) {
+        for (TwoDimCV cv : cvs) {
             cv.magnetize();
         }
-        obj.field = !obj.field;
+        // obj.field = !obj.field; DO THIS OUTSIDE THE METHOD
+    }
+
+    static double[] listTemps(Vector<TwoDimCV> cvs) {
+        double[] temps = new double[cvs.size()];
+        for (int i = 0; i < temps.length; i++) {
+            temps[i] = Math.round(cvs.get(i).temperature * 100) / 100.0;
+        }
+        return temps;
     }
 
     // TODO
