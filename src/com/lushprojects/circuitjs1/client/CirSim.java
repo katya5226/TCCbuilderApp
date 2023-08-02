@@ -20,6 +20,7 @@
 // Test by Oskar
 
 package com.lushprojects.circuitjs1.client;
+
 import com.lushprojects.circuitjs1.client.math3.linear.RealVector;
 
 // GWT conversion (c) 2015 by Iain Sharp
@@ -70,9 +71,6 @@ import com.google.gwt.storage.client.Storage;
 
 import static com.google.gwt.event.dom.client.KeyCodes.*;
 
-import com.lushprojects.circuitjs1.client.math3.analysis.UnivariateFunction;
-import com.lushprojects.circuitjs1.client.math3.analysis.interpolation.SplineInterpolator;
-import com.lushprojects.circuitjs1.client.math3.analysis.interpolation.UnivariateInterpolator;
 import com.lushprojects.circuitjs1.client.math3.linear.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
 import com.lushprojects.circuitjs1.client.util.PerfMonitor;
@@ -100,7 +98,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar optionsMenuBar;
     CheckboxMenuItem dotsCheckItem;
     CheckboxMenuItem voltsCheckItem;
-    CheckboxMenuItem tempsCheckItem;
+    CheckboxMenuItem showTemperaturesCheckItem;
+    CheckboxMenuItem showOverlayCheckItem;
     CheckboxMenuItem powerCheckItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
@@ -312,6 +311,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     double[] x_mod;
 
     boolean viewTempsInGraph = true;
+    boolean viewTempsOverlay = true;
     double minTemp, maxTemp;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
@@ -596,12 +596,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         optionsMenuBar = m = new MenuBar(true);
         menuBar.addItem(Locale.LS("Options"), optionsMenuBar);
-        m.addItem(tempsCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperatures in Graph"), new Command() {
+        m.addItem(showTemperaturesCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperatures in Graph"), new Command() {
             public void execute() {
                 viewTempsInGraph = !viewTempsInGraph;
             }
         }));
-        tempsCheckItem.setState(true);
+        showTemperaturesCheckItem.setState(true);
+        m.addItem(showOverlayCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperature Overlay (2D)"), new Command() {
+            public void execute() {
+                viewTempsOverlay = !viewTempsOverlay;
+            }
+        }));
+        showOverlayCheckItem.setState(true);
         dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current"));
         dotsCheckItem.setState(true);
         voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"), new Command() {

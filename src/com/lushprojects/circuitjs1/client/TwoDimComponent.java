@@ -1,7 +1,6 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
@@ -75,7 +74,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         color = Color.blue;
         color2 = Color.red;
         calculateLengthHeight();
-        zigzagFactor = 2;
+        zigzagFactor = 4;
         name = "TwoDimComponent";
         n = 24;
         m = 48;
@@ -218,33 +217,16 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 Color.colorToIndex(color) + " " + length + " " + name + " " + numCvs + "\n";
     }
 
-
-    // @Override
-    // void draw(Graphics g) {
-    //     boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
-    //     drawRect(g, point1, point4, color.getHexValue());
-    //     double tmpDx = length / n;
-    //     double tmpDy = length / m;
-    //     if (tmpDx < 1e-6 && tmpDx != 0) {
-    //         //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
-    //         isDisabled = true;
-    //     } else {
-    //         isDisabled = false;
-    //         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
-    //     }
-
-    //     doDots(g);
-    //     drawPosts(g);
-
-    // }
-
     @Override
     void draw(Graphics g) {
         boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
         double tmpDx = length / n;
         double tmpDy = height / m;
-        drawRect(g, point1, point4, color.getHexValue());
-        drawCVs(g, point1, point4, color.getHexValue(), color2.getHexValue());
+        if (sim.viewTempsOverlay)
+            drawCVTemperatures(g, point1, point4);
+        else
+            drawCVMaterials(g, point1, point4);
+
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
             isDisabled = true;
@@ -258,7 +240,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     }
 
-    void drawCVs(Graphics g, Point pa, Point pb, String color1, String color2) {
+    void drawCVMaterials(Graphics g, Point pa, Point pb) {
         Context2d ctx = g.context;
         double x = Math.min(pa.x, pb.x);
         double y = Math.min(pa.y, pb.y);
@@ -266,18 +248,62 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         double cvWidth = width / n;
         double height = Math.abs(pa.y - pb.y);
         double cvHeight = height / m;
-        ctx.setStrokeStyle(Color.white.getHexValue());
-        ctx.strokeRect(x, y, width, height);
         ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+        ctx.setLineWidth(0.5);
+        ctx.strokeRect(x, y, width, height);
 
         for (TwoDimCV cv : cvs) {
             double cvX = x + cv.xIndex * cvWidth;
             double cvY = y + cv.yIndex * cvHeight;
-            String cvColor = cv.material.equals(material) ? color1 : color2;
+            String cvColor = cv.material.equals(material) ? color.getHexValue() : color2.getHexValue();
             ctx.setFillStyle(cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }
+    }
+
+    void drawCVTemperatures(Graphics g, Point pa, Point pb) {
+        Context2d ctx = g.context;
+        double x = Math.min(pa.x, pb.x);
+        double y = Math.min(pa.y, pb.y);
+        double width = Math.abs(pa.x - pb.x);
+        double cvWidth = width / n;
+        double height = Math.abs(pa.y - pb.y);
+        double cvHeight = height / m;
+        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+        ctx.setLineWidth(0.5);
+        ctx.strokeRect(x, y, width, height);
+        int i = 0;
+        for (TwoDimCV cv : cvs) {
+            double cvX = x + cv.xIndex * cvWidth;
+            double cvY = y + cv.yIndex * cvHeight;
+
+            double temperatureRange = sim.maxTemp - sim.minTemp;
+            double temperatureRatio = (cv.temperature - sim.minTemp) / temperatureRange;
+
+            // Just for testing of color mixing, comment out when not needed
+            temperatureRatio = ((double) i % n) / n;
+            i++;
+            //
+
+            Color color1 = Color.blue;
+            Color color2 = Color.white;
+            Color color3 = Color.red;
+
+            int red = (int) (color1.getRed() * (1 - temperatureRatio) + color2.getRed() * temperatureRatio);
+            int green = (int) (color1.getGreen() * (1 - temperatureRatio) + color2.getGreen() * temperatureRatio);
+            int blue = (int) (color1.getBlue() * (1 - temperatureRatio) + color2.getBlue() * temperatureRatio);
+
+            red = (int) (red * (1 - temperatureRatio) + color3.getRed() * temperatureRatio);
+            green = (int) (green * (1 - temperatureRatio) + color3.getGreen() * temperatureRatio);
+            blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
+
+            String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
+            ctx.setFillStyle(cvColor);
+            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+        }
+
     }
 
     void calculateCurrent() {
@@ -440,13 +466,4 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         resistance = r;
     }
 
-    static void drawRect(Graphics g, Point pa, Point pb, String color) {
-        int x = Math.min(pa.x, pb.x);
-        int y = Math.min(pa.y, pb.y);
-        int width = Math.abs(pa.x - pb.x);
-        int height = Math.abs(pa.y - pb.y);
-
-        g.context.setFillStyle(color);
-        g.context.fillRect(x, y, width, height);
-    }
 }
