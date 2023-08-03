@@ -352,7 +352,6 @@ public class Material {
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         String text = response.getText();
-                        GWT.log(text);
                         for (String line : text.split("\n"))
                             fields.add(Double.parseDouble(line));
                         callback.onSuccess(response);

@@ -1,5 +1,5 @@
-package com.lushprojects.circuitjs1.client;
 
+package com.lushprojects.circuitjs1.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
@@ -407,7 +407,7 @@ public class CyclicDialog extends Dialog {
 
     }
 
-    private void printCyclePart(CyclePart cp, HTML label) {
+    public void printCyclePart(CyclePart cp, HTML label) {
         if (sim.cycleParts.size() == 1) {
             if (label.getHTML().equals("")) {
                 label.setHTML(label.getHTML() + "<b>Cyclic Operation:</b><br>");

@@ -720,7 +720,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
         buttonPanel.add(resetButton = new Button(Locale.LS("Build TCC")));
         buttonPanel.add(quickResetButton = new Button(Locale.LS("Reset TCC")));
-        testButton = new Button(Locale.LS("Test"));
+        buttonPanel.add(testButton = new Button(Locale.LS("Test TCC")));
         resetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 new StartDialog(theSim).show();
@@ -733,7 +733,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         });
         testButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                runTestSuite();
+                setupForTest();
             }
         });
 
@@ -1101,11 +1101,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
     }
+
     void makeTwoDimTCE() {
         twoDimTCE = new TwoDimTCE("2D TCE", 0, simTwoDimComponents);
         twoDimTCE.buildTCE();
         TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, 300.0, true);
     }
+
     void setTwoDimSim() {
         twoDimES = new TwoDimEqSys(twoDimTCE);
     }
@@ -1120,7 +1122,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         right_boundary = heatCircuit.right_boundary;
         start_temperatures = new double[this.num_cvs];
         numCycleParts = this.cycleParts.size();
-        if (cycleParts.size() > 0)
+        if (!cycleParts.isEmpty())
             cyclePart = this.cycleParts.get(0);
         cyclePartTime = 0.0;
         printing_interval = 1;
@@ -2281,6 +2283,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return (Math.round(value * 1000) / 1000.0) + " m";
         }
     }
+
     void calculateWireClosure() {
         int i;
         LabeledNodeElm.resetNodeList();
@@ -3875,8 +3878,51 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     }
 
-    void preloadMaterials() {
+    public void setupForTest() {
+        cyclic = true;
+        temp_left = 291;
+        h_left = 100000.0;
+        h_right = 100000.0;
+        temp_right = 290;
+        qIn = 0;
+        qOut = 0;
+        dt = 0.005;
+        startTemp = 290;
+        left_boundary = 41;
+        right_boundary = 42;
 
+        CyclePart cyclePartHeatTransfer = new CyclePart(cycleParts.size(), this);
+        cyclePartHeatTransfer.partType = CyclePart.PartType.HEAT_TRANSFER;
+        cyclePartHeatTransfer.duration = 1.0;
+
+        CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
+        cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
+        cyclePartMagneticFieldChange.components.add(simComponents.get(2));
+        simComponents.get(2).fieldIndex = 2;
+
+        CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
+        cyclePartPropertiesChange.partType = CyclePart.PartType.PROPERTIES_CHANGE;
+        cyclePartPropertiesChange.components.add(simComponents.get(1));
+        cyclePartPropertiesChange.components.add(simComponents.get(3));
+
+//        tukaj neki smrdi :{ ( ne dela )
+/*        cyclePartPropertiesChange.newProperties.add(new Vector<Double>());
+        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+        */
+
+
+        cycleParts.add(cyclePartHeatTransfer);
+        cycleParts.add(cyclePartMagneticFieldChange);
+//        cycleParts.add(cyclePartPropertiesChange);
+
+        for (CyclePart cp : cycleParts) {
+            CyclicDialog cd = new CyclicDialog(this);
+            cd.printCyclePart(cp, cyclicOperationLabel);
+            cd.closeDialog();
+        }
+        resetAction();
     }
 
     void runTestSuite() {

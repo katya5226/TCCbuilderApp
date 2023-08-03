@@ -2,6 +2,7 @@ package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.GWT;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 public class CyclePart {
@@ -96,6 +97,7 @@ public class CyclePart {
     void propertiesChange() {
         for (int i = 0; i < this.components.size(); i++) {
             Component cp = this.components.get(i);
+            GWT.log(this.newProperties.size()+"");
             Vector<Double> newProps = this.newProperties.get(i);
             cp.setConstProperties(newProps);
         }

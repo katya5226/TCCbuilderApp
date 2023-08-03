@@ -1,4 +1,2 @@
 ### setuplist.txt first line must be a comments
-+Basics
-resistors.txt Resistors 
 KlinarDiode.txt MCWithFluidicSwitch

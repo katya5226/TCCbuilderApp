@@ -127,7 +127,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     public void buildComponent() {
-        GWT.log("Building component " + name + " " + index);
         this.cvs.clear();
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.add(new ControlVolume(i));
