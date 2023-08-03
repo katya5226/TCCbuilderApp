@@ -127,7 +127,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     public void buildComponent() {
-        GWT.log("Building component "+name + " " + index);
+        GWT.log("Building component " + name + " " + index);
         this.cvs.clear();
         for (int i = 0; i < this.num_cvs; i++) {
             this.cvs.add(new ControlVolume(i));
@@ -293,7 +293,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 ei2.choice.select(Color.colorToIndex(this.color));
                 return ei2;
             case 5:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", this.length);
+                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", this.length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 6:
                 return new EditInfo("Left contact resistance (mK/W)", this.left_resistance);
             case 7:

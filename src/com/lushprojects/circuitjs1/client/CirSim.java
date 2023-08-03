@@ -1101,7 +1101,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
     }
-
+    void makeTwoDimTCE() {
+        twoDimTCE = new TwoDimTCE("2D TCE", 0, simTwoDimComponents);
+        twoDimTCE.buildTCE();
+        TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, 300.0, true);
+    }
     void setTwoDimSim() {
         twoDimES = new TwoDimEqSys(twoDimTCE);
     }
@@ -2266,6 +2270,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // labeled nodes, and ground.
     // The actual node we map to is not assigned yet. Instead we map to the same
     // NodeMapEntry.
+    public String formatLength(double value) {
+        if (value < 1e-3) { // less than 1 millimeter
+            value *= 1e6; // convert to micrometers
+            return (Math.round(value * 1000) / 1000.0) + " µm";
+        } else if (value < 1) { // less than 1 meter
+            value *= 1e3; // convert to millimeters
+            return (Math.round(value * 1000) / 1000.0) + " mm";
+        } else {
+            return (Math.round(value * 1000) / 1000.0) + " m";
+        }
+    }
     void calculateWireClosure() {
         int i;
         LabeledNodeElm.resetNodeList();
@@ -4254,8 +4269,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         setGrid();
     }
 
-    int snapGrid(int x) {
-        return (x + gridRound) & gridMask;
+    int snapGrid(int n) {
+        return (n + gridRound) & gridMask;
     }
 
     boolean doSwitch(int x, int y) {

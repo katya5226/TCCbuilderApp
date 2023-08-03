@@ -60,7 +60,8 @@ class SliderDialog extends Dialog {
         hp = new HorizontalPanel();
         hp.setWidth("100%");
         hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        hp.setStyleName("topSpace");
+        hp.setStyleName(
+                "topSpace");
         vp.add(hp);
         hp.add(applyButton = new Button(Locale.LS("Apply")));
         applyButton.addClickHandler(new ClickHandler() {

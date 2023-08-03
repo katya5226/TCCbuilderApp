@@ -92,7 +92,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         m = components.get(0).m;  // TODO: check if all are of the same height and m
         height = components.get(0).height;
         for (TwoDimComponent c : components) {
-            numCvs += c.numCvs;
+            numCvs += c.cvs.size();
             n += c.n;
         }
         Collections.sort(components);

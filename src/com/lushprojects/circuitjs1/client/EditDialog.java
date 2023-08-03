@@ -172,10 +172,7 @@ class EditDialog extends Dialog {
                     ei.textf.setVisibleLength(50);
                 }
                 if (ei.text == null) {
-                    if (ei.name.equals("Length (" + CircuitElm.sim.selectedLengthUnit.unitName + ")"))
-                        ei.textf.setText(ei.value * CircuitElm.sim.selectedLengthUnit.conversionFactor + "");
-                    else
-                        ei.textf.setText(ei.value + "");
+                    ei.textf.setText(ei.value + "");
                 }
             }
         }

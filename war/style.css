@@ -1,10 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
 
-* {
-    font-family: "Roboto", sans-serif;
-    color: var(--white);
-    box-sizing: border-box;
-}
 
 :root {
     --black: #0D121F;
@@ -13,10 +8,17 @@
     --blue: #273459;
     --white: #F2F2F2;
     --red: #D93B3B;
+    --deep-red: #8d2424;
     --yellow: #F2A71B;
     --deep-yellow: #cf8f18;
     --gray: #404B59;
     --light-gray: #5d6e83;
+}
+
+* {
+    font-family: "Roboto", sans-serif;
+    color: var(--white);
+    box-sizing: border-box;
 }
 
 table {
@@ -27,6 +29,30 @@ input {
     color: var(--black);
 }
 
+.disabled {
+    color: var(--light-gray)
+}
+
+.topSpace {
+    margin-top: 12px;
+}
+
+.aroundSpace {
+    margin: 12px;
+}
+
+.cursorPointer {
+    cursor: default;
+}
+
+.cursorCross {
+    cursor: crosshair;
+}
+
+.cursorSplitter {
+    cursor: row-resize;
+}
+
 div.gwt-DialogBox {
     border: 0.125rem solid var(--deep-blue);
 }
@@ -34,7 +60,7 @@ div.gwt-DialogBox {
 div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>table>tbody>tr>td>* {
     width: 100%;
     font-size: 0.75rem;
-
+    margin: 0;
 }
 
 
@@ -64,7 +90,7 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
     font-weight: 700;
 }
 
-.dialogButtonPanel{
+.dialogButtonPanel {
     margin-top: 1rem;
 }
 
@@ -74,13 +100,15 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
     width: 100%;
     text-align: left;
     padding: 0.125rem;
-    color: var(--white);
+    color: var(--black);
+
     background-color: var(--yellow);
 }
 
 .gwt-ListBox:hover {
     background-color: var(--white);
-    color: var(--gray);
+    color: var(--black);
+
 }
 
 .gwt-ListBox:focus {
@@ -95,37 +123,11 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
     text-align: left;
     padding: 0.125rem;
     background-color: var(--white);
-    color: var(--gray);
-}
-
-.gwt-ListBox option:hover {
-    box-shadow: 0 0 10px 100px #000 inset;
+    color: var(--black);
 
 }
 
-.disabled {
-    color: var(--light-gray)
-}
 
-.topSpace {
-    margin-top: 12px;
-}
-
-.aroundSpace {
-    margin: 12px;
-}
-
-.cursorPointer {
-    cursor: default;
-}
-
-.cursorCross {
-    cursor: crosshair;
-}
-
-.cursorSplitter {
-    cursor: row-resize;
-}
 
 .gwt-MenuBar {
     background-color: var(--blue);
@@ -194,7 +196,7 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
 .gwt-Button {
     font-family: 'Roboto', sans-serif;
     border: none;
-    color: var(--white);
+    color: var(--black);
     background-color: var(--yellow);
     border: 0.125rem solid var(--deep-yellow);
     cursor: pointer;
@@ -202,8 +204,8 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
 }
 
 .gwt-Button:hover {
-    background-color: var(--white);
-    color: var(--gray);
+    color: var(--white);
+    background-color: var(--light-gray);
     border-color: var(--gray);
 }
 
@@ -216,13 +218,9 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
 
 .topButton-red {
     background-color: var(--red);
-    border: 0.125rem solid var(--red);
+    border: 0.125rem solid var(--deep-red);
 }
 
-.topButton-red:hover {
-    background-color: var(--white);
-    color: var(--gray);
-}
 
 .mainVertical {
     box-sizing: border-box;

@@ -1,6 +1,7 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
@@ -14,9 +15,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     String name;
     int index;
     Material material;
-    int numCvs;
     int n;
-    int m; // total # of CVs and # of CVs in x and y directions
+    int m;
     double[] resistances;
     TwoDimComponent[] neighbours;
     int[] boundaries;
@@ -26,7 +26,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     boolean field;
     int fieldIndex;
     Point point3, point4;
-    int zigzagFactor;
 
     TwoDimComponent(int xx, int yy) {
         super(xx, yy);
@@ -61,7 +60,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         length = Double.parseDouble(st.nextToken());
         name = st.nextToken();
-        numCvs = Integer.parseInt(st.nextToken());
         isDisabled = false;
         field = false;
         fieldIndex = 1;
@@ -73,12 +71,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         resistance = 1000;
         color = Color.blue;
         color2 = Color.red;
-        calculateLengthHeight();
-        zigzagFactor = 4;
         name = "TwoDimComponent";
         n = 24;
         m = 48;
-        numCvs = n * m;
         cvs = new Vector<TwoDimCV>();
         resistances = new double[]{0.0, 0.0, 0.0, 0.0};
         neighbours = new TwoDimComponent[4];
@@ -86,16 +81,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         constRho = -1;
         constCp = -1;
         constK = -1;
-        sim.simTwoDimComponents.add(this);  // TODO
-        Collections.sort(sim.trackedTemperatures);
-        double tmpDx = length / n;
-        double tmpDy = height / m;
-/*
-        if ((!(tmpDx < 1e-6) || tmpDx == 0) && (!(tmpDy < 1e-6) || tmpDy == 0)) {
-            //sim.trackedTemperatures.add(this);
-        }
-*/
-
+        sim.simTwoDimComponents.add(this);
     }
 
     void calculateLengthHeight() {
@@ -108,6 +94,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         //gridSize px = 1 unit of measurement
         length /= sim.gridSize;
         height /= sim.gridSize;
+
+
         TwoDimTCCmanager.setdxdy(this.cvs, length / n, height / m);
     }
 
@@ -154,7 +142,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     void buildComponent() {
         cvs.clear();
-        for (int i = 0; i < numCvs; i++) {
+        for (int i = 0; i < n * m; i++) {
             cvs.add(new TwoDimCV(i, this));
             if (constRho != -1) {
                 cvs.get(i).constRho = constRho;
@@ -175,19 +163,16 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         for (int i = 0; i < n; i++) {
             cvs.get(i).resistances[2] = resistances[2];
         }
-        for (int i = (m - 1) * n; i < numCvs; i++) {
+        for (int i = (m - 1) * n; i < n * m; i++) {
             cvs.get(i).resistances[3] = resistances[3];
         }
         cvNeighbours();
         //calculateConductivities();
+        calculateLengthHeight();
         TwoDimTCCmanager.setxy(cvs, 0.0, 0.0);
-    }
+        TwoDimTCCmanager.setdxdy(cvs, length / this.n, height / this.m);
 
-    // void setxy(double xOffset, double yOffset) {  // TO MOVE
-    //     for (int i = 0; i < numCvs; i++) {
-    //         cvs.get(i).setxy(xOffset, yOffset);
-    //     }
-    // }
+    }
 
     @Override
     public int compareTo(TwoDimComponent o) {
@@ -214,7 +199,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     String dump() {  // TODO
         return "521 " + point1.x + " " + point1.y + " " + point2.x + " " +
                 point2.y + " 0 " + index + " " + material.materialName + " " +
-                Color.colorToIndex(color) + " " + length + " " + name + " " + numCvs + "\n";
+                Color.colorToIndex(color) + " " + length + " " + name + " " + n * m + "\n";
     }
 
     @Override
@@ -321,24 +306,15 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         // getBasicInfo(arr);
         arr[1] = "TwoDimComponent index = " + String.valueOf(index);
         arr[2] = "Material = " + material.materialName;
-        arr[3] = "Length = " + formatLength(length);
-        arr[4] = "Height = " + formatLength(height);
-        arr[5] = "#CVs = " + numCvs;
-        arr[6] = "CV dx = " + formatLength(cvs.get(0).dx);
-        arr[7] = "CV dy = " + formatLength(cvs.get(0).dy);
+        arr[3] = "Length = " + sim.formatLength(length);
+        arr[4] = "Height = " + sim.formatLength(height);
+        arr[5] = "#CVs (x) = " + n;
+        arr[6] = "#CVs (y) = " + m;
+        arr[7] = "CV dx = " + sim.formatLength(cvs.get(0).dx);
+        arr[8] = "CV dy = " + sim.formatLength(cvs.get(0).dy);
     }
 
-    private String formatLength(double value) {
-        if (value < 1e-3) { // less than 1 millimeter
-            value *= 1e6; // convert to micrometers
-            return (Math.round(value * 1000) / 1000.0) + " µm";
-        } else if (value < 1) { // less than 1 meter
-            value *= 1e3; // convert to millimeters
-            return (Math.round(value * 1000) / 1000.0) + " mm";
-        } else {
-            return (Math.round(value * 1000) / 1000.0) + " m";
-        }
-    }
+
 
 
     @Override
@@ -353,6 +329,10 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             case 1:
                 return new EditInfo("Index", index);
             case 2:
+                return new EditInfo("Number of control volumes in x-direction", this.n);
+            case 3:
+                return new EditInfo("Number of control volumes in y-direction", this.m);
+            case 4:
                 EditInfo ei = new EditInfo("Material", 0);
                 ei.choice = new Choice();
                 for (String m : sim.materialNames) {
@@ -360,41 +340,29 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 }
                 ei.choice.select(sim.materialNames.indexOf(material.materialName));
                 return ei;
-            case 3:
-                return new EditInfo("Number of control volumes", (double) numCvs);
-            case 4:
-                EditInfo ei2 = new EditInfo("Color 1:", 0);
+            case 5:
+                EditInfo ei2 = new EditInfo("Color", 0);
                 ei2.choice = new Choice();
                 for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
                     ei2.choice.add(sim.colorChoices.get(ch));
                 }
-
                 ei2.choice.select(Color.colorToIndex(color));
-                return ei2;
-            case 5:
-                EditInfo ei3 = new EditInfo("Color 2:", 0);
-                ei3.choice = new Choice();
-                for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
-                    ei3.choice.add(sim.colorChoices.get(ch));
-                }
 
-                ei3.choice.select(Color.colorToIndex(color2));
-                return ei3;
+                return ei2;
             case 6:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length);
+                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 7:
-                return new EditInfo("Left contact resistance (mK/W)", resistances[0]);
+                return new EditInfo("Height (" + sim.selectedLengthUnit.unitName + ")", height * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 8:
-                return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
+                return new EditInfo("Left contact resistance (mK/W)", resistances[0]);
             case 9:
-                return new EditInfo("Zigzag factor", zigzagFactor);
+                return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
             default:
                 return null;
         }
     }
 
     public void setEditValue(int n, EditInfo ei) {
-
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -403,53 +371,45 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 index = (int) ei.value;
                 break;
             case 2:
+                this.n = (int) ei.value;
+                break;
+            case 3:
+                this.m = (int) ei.value;
+                break;
+            case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
                 if (!material.isLoaded())
                     material.readFiles();
                 break;
-            case 3:
-                numCvs = (int) ei.value;
-                break;
-            case 4:
-                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
-                break;
             case 5:
-                color2 = Color.translateColorIndex(ei.choice.getSelectedIndex());
+                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 6:
                 double prevLength = length;
                 length = (ei.value / sim.selectedLengthUnit.conversionFactor);
 
                 double ratio = length / prevLength;
-                int deltaX = (int) ((point2.x - point1.x) * ratio);
-                point2.x = (point1.x + deltaX);
-                point2.x = sim.snapGrid(point2.x);
+                int deltaX = (int) (Math.abs(point2.x - point1.x) * ratio);
+                drag(sim.snapGrid(point1.x + deltaX), point4.y);
                 break;
             case 7:
-                resistances[0] = ei.value;
+                double prevHeight = height;
+                height = (ei.value / sim.selectedLengthUnit.conversionFactor);
+
+                double ratio2 = height / prevHeight;
+                int deltaY = (int) (Math.abs(point1.y - point4.y) * ratio2);
+
+                drag(point4.x, sim.snapGrid(point1.y + deltaY));
+
                 break;
             case 8:
-                resistances[1] = ei.value;
+                resistances[0] = ei.value;
                 break;
             case 9:
-                zigzagFactor = (int) ei.value;
+                resistances[1] = ei.value;
                 break;
+
         }
-
-        //TODO: Implement this with better functionality
-
-/*        if (length / numCvs < 1e-6) {
-            String input = String.valueOf(numCvs);
-            if (!isDisabled)
-                Window.alert("TwoDimComponent can't have a dx < 1e-6, current is " + (length / numCvs) + "\n Please enter a smaller number of control volumes!");
-            isDisabled = true;
-        } else {
-            isDisabled = false;
-            setDxDy(length / numCvs, 0.01);
-            buildComponent();
-        }*/
-
-        TwoDimTCCmanager.setdxdy(cvs, length / n, height / m);
         buildComponent();
     }
 
