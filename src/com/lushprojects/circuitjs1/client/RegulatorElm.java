@@ -21,18 +21,19 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.core.client.GWT;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
-class ResistorElm extends CircuitElm {
+class RegulatorElm extends CircuitElm {
     double resistance;
 
-    public ResistorElm(int xx, int yy) {
+    public RegulatorElm(int xx, int yy) {
         super(xx, yy);
         resistance = 1000;
     }
 
-    public ResistorElm(int xa, int ya, int xb, int yb, int f,
-                       StringTokenizer st) {
+    public RegulatorElm(int xa, int ya, int xb, int yb, int f,
+                        StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         resistance = new Double(st.nextToken()).doubleValue();
     }
@@ -49,7 +50,7 @@ class ResistorElm extends CircuitElm {
 
     void setPoints() {
         super.setPoints();
-        calcLeads(64);
+        calcLeads(32);
         ps3 = new Point();
         ps4 = new Point();
     }
@@ -58,18 +59,16 @@ class ResistorElm extends CircuitElm {
         int segments = 16;
         int i;
         int ox = 0;
-        //int hs = sim.euroResistorCheckItem.getState() ? 6 : 8;
         int hs = 6;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, hs);
         draw2Leads(g);
 
-        //   double segf = 1./segments;
         double len = distance(lead1, lead2);
         g.context.save();
-        g.context.setLineWidth(3.0);
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
+        g.context.setLineWidth(2);
         if (sim.voltsCheckItem.getState()) {
             CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
             grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
@@ -79,24 +78,40 @@ class ResistorElm extends CircuitElm {
             setPowerColor(g, true);
         if (dn < 30)
             hs = 2;
-        if (!sim.euroResistorCheckItem.getState()) {
-            g.context.beginPath();
-            g.context.moveTo(0, 0);
-            for (i = 0; i < 4; i++) {
-                g.context.lineTo((1 + 4 * i) * len / 16, hs);
-                g.context.lineTo((3 + 4 * i) * len / 16, -hs);
-            }
-            g.context.lineTo(len, 0);
-            g.context.stroke();
-
-        } else {
-            g.context.strokeRect(0, -hs, len, 2.0 * hs);
+        g.context.beginPath();
+        g.context.moveTo(0, 0);
+        for (i = 0; i < 4; i++) {
+            g.context.lineTo((1 + 4 * i) * len / 16, hs);
+            g.context.lineTo((3 + 4 * i) * len / 16, -hs);
         }
+        g.context.lineTo(len, 0);
+        g.context.stroke();
+        g.context.beginPath();
+
+        double arrowStartX = ((5) * len / 16);
+        double arrowEndX = ((8) * len / 16) * 1.375;
+        double arrowStartY = hs * 3;
+        double arrowEndY = -hs * 3;
+
+        g.context.beginPath();
+        g.context.moveTo(arrowStartX, arrowStartY);
+        g.context.lineTo(arrowEndX, arrowEndY);
+        g.context.stroke();
+
+        double arrowAngle = Math.atan2(arrowEndY - arrowStartY, arrowEndX - arrowStartX);
+        double triangleSize = 4;
+
+        g.context.beginPath();
+        g.context.moveTo(arrowEndX - triangleSize * Math.cos(arrowAngle - Math.PI / 6), arrowEndY - triangleSize * Math.sin(arrowAngle - Math.PI / 6));
+        g.context.lineTo(arrowEndX, arrowEndY);
+        g.context.lineTo(arrowEndX - triangleSize * Math.cos(arrowAngle + Math.PI / 6), arrowEndY - triangleSize * Math.sin(arrowAngle + Math.PI / 6));
+        g.context.stroke();
         g.context.restore();
-        if (sim.showValuesCheckItem.getState()) {
+
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(resistance, "");
             drawValues(g, s, hs + 2);
-        }
+        }*/
         doDots(g);
         drawPosts(g);
     }

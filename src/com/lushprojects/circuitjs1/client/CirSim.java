@@ -1421,12 +1421,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), ""));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "GroundElm"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
+        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
         mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
 
 
@@ -1623,6 +1623,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // UPDATE CIRCUIT
 
     public void updateCircuit() {
+
+
+        if(elmList.isEmpty()) {
+            RegulatorElm elm =new RegulatorElm(120,290);
+            elm.drag(400,290);
+            elmList.add(elm);
+            centreCircuit();
+        }
+
         PerfMonitor perfmon = new PerfMonitor();
         perfmon.startContext("updateCircuit()");
 
@@ -5802,6 +5811,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new LabeledNodeElm(x1, y1);
             case "BoxElm":
                 return new BoxElm(x1, y1);
+            case "DiodeElm":
+                return new DiodeElm(x1, y1);
+            case "SwitchElm":
+                return new SwitchElm(x1, y1);
+            case "CapacitorElm":
+                return new CapacitorElm(x1, y1);
+            case "RegulatorElm":
+                return new RegulatorElm(x1, y1);
             case "GroundElm":
                 return new GroundElm(x1, y1);
             case "CurrentElm":
