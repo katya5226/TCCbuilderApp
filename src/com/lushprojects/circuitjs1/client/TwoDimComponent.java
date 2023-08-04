@@ -72,8 +72,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         color = Color.blue;
         color2 = Color.red;
         name = "TwoDimComponent";
-        n = 24;
-        m = 48;
+        // n = 24;
+        // m = 48;
+        n = m = 4;
         cvs = new Vector<TwoDimCV>();
         resistances = new double[]{0.0, 0.0, 0.0, 0.0};
         neighbours = new TwoDimComponent[4];

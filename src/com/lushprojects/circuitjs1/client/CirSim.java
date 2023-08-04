@@ -319,7 +319,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Timer testTimer;
 
     // Two-dimensional choice
-    int simDimensionality = 1;
+    int simDimensionality = 2;
     Vector<TwoDimComponent> simTwoDimComponents;
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
@@ -742,6 +742,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         runStopButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 setSimRunning(!simIsRunning());
+                TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
             }
         });
 
@@ -1103,6 +1104,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void makeTwoDimTCE() {
+        GWT.log("MAKING TCE");
+        GWT.log(String.valueOf(simTwoDimComponents.size()));
         twoDimTCE = new TwoDimTCE("2D TCE", 0, simTwoDimComponents);
         twoDimTCE.buildTCE();
         TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, 300.0, true);
@@ -1110,6 +1113,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void setTwoDimSim() {
         twoDimES = new TwoDimEqSys(twoDimTCE);
+        //GWT.log(String.valueOf(twoDimES.numCvs));
+        TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
     }
 
     void setHeatSim() {
@@ -1191,17 +1196,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     // **************************************************************************************
 
-    public void twoDimHeatTransferStep() {  // need a new library for matrices here
+    public void twoDimHeatTransferStep() {
         twoDimES.conductionMatrix();
         LUDecomposition solver = new LUDecomposition(twoDimES.matrix);
         RealVector solutionVector = solver.getSolver().solve(twoDimES.rhs);
-        for (int i = 0; i < twoDimTCE.numCvs; i++) {
+        for (int i = 0; i < twoDimTCE.cvs.size(); i++) {
             twoDimTCE.cvs.get(i).temperature = solutionVector.getEntry(i);
         }
+        TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
         // update modes
         // calculate again
         // set new temperatures
         // replace old with new
+        TwoDimTCCmanager.replaceOldNew(twoDimTCE.cvs);
     }
 
     void setColors(String positiveColor, String negativeColor, String neutralColor, String selectColor,
@@ -3231,26 +3238,33 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         for (iter = 1; ; iter++) {
             // *************************** Katni *******************************
-            if (!this.cyclic) {
-                heat_transfer_step();
-                time += dt;
-            } else {
-                //CirSim.debugger();
-                if (this.cycleParts.size() == 0) {
-                    Window.alert("Sim set to cyclic but cycle parts undefined");
-                }
-                this.cyclePart.execute();
-
-                if (this.cyclePart.duration > 0.0) {
+            if (simDimensionality == 1) {
+                if (!this.cyclic) {
+                    heat_transfer_step();
                     time += dt;
-                }
-                this.cyclePartTime += dt;
-                if (this.cyclePartTime >= this.cyclePart.duration) {
-                    this.cyclePartTime = 0.0;
-                    this.cyclePartIndex = (this.cyclePartIndex + 1) % this.numCycleParts;
-                    this.cyclePart = this.cycleParts.get(this.cyclePartIndex);
+                } else {
+                    //CirSim.debugger();
+                    if (this.cycleParts.size() == 0) {
+                        Window.alert("Sim set to cyclic but cycle parts undefined");
+                    }
+                    this.cyclePart.execute();
+
+                    if (this.cyclePart.duration > 0.0) {
+                        time += dt;
+                    }
+                    this.cyclePartTime += dt;
+                    if (this.cyclePartTime >= this.cyclePart.duration) {
+                        this.cyclePartTime = 0.0;
+                        this.cyclePartIndex = (this.cyclePartIndex + 1) % this.numCycleParts;
+                        this.cyclePart = this.cycleParts.get(this.cyclePartIndex);
+                    }
                 }
             }
+            if (simDimensionality == 2) {
+                twoDimHeatTransferStep();
+                time += dt;
+            }
+
             // *****************************************************************
             t += timeStep;
             timeStepAccum += timeStep;
@@ -3362,8 +3376,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (i = 0; i != elmList.size(); i++)
             getElm(i).reset();
         repaint();
-        makeTCC();
-        setHeatSim();
+        if (simDimensionality == 1) {
+            makeTCC();
+            setHeatSim();
+        }
+        if (simDimensionality == 2) {
+            makeTwoDimTCE();
+            setTwoDimSim();
+        }
     }
 
     static void electronSaveAsCallback(String s) {
@@ -3894,27 +3914,25 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         CyclePart cyclePartHeatTransfer = new CyclePart(cycleParts.size(), this);
         cyclePartHeatTransfer.partType = CyclePart.PartType.HEAT_TRANSFER;
         cyclePartHeatTransfer.duration = 1.0;
+        cycleParts.add(cyclePartHeatTransfer);
 
         CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
         cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
         cyclePartMagneticFieldChange.components.add(simComponents.get(2));
         simComponents.get(2).fieldIndex = 2;
+        cycleParts.add(cyclePartMagneticFieldChange);
 
-        CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
-        cyclePartPropertiesChange.partType = CyclePart.PartType.PROPERTIES_CHANGE;
-        cyclePartPropertiesChange.components.add(simComponents.get(1));
-        cyclePartPropertiesChange.components.add(simComponents.get(3));
+        // CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
+        // cyclePartPropertiesChange.partType = CyclePart.PartType.PROPERTIES_CHANGE;
+        // cyclePartPropertiesChange.components.add(simComponents.get(1));
+        // cyclePartPropertiesChange.components.add(simComponents.get(3));
 
 //        tukaj neki smrdi :{ ( ne dela )
 /*        cyclePartPropertiesChange.newProperties.add(new Vector<Double>());
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
-        */
-
-
-        cycleParts.add(cyclePartHeatTransfer);
-        cycleParts.add(cyclePartMagneticFieldChange);
+        */      
 //        cycleParts.add(cyclePartPropertiesChange);
 
         for (CyclePart cp : cycleParts) {

@@ -355,9 +355,14 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-        if (!sim.simComponents.isEmpty()) {
-            sim.resetAction();
-        }
+        if (sim.simDimensionality == 1) 
+            if (!sim.simComponents.isEmpty()) {
+                sim.resetAction();
+            }
+        if (sim.simDimensionality == 2)
+            if (!sim.simTwoDimComponents.isEmpty()) {
+                sim.resetAction();
+            }
         closeDialog();
     }
 

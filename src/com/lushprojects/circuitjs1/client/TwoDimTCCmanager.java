@@ -1,6 +1,6 @@
 package com.lushprojects.circuitjs1.client;
 
-// import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT;
 // import com.google.gwt.user.client.Window;
 
 import java.util.*;
@@ -9,8 +9,8 @@ public class TwoDimTCCmanager {
 
 
 
-    static void setConstParam(Vector<TwoDimCV> cvs, HeatSimProps.Property param, double value) {
-        switch (param) {
+    static void setConstProp(Vector<TwoDimCV> cvs, HeatSimProps.Property prop, double value) {
+        switch (prop) {
             case DENSITY:
                 for (TwoDimCV cv : cvs) {
                     cv.constRho = value;
@@ -135,6 +135,15 @@ public class TwoDimTCCmanager {
             temps[i] = Math.round(cvs.get(i).temperature * 100) / 100.0;
         }
         return temps;
+    }
+
+    static void printTemps(Vector<TwoDimCV> cvs) {
+        double[] temps = new double[cvs.size()];
+        for (int i = 0; i < temps.length; i++) {
+            temps[i] = Math.round(cvs.get(i).temperature * 100) / 100.0;
+            GWT.log("Temp" + String.valueOf(i) + ": " + String.valueOf(temps[i]));
+            //GWT.log("(dx, dy)" + String.valueOf(i) + ": " + String.valueOf(cvs.get(i).dx) + ", " + String.valueOf(cvs.get(i).dy));
+        }
     }
 
     // TODO

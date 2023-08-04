@@ -24,14 +24,14 @@ public class TwoDimCV {
     int mode;
 
     public TwoDimCV(int index, TwoDimComponent parent) {
-        parent = parent;
-        material = parent.material;
-        index = index;
+        this.parent = parent;
+        this.material = parent.material;
+        this.index = index;
         xIndex = index % parent.n;
         yIndex = index / parent.n;
         dx = dy = 0.001;
         temperature = temperatureOld = 0.0;
-        neighbours = new TwoDimCV[4]; // 0 - west, 1 - east, 2 - south, 3 - north
+        neighbours = new TwoDimCV[]{this, this, this, this}; // 0 - west, 1 - east, 2 - south, 3 - north
         resistances = new double[]{0.0, 0.0, 0.0, 0.0};
         kh = new double[]{0.0, 0.0, 0.0, 0.0};
         kd = new double[]{0.0, 0.0, 0.0, 0.0};
@@ -99,19 +99,30 @@ public class TwoDimCV {
     }
 
     void calcKh() {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             TwoDimCV neigh = neighbours[i];
             double r = resistances[i];
             kh[i] = neigh.k() * k() * (neigh.dx + dx) /
                     (neigh.k() * dx + k() * neigh.dx + neigh.k() * k() * r * (dx + neigh.dx) / 2);
         }
+        for (int i = 2; i < 4; i++) {
+            TwoDimCV neigh = neighbours[i];
+            double r = resistances[i];
+            kh[i] = neigh.k() * k() * (neigh.dy + dy) /
+                    (neigh.k() * dy + k() * neigh.dy + neigh.k() * k() * r * (dy + neigh.dy) / 2);
+        }
     }
 
     void calcKd() {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             TwoDimCV neigh = neighbours[i];
             kd[i] = 2 * kh[i] * dx / (neigh.dx + dx);
         }
+        for (int i = 2; i < 4; i++) {
+            TwoDimCV neigh = neighbours[i];
+            kd[i] = 2 * kh[i] * dy / (neigh.dy + dy);
+        }
+        
     }
 
     void calculateConductivities() {
