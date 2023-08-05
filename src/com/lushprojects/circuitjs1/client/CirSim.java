@@ -323,6 +323,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Vector<TwoDimComponent> simTwoDimComponents;
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
+    TwoDimBC twoDimBC;
 
     public enum LengthUnit {
         MICROMETER(1e6, "µm"),
@@ -970,6 +971,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // 2D
         simTwoDimComponents = new Vector<TwoDimComponent>();
+        HeatSimProps.BC bc = HeatSimProps.BC.CONVECTIVE;  // No way I am passing this to a constructor 4x. 
+        twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
 
         this.ud = 0;
         // this.user_defined_functions = new String[this.num_cvs];
@@ -1127,8 +1130,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void setTwoDimSim() {
-        twoDimES = new TwoDimEqSys(twoDimTCE);
-        //GWT.log(String.valueOf(twoDimES.numCvs));
+        twoDimES = new TwoDimEqSys(twoDimTCE, twoDimBC);
         TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
     }
 
@@ -1212,13 +1214,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // **************************************************************************************
 
     public void twoDimHeatTransferStep() {
+        // GWT.log(String.valueOf(minTemp));
+        // GWT.log(String.valueOf(maxTemp));
         twoDimES.conductionMatrix();
         LUDecomposition solver = new LUDecomposition(twoDimES.matrix);
         RealVector solutionVector = solver.getSolver().solve(twoDimES.rhs);
         for (int i = 0; i < twoDimTCE.cvs.size(); i++) {
             twoDimTCE.cvs.get(i).temperature = solutionVector.getEntry(i);
         }
-        TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
+        // TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
         // update modes
         // calculate again
         // set new temperatures

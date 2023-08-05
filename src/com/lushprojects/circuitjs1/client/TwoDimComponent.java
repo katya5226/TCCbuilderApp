@@ -268,8 +268,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             double temperatureRatio = (cv.temperature - sim.minTemp) / temperatureRange;
 
             // Just for testing of color mixing, comment out when not needed
-            temperatureRatio = ((double) i % n) / n;
-            i++;
+            // temperatureRatio = ((double) i % n) / n;
+            // i++;
             //
 
             Color color1 = Color.blue;

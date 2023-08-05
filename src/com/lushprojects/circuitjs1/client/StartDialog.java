@@ -178,6 +178,9 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.temp_left = leftTempValue;
+                    if (sim.simDimensionality == 2) {
+                        sim.twoDimBC.T[0] = leftTempValue;
+                    }
                 }
                 if (rightTemperature.isVisible()) {
                     double rightTempValue = rightTemperature.getValue();
@@ -186,6 +189,9 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.temp_right = rightTempValue;
+                    if (sim.simDimensionality == 2) {
+                        sim.twoDimBC.T[1] = rightTempValue;
+                    }
                 }
                 if (leftConvectionCoefficient.isVisible()) {
                     double leftConvCoeffValue = leftConvectionCoefficient.getValue();
@@ -194,6 +200,9 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.h_left = leftConvCoeffValue;
+                    if (sim.simDimensionality == 2) {
+                        sim.twoDimBC.h[0] = leftConvCoeffValue;
+                    }
                 }
                 if (rightConvectionCoefficient.isVisible()) {
                     double rightConvCoeffValue = rightConvectionCoefficient.getValue();
@@ -202,6 +211,9 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.h_right = rightConvCoeffValue;
+                    if (sim.simDimensionality == 2) {
+                        sim.twoDimBC.h[1] = rightConvCoeffValue;
+                    }
                 }
                 if (inletHeatFlux.isVisible()) {
                     double qInValue = inletHeatFlux.getValue();
@@ -223,6 +235,11 @@ public class StartDialog extends Dialog {
                 sim.startTemp = startTempValue;
                 sim.left_boundary = (int) (10 * (leftBoundary.getSelectedIndex() + 1) + 1);//what is this (o_O)
                 sim.right_boundary = (int) (10 * (rightBoundary.getSelectedIndex() + 1) + 2);//what is this (o_O)
+
+                if (sim.simDimensionality == 2) {
+                    sim.minTemp = Math.min(sim.twoDimBC.T[0], sim.twoDimBC.T[1]);
+                    sim.maxTemp = Math.max(sim.twoDimBC.T[0], sim.twoDimBC.T[1]);
+                }
                 // GWT.log("Left Boundary: " + String.valueOf(sim.left_boundary));
                 // GWT.log("Left Temperature: " + String.valueOf(sim.temp_left));
                 // GWT.log("Left Convection coeff: " + String.valueOf(sim.h_left));
@@ -270,6 +287,12 @@ public class StartDialog extends Dialog {
                         leftConvectionCoefficientLabel.setVisible(true);
                         leftConvectionCoefficient.setVisible(true);
                         leftConvectionCoefficient.setValue(sim.h_left);
+
+                        if (sim.simDimensionality == 2) {
+                            leftTemperature.setValue(sim.twoDimBC.T[0]);
+                            leftConvectionCoefficient.setValue(sim.twoDimBC.h[0]);
+                        }
+
                         break;
                     default:
 
@@ -306,6 +329,12 @@ public class StartDialog extends Dialog {
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
                         rightConvectionCoefficient.setValue(sim.h_right);
+
+                        if (sim.simDimensionality == 2) {
+                            rightTemperature.setValue(sim.twoDimBC.T[1]);
+                            rightConvectionCoefficient.setValue(sim.twoDimBC.h[1]);
+                        }
+
                         break;
                     default:
                         break;

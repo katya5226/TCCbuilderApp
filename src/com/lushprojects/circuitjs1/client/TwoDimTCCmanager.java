@@ -146,6 +146,39 @@ public class TwoDimTCCmanager {
         }
     }
 
+    static void calculateFluxes(Vector<TwoDimCV> cvs, int n, int m, TwoDimBC bc) {
+        double Tw = 0.0; double Te = 0.0;
+        double fe = 0.0; double fw = 0.0;
+        for (int j = 0; j < m; j++) {
+            int k1 = j * n;
+            int k1e = j * n + 1;
+            int k2 = j * n + n - 1;
+            int k2w = j * n + n - 2;
+            TwoDimCV cv1 = cvs.get(k1);  // first CV on the west side
+            TwoDimCV cv1e = cvs.get(k1e);  // second CV on the west side
+            TwoDimCV cv2 = cvs.get(k2);  // first CV on the east side
+            TwoDimCV cv2w = cvs.get(k2w);  // second CV from the east side
+            
+            Tw = cv1.temperature + 2 * ((cv1.temperature - cv1e.temperature) / (cv1.dx + cv1e.dx)) * (0.5 * cv1.dx);
+            Te = cv2.temperature - 2 * ((cv2w.temperature - cv2.temperature) / (cv2.dx + cv2w.dx)) * (0.5 * cv2.dx);
+            
+            fw += (bc.T[0] - Tw) * bc.h[0] / m;
+            fe += (Te - bc.T[1]) * bc.h[1] / m;
+        }
+
+        // print fw and fe that are fluxes in and out of object
+
+        for (int i = 0; i < n - 1; i++) {
+            double flow = 0.0;
+            for (int j = 0; j < m; j++) {
+                TwoDimCV cv = cvs.get(j * n + i);
+                TwoDimCV cve = cvs.get(j * n + i + 1);
+                flow += (cv.kd[1] * (cv.temperature - cve.temperature) / cv.dx) / m;
+            }
+            // print flow for each i
+        }
+    }
+
     // TODO
 //    public static <T> void printAttributes(T obj) {
 //        name, index, material, numcvs

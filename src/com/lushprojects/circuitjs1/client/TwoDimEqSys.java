@@ -14,6 +14,7 @@ import java.util.*;
 public class TwoDimEqSys {
     TwoDimTCE aTCE;
     TwoDimCV currCV;
+    TwoDimBC boundCond;
     double[] kd;
     double[] ad;
     double[] hd;
@@ -21,14 +22,13 @@ public class TwoDimEqSys {
     double dx, dy, dt;
     int n, m;
     int numCvs;
-    double[] boundT;
     double tempOld;
     RealMatrix matrix;
     RealVector rhs;
-    double h;
 
-    public TwoDimEqSys(TwoDimTCE obj) {
+    public TwoDimEqSys(TwoDimTCE obj, TwoDimBC bc) {
         aTCE = obj;
+        this.boundCond = bc;
         currCV = obj.cvs.get(0);
         n = obj.n; m = obj.m;
         numCvs = n * m;
@@ -44,8 +44,6 @@ public class TwoDimEqSys {
         kd = new double[]{0.0, 0.0, 0.0, 0.0};
         ad = new double[]{0.0, 0.0, 0.0, 0.0};
         hd = new double[]{0.0, 0.0, 0.0, 0.0};
-        boundT = new double[]{400.0, 200.0, 300.0, 300.0};
-        h = 1000;
     }
 
     void resetMatrix() {
@@ -62,8 +60,6 @@ public class TwoDimEqSys {
     void setParameters() {
         dx = currCV.dx;
         dy = currCV.dy;
-        // dx = 0.001;
-        // dy = 0.001;
         tempOld = currCV.temperatureOld;
         rcp = currCV.rho() * currCV.cp() * Math.pow(dx, 2) * Math.pow(dy, 2);
         gen = currCV.qGen * dt * Math.pow(dx, 2) * Math.pow(dy, 2);
@@ -71,8 +67,8 @@ public class TwoDimEqSys {
         for (int i = 0; i < 4; i++) {
             kd[i] = currCV.kd[i];
         }
-        hd[0] = Math.pow(dy, 2) * dt * h * dx;
-        hd[1] = Math.pow(dy, 2) * dt * h * dx;
+        hd[0] = Math.pow(dy, 2) * dt * boundCond.h[0] * dx;
+        hd[1] = Math.pow(dy, 2) * dt * boundCond.h[0] * dx;
         hd[2] = 0.0; // Math.pow(dx, 2) * dt * h * dy;
         hd[3] = 0.0; // Math.pow(dx, 2) * dt * h * dy;
         ad[0] = Math.pow(dy, 2) * dt * kd[0];
@@ -86,6 +82,7 @@ public class TwoDimEqSys {
         // south-west corner
         currCV = aTCE.cvs.get(0);
         setParameters();
+        // GWT.log("Test3");
         // matrix[0][1] = - ad[1] - 0.5 * hd[0];
         // matrix[0][0] = ad[1] + ad[3] + rcp + 1.5 * hd[0];
         // matrix[0][n] = - ad[3];
@@ -93,7 +90,7 @@ public class TwoDimEqSys {
         matrix.setEntry(0, 1, - ad[1] - 0.5 * hd[0]);
         matrix.setEntry(0, 0, ad[1] + ad[3] + rcp + 1.5 * hd[0]);
         matrix.setEntry(0, n, - ad[3]);
-        rhs.setEntry(0, rcp * tempOld + hd[0] * boundT[0] + gen);
+        rhs.setEntry(0, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
         // first (south, bottom) row
         for(int j = 1; j < n-1; j++) {
             currCV = aTCE.cvs.get(j);
@@ -119,7 +116,7 @@ public class TwoDimEqSys {
         matrix.setEntry(n - 1, n - 2, - ad[0] - 0.5 * hd[1]);
         matrix.setEntry(n - 1, n - 1, ad[0] + ad[3] + rcp + 1.5 * hd[1]);
         matrix.setEntry(n - 1, 2 * n - 1, - ad[3]);
-        rhs.setEntry(n - 1, rcp * tempOld + hd[1] * boundT[1] + gen);
+        rhs.setEntry(n - 1, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
         // first (west) column
         for(int j = n; j < (m - 1) * n; j += n) {
             currCV = aTCE.cvs.get(j);
@@ -133,7 +130,7 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j - n, -ad[2]);
             matrix.setEntry(j, j + n, -ad[3]);
             matrix.setEntry(j, j + 1, -ad[1] - 0.5 * hd[0]);
-            rhs.setEntry(j, rcp * tempOld + hd[0] * boundT[0] + gen);
+            rhs.setEntry(j, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
         }
         // north-west corner
         int ind = (m - 1) * n;
@@ -148,7 +145,7 @@ public class TwoDimEqSys {
         matrix.setEntry(ind, ind_s, - ad[2]);
         matrix.setEntry(ind, ind, ad[1] + ad[2] + rcp + 1.5 * hd[0]);
         matrix.setEntry(ind, ind_e, - ad[1] - 0.5 * hd[0]);
-        rhs.setEntry(ind, rcp * tempOld + hd[0] * boundT[0] + gen);
+        rhs.setEntry(ind, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
         // last (top, north) row
         for(int j = (m - 1) * n + 1; j <  m * n - 1; j ++) {
             currCV = aTCE.cvs.get(j);
@@ -177,7 +174,7 @@ public class TwoDimEqSys {
         matrix.setEntry(ind, ind_w, - ad[0] - 0.5 * hd[1]);
         matrix.setEntry(ind, ind, ad[0] + ad[2] + rcp + 1.5 * hd[1]);
         matrix.setEntry(ind, ind_s, - ad[2]);
-        rhs.setEntry(ind, rcp * tempOld + hd[1] * boundT[1] + gen);
+        rhs.setEntry(ind, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
         // last (east) column
         for(int j = 2 * n - 1; j < (m - 1) * n; j += n) {
             currCV = aTCE.cvs.get(j);
@@ -191,7 +188,7 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j - n, -ad[2]);
             matrix.setEntry(j, j + n, -ad[3]);
             matrix.setEntry(j, j - 1, -ad[0] - 0.5 * hd[1]);
-            rhs.setEntry(j, rcp * tempOld + hd[1] * boundT[1] + gen);
+            rhs.setEntry(j, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
         }
         // core
         for(int k = 1; k < m - 1; k++) {

@@ -19,12 +19,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
     Vector <TwoDimComponent> components;
     int numComponents;
     int numCvs, n, m; // total # of CVs and # of CVs in x and y directions
-    double [] resistances;
     TwoDimTCE [] neighbours;
-    int [] boundaries;
-    double Tb[];
-    double hb[];
-    double q[];
     Vector<TwoDimCV> cvs;
     double length, height;
 
@@ -34,11 +29,6 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         this.index = index;
         this.components = components;
         cvs = new Vector<TwoDimCV>();
-        resistances = new double[]{0.0, 0.0, 0.0, 0.0};
-        Tb = new double[]{0.0, 0.0, 0.0, 0.0};
-        hb = new double[]{0.0, 0.0, 0.0, 0.0};
-        q = new double[]{0.0, 0.0, 0.0, 0.0};
-        boundaries = new int[]{41, 41, 41, 41};
         neighbours = new TwoDimTCE[]{null, null, null, null};
     }
 
@@ -111,17 +101,17 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         if (neighbours[1] != null)
             components.get(components.size() - 1).neighbours[1] = neighbours[1].components.get(0);
         for (int i = 0; i < components.size() - 1; i++) {
-            components.get(i).boundaries[1] = 52;
+            // components.get(i).boundaries[1] = 52;
             components.get(i).neighbours[1] = components.get(i + 1);
             components.get(i + 1).neighbours[0] = components.get(i);
         }
         for (int i = 1; i < components.size(); i++) {
-            components.get(i).boundaries[0] = 51;
+            // components.get(i).boundaries[0] = 51;
             components.get(i - 1).cvs.get(components.size() - 1).neighbours[1] = components.get(i).cvs.get(0);
             components.get(i).cvs.get(0).neighbours[0] = components.get(i - 1).cvs.get(components.size() - 1);
         }
-        components.get(0).boundaries[0] = boundaries[0];
-        components.get(components.size() - 1).boundaries[1] = boundaries[1];
+        // components.get(0).boundaries[0] = boundaries[0];
+        // components.get(components.size() - 1).boundaries[1] = boundaries[1];
         int cvTCEind = 0;
         cvs.clear();
         for (int j = 0; j < m; j++) {

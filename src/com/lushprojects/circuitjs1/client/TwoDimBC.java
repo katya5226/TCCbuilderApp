@@ -6,15 +6,15 @@ package com.lushprojects.circuitjs1.client;
 // import java.util.*;
 
 public class TwoDimBC {
-    BC[] bcType;
+    HeatSimProps.BC[] bcType;
     double[] T;
     double[] q;  // this will be changed with respect to 1D as it will not be an absolute value
     double[] h;
 
-    public TwoDimBC(BC[] bt) {
-        bcType = new BC[]{bt[0], bt[1], bt[2], bt[3]};
-        T = new double[]{300.0, 300.0, 300.0, 300.0};
+    public TwoDimBC(HeatSimProps.BC[] bt) {
+        this.bcType = bt;
+        T = new double[]{400.0, 200.0, 300.0, 300.0};
         q = new double[]{0.0, 0.0, 0.0, 0.0};
-        h = new double[]{0.0, 0.0, 0.0, 0.0};
+        h = new double[]{10000.0, 10000.0, 0.0, 0.0};
     }
 }
