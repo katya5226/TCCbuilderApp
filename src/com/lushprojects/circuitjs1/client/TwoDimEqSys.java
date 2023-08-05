@@ -212,18 +212,18 @@ public class TwoDimEqSys {
                 rhs.setEntry(j, rcp * tempOld + gen);
             }
         }
-        GWT.log("MATRIX");
-        for (int i = 0; i < numCvs; i ++) {
-            for (int j = 0; j < numCvs; j ++) {
-                double entry = Math.round(matrix.getEntry(i, j) * 10000000); // / 10000.0;
-                GWT.log(String.valueOf(i) + ", " + String.valueOf(j) + ": " + String.valueOf(entry));
-            }
-            GWT.log("");
-        }
-        GWT.log("RHS");
-        for (int i = 0; i < numCvs; i ++) {
-            GWT.log(String.valueOf(rhs.getEntry(i)) + ", ");
-        }
+        // GWT.log("MATRIX");
+        // for (int i = 0; i < numCvs; i ++) {
+        //     for (int j = 0; j < numCvs; j ++) {
+        //         double entry = Math.round(matrix.getEntry(i, j) * 10000000); // / 10000.0;
+        //         GWT.log(String.valueOf(i) + ", " + String.valueOf(j) + ": " + String.valueOf(entry));
+        //     }
+        //     GWT.log("");
+        // }
+        // GWT.log("RHS");
+        // for (int i = 0; i < numCvs; i ++) {
+        //     GWT.log(String.valueOf(rhs.getEntry(i)) + ", ");
+        // }
     }
 
 }

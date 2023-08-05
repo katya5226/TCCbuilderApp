@@ -319,7 +319,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Timer testTimer;
 
     // Two-dimensional choice
-    int simDimensionality = 2;
+    int simDimensionality = 1;
     Vector<TwoDimComponent> simTwoDimComponents;
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
@@ -779,6 +779,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dimensionality.addItem("2D");
         dimensionality.addStyleName("topSpace");
         verticalPanel.add(dimensionality);
+
+        dimensionality.setSelectedIndex(0);
+        dimensionality.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                switch (dimensionality.getSelectedItemText()) {
+                    case "1D":
+                        simDimensionality = 1;
+                        break;
+                    case "2D":
+                        simDimensionality = 2;
+                        break;
+                }
+            }
+        });
 
         scale.addChangeHandler(new ChangeHandler() {
             @Override
