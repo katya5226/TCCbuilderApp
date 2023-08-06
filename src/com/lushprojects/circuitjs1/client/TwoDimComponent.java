@@ -46,9 +46,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         isDisabled = false;
         field = false;
         fieldIndex = 1;
-
         for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
-
             if (twoDimComponent.x2 == xx && twoDimComponent.y2 == yy) {
                 this.m = twoDimComponent.m;
                 this.n = twoDimComponent.n;
@@ -56,6 +54,10 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
         }
         buildComponent();
+        double tmpDx = this.length / this.n;
+        if (!(tmpDx < 1e-6) || tmpDx == 0) {
+            sim.simTwoDimComponents.add(this);
+        }
     }
 
     TwoDimComponent(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -75,7 +77,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         field = false;
         fieldIndex = 1;
         buildComponent();
-
+        sim.simTwoDimComponents.add(this);
     }
 
     void initializeComponent() {
@@ -93,7 +95,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         constRho = -1;
         constCp = -1;
         constK = -1;
-        sim.simTwoDimComponents.add(this);
     }
 
     void calculateLengthHeight() {
@@ -303,7 +304,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
 
             String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
-            ctx.setFillStyle(cvColor.equals("#000") ? Color.blue.getHexValue() : cvColor);
+            ctx.setFillStyle(/*cvColor.equals("#000") ? Color.blue.getHexValue() : */cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 public class ModelMethods {
@@ -69,13 +70,10 @@ public class ModelMethods {
     }
 
     public static String printTemps(Double time, Double[] temps) {
-        String s = String.valueOf(Math.round(time * 1.0e6)/1.0e6) + "\t";
-        Double t;
+        String s = NumberFormat.getFormat("0.000").format(time) + "\t";
         for (double temp : temps) {
-            t = Math.round(temp * 100)/100.0;
-            s += String.valueOf(t) + "\t";
+            s += NumberFormat.getFormat("0.00").format(temp) + "\t";
         }
-        //s += "\n";
         return s;
     }
 

@@ -743,7 +743,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         runStopButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 setSimRunning(!simIsRunning());
-                TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
+                //TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
             }
         });
 
@@ -793,6 +793,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         simDimensionality = 2;
                         break;
                 }
+
+
+                drawMenuBar.clearItems();
+                composeMainMenu(drawMenuBar, 1);
+                mainMenuBar.clearItems();
+                composeMainMenu(mainMenuBar, 1);
+                loadShortcuts();
+                simTwoDimComponents = new Vector<TwoDimComponent>();
+                simComponents = new Vector<Component>();
             }
         });
 
@@ -971,7 +980,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // 2D
         simTwoDimComponents = new Vector<TwoDimComponent>();
-        HeatSimProps.BC bc = HeatSimProps.BC.CONVECTIVE;  // No way I am passing this to a constructor 4x. 
+        HeatSimProps.BC bc = HeatSimProps.BC.CONVECTIVE;  // No way I am passing this to a constructor 4x.
         twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
 
         this.ud = 0;
@@ -1131,7 +1140,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void setTwoDimSim() {
         twoDimES = new TwoDimEqSys(twoDimTCE, twoDimBC);
-        TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
+        //TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
     }
 
     void setHeatSim() {
@@ -1228,6 +1237,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // set new temperatures
         // replace old with new
         TwoDimTCCmanager.replaceOldNew(twoDimTCE.cvs);
+        this.append_new_temps();
+
     }
 
     void setColors(String positiveColor, String negativeColor, String neutralColor, String selectColor,
@@ -1444,16 +1455,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // this is called twice, once for the Draw menu, once for the right mouse popup
     // menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), ""));
-        mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
+        //TODO: update this when mergind with elements branchs
+        if (simDimensionality == 2) {
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
+        } else {
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
+        }
 
 
         MenuBar otherMenuBar = new MenuBar(true);
@@ -3398,8 +3413,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (simDimensionality == 1) {
             makeTCC();
             setHeatSim();
-        }
-        if (simDimensionality == 2) {
+        } else if (simDimensionality == 2) {
             makeTwoDimTCE();
             setTwoDimSim();
         }
@@ -3761,49 +3775,114 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         return dump;
     }
 
-    // ********************************************** Katni
-    // ********************************************
     String dumpThermalCircuit() {
-        String dump =
-                "Data directory: " + "/materials\n" +
-                        "Time step dt: " + theSim.dt + "\n" +
-                        "Inner loop tolerance: " + "\n" +
-                        "Boundary condition on the left: " + "\n" +
-                        "Boundary condition on the right: " + "\n" +
-                        "Temperature on the left: " + heatCircuit.temp_left + " K\n" +
-                        "Convection coefficient on the left: " + " W/(m^2K)\n" +
-                        "Temperature on the right: " + heatCircuit.temp_right + " K\n" +
-                        "Convection coefficient on the right: " + " W/(m^2K)\n";
+        String dump = "";
+        if (simDimensionality == 1) {
+            dump =
+                    "Data directory: " + "/materials\n" +
+                            "Time step dt: " + dt + "\n" +
+                            "Inner loop tolerance: " + "\n" +
+                            "Dimensionality: 1D\n" +
+                            "Boundary condition on the left: " + heatCircuit.left_boundary + "\n" +
+                            "Boundary condition on the right: " + heatCircuit.right_boundary + "\n" +
+                            "Temperature on the left: " + heatCircuit.temp_left + " K\n" +
+                            "Convection coefficient on the left: " + " W/(m²K)\n" +
+                            "Temperature on the right: " + heatCircuit.temp_right + " K\n" +
+                            "Convection coefficient on the right: " + " W/(m²K)\n";
 
-        dump += "\nThermal control elements: \n";
-        for (TCE tce : simTCEs) {
-            dump += "\nTCE: " + tce.name + "\n";
+            dump += "\nThermal control elements: \n";
+            for (TCE tce : simTCEs) {
+                dump += "\nTCE: " + tce.name + "\n";
+                dump += "Components: \n";
+                for (Component component : tce.components) {
+                    dump += "Component name: " + component.name + "\n" +
+                            "Component index: " + component.index + "\n" +
+                            "Material: " + component.material.materialName + "\n" +
+                            "Number of control volumes:  " + component.num_cvs + "\n" +
+                            "Control volume length: " + component.cvs.get(0).dx + " m\n" +
+                            "Constant density:" + component.constRho + " kg/m³\n" +
+                            "Constant specific heat:" + component.constCp + " J/(kgK)\n" +
+                            "Constant thermal conductivity: " + component.constK + " W/(mK)\n" +
+                            "Left contact resistance: " + component.left_resistance + " mK/W\n" +
+                            "Right contact resistance: " + component.right_resistance + " mK/W\n" +
+                            "Generated heat: " + "TBD" + " W/m²\n\n";
+                }
+            }
+            dump += "\nTemperatures:\n";
+            dump += "Time\t";
+            for (int i = 0; i < num_cvs; i++) {
+                dump += "CV# " + i + "\t";
+            }
+            dump += "\n";
+            for (int i = 0; i < temperatures.size(); i++) {
+                Double[] temp = temperatures.get(i);
+                Double time = times.get(i);
+                dump += NumberFormat.getFormat("0.000").format(time) + "\t";
+                for (double CVTemp : temp) {
+                    dump += NumberFormat.getFormat("0.00").format(CVTemp) + "\t";
+                }
+                dump += "\n";
+            }
+            dump += "\nFluxes:\n";
+            heatCircuit.calculateHeatFluxes();
+            for (int i = 0; i < heatCircuit.num_cvs; i++) {
+                dump += String.valueOf(heatCircuit.fluxes[i]) + "\t";
+            }
+        } else if (simDimensionality == 2) {
+            dump =
+                    "Data directory: " + "/materials\n" +
+                            "Time step dt: " + theSim.dt + "\n" +
+                            "Inner loop tolerance: " + "\n" +
+                            "Dimensionality: 2D\n" +
+                            "Boundary condition on the left: " + "\n" +
+                            "Boundary condition on the right: " + "\n" +
+                            "Temperature on the left: " + " K\n" +
+                            "Convection coefficient on the left: " + " W/(m²K)\n" +
+                            "Temperature on the right: " + " K\n" +
+                            "Convection coefficient on the right: " + " W/(m²K)\n";
+
+            dump += "\nThermal control elements: \n";
+            dump += "\nTCE: " + twoDimTCE.name + "\n";
             dump += "Components: \n";
-            for (Component component : tce.components) {
+            for (TwoDimComponent component : twoDimTCE.components) {
                 dump += "Component name: " + component.name + "\n" +
                         "Component index: " + component.index + "\n" +
                         "Material: " + component.material.materialName + "\n" +
-                        "Number of control volumes:  " + component.num_cvs + "\n" +
+                        "X-discretizaton number:  " + component.n + "\n" +
+                        "Y-discretizaton number:  " + component.m + "\n" +
                         "Control volume length: " + component.cvs.get(0).dx + " m\n" +
-                        "Constant density:" + "kg/m^3\n" +
-                        "Constant specific heat:" + "J/(kgK)\n" +
-                        "Constant thermal conductivity: " + " W/(mK)\n" +
-                        "Left contact resistance: " + "mK/W\n" +
-                        "Right contact resistance: " + "mK/W\n" +
-                        "Generated heat: " + "W/m^2\n\n";
+                        "Control volume height: " + component.cvs.get(0).dy + " m\n" +
+                        "Constant density:" + component.cvs.get(0).constRho + "kg/m³\n" +
+                        "Constant specific heat:" + component.cvs.get(0).constCp + "J/(kgK)\n" +
+                        "Constant thermal conductivity: " + component.cvs.get(0).constK + " W/(mK)\n" +
+                        "Left contact resistance: " + component.resistances[0] + "mK/W\n" +
+                        "Right contact resistance: " + component.resistances[1] + "mK/W\n" +
+                        "Bottom contact resistance: " + component.resistances[2] + "mK/W\n" +
+                        "Top contact resistance: " + component.resistances[3] + "mK/W\n" +
+                        "Generated heat: " + "W/m²\n\n";
             }
+            dump += "\nTemperatures at " + NumberFormat.getFormat("0.00").format(time) + "s\n";
+            Vector<TwoDimCV> cvs = twoDimTCE.cvs;
+            for (int i = 0; i < cvs.size(); i++) {
+                TwoDimCV cv = cvs.get(i);
+                if (i % twoDimTCE.n == 0)
+                    dump += "\n";
+                dump += NumberFormat.getFormat("0.00").format(cv.temperature) + "\t";
+            }
+            dump += "\nfw";
+            for (int i = 0; i < twoDimTCE.n-1; i++) {
+                double flow = 0.0;
+                for (int j = 0; j < twoDimTCE.m; j++) {
+                    TwoDimCV cv = cvs.get(j * twoDimTCE.n + i);
+                    TwoDimCV cve = cvs.get(j * twoDimTCE.n + i + 1);
+                    flow += (cv.kd[1] * (cv.temperature - cve.temperature) / cv.dx) / twoDimTCE.m;
+                }
+                dump += "\nflow(" + i + ")=" + NumberFormat.getFormat("0.0000").format(flow);
+
+            }
+            dump += "fe\n";
         }
 
-
-        for (int i = 0; i < temperatures.size(); i++) {
-            dump += ModelMethods.printTemps(times.get(i), temperatures.get(i));
-            dump += "\n";
-        }
-        dump += "\nFluxes:\n";
-        heatCircuit.calculateHeatFluxes();
-        for (int i = 0; i < heatCircuit.num_cvs; i++) {
-            dump += String.valueOf(heatCircuit.fluxes[i]) + "\t";
-        }
         return dump;
     }
     // *************************************************************************************************
@@ -3951,7 +4030,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
         cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
-        */      
+        */
 //        cycleParts.add(cyclePartPropertiesChange);
 
         for (CyclePart cp : cycleParts) {
