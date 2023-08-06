@@ -178,9 +178,7 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.temp_left = leftTempValue;
-                    if (sim.simDimensionality == 2) {
-                        sim.twoDimBC.T[0] = leftTempValue;
-                    }
+
                 }
                 if (rightTemperature.isVisible()) {
                     double rightTempValue = rightTemperature.getValue();
@@ -189,9 +187,7 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.temp_right = rightTempValue;
-                    if (sim.simDimensionality == 2) {
-                        sim.twoDimBC.T[1] = rightTempValue;
-                    }
+
                 }
                 if (leftConvectionCoefficient.isVisible()) {
                     double leftConvCoeffValue = leftConvectionCoefficient.getValue();
@@ -200,9 +196,7 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.h_left = leftConvCoeffValue;
-                    if (sim.simDimensionality == 2) {
-                        sim.twoDimBC.h[0] = leftConvCoeffValue;
-                    }
+
                 }
                 if (rightConvectionCoefficient.isVisible()) {
                     double rightConvCoeffValue = rightConvectionCoefficient.getValue();
@@ -211,9 +205,7 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.h_right = rightConvCoeffValue;
-                    if (sim.simDimensionality == 2) {
-                        sim.twoDimBC.h[1] = rightConvCoeffValue;
-                    }
+
                 }
                 if (inletHeatFlux.isVisible()) {
                     double qInValue = inletHeatFlux.getValue();
@@ -236,10 +228,6 @@ public class StartDialog extends Dialog {
                 sim.left_boundary = (int) (10 * (leftBoundary.getSelectedIndex() + 1) + 1);//what is this (o_O)
                 sim.right_boundary = (int) (10 * (rightBoundary.getSelectedIndex() + 1) + 2);//what is this (o_O)
 
-                if (sim.simDimensionality == 2) {
-                    sim.minTemp = Math.min(sim.twoDimBC.T[0], sim.twoDimBC.T[1]);
-                    sim.maxTemp = Math.max(sim.twoDimBC.T[0], sim.twoDimBC.T[1]);
-                }
                 // GWT.log("Left Boundary: " + String.valueOf(sim.left_boundary));
                 // GWT.log("Left Temperature: " + String.valueOf(sim.temp_left));
                 // GWT.log("Left Convection coeff: " + String.valueOf(sim.h_left));
@@ -288,10 +276,6 @@ public class StartDialog extends Dialog {
                         leftConvectionCoefficient.setVisible(true);
                         leftConvectionCoefficient.setValue(sim.h_left);
 
-                        if (sim.simDimensionality == 2) {
-                            leftTemperature.setValue(sim.twoDimBC.T[0]);
-                            leftConvectionCoefficient.setValue(sim.twoDimBC.h[0]);
-                        }
 
                         break;
                     default:
@@ -329,11 +313,6 @@ public class StartDialog extends Dialog {
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
                         rightConvectionCoefficient.setValue(sim.h_right);
-
-                        if (sim.simDimensionality == 2) {
-                            rightTemperature.setValue(sim.twoDimBC.T[1]);
-                            rightConvectionCoefficient.setValue(sim.twoDimBC.h[1]);
-                        }
 
                         break;
                     default:
@@ -384,63 +363,12 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-        if (sim.simDimensionality == 1) 
-            if (!sim.simComponents.isEmpty()) {
-                sim.resetAction();
-            }
-        if (sim.simDimensionality == 2)
-            if (!sim.simTwoDimComponents.isEmpty()) {
-                sim.resetAction();
-            }
-        closeDialog();
-    }
 
-    /*private void printCycleParts() {
-        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<b>Cyclic Operation:</b><br>");
-        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cyclic</b> " + String.valueOf(sim.cyclic) + "<br>");
-        for (CyclePart cp : sim.cycleParts) {
-            sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;<b>Cycle Part:</b> " + cp.partType + "<br>");
-            switch (cp.partType) {
-                case HEAT_TRANSFER:
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components: all</b>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#.0000").format(cp.duration) + " s<br>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                    break;
-                case HEAT_INPUT:
-                    break;
-                case MECHANIC_DISPLACEMENT:
-                    break;
-                case MAGNETIC_FIELD_CHANGE:
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
-                    for (Component c : cp.components)
-                        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + c.index);
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Magnetic Field Strength:</b> ");
-                    for (Component c : cp.components)
-                        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + c.material.fields.get(c.fieldIndex) + "T for " + c.name);
-
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
-                    break;
-                case ELECTRIC_FIELD_CHANGE:
-                    break;
-                case PRESSURE_CHANGE:
-                    break;
-                case SHEAR_STRESS_CHANGE:
-                    break;
-                case PROPERTIES_CHANGE:
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Components:</b>");
-                    for (Component c : cp.components)
-                        sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + " " + c.name + c.index);
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "<br>");
-                    sim.cyclicOperationLabel.setHTML(sim.cyclicOperationLabel.getHTML() + "&nbsp;&nbsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
-                    break;
-            }
+        if (!sim.simComponents.isEmpty()) {
+            sim.resetAction();
 
 
+            closeDialog();
         }
-    }*/
+    }
 }

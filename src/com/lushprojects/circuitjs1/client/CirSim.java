@@ -724,7 +724,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         buttonPanel.add(testButton = new Button(Locale.LS("Test TCC")));
         resetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                new StartDialog(theSim).show();
+                if (simDimensionality == 1)
+                    new StartDialog(theSim).show();
+                else if (simDimensionality == 2)
+                    new StartDialog2D(theSim).show();
             }
         });
         quickResetButton.addClickHandler(new ClickHandler() {
@@ -1128,6 +1131,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             maxTemp = startTemp + maxValue;
         }
 
+
     }
 
     void makeTwoDimTCE() {
@@ -1136,6 +1140,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         twoDimTCE = new TwoDimTCE("2D TCE", 0, simTwoDimComponents);
         twoDimTCE.buildTCE();
         TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, 300.0, true);
+        minTemp = Math.min(twoDimBC.T[0], twoDimBC.T[1]);
+        maxTemp = Math.max(twoDimBC.T[0], twoDimBC.T[1]);
+        GWT.log(minTemp + " - " + maxTemp);
     }
 
     void setTwoDimSim() {
@@ -3870,7 +3877,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 dump += NumberFormat.getFormat("0.00").format(cv.temperature) + "\t";
             }
             dump += "\nfw";
-            for (int i = 0; i < twoDimTCE.n-1; i++) {
+            for (int i = 0; i < twoDimTCE.n - 1; i++) {
                 double flow = 0.0;
                 for (int j = 0; j < twoDimTCE.m; j++) {
                     TwoDimCV cv = cvs.get(j * twoDimTCE.n + i);
