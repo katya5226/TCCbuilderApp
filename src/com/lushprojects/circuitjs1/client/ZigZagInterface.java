@@ -107,7 +107,7 @@ public class ZigZagInterface extends TwoDimComponent {
         arr[7] = "#CVs (y) = " + m;
         arr[8] = "CV dx = " + sim.formatLength(cvs.get(0).dx);
         arr[9] = "CV dy = " + sim.formatLength(cvs.get(0).dy);
-        arr[10] = "Zigzag factor =  = " + zigzagFactor;
+        arr[10] = "Zigzag number = " + zigzagFactor;
     }
 
     @Override
@@ -118,9 +118,9 @@ public class ZigZagInterface extends TwoDimComponent {
             case 1:
                 return new EditInfo("Index", index);
             case 2:
-                return new EditInfo("Number of control volumes in x-direction", this.n);
+                return new EditInfo("X-discretization number", this.n);
             case 3:
-                return new EditInfo("Number of control volumes in y-direction", this.m);
+                return new EditInfo("Y-discretization number", this.m);
             case 4:
                 EditInfo ei = new EditInfo("Material 1", 0);
                 ei.choice = new Choice();
@@ -152,7 +152,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
                     ei3.choice.add(sim.colorChoices.get(ch));
                 }
-                ei3.choice.select(Color.colorToIndex(color));
+                ei3.choice.select(Color.colorToIndex(color2));
 
                 return ei3;
             case 8:
@@ -164,7 +164,7 @@ public class ZigZagInterface extends TwoDimComponent {
             case 11:
                 return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
             case 12:
-                return new EditInfo("Zigzag factor", zigzagFactor);
+                return new EditInfo("<div>Zigzag number&nbsp;<em>(must be a factor of y-discretization number)</em> </div>", zigzagFactor);
             default:
                 return null;
         }

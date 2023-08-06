@@ -20,6 +20,7 @@
 package com.lushprojects.circuitjs1.client;
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -100,7 +101,8 @@ class EditDialog extends Dialog {
         componentButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 closeDialog();
-                new ComponentConstantsDialog((Component) elm, cframe).show();
+                new ComponentConstantsDialog((CircuitElm) elm, cframe).show();
+
             }
         });
 
@@ -178,20 +180,25 @@ class EditDialog extends Dialog {
         }
 
 
-        if (elm instanceof Component) {
+        if (elm instanceof Component || elm instanceof TwoDimComponent) {
             vp.insert(l = new Label(Locale.LS("Set Constant Parameters")), vp.getWidgetCount() - 1);
             vp.insert(componentButton, vp.getWidgetCount() - 1);
             l.setStyleName("topSpace");
-            if (((Component) elm).cvs.get(0).const_rho != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Density: ") + ((Component) elm).cvs.get(0).const_rho), vp.getWidgetCount() - 1);
+
+            double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).const_rho : ((TwoDimComponent) elm).cvs.get(0).constRho;
+            double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).const_cp : ((TwoDimComponent) elm).cvs.get(0).constCp;
+            double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).const_k : ((TwoDimComponent) elm).cvs.get(0).constK;
+            GWT.log(constRho + " " + constCp + " " + constK);
+            if (constRho != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
-            if (((Component) elm).cvs.get(0).const_cp != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + ((Component) elm).cvs.get(0).const_cp), vp.getWidgetCount() - 1);
+            if (constCp != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + constCp), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
-            if (((Component) elm).cvs.get(0).const_k != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + ((Component) elm).cvs.get(0).const_k), vp.getWidgetCount() - 1);
+            if (constK != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + constK), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
         }

@@ -2,12 +2,14 @@ package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
 import java.util.*;
 
 public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComponent> {
+    int oldX, oldY;
     double resistance;
     Color color;
     Color color2;
@@ -44,6 +46,15 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         isDisabled = false;
         field = false;
         fieldIndex = 1;
+
+        for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+
+            if (twoDimComponent.x2 == xx && twoDimComponent.y2 == yy) {
+                this.m = twoDimComponent.m;
+                this.n = twoDimComponent.n;
+            }
+
+        }
         buildComponent();
     }
 
@@ -182,14 +193,20 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     @Override
     void drag(int xx, int yy) {
-        int oldX = sim.snapGrid(xx);
-        int oldY = sim.snapGrid(yy);
 
+        oldX = xx > x ? sim.snapGrid(xx) : x;
+        oldY = yy > y ? sim.snapGrid(yy) : y;
+
+        if (point1 != null)
+            for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+                if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y) {
+                    oldY = twoDimComponent.point4.y;
+                }
+            }
         x2 = oldX;
         y2 = y;
         setPoints();
-        point4 = new Point(oldX, oldY);
-        point3 = new Point(point1.x, oldY);
+
     }
 
     int getDumpType() {
@@ -241,6 +258,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         for (TwoDimCV cv : cvs) {
             double cvX = x + cv.xIndex * cvWidth;
             double cvY = y + cv.yIndex * cvHeight;
+            //color2 is only defined in zigzag interface, will throw exception otherwise
             String cvColor = cv.material.equals(material) ? color.getHexValue() : color2.getHexValue();
             ctx.setFillStyle(cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
@@ -285,7 +303,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
 
             String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
-            ctx.setFillStyle(cvColor);
+            ctx.setFillStyle(cvColor.equals("#000") ? Color.blue.getHexValue() : cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }
@@ -295,6 +313,13 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     void calculateCurrent() {
         current = (volts[0] - volts[1]) / resistance;
         // System.out.print(this + " res current set to " + current + "\n");
+    }
+
+    @Override
+    void setPoints() {
+        super.setPoints();
+        point4 = new Point(oldX, oldY);
+        point3 = new Point(point1.x, oldY);
     }
 
 
@@ -316,8 +341,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
-
-
     @Override
     String getScopeText(int v) {
         return Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
@@ -330,9 +353,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             case 1:
                 return new EditInfo("Index", index);
             case 2:
-                return new EditInfo("Number of control volumes in x-direction", this.n);
+                return new EditInfo("X-discretization number", this.n);
             case 3:
-                return new EditInfo("Number of control volumes in y-direction", this.m);
+                return new EditInfo("Y-discretization number", this.m);
             case 4:
                 EditInfo ei = new EditInfo("Material", 0);
                 ei.choice = new Choice();
@@ -376,6 +399,15 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 break;
             case 3:
                 this.m = (int) ei.value;
+                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+                    if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y ||
+                            twoDimComponent.x == point2.x && twoDimComponent.y == point2.y) {
+                        if (twoDimComponent.m != m)
+                            Window.alert("Y-discretization numbers should not differ!");
+
+                    }
+
+                }
                 break;
             case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));

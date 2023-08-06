@@ -4564,6 +4564,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (me)
             mouseElm.setSelected(false);
 
+
         return allowed;
     }
 
