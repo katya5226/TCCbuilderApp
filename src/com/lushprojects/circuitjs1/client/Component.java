@@ -450,4 +450,9 @@ public class Component extends CircuitElm implements Comparable<Component> {
         this.field = !this.field;
     }
 
+    @Override
+    void stamp() {
+        sim.stampResistor(nodes[0], nodes[1], resistance);
+    }
+
 }

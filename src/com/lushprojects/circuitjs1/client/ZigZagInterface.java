@@ -15,6 +15,7 @@ public class ZigZagInterface extends TwoDimComponent {
         //CirSim.debugger();
         material2 = sim.materialHashMap.get("000000-Custom");
         if (!material2.isLoaded()) material2.readFiles();
+
     }
 
     public ZigZagInterface(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -25,12 +26,13 @@ public class ZigZagInterface extends TwoDimComponent {
         }
         color2 = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         zigzagNumber = Integer.parseInt(st.nextToken());
-
+        buildComponent();
     }
 
     @Override
     void initializeComponent() {
         super.initializeComponent();
+        color2 = Color.red;
         name = "ZigZagComponent";
         zigzagNumber = 4;
     }

@@ -15,7 +15,6 @@ public class StartDialog2D extends Dialog {
     CirSim sim;
     VerticalPanel vp;
     HorizontalPanel buttonPanel;
-    HorizontalPanel cyclicContainer;
     Button cancelButton;
     Button applyButton;
     DoubleBox timeStep;
@@ -37,8 +36,6 @@ public class StartDialog2D extends Dialog {
     ListBox leftBoundary;
     ListBox rightBoundary;
 
-    HorizontalPanel leftHorizontalPanel;
-    HorizontalPanel rightHorizontalPanel;
     ArrayList<Widget> leftToggleables = new ArrayList<Widget>();
     ArrayList<Widget> rightToggleables = new ArrayList<Widget>();
 

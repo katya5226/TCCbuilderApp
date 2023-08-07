@@ -98,11 +98,10 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     void initializeComponent() {
         resistance = 1000;
         color = Color.blue;
-        color2 = Color.red;
         name = "TwoDimComponent";
         // n = 24;
         // m = 48;
-        n = m = 4;
+        n = m = 12;
         cvs = new Vector<TwoDimCV>();
         resistances = new double[]{0.0, 0.0, 0.0, 0.0};
         neighbours = new TwoDimComponent[4];
@@ -412,6 +411,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         switch (n) {
             case 0:
@@ -467,5 +467,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
     }
 
-
+    @Override
+    void stamp() {
+        sim.stampResistor(nodes[0], nodes[1], resistance);
+    }
 }
