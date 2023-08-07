@@ -20,6 +20,7 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
@@ -234,33 +235,11 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     void getInfo(String[] arr) {
         arr[0] = this.name;
-        // getBasicInfo(arr);
-        arr[1] = "Component index = " + String.valueOf(this.index);
+        arr[1] = "Component index = " + this.index;
         arr[2] = "Material = " + this.material.materialName;
-
-        double tmpLength = this.length;
-        if (tmpLength < 1e-3) { // less than 1 millimeter
-            tmpLength = this.length * 1e6; // convert to micrometers
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " µm";
-        } else if (tmpLength < 1) { // less than 1 meter
-            tmpLength = this.length * 1e3; // convert to millimeters
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " mm";
-        } else {
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " m";
-        }
-
+        arr[3] = "Length = " + CirSim.formatLength(this.length);
         arr[4] = "#CVs = " + this.num_cvs;
-
-        double dx = this.cvs.get(0).dx; // dx is in meters
-        if (dx < 1e-3) { // less than 1 millimeter
-            dx = dx * 1e6; // convert to micrometers
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " µm";
-        } else if (dx < 1) { // less than 1 meter
-            dx = dx * 1e3; // convert to millimeters
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " mm";
-        } else {
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " m";
-        }
+        arr[5] = "CV dx = " + CirSim.formatLength(this.cvs.get(0).dx);
     }
 
     @Override
@@ -318,8 +297,11 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 break;
             case 2:
                 this.material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
+                sim.lastMaterialChoiceBoxSelected = 0;
                 if (!this.material.isLoaded())
                     this.material.readFiles();
+                else
+                    this.material.showTemperatureRanges();
                 break;
             case 3:
                 this.num_cvs = (int) ei.value;

@@ -9,6 +9,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.Vector;
 
@@ -206,6 +207,21 @@ public class Material {
         return isLoaded;
     }
 
+    public void showTemperatureRanges() {
+        String message = "<pre>Density: " + tRhoMin + " - " + tRhoMax + " K\n"
+                + "Specific Heat Capacity: " + tCpMin + " - " + tCpMax + " K\n"
+                + "Thermal Conductivity: " + tKMin + " - " + tKMax + " K\n";
+        if (CirSim.editDialog!= null && ((EditDialog) sim.editDialog).rangesHTML != null)
+            ((EditDialog) sim.editDialog).rangesHTML[sim.lastMaterialChoiceBoxSelected].setHTML(message);
+    }
+
+    public void showTemperatureRanges(int i) {
+        String message = "<pre>Density: " + tRhoMin + " - " + tRhoMax + " K\n"
+                + "Specific Heat Capacity: " + tCpMin + " - " + tCpMax + " K\n"
+                + "Thermal Conductivity: " + tKMin + " - " + tKMax + " K\n";
+        ((EditDialog) sim.editDialog).rangesHTML[i].setHTML(message);
+    }
+
     void readRTPropertiesFromURL(String url) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
@@ -261,6 +277,7 @@ public class Material {
                         tKMax = Double.parseDouble(obj.get("thermalConductivity").toString().replaceAll("\"", "").split("-")[1]);
 /*                        tEmissMin = Double.parseDouble()(obj.get("emissivity").toString().replaceAll("\"","")".split("-")[0]);
                         tEmissMax = Double.parseDouble()(obj.get("emissivity").toString().replaceAll("\"","")".split("-")[1]);*/
+
 
                         sim.awaitedResponses.remove(url);
                     } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {

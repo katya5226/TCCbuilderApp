@@ -310,6 +310,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     double[] x_prev;
     double[] x_mod;
 
+    int lastMaterialChoiceBoxSelected;
     boolean viewTempsInGraph = true;
     boolean viewTempsOverlay = true;
     double minTemp, maxTemp;
@@ -935,14 +936,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // ***************************************************************************
 
         setSimRunning(running);
-/*        double x[] = { 0.0, 1.0, 2.0 };
-        double y[] = { 1.0, -1.0, 2.0};
-        UnivariateInterpolator interpolator = new SplineInterpolator();
-        UnivariateFunction function = interpolator.interpolate(x, y);
-        RealMatrix coefficientMatrix = new Array2DRowRealMatrix(3, 3);
-        RealVector rhsVector = new ArrayRealVector(new double[]{1.0, 2.0, 3.0});
-        LUDecomposition solver = new LUDecomposition(coefficientMatrix);
-        RealVector solutionVector = solver.getSolver().solve(rhsVector);*/
+
     }
 
     // ***********************************Katni**********************************************
@@ -1468,12 +1462,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), ""));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), ""));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), ""));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), ""));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), ""));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "GroundElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
         }
 
@@ -2314,13 +2308,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // info about each wire and its neighbors, used to calculate wire currents
     Vector<WireInfo> wireInfoList;
 
-    // find groups of nodes connected by wire equivalents and map them to the same
-    // node. this speeds things
-    // up considerably by reducing the size of the matrix. We do this for wires,
-    // labeled nodes, and ground.
-    // The actual node we map to is not assigned yet. Instead we map to the same
-    // NodeMapEntry.
-    public String formatLength(double value) {
+    public static String formatLength(double value) {
         if (value < 1e-3) { // less than 1 millimeter
             value *= 1e6; // convert to micrometers
             return (Math.round(value * 1000) / 1000.0) + " µm";
@@ -2331,6 +2319,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return (Math.round(value * 1000) / 1000.0) + " m";
         }
     }
+    // find groups of nodes connected by wire equivalents and map them to the same
+    // node. this speeds things
+    // up considerably by reducing the size of the matrix. We do this for wires,
+    // labeled nodes, and ground.
+    // The actual node we map to is not assigned yet. Instead we map to the same
+    // NodeMapEntry.
 
     void calculateWireClosure() {
         int i;
@@ -5927,6 +5921,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new LabeledNodeElm(x1, y1);
             case "BoxElm":
                 return new BoxElm(x1, y1);
+            case "DiodeElm":
+                return new DiodeElm(x1, y1);
+            case "SwitchElm":
+                return new SwitchElm(x1, y1);
+            case "CapacitorElm":
+                return new CapacitorElm(x1, y1);
+            case "RegulatorElm":
+                return new RegulatorElm(x1, y1);
             case "GroundElm":
                 return new GroundElm(x1, y1);
             case "CurrentElm":

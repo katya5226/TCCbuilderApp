@@ -48,6 +48,7 @@ class EditDialog extends Dialog {
     Editable elm;
     CirSim cframe;
     Button applyButton, okButton, cancelButton, componentButton;
+    HTML[] rangesHTML;
     EditInfo einfos[];
     int einfocount;
     final int barmax = 1000;
@@ -58,6 +59,8 @@ class EditDialog extends Dialog {
     EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
+
+        rangesHTML = new HTML[2];
         setText(Locale.LS("Edit Component"));
         cframe = f;
         elm = ce;
@@ -135,8 +138,39 @@ class EditDialog extends Dialog {
                 ei.choice.addChangeHandler(new ChangeHandler() {
                     public void onChange(ChangeEvent e) {
                         itemStateChanged(e);
+
                     }
                 });
+
+
+                if (elm instanceof Component || elm instanceof TwoDimComponent) {
+                    ei.choice.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent e) {
+                            itemStateChanged(e);
+
+                        }
+                    });
+                    if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
+                        vp.insert(l = new Label(Locale.LS("Material ranges: ")), vp.getWidgetCount() - 1);
+                        vp.insert(rangesHTML[0] = new HTML("&lt;choose a material&gt;"), vp.getWidgetCount() - 1);
+                        l.setStyleName("topSpace");
+                    } else if (ei.name.equals("Material 2")) {
+                        vp.insert(l = new Label(Locale.LS("Material ranges: ")), vp.getWidgetCount() - 1);
+                        vp.insert(rangesHTML[1] = new HTML("&lt;choose a material&gt;"), vp.getWidgetCount() - 1);
+                        l.setStyleName("topSpace");
+                    }
+/*                    ei.choice.addChangeHandler(new ChangeHandler() {
+                        public void onChange(ChangeEvent e) {
+                            itemStateChanged(e);
+                            if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
+                                ((EditDialog) CirSim.editDialog).rangesHTML[0] = null;
+                            } else if (ei.name.equals("Material 2")) {
+                                ((EditDialog) CirSim.editDialog).rangesHTML[1] = null;
+                            }
+                        }
+                    });*/
+                }
             } else if (ei.checkbox != null) {
                 vp.insert(ei.checkbox, idx);
                 ei.checkbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
