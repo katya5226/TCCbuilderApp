@@ -20,6 +20,7 @@
 package com.lushprojects.circuitjs1.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
 import java.lang.Math;
@@ -170,24 +171,38 @@ public class Component extends CircuitElm implements Comparable<Component> {
         return this.index - o.index;
     }
 
-
+    @Override
     int getDumpType() {
-        return 'r';
+        return 520;
     }
 
+    @Override
     String dump() {
-        return "520 " + point1.x + " " + point1.y + " " + point2.x + " " + point2.y + " 0 " + index + " " + material.materialName + " " + Color.colorToIndex(color) + " " + this.length + " " + this.name + " " + this.num_cvs + "\n";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getDumpType()).append(" ");
+        sb.append(point1.x).append(' ').append(point1.y).append(' ');
+        sb.append(point2.x).append(' ').append(point2.y).append(' ');
+        sb.append("0 ").append(index).append(' ');
+
+        sb.append(material.materialName).append(' ');
+        sb.append(Color.colorToIndex(color)).append(' ');
+
+        sb.append(length).append(' ');
+        sb.append(name).append(' ');
+        sb.append(num_cvs);
+
+        return sb.toString();
     }
 
-    Point ps3, ps4;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(32);
-        ps3 = new Point();
-        ps4 = new Point();
     }
 
+    @Override
     void draw(Graphics g) {
         int hs = 13;
         setBbox(point1, point2, hs);
@@ -210,16 +225,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     }
 
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        // System.out.print(this + " res current set to " + current + "\n");
-    }
-
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
-
-
     double[] listTemps() {
         double[] temps = new double[this.num_cvs];
         for (int i = 0; i < temps.length; i++) {
@@ -230,33 +235,11 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     void getInfo(String[] arr) {
         arr[0] = this.name;
-        // getBasicInfo(arr);
-        arr[1] = "Component index = " + String.valueOf(this.index);
+        arr[1] = "Component index = " + this.index;
         arr[2] = "Material = " + this.material.materialName;
-
-        double tmpLength = this.length;
-        if (tmpLength < 1e-3) { // less than 1 millimeter
-            tmpLength = this.length * 1e6; // convert to micrometers
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " µm";
-        } else if (tmpLength < 1) { // less than 1 meter
-            tmpLength = this.length * 1e3; // convert to millimeters
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " mm";
-        } else {
-            arr[3] = "Length = " + (Math.round(tmpLength * 1000) / 1000.0) + " m";
-        }
-
+        arr[3] = "Length = " + CirSim.formatLength(this.length);
         arr[4] = "#CVs = " + this.num_cvs;
-
-        double dx = this.cvs.get(0).dx; // dx is in meters
-        if (dx < 1e-3) { // less than 1 millimeter
-            dx = dx * 1e6; // convert to micrometers
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " µm";
-        } else if (dx < 1) { // less than 1 meter
-            dx = dx * 1e3; // convert to millimeters
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " mm";
-        } else {
-            arr[5] = "CV dx = " + (Math.round(dx * 1000) / 1000.0) + " m";
-        }
+        arr[5] = "CV dx = " + CirSim.formatLength(this.cvs.get(0).dx);
     }
 
     @Override
@@ -264,8 +247,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
         return Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
     }
 
-    /*  */
 
+    @Override
     public EditInfo getEditInfo(int n) {
         switch (n) {
             case 0:
@@ -302,6 +285,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
 
         switch (n) {
@@ -315,6 +299,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 this.material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
                 if (!this.material.isLoaded())
                     this.material.readFiles();
+
                 break;
             case 3:
                 this.num_cvs = (int) ei.value;
@@ -354,18 +339,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     }
 
-    int getShortcut() {
-        return 0;
-    }
-
-
-    double getResistance() {
-        return resistance;
-    }
-
-    void setResistance(double r) {
-        resistance = r;
-    }
 
     public void set_constant_parameters(String[] parameters, double[] values) {
         for (int i = 0; i < parameters.length; i++) {
@@ -455,6 +428,11 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
         // GWT.log("Finished (de)magnetization.");
         this.field = !this.field;
+    }
+
+    @Override
+    void stamp() {
+        sim.stampResistor(nodes[0], nodes[1], resistance);
     }
 
 }

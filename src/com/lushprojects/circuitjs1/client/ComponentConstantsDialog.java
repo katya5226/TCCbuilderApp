@@ -10,15 +10,15 @@ import java.util.Map;
 
 public class ComponentConstantsDialog extends Dialog {
 
-    private Component component;
+    private CircuitElm circuitElm;
     private CirSim sim;
 
     private ListBox dropdown;
     private Map<String, DoubleBox> valueMap;
     private Button applyButton, cancelButton;
 
-    public ComponentConstantsDialog(Component component, CirSim sim) {
-        this.component = component;
+    public ComponentConstantsDialog(CircuitElm circuitElm, CirSim sim) {
+        this.circuitElm = circuitElm;
         this.sim = sim;
 
         setText(Locale.LS("Set Constant Parameters"));
@@ -68,7 +68,6 @@ public class ComponentConstantsDialog extends Dialog {
         buttonPanel.addStyleName("topSpace");
 
 
-
         // Event handlers
         dropdown.addChangeHandler(new ChangeHandler() {
             @Override
@@ -80,7 +79,7 @@ public class ComponentConstantsDialog extends Dialog {
         cancelButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                new EditDialog(component, sim);
+                new EditDialog(circuitElm, sim);
                 hide();
             }
         });
@@ -89,7 +88,7 @@ public class ComponentConstantsDialog extends Dialog {
             @Override
             public void onClick(ClickEvent event) {
                 applyValues();
-                new EditDialog(component, sim);
+                new EditDialog(circuitElm, sim);
                 hide();
             }
         });
@@ -118,21 +117,37 @@ public class ComponentConstantsDialog extends Dialog {
             double value = doubleBox.getValue();
             // Apply the value to the component or perform necessary actions
             // For example:
-            switch (selectedValue) {
-                case "Density":
-                    component.constRho = value;
-                    break;
-                case "Specific Heat Capacity":
-                    component.constCp = value;
-                    break;
-                case "Thermal Conductivity":
-                    component.constK = value;
-                    break;
+            if (circuitElm instanceof Component) {
+                switch (selectedValue) {
+                    case "Density":
+                        ((Component) circuitElm).constRho = value;
+                        break;
+                    case "Specific Heat Capacity":
+                        ((Component) circuitElm).constCp = value;
+                        break;
+                    case "Thermal Conductivity":
+                        ((Component) circuitElm).constK = value;
+                        break;
+                }
+                ((Component) circuitElm).buildComponent();
+            }
+
+            if (circuitElm instanceof TwoDimComponent) {
+                switch (selectedValue) {
+                    case "Density":
+                        ((TwoDimComponent) circuitElm).constRho = value;
+                        break;
+                    case "Specific Heat Capacity":
+                        ((TwoDimComponent) circuitElm).constCp = value;
+                        break;
+                    case "Thermal Conductivity":
+                        ((TwoDimComponent) circuitElm).constK = value;
+                        break;
+                }
+                ((TwoDimComponent) circuitElm).buildComponent();
+
             }
         }
-        GWT.log(component.constRho+"");
-        GWT.log(component.constCp+"");
-        GWT.log(component.constK+"");
     }
 
     public void showDialog() {

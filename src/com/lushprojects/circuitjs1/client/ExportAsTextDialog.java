@@ -46,6 +46,7 @@ public class ExportAsTextDialog extends Dialog {
 		Label  la2;
 		SafeHtml html;
 		vp=new VerticalPanel();
+		vp.setWidth("80vw");
 		setWidget(vp);
 		setText(Locale.LS("Export as Text"));
 		vp.add(new Label(Locale.LS("Text file for this circuit is...")));
@@ -54,8 +55,8 @@ public class ExportAsTextDialog extends Dialog {
 //		html=SafeHtmlUtils.fromTrustedString(html.asString().replace("\n", "<BR>"));
 //		tb.setHTML(html);
 		vp.add(ta= new TextArea());
-		ta.setWidth("1000px");
-		ta.setHeight("600px");
+		ta.setWidth("100%");
+		ta.setHeight("75vh");
 		ta.setText(s);
 		textArea = ta;
 	//	vp.add(la2 = new Label(sim.LS("To save this file select it all (eg click in text and type control-A) and copy to your clipboard (eg control-C) before pasting to an empty text file (eg on Windows Notepad) and saving as a new file."), true));

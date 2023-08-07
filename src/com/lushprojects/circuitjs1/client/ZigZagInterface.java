@@ -1,41 +1,43 @@
 package com.lushprojects.circuitjs1.client;
 
+import java.lang.Math;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
-import com.lushprojects.circuitjs1.client.util.Locale;
-
-import java.lang.Math;
-import java.text.MessageFormat;
-import java.util.*;
-
 import com.google.gwt.user.client.Window;
 
 public class ZigZagInterface extends TwoDimComponent {
 
-    Material material2;
-    int zigzagFactor;
+    int zigzagNumber;
 
     public ZigZagInterface(int xx, int yy) {
         super(xx, yy);
         //CirSim.debugger();
         material2 = sim.materialHashMap.get("000000-Custom");
         if (!material2.isLoaded()) material2.readFiles();
+
     }
 
     public ZigZagInterface(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        material2 = sim.materialHashMap.get("000000-Custom");
-        if (!material2.isLoaded()) material2.readFiles();
+        material2 = sim.materialHashMap.get(st.nextToken(" "));
+        if (!material2.isLoaded()) {
+            material2.readFiles();
+        }
+        color2 = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
+        zigzagNumber = Integer.parseInt(st.nextToken());
+        buildComponent();
     }
 
     @Override
     void initializeComponent() {
         super.initializeComponent();
+        color2 = Color.red;
         name = "ZigZagComponent";
-        zigzagFactor = 4;
+        zigzagNumber = 4;
     }
 
-    double yTilde(int ci, double xT, double hT) {
+    private double yTilde(int ci, double xT, double hT) {
         double yT;
         if (ci % 2 == 0) yT = ((ci + 1) * hT) - ((hT / length) * xT);
         else yT = (ci * hT) + ((hT / length) * xT);
@@ -59,10 +61,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 }
             }
         } else {
-            if (m % c != 0) {
-                GWT.log("Discretisation number in y-direction must be divisible by zigzag number c!");
-                return;
-            }
+
             double hT = height / c;
             for (int j = 0; j < m; j++) {
                 int ci = (int) Math.floor(j / (hT / dy));
@@ -82,17 +81,58 @@ public class ZigZagInterface extends TwoDimComponent {
     }
 
     @Override
+    String dump() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(super.dump()).append(' ');
+        sb.append(material2.materialName).append(' ');
+        sb.append(Color.colorToIndex(color2)).append(' ');
+        sb.append(zigzagNumber).append(' ');
+
+        return sb.toString();
+    }
+
+    @Override
+    void drawCVMaterials(Graphics g, Point pa, Point pb) {
+        Context2d ctx = g.context;
+        double x = Math.min(pa.x, pb.x);
+        double y = Math.min(pa.y, pb.y);
+        double width = Math.abs(pa.x - pb.x);
+        double cvWidth = width / n;
+        double height = Math.abs(pa.y - pb.y);
+        double cvHeight = height / m;
+        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+        ctx.setLineWidth(0.5);
+        ctx.strokeRect(x, y, width, height);
+
+        for (TwoDimCV cv : cvs) {
+            double cvX = x + cv.xIndex * cvWidth;
+            double cvY = y + cv.yIndex * cvHeight;
+            String cvColor = cv.material.equals(material) ? color.getHexValue() : color2.getHexValue();
+            ctx.setFillStyle(cvColor);
+            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+        }
+    }
+
+    @Override
     void calculateLengthHeight() {
         super.calculateLengthHeight();
         if (cvs != null)
-            makeZigZag(zigzagFactor);
+            makeZigZag(zigzagNumber);
     }
 
     @Override
     void buildComponent() {
         super.buildComponent();
-        makeZigZag(zigzagFactor);
+        makeZigZag(zigzagNumber);
     }
+
+    @Override
+    int getDumpType() {
+        return 522;
+    }
+
 
     @Override
     void getInfo(String[] arr) {
@@ -107,7 +147,7 @@ public class ZigZagInterface extends TwoDimComponent {
         arr[7] = "#CVs (y) = " + m;
         arr[8] = "CV dx = " + sim.formatLength(cvs.get(0).dx);
         arr[9] = "CV dy = " + sim.formatLength(cvs.get(0).dy);
-        arr[10] = "Zigzag factor =  = " + zigzagFactor;
+        arr[10] = "Zigzag number = " + zigzagNumber;
     }
 
     @Override
@@ -118,9 +158,9 @@ public class ZigZagInterface extends TwoDimComponent {
             case 1:
                 return new EditInfo("Index", index);
             case 2:
-                return new EditInfo("Number of control volumes in x-direction", this.n);
+                return new EditInfo("X-discretization number", this.n);
             case 3:
-                return new EditInfo("Number of control volumes in y-direction", this.m);
+                return new EditInfo("Y-discretization number", this.m);
             case 4:
                 EditInfo ei = new EditInfo("Material 1", 0);
                 ei.choice = new Choice();
@@ -152,7 +192,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
                     ei3.choice.add(sim.colorChoices.get(ch));
                 }
-                ei3.choice.select(Color.colorToIndex(color));
+                ei3.choice.select(Color.colorToIndex(color2));
 
                 return ei3;
             case 8:
@@ -164,7 +204,7 @@ public class ZigZagInterface extends TwoDimComponent {
             case 11:
                 return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
             case 12:
-                return new EditInfo("Zigzag factor", zigzagFactor);
+                return new EditInfo("<div>Zigzag number&nbsp;<em>(must be a factor of y-discretization number)</em> </div>", zigzagNumber);
             default:
                 return null;
         }
@@ -184,6 +224,15 @@ public class ZigZagInterface extends TwoDimComponent {
                 break;
             case 3:
                 this.m = (int) ei.value;
+                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+                    if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y ||
+                            twoDimComponent.x == point2.x && twoDimComponent.y == point2.y) {
+                        if (twoDimComponent.m != m)
+                            Window.alert("Y-discretization numbers should not differ!");
+
+                    }
+
+                }
                 break;
             case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
@@ -226,7 +275,10 @@ public class ZigZagInterface extends TwoDimComponent {
                 resistances[1] = ei.value;
                 break;
             case 12:
-                zigzagFactor = (int) ei.value;
+                if (m % zigzagNumber != 0) {
+                    Window.alert("Zigzag number must be a factor of Y-direction number!");
+                }
+                zigzagNumber = (int) ei.value;
                 break;
 
         }

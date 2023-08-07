@@ -20,22 +20,14 @@
 package com.lushprojects.circuitjs1.client;
 
 
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 
 interface Editable {
     EditInfo getEditInfo(int n);
@@ -47,6 +39,7 @@ class EditDialog extends Dialog {
     Editable elm;
     CirSim cframe;
     Button applyButton, okButton, cancelButton, componentButton;
+    ListBox[] rangesHTML;
     EditInfo einfos[];
     int einfocount;
     final int barmax = 1000;
@@ -57,12 +50,15 @@ class EditDialog extends Dialog {
     EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
+
+        rangesHTML = new ListBox[2];
         setText(Locale.LS("Edit Component"));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());
         vp = new VerticalPanel();
         setWidget(vp);
+        vp.setHeight("90vh");
         einfos = new EditInfo[20];
 //		noCommaFormat = DecimalFormat.getInstance();
 //		noCommaFormat.setMaximumFractionDigits(10);
@@ -100,7 +96,8 @@ class EditDialog extends Dialog {
         componentButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 closeDialog();
-                new ComponentConstantsDialog((Component) elm, cframe).show();
+                new ComponentConstantsDialog((CircuitElm) elm, cframe).show();
+
             }
         });
 
@@ -133,8 +130,33 @@ class EditDialog extends Dialog {
                 ei.choice.addChangeHandler(new ChangeHandler() {
                     public void onChange(ChangeEvent e) {
                         itemStateChanged(e);
+
                     }
                 });
+
+
+                if (elm instanceof Component || elm instanceof TwoDimComponent) {
+
+
+                    if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
+                        ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                            @Override
+                            public void onMouseOver(MouseOverEvent e) {
+                                cframe.materialHashMap.get(rangesHTML[0].getSelectedItemText()).showTemperatureRanges(0);
+                            }
+                        });
+                        vp.insert(rangesHTML[0] = ei.choice, vp.getWidgetCount() - 1);
+                    } else if (ei.name.equals("Material 2")) {
+                        ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                            @Override
+                            public void onMouseOver(MouseOverEvent e) {
+                                cframe.materialHashMap.get(rangesHTML[1].getSelectedItemText()).showTemperatureRanges(1);
+                            }
+                        });
+                        vp.insert(rangesHTML[1] = ei.choice, vp.getWidgetCount() - 1);
+                    }
+
+                }
             } else if (ei.checkbox != null) {
                 vp.insert(ei.checkbox, idx);
                 ei.checkbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -178,20 +200,25 @@ class EditDialog extends Dialog {
         }
 
 
-        if (elm instanceof Component) {
+        if (elm instanceof Component || elm instanceof TwoDimComponent) {
             vp.insert(l = new Label(Locale.LS("Set Constant Parameters")), vp.getWidgetCount() - 1);
             vp.insert(componentButton, vp.getWidgetCount() - 1);
             l.setStyleName("topSpace");
-            if (((Component) elm).cvs.get(0).const_rho != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Density: ") + ((Component) elm).cvs.get(0).const_rho), vp.getWidgetCount() - 1);
+
+            double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).const_rho : ((TwoDimComponent) elm).cvs.get(0).constRho;
+            double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).const_cp : ((TwoDimComponent) elm).cvs.get(0).constCp;
+            double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).const_k : ((TwoDimComponent) elm).cvs.get(0).constK;
+            GWT.log(constRho + " " + constCp + " " + constK);
+            if (constRho != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
-            if (((Component) elm).cvs.get(0).const_cp != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + ((Component) elm).cvs.get(0).const_cp), vp.getWidgetCount() - 1);
+            if (constCp != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + constCp), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
-            if (((Component) elm).cvs.get(0).const_k != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + ((Component) elm).cvs.get(0).const_k), vp.getWidgetCount() - 1);
+            if (constK != -1) {
+                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + constK), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
         }

@@ -90,6 +90,10 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
     font-weight: 700;
 }
 
+.heading {
+    margin-top: 1rem;
+}
+
 .dialogButtonPanel {
     margin-top: 1rem;
 }
@@ -230,7 +234,7 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
 
 .buttonPanel {
     width: 100%;
-    margin-bottom: 1rem;
+    padding: 1rem;
 }
 
 .buttonPanel>tbody>tr {
@@ -240,8 +244,6 @@ div.gwt-DialogBox>div>table>tbody>tr.dialogMiddle>td.dialogMiddleCenter>div>tabl
 }
 
 .buttonPanel>tbody>tr>td {
-    height: 100%;
-    width: 33%;
     display: flex;
     align-items: center;
     justify-content: space-between;
