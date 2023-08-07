@@ -434,6 +434,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
                 if (!material.isLoaded()) material.readFiles();
+
                 break;
             case 5:
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());

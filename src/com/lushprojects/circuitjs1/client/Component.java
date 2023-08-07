@@ -297,11 +297,9 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 break;
             case 2:
                 this.material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-                sim.lastMaterialChoiceBoxSelected = 0;
                 if (!this.material.isLoaded())
                     this.material.readFiles();
-                else
-                    this.material.showTemperatureRanges();
+
                 break;
             case 3:
                 this.num_cvs = (int) ei.value;

@@ -21,22 +21,13 @@ package com.lushprojects.circuitjs1.client;
 
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.ui.*;
 import com.lushprojects.circuitjs1.client.util.Locale;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 
 interface Editable {
     EditInfo getEditInfo(int n);
@@ -48,7 +39,7 @@ class EditDialog extends Dialog {
     Editable elm;
     CirSim cframe;
     Button applyButton, okButton, cancelButton, componentButton;
-    HTML[] rangesHTML;
+    ListBox[] rangesHTML;
     EditInfo einfos[];
     int einfocount;
     final int barmax = 1000;
@@ -60,13 +51,14 @@ class EditDialog extends Dialog {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
 
-        rangesHTML = new HTML[2];
+        rangesHTML = new ListBox[2];
         setText(Locale.LS("Edit Component"));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());
         vp = new VerticalPanel();
         setWidget(vp);
+        vp.setHeight("90vh");
         einfos = new EditInfo[20];
 //		noCommaFormat = DecimalFormat.getInstance();
 //		noCommaFormat.setMaximumFractionDigits(10);
@@ -144,32 +136,26 @@ class EditDialog extends Dialog {
 
 
                 if (elm instanceof Component || elm instanceof TwoDimComponent) {
-                    ei.choice.addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent e) {
-                            itemStateChanged(e);
 
-                        }
-                    });
+
                     if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
-                        vp.insert(l = new Label(Locale.LS("Material ranges: ")), vp.getWidgetCount() - 1);
-                        vp.insert(rangesHTML[0] = new HTML("&lt;choose a material&gt;"), vp.getWidgetCount() - 1);
-                        l.setStyleName("topSpace");
-                    } else if (ei.name.equals("Material 2")) {
-                        vp.insert(l = new Label(Locale.LS("Material ranges: ")), vp.getWidgetCount() - 1);
-                        vp.insert(rangesHTML[1] = new HTML("&lt;choose a material&gt;"), vp.getWidgetCount() - 1);
-                        l.setStyleName("topSpace");
-                    }
-/*                    ei.choice.addChangeHandler(new ChangeHandler() {
-                        public void onChange(ChangeEvent e) {
-                            itemStateChanged(e);
-                            if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
-                                ((EditDialog) CirSim.editDialog).rangesHTML[0] = null;
-                            } else if (ei.name.equals("Material 2")) {
-                                ((EditDialog) CirSim.editDialog).rangesHTML[1] = null;
+                        ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                            @Override
+                            public void onMouseOver(MouseOverEvent e) {
+                                cframe.materialHashMap.get(rangesHTML[0].getSelectedItemText()).showTemperatureRanges(0);
                             }
-                        }
-                    });*/
+                        });
+                        vp.insert(rangesHTML[0] = ei.choice, vp.getWidgetCount() - 1);
+                    } else if (ei.name.equals("Material 2")) {
+                        ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                            @Override
+                            public void onMouseOver(MouseOverEvent e) {
+                                cframe.materialHashMap.get(rangesHTML[1].getSelectedItemText()).showTemperatureRanges(1);
+                            }
+                        });
+                        vp.insert(rangesHTML[1] = ei.choice, vp.getWidgetCount() - 1);
+                    }
+
                 }
             } else if (ei.checkbox != null) {
                 vp.insert(ei.checkbox, idx);

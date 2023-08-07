@@ -310,7 +310,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     double[] x_prev;
     double[] x_mod;
 
-    int lastMaterialChoiceBoxSelected;
     boolean viewTempsInGraph = true;
     boolean viewTempsOverlay = true;
     double minTemp, maxTemp;
@@ -3685,7 +3684,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             editDialog = null;
         }
 
-        editDialog = new EditDialog(eable, this);
+        editDialog = new EditDialog(eable,  this);
         editDialog.show();
     }
 
