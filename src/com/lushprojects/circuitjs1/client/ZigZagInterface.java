@@ -2,12 +2,12 @@ package com.lushprojects.circuitjs1.client;
 
 import java.lang.Math;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 
 public class ZigZagInterface extends TwoDimComponent {
 
-    Material material2;
     int zigzagNumber;
 
     public ZigZagInterface(int xx, int yy) {
@@ -19,8 +19,13 @@ public class ZigZagInterface extends TwoDimComponent {
 
     public ZigZagInterface(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        material2 = sim.materialHashMap.get("000000-Custom");
-        if (!material2.isLoaded()) material2.readFiles();
+        material2 = sim.materialHashMap.get(st.nextToken(" "));
+        if (!material2.isLoaded()) {
+            material2.readFiles();
+        }
+        color2 = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
+        zigzagNumber = Integer.parseInt(st.nextToken());
+
     }
 
     @Override
@@ -30,7 +35,7 @@ public class ZigZagInterface extends TwoDimComponent {
         zigzagNumber = 4;
     }
 
-    double yTilde(int ci, double xT, double hT) {
+    private double yTilde(int ci, double xT, double hT) {
         double yT;
         if (ci % 2 == 0) yT = ((ci + 1) * hT) - ((hT / length) * xT);
         else yT = (ci * hT) + ((hT / length) * xT);
@@ -74,6 +79,41 @@ public class ZigZagInterface extends TwoDimComponent {
     }
 
     @Override
+    String dump() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(super.dump()).append(' ');
+        sb.append(material2.materialName).append(' ');
+        sb.append(Color.colorToIndex(color2)).append(' ');
+        sb.append(zigzagNumber).append(' ');
+
+        return sb.toString();
+    }
+
+    @Override
+    void drawCVMaterials(Graphics g, Point pa, Point pb) {
+        Context2d ctx = g.context;
+        double x = Math.min(pa.x, pb.x);
+        double y = Math.min(pa.y, pb.y);
+        double width = Math.abs(pa.x - pb.x);
+        double cvWidth = width / n;
+        double height = Math.abs(pa.y - pb.y);
+        double cvHeight = height / m;
+        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+        ctx.setLineWidth(0.5);
+        ctx.strokeRect(x, y, width, height);
+
+        for (TwoDimCV cv : cvs) {
+            double cvX = x + cv.xIndex * cvWidth;
+            double cvY = y + cv.yIndex * cvHeight;
+            String cvColor = cv.material.equals(material) ? color.getHexValue() : color2.getHexValue();
+            ctx.setFillStyle(cvColor);
+            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+        }
+    }
+
+    @Override
     void calculateLengthHeight() {
         super.calculateLengthHeight();
         if (cvs != null)
@@ -85,6 +125,12 @@ public class ZigZagInterface extends TwoDimComponent {
         super.buildComponent();
         makeZigZag(zigzagNumber);
     }
+
+    @Override
+    int getDumpType() {
+        return 522;
+    }
+
 
     @Override
     void getInfo(String[] arr) {

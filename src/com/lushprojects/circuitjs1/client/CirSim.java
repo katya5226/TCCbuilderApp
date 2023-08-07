@@ -4244,6 +4244,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             String line = new String(b, p, linelen);
             StringTokenizer st = new StringTokenizer(line, " +\t\n\r\f");
             while (st.hasMoreTokens()) {
+
                 String type = st.nextToken();
                 int tint = type.charAt(0);
                 try {

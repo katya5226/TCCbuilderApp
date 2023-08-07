@@ -170,24 +170,38 @@ public class Component extends CircuitElm implements Comparable<Component> {
         return this.index - o.index;
     }
 
-
+    @Override
     int getDumpType() {
-        return 'r';
+        return 520;
     }
 
+    @Override
     String dump() {
-        return "520 " + point1.x + " " + point1.y + " " + point2.x + " " + point2.y + " 0 " + index + " " + material.materialName + " " + Color.colorToIndex(color) + " " + this.length + " " + this.name + " " + this.num_cvs + "\n";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getDumpType()).append(" ");
+        sb.append(point1.x).append(' ').append(point1.y).append(' ');
+        sb.append(point2.x).append(' ').append(point2.y).append(' ');
+        sb.append("0 ").append(index).append(' ');
+
+        sb.append(material.materialName).append(' ');
+        sb.append(Color.colorToIndex(color)).append(' ');
+
+        sb.append(length).append(' ');
+        sb.append(name).append(' ');
+        sb.append(num_cvs);
+
+        return sb.toString();
     }
 
-    Point ps3, ps4;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(32);
-        ps3 = new Point();
-        ps4 = new Point();
     }
 
+    @Override
     void draw(Graphics g) {
         int hs = 13;
         setBbox(point1, point2, hs);
@@ -209,16 +223,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
         drawPosts(g);
 
     }
-
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        // System.out.print(this + " res current set to " + current + "\n");
-    }
-
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
-
 
     double[] listTemps() {
         double[] temps = new double[this.num_cvs];
@@ -264,8 +268,8 @@ public class Component extends CircuitElm implements Comparable<Component> {
         return Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
     }
 
-    /*  */
 
+    @Override
     public EditInfo getEditInfo(int n) {
         switch (n) {
             case 0:
@@ -302,6 +306,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
 
         switch (n) {
@@ -354,18 +359,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     }
 
-    int getShortcut() {
-        return 0;
-    }
-
-
-    double getResistance() {
-        return resistance;
-    }
-
-    void setResistance(double r) {
-        resistance = r;
-    }
 
     public void set_constant_parameters(String[] parameters, double[] values) {
         for (int i = 0; i < parameters.length; i++) {

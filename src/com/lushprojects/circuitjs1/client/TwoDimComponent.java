@@ -3,20 +3,21 @@ package com.lushprojects.circuitjs1.client;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.lushprojects.circuitjs1.client.util.Locale;
 
+import java.io.Serializable;
 import java.lang.Math;
 import java.util.*;
 
 public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComponent> {
-    int oldX, oldY;
     double resistance;
     Color color;
     Color color2;
     double length, height;
     String name;
     int index;
-    Material material;
+    Material material, material2;
     int n;
     int m;
     double[] resistances;
@@ -34,14 +35,12 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         initializeComponent();
         index = -1;
         for (TwoDimComponent c : sim.simTwoDimComponents) {
-            if (c.index > index)
-                index = c.index;
+            if (c.index > index) index = c.index;
         }
         index++;
         material = sim.materialHashMap.get("100001-Inox");
 
-        if (!material.isLoaded())
-            material.readFiles();
+        if (!material.isLoaded()) material.readFiles();
 
         isDisabled = false;
         field = false;
@@ -65,14 +64,30 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         initializeComponent();
 
         index = Integer.parseInt(st.nextToken());
+
+        setPoints();
+        point3 = new Point(Integer.parseInt(st.nextToken(" ")), Integer.parseInt(st.nextToken(" ")));
+        point4 = new Point(Integer.parseInt(st.nextToken(" ")), Integer.parseInt(st.nextToken(" ")));
+
         material = sim.materialHashMap.get(st.nextToken(" "));
         if (!material.isLoaded()) {
             material.readFiles();
         }
 
+
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
+
         length = Double.parseDouble(st.nextToken());
+        height = Double.parseDouble(st.nextToken());
+
+        constRho = Integer.parseInt(st.nextToken());
+        constCp = Integer.parseInt(st.nextToken());
+        constK = Integer.parseInt(st.nextToken());
+
         name = st.nextToken();
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+
         isDisabled = false;
         field = false;
         fieldIndex = 1;
@@ -100,8 +115,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     void calculateLengthHeight() {
         // as a rectangle with edge coordinates {(x, y), (x2, y), (x2, y2), (x, y2)},
         // where difference between x-es is length and difference between y-s is height.
-        if (point3 == null | point4 == null)
-            return;
+        if (point3 == null | point4 == null) return;
         length = Math.abs(point1.x - point2.x) / sim.selectedLengthUnit.conversionFactor;
         height = Math.abs(point1.y - point4.y) / sim.selectedLengthUnit.conversionFactor;
         //gridSize px = 1 unit of measurement
@@ -194,42 +208,71 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     @Override
     void drag(int xx, int yy) {
+        int oldX = xx > x ? sim.snapGrid(xx) : x;
+        int oldY = yy > y ? sim.snapGrid(yy) : y;
 
-        oldX = xx > x ? sim.snapGrid(xx) : x;
-        oldY = yy > y ? sim.snapGrid(yy) : y;
-
-        if (point1 != null)
-            for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
-                if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y) {
-                    oldY = twoDimComponent.point4.y;
-                }
+        if (point1 != null) for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+            if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y) {
+                oldY = twoDimComponent.point4.y;
             }
+        }
         x2 = oldX;
         y2 = y;
         setPoints();
+        point3 = new Point(point1.x, oldY);
+        point4 = new Point(oldX, oldY);
 
-    }
-
-    int getDumpType() {
-        return 'r';
     }
 
     @Override
-    String dump() {  // TODO
-        return "521 " + point1.x + " " + point1.y + " " + point2.x + " " +
-                point2.y + " 0 " + index + " " + material.materialName + " " +
-                Color.colorToIndex(color) + " " + length + " " + name + " " + n * m + "\n";
+    void move(int dx, int dy) {
+        super.move(dx, dy);
+        point3.x += dx;
+        point4.x += dx;
+        point3.y += dy;
+        point4.y += dy;
     }
+
+    @Override
+    int getDumpType() {
+        return 521;
+    }
+
+    @Override
+    String dump() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(super.dump()).append(" ");
+        sb.append(index).append(" ");
+
+        sb.append(point3.x).append(' ').append(point3.y).append(' ');
+        sb.append(point4.x).append(' ').append(point4.y).append(' ');
+
+        sb.append(material.materialName).append(' ');
+        sb.append(Color.colorToIndex(color)).append(' ');
+
+        sb.append(length).append(' ').append(height).append(' ');
+
+        sb.append(constRho).append(' ');
+        sb.append(constCp).append(' ');
+        sb.append(constK).append(' ');
+
+
+        sb.append(name).append(' ');
+        sb.append(n).append(' ');
+        sb.append(m).append(' ');
+
+        return sb.toString();
+    }
+
 
     @Override
     void draw(Graphics g) {
         boundingBox.setBounds(x, y, Math.abs(x - x2), Math.abs(y - point4.y));
         double tmpDx = length / n;
         double tmpDy = height / m;
-        if (sim.viewTempsOverlay)
-            drawCVTemperatures(g, point1, point4);
-        else
-            drawCVMaterials(g, point1, point4);
+        if (sim.viewTempsOverlay) drawCVTemperatures(g, point1, point4);
+        else drawCVMaterials(g, point1, point4);
 
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TwoDimComponent can't have a dx < 1µ, current is " + tmpDx);
@@ -259,9 +302,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         for (TwoDimCV cv : cvs) {
             double cvX = x + cv.xIndex * cvWidth;
             double cvY = y + cv.yIndex * cvHeight;
-            //color2 is only defined in zigzag interface, will throw exception otherwise
-            String cvColor = cv.material.equals(material) ? color.getHexValue() : color2.getHexValue();
-            ctx.setFillStyle(cvColor);
+            ctx.setFillStyle(color.getHexValue());
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }
@@ -304,29 +345,13 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
 
             String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
-            ctx.setFillStyle(/*cvColor.equals("#000") ? Color.blue.getHexValue() : */cvColor);
+            ctx.setFillStyle(cvColor.equals("#000") ? color.getHexValue() : cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }
 
     }
 
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        // System.out.print(this + " res current set to " + current + "\n");
-    }
-
-    @Override
-    void setPoints() {
-        super.setPoints();
-        point4 = new Point(oldX, oldY);
-        point3 = new Point(point1.x, oldY);
-    }
-
-
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
 
     void getInfo(String[] arr) {
         arr[0] = name;
@@ -400,20 +425,15 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 break;
             case 3:
                 this.m = (int) ei.value;
-                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
-                    if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y ||
-                            twoDimComponent.x == point2.x && twoDimComponent.y == point2.y) {
-                        if (twoDimComponent.m != m)
-                            Window.alert("Y-discretization numbers should not differ!");
+                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents)
+                    if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y || twoDimComponent.x == point2.x && twoDimComponent.y == point2.y)
+                        if (twoDimComponent.m != m) Window.alert("Y-discretization numbers should not differ!");
 
-                    }
 
-                }
                 break;
             case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-                if (!material.isLoaded())
-                    material.readFiles();
+                if (!material.isLoaded()) material.readFiles();
                 break;
             case 5:
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
@@ -447,17 +467,5 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
     }
 
-    int getShortcut() {
-        return 0;
-    }
-
-
-    double getResistance() {
-        return resistance;
-    }
-
-    void setResistance(double r) {
-        resistance = r;
-    }
 
 }
