@@ -995,7 +995,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         colorChoices.add("magenta");
         colorChoices.add("blue");
 
-        readMaterialFlags();
+
+        String CORSproxy = "https://corsproxy.io/?";
+        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+        //String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
+        //String baseURL = "http://127.0.0.1:8888/";
+        readMaterialFlags(baseURL + "materials_flags.csv");
         /*readMaterialNames(new AsyncCallback<String[]>() {
             @Override
             public void onSuccess(String[] materialNames) {
@@ -1021,8 +1026,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         });*/
     }
 
-    private void readMaterialFlags() {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, GWT.getModuleBaseURL() + "material_data/materials_flags.csv");
+    private void readMaterialFlags(String url) {
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
@@ -1033,10 +1038,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         materialFlagText = response.getText();
+                        GWT.log(materialFlagText);
                         String[] lines = materialFlagText.split("\n");
                         for (String s : Arrays.copyOfRange(lines, 1, lines.length)) {
                             String name = s.split(",")[0];
                             materialHashMap.put(name, new Material(name, theSim));
+                            GWT.log(name);
                             materialNames.add(name);
                         }
 
@@ -1385,68 +1392,68 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // mouse
     // events and dispatch them.
     native static void doTouchHandlers(CirSim sim, CanvasElement cv) /*-{
-	// Set up touch events for mobile, etc
-	var lastTap;
-	var tmout;
-	var lastScale;
+        // Set up touch events for mobile, etc
+        var lastTap;
+        var tmout;
+        var lastScale;
 
-	cv.addEventListener("touchstart", function (e) {
-        	mousePos = getTouchPos(cv, e);
-  		var touch = e.touches[0];
-  		var etype = "mousedown";
-  		lastScale = 1;
-  		clearTimeout(tmout);
-  		e.preventDefault();
+        cv.addEventListener("touchstart", function (e) {
+            mousePos = getTouchPos(cv, e);
+            var touch = e.touches[0];
+            var etype = "mousedown";
+            lastScale = 1;
+            clearTimeout(tmout);
+            e.preventDefault();
 
-  		if (e.timeStamp-lastTap < 300) {
-     		    etype = "dblclick";
-  		} else {
-  		    tmout = setTimeout(function() {
-  		        sim.@com.lushprojects.circuitjs1.client.CirSim::longPress()();
-  		    }, 500);
-  		}
-  		lastTap = e.timeStamp;
+            if (e.timeStamp - lastTap < 300) {
+                etype = "dblclick";
+            } else {
+                tmout = setTimeout(function () {
+                    sim.@com.lushprojects.circuitjs1.client.CirSim::longPress()();
+                }, 500);
+            }
+            lastTap = e.timeStamp;
 
-  		var touch1 = e.touches[0];
-  		var touch2 = e.touches[e.touches.length-1];
-  		var mouseEvent = new MouseEvent(etype, {
-    			clientX: .5*(touch1.clientX+touch2.clientX),
-    			clientY: .5*(touch1.clientY+touch2.clientY)
-  		});
-  		cv.dispatchEvent(mouseEvent);
-  		if (e.touches.length > 1)
-  		    sim.@com.lushprojects.circuitjs1.client.CirSim::twoFingerTouch(II)(mouseEvent.clientX, mouseEvent.clientY - cv.getBoundingClientRect().y);
-	}, false);
-	cv.addEventListener("touchend", function (e) {
-  		var mouseEvent = new MouseEvent("mouseup", {});
-  		e.preventDefault();
-  		clearTimeout(tmout);
-  		cv.dispatchEvent(mouseEvent);
-	}, false);
-	cv.addEventListener("touchmove", function (e) {
-  		e.preventDefault();
-  		clearTimeout(tmout);
-	        if (e.touches.length > 1) {
-	            sim.@com.lushprojects.circuitjs1.client.CirSim::zoomCircuit(D)(40*(Math.log(e.scale)-Math.log(lastScale)));
-	            lastScale = e.scale;
-	        }
-  		var touch1 = e.touches[0];
-  		var touch2 = e.touches[e.touches.length-1];
-  		var mouseEvent = new MouseEvent("mousemove", {
-    			clientX: .5*(touch1.clientX+touch2.clientX),
-    			clientY: .5*(touch1.clientY+touch2.clientY)
-  		});
-  		cv.dispatchEvent(mouseEvent);
-	}, false);
+            var touch1 = e.touches[0];
+            var touch2 = e.touches[e.touches.length - 1];
+            var mouseEvent = new MouseEvent(etype, {
+                clientX: .5 * (touch1.clientX + touch2.clientX),
+                clientY: .5 * (touch1.clientY + touch2.clientY)
+            });
+            cv.dispatchEvent(mouseEvent);
+            if (e.touches.length > 1)
+                sim.@com.lushprojects.circuitjs1.client.CirSim::twoFingerTouch(II)(mouseEvent.clientX, mouseEvent.clientY - cv.getBoundingClientRect().y);
+        }, false);
+        cv.addEventListener("touchend", function (e) {
+            var mouseEvent = new MouseEvent("mouseup", {});
+            e.preventDefault();
+            clearTimeout(tmout);
+            cv.dispatchEvent(mouseEvent);
+        }, false);
+        cv.addEventListener("touchmove", function (e) {
+            e.preventDefault();
+            clearTimeout(tmout);
+            if (e.touches.length > 1) {
+                sim.@com.lushprojects.circuitjs1.client.CirSim::zoomCircuit(D)(40 * (Math.log(e.scale) - Math.log(lastScale)));
+                lastScale = e.scale;
+            }
+            var touch1 = e.touches[0];
+            var touch2 = e.touches[e.touches.length - 1];
+            var mouseEvent = new MouseEvent("mousemove", {
+                clientX: .5 * (touch1.clientX + touch2.clientX),
+                clientY: .5 * (touch1.clientY + touch2.clientY)
+            });
+            cv.dispatchEvent(mouseEvent);
+        }, false);
 
-	// Get the position of a touch relative to the canvas
-	function getTouchPos(canvasDom, touchEvent) {
-  		var rect = canvasDom.getBoundingClientRect();
-  		return {
-    			x: touchEvent.touches[0].clientX - rect.left,
-    			y: touchEvent.touches[0].clientY - rect.top
-  		};
-	}
+        // Get the position of a touch relative to the canvas
+        function getTouchPos(canvasDom, touchEvent) {
+            var rect = canvasDom.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        }
 
     }-*/;
 
@@ -2272,11 +2279,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public static native void console(String text)
-	/*-{
-	    console.log(text);
-	}-*/;
+        /*-{
+            console.log(text);
+        }-*/;
 
-    public static native void debugger() /*-{ debugger; }-*/;
+    public static native void debugger() /*-{
+        debugger;
+    }-*/;
 
     class NodeMapEntry {
         int node;
@@ -3436,7 +3445,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     static native void electronSaveAs(String dump) /*-{
         $wnd.showSaveDialog().then(function (file) {
             if (file.canceled)
-            	return;
+                return;
             $wnd.saveFile(file, dump);
             @com.lushprojects.circuitjs1.client.CirSim::electronSaveAsCallback(Ljava/lang/String;)(file.filePath.toString());
         });
@@ -3467,7 +3476,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }-*/;
 
     static native String getElectronStartCircuitText() /*-{
-    	return $wnd.startCircuitText;
+        return $wnd.startCircuitText;
     }-*/;
 
     void allowSave(boolean b) {
@@ -3684,7 +3693,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             editDialog = null;
         }
 
-        editDialog = new EditDialog(eable,  this);
+        editDialog = new EditDialog(eable, this);
         editDialog.show();
     }
 
@@ -5960,25 +5969,27 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     native boolean weAreInUS(boolean orCanada) /*-{
-    try {
-	l = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) ;
-    	if (l.length > 2) {
-    		l = l.slice(-2).toUpperCase();
-    		return (l == "US" || (l=="CA" && orCanada));
-    	} else {
-    		return 0;
-    	}
+        try {
+            l = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
+            if (l.length > 2) {
+                l = l.slice(-2).toUpperCase();
+                return (l == "US" || (l == "CA" && orCanada));
+            } else {
+                return 0;
+            }
 
-    } catch (e) { return 0;
-    }
+        } catch (e) {
+            return 0;
+        }
     }-*/;
 
     native boolean weAreInGermany() /*-{
-    try {
-	l = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) ;
-	return (l.toUpperCase().startsWith("DE"));
-    } catch (e) { return 0;
-    }
+        try {
+            l = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
+            return (l.toUpperCase().startsWith("DE"));
+        } catch (e) {
+            return 0;
+        }
     }-*/;
 
     // For debugging
@@ -6021,14 +6032,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     native void printCanvas(CanvasElement cv) /*-{
-	    var img    = cv.toDataURL("image/png");
-	    var win = window.open("", "print", "height=500,width=500,status=yes,location=no");
-	    win.document.title = "Print Circuit";
-	    win.document.open();
-	    win.document.write('<img src="'+img+'"/>');
-	    win.document.close();
-	    setTimeout(function(){win.print();},1000);
-	}-*/;
+        var img = cv.toDataURL("image/png");
+        var win = window.open("", "print", "height=500,width=500,status=yes,location=no");
+        win.document.title = "Print Circuit";
+        win.document.open();
+        win.document.write('<img src="' + img + '"/>');
+        win.document.close();
+        setTimeout(function () {
+            win.print();
+        }, 1000);
+    }-*/;
 
 
     void doPrint() {
@@ -6100,12 +6113,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     // create SVG context using canvas2svg
     native static Context2d createSVGContext(int w, int h) /*-{
-	    return new C2S(w, h);
-	}-*/;
+        return new C2S(w, h);
+    }-*/;
 
     native static String getSerializedSVG(Context2d context) /*-{
-	    return context.getSerializedSvg();
-	}-*/;
+        return context.getSerializedSvg();
+    }-*/;
 
     public String getCircuitAsSVG() {
         Rectangle bounds = getCircuitBounds();
@@ -6341,7 +6354,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
 
-    native JsArray<JavaScriptObject> getJSArray() /*-{ return []; }-*/;
+    native JsArray<JavaScriptObject> getJSArray() /*-{
+        return [];
+    }-*/;
 
     JsArray<JavaScriptObject> getJSElements() {
         int i;
@@ -6355,47 +6370,67 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     native void setupJSInterface() /*-{
-	    var that = this;
-	    $wnd.CircuitJS1 = {
-	        setSimRunning: $entry(function(run) { that.@com.lushprojects.circuitjs1.client.CirSim::setSimRunning(Z)(run); } ),
-	        getTime: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::t; } ),
-	        getTimeStep: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::timeStep; } ),
-	        setTimeStep: $entry(function(ts) { that.@com.lushprojects.circuitjs1.client.CirSim::timeStep = ts; } ),
-	        isRunning: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::simIsRunning()(); } ),
-	        getNodeVoltage: $entry(function(n) { return that.@com.lushprojects.circuitjs1.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n); } ),
-	        getElements: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()(); } ),
-	        getCircuitAsSVG: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()(); } ),
-	        exportCircuit: $entry(function() { return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()(); } ),
-	        importCircuit: $entry(function(circuit, subcircuitsOnly) { return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly); })
-	    };
-	    var hook = $wnd.oncircuitjsloaded;
-	    if (hook)
-	    	hook($wnd.CircuitJS1);
-	}-*/;
+        var that = this;
+        $wnd.CircuitJS1 = {
+            setSimRunning: $entry(function (run) {
+                that.@com.lushprojects.circuitjs1.client.CirSim::setSimRunning(Z)(run);
+            }),
+            getTime: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::t;
+            }),
+            getTimeStep: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::timeStep;
+            }),
+            setTimeStep: $entry(function (ts) {
+                that.@com.lushprojects.circuitjs1.client.CirSim::timeStep = ts;
+            }),
+            isRunning: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::simIsRunning()();
+            }),
+            getNodeVoltage: $entry(function (n) {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n);
+            }),
+            getElements: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::getJSElements()();
+            }),
+            getCircuitAsSVG: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::doExportAsSVGFromAPI()();
+            }),
+            exportCircuit: $entry(function () {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::dumpCircuit()();
+            }),
+            importCircuit: $entry(function (circuit, subcircuitsOnly) {
+                return that.@com.lushprojects.circuitjs1.client.CirSim::importCircuitFromText(Ljava/lang/String;Z)(circuit, subcircuitsOnly);
+            })
+        };
+        var hook = $wnd.oncircuitjsloaded;
+        if (hook)
+            hook($wnd.CircuitJS1);
+    }-*/;
 
     native void callUpdateHook() /*-{
-	    var hook = $wnd.CircuitJS1.onupdate;
-	    if (hook)
-	    	hook($wnd.CircuitJS1);
-	}-*/;
+        var hook = $wnd.CircuitJS1.onupdate;
+        if (hook)
+            hook($wnd.CircuitJS1);
+    }-*/;
 
     native void callAnalyzeHook() /*-{
-            var hook = $wnd.CircuitJS1.onanalyze;
-            if (hook)
-                hook($wnd.CircuitJS1);
-    	}-*/;
+        var hook = $wnd.CircuitJS1.onanalyze;
+        if (hook)
+            hook($wnd.CircuitJS1);
+    }-*/;
 
     native void callTimeStepHook() /*-{
-	    var hook = $wnd.CircuitJS1.ontimestep;
-	    if (hook)
-	    	hook($wnd.CircuitJS1);
-	}-*/;
+        var hook = $wnd.CircuitJS1.ontimestep;
+        if (hook)
+            hook($wnd.CircuitJS1);
+    }-*/;
 
     native void callSVGRenderedHook(String svgData) /*-{
-		var hook = $wnd.CircuitJS1.onsvgrendered;
-		if (hook)
-			hook($wnd.CircuitJS1, svgData);
-	}-*/;
+        var hook = $wnd.CircuitJS1.onsvgrendered;
+        if (hook)
+            hook($wnd.CircuitJS1, svgData);
+    }-*/;
 
     class UndoItem {
         public String dump;

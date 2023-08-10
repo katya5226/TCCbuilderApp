@@ -9,43 +9,43 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.ui.HTMLPanel;
 
+import java.lang.reflect.Field;
 import java.util.Vector;
-
-// edited
-
 
 @SuppressWarnings("rawtypes")
 public class Material {
-
+    public boolean name;
     public boolean invariant;
     public boolean thermoelectric;
-    public boolean hysteresis;
-    public boolean cpThysteresis;  // !!!
-    public boolean nonInvariant;
     public boolean temperatureInducedPhaseChange;
-    public boolean magnetocaloric;
     public boolean electrocaloric;
+    public boolean magnetocaloric;
     public boolean barocaloric;
     public boolean elastocaloric;
+    public boolean cpThysteresis;
+    public boolean dTThysteresis;
+    public boolean kThysteresis;
 
-    public int ID;
+
+    private final CirSim sim;
     public Vector<Double> interpTemps;
 
     public Vector<Double> rho;
     public Vector<Double> k;
-    private final CirSim sim;
+    public Vector<Double> kTheating;
+    public Vector<Double> kTcooling;
+    public Vector<Vector<Double>> dT;
     public Vector<Vector<Double>> dTheating;
     public Vector<Vector<Double>> dTcooling;
+
     public Vector<Vector<Double>> cp;
     public Vector<Vector<Double>> cpHeating;
     public Vector<Vector<Double>> cpCooling;
     public Vector<Double> fields;
 
     public String materialName;
-    public String label;
-
+    boolean field;
 
     public Vector<Double> temperaturesST;
     public Vector<Double> lowFieldEntropies;
@@ -65,8 +65,8 @@ public class Material {
     double tEmissMin;
     double tEmissMax;
     double tMelt;
-
-    boolean field;
+    int id;
+    private String shortName, longName;
 
     public Material(String materialName, CirSim sim) {
         this.materialName = materialName;
@@ -86,7 +86,6 @@ public class Material {
         this.cpCooling = new Vector<Vector<Double>>();
         this.fields = new Vector<Double>();
         setFlags(sim.materialFlagText);
-        this.cpThysteresis = false;  // SHOULD BE ALSO READ FROM FLAGTEXT !!!
     }
 
 
@@ -97,34 +96,33 @@ public class Material {
             String[] line = matcher.getGroup(0).split(",", -1);
             invariant = line[1].equals("1");
             thermoelectric = line[2].equals("1");
-            hysteresis = line[3].equals("1");
-            nonInvariant = line[4].equals("1");
-            temperatureInducedPhaseChange = line[5].equals("1");
-            electrocaloric = line[6].equals("1");
-            magnetocaloric = line[7].equals("1");
-            barocaloric = line[8].equals("1");
-            elastocaloric = line[9].equals("1");
-            //GWT.log(Arrays.toString(line));
-            //GWT.log(line.length+" "+invariant +" "+thermoelectric +" "+hysteresis+" "+nonInvariant+" "+temperatureInducedPhaseChange+" "+electrocaloric+" "+magnetocaloric+" "+barocaloric+" "+elastocaloric);
+            temperatureInducedPhaseChange = line[3].equals("1");
+            electrocaloric = line[4].equals("1");
+            magnetocaloric = line[5].equals("1");
+            barocaloric = line[6].equals("1");
+            elastocaloric = line[7].equals("1");
+            cpThysteresis = line[8].equals("1");
+            dTThysteresis = line[9].equals("1");
+            kThysteresis = line[10].equals("1");
         } else
             GWT.log("No entry found in flag file for material \"" + materialName + "\"");
     }
 
     void readFiles() {
+
         String CORSproxy = "https://corsproxy.io/?";
-        //String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-        String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        String url_info = baseURL + materialName + "/info.txt";
-        String url_properties = baseURL + materialName + "/RT_properties.txt";
-        String url_ranges = baseURL + materialName + "/Ranges.txt";
-        String url_rho = baseURL + materialName + "/rho.txt";
-        String url_k = baseURL + materialName + "/k.txt";
+        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+        //String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
+        //String baseURL = "http://127.0.0.1:8888/";
+        String url_info = baseURL + materialName + "/appInfo/info.json";
+        String url_rho = baseURL + materialName + "/appInfo/rho.txt";
+        String url_k = baseURL + materialName + "/appInfo/k.txt";
 
         if (!sim.awaitedResponses.contains(url_info)) {
             sim.awaitedResponses.add(url_info);
             readInfoFromURL(url_info);
         }
-        if (!sim.awaitedResponses.contains(url_properties)) {
+/*        if (!sim.awaitedResponses.contains(url_properties)) {
             sim.awaitedResponses.add(url_properties);
             readRTPropertiesFromURL(url_properties);
         }
@@ -132,27 +130,30 @@ public class Material {
             sim.awaitedResponses.add(url_ranges);
             readRangesFromURL(url_ranges);
         }
+        if (!sim.awaitedResponses.contains(url_k)) {
+            sim.awaitedResponses.add(url_k);
+            fillVectorFromURL(url_k, k);
+        }*/
         if (!sim.awaitedResponses.contains(url_rho)) {
             sim.awaitedResponses.add(url_rho);
             fillVectorFromURL(url_rho, rho);
         }
-        if (!sim.awaitedResponses.contains(url_k)) {
-            sim.awaitedResponses.add(url_k);
-            fillVectorFromURL(url_k, k);
-        }
 
 
         if (invariant) {
-            String url_cp = baseURL + materialName + "/cp.txt";
+            String url_cp = baseURL + materialName + "/appInfo/cp.txt";
             if (!sim.awaitedResponses.contains(url_cp)) {
                 sim.awaitedResponses.add(url_cp);
                 Vector<Double> vector = new Vector<Double>();
                 fillVectorFromURL(url_cp, vector);
                 cp.add(vector);
             }
-        }
-        if (magnetocaloric) {
-            String url_fields = baseURL + materialName + "/Fields.txt";
+            if (!sim.awaitedResponses.contains(url_k)) {
+                sim.awaitedResponses.add(url_k);
+                fillVectorFromURL(url_k, k);
+            }
+        } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {
+            String url_fields = baseURL + materialName + "/appInfo/Fields.txt";
             if (!sim.awaitedResponses.contains(url_fields)) {
                 sim.awaitedResponses.add(url_fields);
                 loadFieldsFromUrl(url_fields, new Callback() {
@@ -162,24 +163,44 @@ public class Material {
                         String url_cp, url_dT;
                         for (double field : fields) {
                             String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
-                            url_cp = baseURL + materialName + "/cp_" + fieldName + "T.txt";
-                            Vector<Double> field_cp = new Vector<Double>();
-                            sim.awaitedResponses.add(url_cp);
-                            fillVectorFromURL(url_cp, field_cp);
-                            cp.add(field_cp);
 
+                            Vector<Double> vector = new Vector<Double>();
+                            if (cpThysteresis) {
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_cooling.txt";
+                                sim.awaitedResponses.add(url_cp);
+                                fillVectorFromURL(url_cp, vector);
+                                dTcooling.add(vector);
+
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_heating.txt";
+                                vector = new Vector<Double>();
+                                sim.awaitedResponses.add(url_cp);
+                                fillVectorFromURL(url_cp, vector);
+                                dTheating.add(vector);
+                            } else {
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T.txt";
+                                Vector<Double> field_cp = new Vector<Double>();
+                                sim.awaitedResponses.add(url_cp);
+                                fillVectorFromURL(url_cp, field_cp);
+                                cp.add(field_cp);
+                            }
                             if (field != 0) {
-                                Vector<Double> field_dT = new Vector<Double>();
-                                url_dT = baseURL + materialName + "/dT_" + fieldName + "T_cooling.txt";
-                                sim.awaitedResponses.add(url_dT);
-                                fillVectorFromURL(url_dT, field_dT);
-                                dTcooling.add(field_dT);
+                                if (dTThysteresis) {
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T_cooling.txt";
+                                    sim.awaitedResponses.add(url_dT);
+                                    fillVectorFromURL(url_dT, vector);
+                                    dTcooling.add(vector);
 
-                                url_dT = baseURL + materialName + "/dT_" + fieldName + "T_heating.txt";
-                                field_dT = new Vector<Double>();
-                                sim.awaitedResponses.add(url_dT);
-                                fillVectorFromURL(url_dT, field_dT);
-                                dTheating.add(field_dT);
+                                    vector = new Vector<Double>();
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T_heating.txt";
+                                    sim.awaitedResponses.add(url_dT);
+                                    fillVectorFromURL(url_dT, vector);
+                                    dTheating.add(vector);
+                                } else {
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T.txt";
+                                    sim.awaitedResponses.add(url_dT);
+                                    fillVectorFromURL(url_dT, vector);
+                                    cp.add(vector);
+                                }
                             }
                         }
 
@@ -191,11 +212,28 @@ public class Material {
                     }
                 });
             }
+        } else {
+            String url_cp = baseURL + materialName + "/appInfo/cp.txt";
+            if (!sim.awaitedResponses.contains(url_cp)) {
+                sim.awaitedResponses.add(url_cp);
+                Vector<Double> vector = new Vector<Double>();
+                fillVectorFromURL(url_cp, vector);
+                cp.add(vector);
+            }
+            if (!sim.awaitedResponses.contains(url_k)) {
+                url_k = baseURL + materialName + "/appInfo/k_heating.txt";
+                sim.awaitedResponses.add(url_k);
+                fillVectorFromURL(url_k, kTheating);
+                url_k = baseURL + materialName + "/appInfo/k_cooling.txt";
+                sim.awaitedResponses.add(url_k);
+                fillVectorFromURL(url_k, kTcooling);
+            }
         }
     }
 
+
     boolean isLoaded() {
-        boolean isLoaded = true;
+/*        boolean isLoaded = true;
         isLoaded = isLoaded && k.size() > 0;
         isLoaded = isLoaded && rho.size() > 0;
         isLoaded = isLoaded && cp.size() > 0;
@@ -204,88 +242,20 @@ public class Material {
             isLoaded = isLoaded && dTcooling != null && dTcooling.size() > 0;
             isLoaded = isLoaded && dTheating != null && dTheating.size() > 0;
         }
-        return isLoaded;
+        return isLoaded;*/
+        return false;
     }
 
 
     public void showTemperatureRanges(int i) {
-        String message = "Density: " + tRhoMin + " - " + tRhoMax + " K\n"
-                + "Specific Heat Capacity: " + tCpMin + " - " + tCpMax + " K\n"
-                + "Thermal Conductivity: " + tKMin + " - " + tKMax + " K\n";
+        String message =
+                "Density: " + (tRhoMin == -1 || tRhoMax == -1 ? "undefined" : (tRhoMin + " - " + tRhoMax + " K")) + "\n"
+                        + "Specific Heat Capacity: " + (tCpMin == -1 || tCpMax == -1 ? "undefined" : (tCpMin + " - " + tCpMax + " K")) + "\n"
+                        + "Thermal Conductivity: " + (tKMin == -1 || tKMax == -1 ? "undefined" : (tKMin + " - " + tKMax + " K")) + "\n"
+                        + "Emissivity: " + (tEmissMin == -1 || tEmissMax == -1 ? "undefined" : (tEmissMin + " - " + tEmissMax + " K")) + "\n";
+
         if (CirSim.editDialog != null && ((EditDialog) sim.editDialog).rangesHTML != null)
             ((EditDialog) sim.editDialog).rangesHTML[i].setTitle(message);
-    }
-
-
-    void readRTPropertiesFromURL(String url) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-        try {
-            requestBuilder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    GWT.log("File Error Response", exception);
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                        String text = response.getText();
-                        JSONValue val = JSONParser.parseStrict(text);
-                        JSONObject obj = val.isObject();
-                        rhoRT = Double.parseDouble(obj.get("density").toString().replaceAll("\"", ""));
-                        cpRT = Double.parseDouble(obj.get("specificHeatCapacity").toString().replaceAll("\"", ""));
-                        rhoRT = Double.parseDouble(obj.get("thermalConductivity").toString().replaceAll("\"", ""));
-                        emissRT = Double.parseDouble(obj.get("emissivity").toString().replaceAll("\"", ""));
-
-                        sim.awaitedResponses.remove(url);
-                    } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
-                        GWT.log("File \"" + url + "\" not found");
-                        sim.awaitedResponses.remove(url);
-                    } else {
-                        GWT.log("Bad file server response: " + response.getStatusText());
-                        sim.awaitedResponses.remove(url);
-                    }
-                }
-            });
-        } catch (RequestException e) {
-            GWT.log("failed file reading", e);
-        }
-
-    }
-
-    void readRangesFromURL(String url) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-        try {
-            requestBuilder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    GWT.log("File Error Response", exception);
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                        String text = response.getText();
-                        JSONValue val = JSONParser.parseStrict(text);
-                        JSONObject obj = val.isObject();
-                        tRhoMin = Double.parseDouble(obj.get("density").toString().replaceAll("\"", "").split("-")[0]);
-                        tRhoMax = Double.parseDouble(obj.get("density").toString().replaceAll("\"", "").split("-")[1]);
-                        tCpMin = Double.parseDouble(obj.get("specificHeatCapacity").toString().replaceAll("\"", "").split("-")[0]);
-                        tCpMax = Double.parseDouble(obj.get("specificHeatCapacity").toString().replaceAll("\"", "").split("-")[1]);
-                        tKMin = Double.parseDouble(obj.get("thermalConductivity").toString().replaceAll("\"", "").split("-")[0]);
-                        tKMax = Double.parseDouble(obj.get("thermalConductivity").toString().replaceAll("\"", "").split("-")[1]);
-/*                        tEmissMin = Double.parseDouble()(obj.get("emissivity").toString().replaceAll("\"","")".split("-")[0]);
-                        tEmissMax = Double.parseDouble()(obj.get("emissivity").toString().replaceAll("\"","")".split("-")[1]);*/
-                        sim.awaitedResponses.remove(url);
-                    } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
-                        GWT.log("File \"" + url + "\" not found");
-                        sim.awaitedResponses.remove(url);
-                    } else {
-                        GWT.log("Bad file server response: " + response.getStatusText());
-                        sim.awaitedResponses.remove(url);
-                    }
-                }
-            });
-        } catch (RequestException e) {
-            GWT.log("failed file reading", e);
-        }
-
     }
 
     void readInfoFromURL(String url) {
@@ -299,10 +269,45 @@ public class Material {
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         String text = response.getText();
-                        String[] info = text.split(",");
-                        ID = Integer.parseInt(info[0]);
-                        label = info[1];
-                        tMelt = Double.parseDouble(info[2]);
+                        JSONValue val = JSONParser.parseStrict(text);
+                        JSONObject obj = val.isObject();
+                        id = obj.get("id").isNumber() != null ? (int) obj.get("id").isNumber().doubleValue() : -1;
+                        tMelt = obj.get("melting_point").isNumber() != null ? obj.get("melting_point").isNumber().doubleValue() : -1;
+                        shortName = obj.get("short_name") != null ? obj.get("short_name").toString() : "";
+                        longName = obj.get("long_name") != null ? obj.get("long_name").toString() : "";
+
+                        JSONObject rtProperties = obj.get("rt_properties").isObject();
+                        rhoRT = rtProperties != null && rtProperties.get("density").isNumber() != null ? rtProperties.get("density").isNumber().doubleValue() : -1;
+                        cpRT = rtProperties != null && rtProperties.get("specificHeatCapacity").isNumber() != null ? rtProperties.get("specificHeatCapacity").isNumber().doubleValue() : -1;
+                        kRT = rtProperties != null && rtProperties.get("thermalConductivity").isNumber() != null ? rtProperties.get("thermalConductivity").isNumber().doubleValue() : -1;
+                        emissRT = rtProperties != null && rtProperties.get("emissivity").isNumber() != null ? rtProperties.get("emissivity").isNumber().doubleValue() : -1;
+
+                        JSONObject ranges = obj.get("ranges").isObject();
+                        tRhoMax = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tRhoMin = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tCpMax = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tCpMin = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tKMax = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tKMin = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tEmissMax = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tEmissMin = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+
+/*                        GWT.log("id: " + id);
+                        GWT.log("tMelt: " + tMelt);
+                        GWT.log("shortName: " + shortName);
+                        GWT.log("longName: " + longName);
+                        GWT.log("rhoRT: " + rhoRT);
+                        GWT.log("cpRT: " + cpRT);
+                        GWT.log("kRT: " + kRT);
+                        GWT.log("emissRT: " + emissRT);
+                        GWT.log("tRhoMax: " + tRhoMax);
+                        GWT.log("tRhoMin: " + tRhoMin);
+                        GWT.log("tCpMax: " + tCpMax);
+                        GWT.log("tCpMin: " + tCpMin);
+                        GWT.log("tKMax: " + tKMax);
+                        GWT.log("tKMin: " + tKMin);
+                        GWT.log("tEmissMax: " + tEmissMax);
+                        GWT.log("tEmissMin: " + tEmissMin);*/
                         sim.awaitedResponses.remove(url);
                     } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
                         GWT.log("File \"" + url + "\" not found");
@@ -318,6 +323,8 @@ public class Material {
         }
 
     }
+
+
 
     void fillVectorFromURL(String url, Vector<Double> vector) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
@@ -380,92 +387,4 @@ public class Material {
         }
 
     }
-/*
-    void loadThermalFileFromURL(String url, String property, final Callback callback) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-        try {
-            requestBuilder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    // Handle error
-                    GWT.log("File Error Response", exception);
-                    callback.onFailure(exception);
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                        String text = response.getText();
-                        if (!readThermalData(text, property))
-                            GWT.log("File \"" + url + "\" is empty");
-                        callback.onSuccess(response);
-                    } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
-                        GWT.log("File \"" + url + "\" not found");
-                        callback.onFailure(response.getStatusText());
-                    } else {
-                        GWT.log("Bad file server response: " + response.getStatusText());
-                        callback.onFailure(response.getStatusText());
-                    }
-                }
-            });
-        } catch (RequestException e) {
-            GWT.log("failed file reading", e);
-            callback.onFailure(e);
-        }
-    }
-
-    boolean readThermalData(String text, String property) {
-*//*        this.temps.clear();
-        switch (property) {
-            case "rho":
-                this.rho.clear();
-                break;
-            case "cp":
-                this.cp.clear();
-                break;
-            case "k":
-                this.k.clear();
-                break;
-        }*//*
-        try {
-            String[] tmp;
-            for (String line : text.split("\n")) {
-                if (line.length() > 0) {
-                    tmp = line.replaceAll("\t", " ").replaceAll("\\s+", " ").split(" ");
-                    *//*if (tmp.length == 1) {
-                        switch (property) {
-                            case "rho":
-                                for (Double temp : temps)
-                                    this.rho.add(Double.parseDouble(tmp[0]));
-                                break;
-                            case "cp":
-                                for (Double temp : temps)
-                                    this.cp.add(Double.parseDouble(tmp[0]));
-                                break;
-                            case "k":
-                                for (Double temp : temps)
-                                    this.k.add(Double.parseDouble(tmp[0]));
-                                break;
-                        }
-                    }*//*
-                    switch (property) {
-                        case "rho":
-                            this.rho.add(Double.parseDouble(tmp[0]));
-                            break;
-                        case "cp":
-                            this.cp.add(Double.parseDouble(tmp[0]));
-                            break;
-                        case "k":
-                            this.k.add(Double.parseDouble(tmp[0]));
-                            break;
-
-                    }
-                } else {
-                    return false;
-                }
-            }
-
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }*/
 }
