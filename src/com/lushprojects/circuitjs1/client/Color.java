@@ -19,17 +19,30 @@
 
 package com.lushprojects.circuitjs1.client;
 
+/*
+:root {
+  --black: #181C24;
+  --blue: #2f3847;
+  --deep-blue: #384354;
+  --white: #F2F2F2;
+  --red: #D93B3B;
+  --deep-red: #8d2424;
+  --yellow: #e7a217;
+  --deep-yellow: #e7a117;
+}
+*/
 public class Color {
     public final static Color white = new Color("#F2F2F2");
+    public final static Color darkGray = new Color("#2f3847");
+    public final static Color gray = new Color("#384354");
     public final static Color lightGray = new Color("#AEB6BF");
-    public final static Color gray = new Color("#404B59");
-    public final static Color darkGray = new Color("#273459");
-    public final static Color black = new Color("#0D121F");
+    public final static Color black = new Color("#181C24");
     public final static Color red = new Color("#D93B3B");
+    public final static Color deepRed = new Color("#8d2424");
     public final static Color pink = new Color("#FFAFC0");
     public final static Color orange = new Color("#FFC800");
-    public final static Color yellow = new Color("#F2A71B");
-    public final static Color deepYellow = new Color("#CF8F18");
+    public final static Color yellow = new Color("#e7a217");
+    public final static Color deepYellow = new Color("#e7a117");
     public final static Color green = new Color("#00FF00");
     public final static Color magenta = new Color("#FF00FF");
     public final static Color cyan = new Color("#00FFFF");

@@ -78,7 +78,7 @@ public class Scrollbar extends Composite implements
         val = value;
         pan = new VerticalPanel();
         can = Canvas.createIfSupported();
-        can.getCanvasElement().getStyle().setBackgroundColor(Color.blue.getHexValue());
+        can.getCanvasElement().getStyle().setBackgroundColor(Color.darkGray.getHexValue());
         can.setWidth((CirSim.VERTICALPANELWIDTH) + " px");
         can.setHeight("40 px");
         can.setCoordinateSpaceWidth((int) (CirSim.VERTICALPANELWIDTH));
@@ -118,7 +118,7 @@ public class Scrollbar extends Composite implements
 
     void draw() {
         g.setStrokeStyle(Color.lightGray.getHexValue());
-        g.setFillStyle(Color.deepBlue.getHexValue());
+        g.setFillStyle(Color.gray.getHexValue());
         g.setLineWidth(3);
         g.fillRect(0, 0, CirSim.VERTICALPANELWIDTH, SCROLLHEIGHT);
         g.setFillStyle(Color.white.getHexValue());
@@ -135,7 +135,7 @@ public class Scrollbar extends Composite implements
         g.stroke();
 
         if (enabled)
-            g.setStrokeStyle(Color.gray.getHexValue());
+            g.setStrokeStyle(Color.white.getHexValue());
         g.beginPath();
         g.setLineWidth(5.0);
         g.moveTo(HMARGIN + SCROLLHEIGHT + BARMARGIN, (double) (SCROLLHEIGHT / 2));
