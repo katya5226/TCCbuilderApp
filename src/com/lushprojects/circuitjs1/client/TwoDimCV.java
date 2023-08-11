@@ -89,11 +89,12 @@ public class TwoDimCV {
     }
 
     double k() {
+        //TODO: update this method for kThysteresis
         double k = 0.01;
         if (constK != -1)
             k = constK;
         else if (constK == -1) {
-            k = ModelMethods.linInterp(temperature, material.interpTemps, material.k);
+            k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
         }
         return k;
     }
@@ -122,7 +123,7 @@ public class TwoDimCV {
             TwoDimCV neigh = neighbours[i];
             kd[i] = 2 * kh[i] * dy / (neigh.dy + dy);
         }
-        
+
     }
 
     void calculateConductivities() {

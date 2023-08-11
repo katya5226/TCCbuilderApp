@@ -998,8 +998,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         String CORSproxy = "https://corsproxy.io/?";
         String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-        //String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        //String baseURL = "http://127.0.0.1:8888/";
+/*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
+        baseURL = "http://127.0.0.1:8888/";*/
         readMaterialFlags(baseURL + "materials_flags.csv");
         /*readMaterialNames(new AsyncCallback<String[]>() {
             @Override
@@ -1038,7 +1038,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
                         materialFlagText = response.getText();
-                        GWT.log(materialFlagText);
                         String[] lines = materialFlagText.split("\n");
                         for (String s : Arrays.copyOfRange(lines, 1, lines.length)) {
                             String name = s.split(",")[0];
@@ -4018,6 +4017,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         left_boundary = 41;
         right_boundary = 42;
 
+
         CyclePart cyclePartHeatTransfer = new CyclePart(cycleParts.size(), this);
         cyclePartHeatTransfer.partType = CyclePart.PartType.HEAT_TRANSFER;
         cyclePartHeatTransfer.duration = 1.0;
@@ -4047,7 +4047,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             cd.printCyclePart(cp, cyclicOperationLabel);
             cd.closeDialog();
         }
-        resetAction();
     }
 
     void runTestSuite() {

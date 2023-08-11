@@ -208,7 +208,6 @@ class EditDialog extends Dialog {
             double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).const_rho : ((TwoDimComponent) elm).cvs.get(0).constRho;
             double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).const_cp : ((TwoDimComponent) elm).cvs.get(0).constCp;
             double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).const_k : ((TwoDimComponent) elm).cvs.get(0).constK;
-            GWT.log(constRho + " " + constCp + " " + constK);
             if (constRho != -1) {
                 vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");

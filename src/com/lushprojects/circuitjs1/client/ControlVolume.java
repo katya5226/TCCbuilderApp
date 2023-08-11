@@ -62,7 +62,7 @@ public class ControlVolume {
         double rho = 0.0;
         if (this.const_rho != -1)
             rho = this.const_rho;
-        else if (this.const_rho == -1) {
+        else {
             rho = ModelMethods.linInterp(this.temperature, this.parent.material.interpTemps, this.parent.material.rho);
         }
         return rho;
@@ -76,27 +76,30 @@ public class ControlVolume {
         if (this.const_cp != -1) {
             cp = this.const_cp;
         } else {
-            if (this.parent.field == true) {
+            if (this.parent.field) {
                 fI = this.parent.fieldIndex;
             }
-            if (m.cpThysteresis == false) {
+            if (m.cpThysteresis) {
+                if (this.mode == 1)
+                    cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpHeating.get(fI));
+                else if (this.mode == -1)
+                    cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpCooling.get(fI));
+            } else {
                 cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cp.get(fI));
-            } else if (m.cpThysteresis == true && this.mode == 1) {
-                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpHeating.get(fI));
-            } else if (m.cpThysteresis == true && this.mode == -1) {
-                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpCooling.get(fI));
             }
         }
         return cp;
     }
 
     double k() {
+        //TODO: update this method for kThysteresis
         //GWT.log("Calculating k");
         double k = 0.01;
+        Material m = this.parent.material;
         if (this.const_k != -1)
             k = this.const_k;
-        else if (this.const_k == -1) {
-            k = ModelMethods.linInterp(this.temperature, this.parent.material.interpTemps, this.parent.material.k);
+        else {
+            k = ModelMethods.linInterp(this.temperature, m.interpTemps, m.k.get(0));
         }
         return k;
     }
