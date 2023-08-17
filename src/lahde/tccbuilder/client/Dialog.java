@@ -27,6 +27,8 @@ class Dialog extends DialogBox  {
 	boolean closeOnEnter;
 
 	Dialog() {
+		setGlassEnabled(true);
+		setGlassStyleName("glassBackdrop");
 		closeOnEnter = true;
 	}
 

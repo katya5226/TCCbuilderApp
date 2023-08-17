@@ -41,7 +41,7 @@ public class CyclicDialog extends Dialog {
 
         componentIndices = new ArrayList<Integer>();
 
-        applyButton = new Button(lahde.tccbuilder.client.util.Locale.LS("Apply"));
+        applyButton = new Button(lahde.tccbuilder.client.util.Locale.LS("Add Part"));
         cancelButton = new Button(lahde.tccbuilder.client.util.Locale.LS("Cancel"));
         vp = new VerticalPanel();
         setWidget(vp);

@@ -37,7 +37,7 @@ interface Editable {
 class EditDialog extends Dialog {
     Editable elm;
     CirSim cframe;
-    Button applyButton, okButton, cancelButton, componentButton;
+    Button applyButton, okButton, cancelButton, constantParametersButton;
     ListBox[] rangesHTML;
     EditInfo einfos[];
     int einfocount;
@@ -49,7 +49,7 @@ class EditDialog extends Dialog {
     EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
-
+//      TODO: change vp to flow panel
         rangesHTML = new ListBox[2];
         setText(Locale.LS("Edit Component"));
         cframe = f;
@@ -57,7 +57,6 @@ class EditDialog extends Dialog {
 //		setLayout(new EditDialogLayout());
         vp = new VerticalPanel();
         setWidget(vp);
-        vp.setHeight("90vh");
         einfos = new EditInfo[20];
 //		noCommaFormat = DecimalFormat.getInstance();
 //		noCommaFormat.setMaximumFractionDigits(10);
@@ -69,7 +68,9 @@ class EditDialog extends Dialog {
         vp.add(hp);
 
         applyButton = new Button(Locale.LS("Apply"));
-        componentButton = new Button(Locale.LS("Add"));
+        constantParametersButton = new Button(Locale.LS("Set Constant Parameter"));
+        constantParametersButton.addStyleName("constantParameterButton");
+        constantParametersButton.addStyleName("topSpace");
 
         hp.add(applyButton);
 
@@ -92,7 +93,7 @@ class EditDialog extends Dialog {
                 closeDialog();
             }
         });
-        componentButton.addClickHandler(new ClickHandler() {
+        constantParametersButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 closeDialog();
                 new ComponentConstantsDialog((CircuitElm) elm, cframe).show();
@@ -200,9 +201,7 @@ class EditDialog extends Dialog {
 
 
         if (elm instanceof Component || elm instanceof TwoDimComponent) {
-            vp.insert(l = new Label(Locale.LS("Set Constant Parameters")), vp.getWidgetCount() - 1);
-            vp.insert(componentButton, vp.getWidgetCount() - 1);
-            l.setStyleName("topSpace");
+            vp.insert(constantParametersButton, vp.getWidgetCount() - 1);
 
             double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).const_rho : ((TwoDimComponent) elm).cvs.get(0).constRho;
             double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).const_cp : ((TwoDimComponent) elm).cvs.get(0).constCp;

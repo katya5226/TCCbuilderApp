@@ -12,6 +12,9 @@
     --gray: #404B59;
     --light-gray: #5d6e83;
 }
+.example::-webkit-scrollbar {
+    display: none;
+}
 
 * {
     font-family: "Roboto", sans-serif;
@@ -58,7 +61,6 @@ div.gwt-DialogBox {
 div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > * {
     width: 100%;
     font-size: 0.75rem;
-    margin: 0;
 }
 
 
@@ -94,6 +96,14 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
 
 .dialogButtonPanel {
     margin-top: 1rem;
+}
+
+.dialogButtonPanel > tbody > tr > td {
+    width: 33%;
+}
+
+.dialogButtonPanel > tbody > tr > td > * {
+    width: 90%;
 }
 
 .gwt-ListBox {
@@ -215,6 +225,11 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
     display: none;
 }
 
+.constantParameterButton {
+    text-align: left;
+    width: fit-content;
+}
+
 .topButton-red {
     background-color: var(--red);
 }
@@ -232,24 +247,15 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
 
 
 .cyclicContainer {
-    margin-bottom: 0.5rem;
-    margin-top: 0.5rem;
-
-}
-
-.cyclicContainer > tbody > tr {
+    height: 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.cyclicContainer > tbody > tr > td {
-    width: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-
 .radioPanel label {
     margin-right: 15px;
+}
+.glassBackdrop{
+    background-color: rgba(24, 28, 36, 0.33);
 }

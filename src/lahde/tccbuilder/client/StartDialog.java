@@ -15,7 +15,7 @@ public class StartDialog extends Dialog {
     CirSim sim;
     VerticalPanel vp;
     HorizontalPanel buttonPanel;
-    HorizontalPanel cyclicContainer;
+    FlowPanel cyclicContainer;
     Button cancelButton;
     Button applyButton;
     DoubleBox timeStep;
@@ -70,7 +70,7 @@ public class StartDialog extends Dialog {
         cyclic.setState(sim.cyclic);
         cyclicButton = new Button("Add Cyclic Part");
         cyclicButton.setEnabled(cyclic.getState());
-        cyclicContainer = new HorizontalPanel();
+        cyclicContainer = new FlowPanel();
         cyclicContainer.addStyleName("cyclicContainer");
         cyclicContainer.add(cyclic);
         cyclicContainer.add(cyclicButton);

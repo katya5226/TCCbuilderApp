@@ -531,8 +531,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         fileMenuBar.addItem(exportAsTextItem);
         fileMenuBar.addItem(iconMenuItem("export", "Export As Image...", new MyCommand("file", "exportasimage")));
         fileMenuBar.addItem(iconMenuItem("export", "Export As SVG...", new MyCommand("file", "exportassvg")));
-        fileMenuBar.addItem(iconMenuItem("microchip", "Create Subcircuit...", new MyCommand("file", "createsubcircuit")));
-        fileMenuBar.addItem(iconMenuItem("magic", "Find DC Operating Point", new MyCommand("file", "dcanalysis")));
+        //fileMenuBar.addItem(iconMenuItem("microchip", "Create Subcircuit...", new MyCommand("file", "createsubcircuit")));
+        //fileMenuBar.addItem(iconMenuItem("magic", "Find DC Operating Point", new MyCommand("file", "dcanalysis")));
         recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file", "recover"));
         recoverItem.setEnabled(recovery != null);
         fileMenuBar.addItem(recoverItem);
@@ -1634,8 +1634,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int steps = 0;
     int framerate = 0, steprate = 0;
     static CirSim theSim;
-
     public void setSimRunning(boolean s) {
+
         if (awaitedResponses.size() == 0)
             if (s) {
                 if (stopMessage != null)
@@ -3798,18 +3798,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     String dumpThermalCircuit() {
         String dump = "";
+
+
         if (simDimensionality == 1) {
             dump =
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + dt + "\n" +
-                            "Inner loop tolerance: " + "\n" +
                             "Dimensionality: 1D\n" +
-                            "Boundary condition on the left: " + heatCircuit.left_boundary + "\n" +
-                            "Boundary condition on the right: " + heatCircuit.right_boundary + "\n" +
+                            "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.left_boundary) + "\n" +
+                            "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.right_boundary) + "\n" +
                             "Temperature on the left: " + heatCircuit.temp_left + " K\n" +
-                            "Convection coefficient on the left: " + " W/(m²K)\n" +
+                            "Convection coefficient on the left: " + heatCircuit.h_left + " W/(m²K)\n" +
                             "Temperature on the right: " + heatCircuit.temp_right + " K\n" +
-                            "Convection coefficient on the right: " + " W/(m²K)\n";
+                            "Convection coefficient on the right: " + heatCircuit.h_right + " W/(m²K)\n";
 
             dump += "\nThermal control elements: \n";
             for (TCE tce : simTCEs) {
@@ -3820,13 +3821,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             "Component index: " + component.index + "\n" +
                             "Material: " + component.material.materialName + "\n" +
                             "Number of control volumes:  " + component.num_cvs + "\n" +
-                            "Control volume length: " + component.cvs.get(0).dx + " m\n" +
-                            "Constant density:" + component.constRho + " kg/m³\n" +
-                            "Constant specific heat:" + component.constCp + " J/(kgK)\n" +
-                            "Constant thermal conductivity: " + component.constK + " W/(mK)\n" +
+                            "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
+                            "Constant density: " + ((component.constRho == -1) ? "not set" : component.constRho + " kg/m³") + "\n" +
+                            "Constant specific heat: " + ((component.constCp == -1) ? "not set" : component.constCp + " J/(kgK)") + "\n" +
+                            "Constant thermal conductivity: " + ((component.constK == -1) ? "not set" : component.constK + " W/(mK)") + "\n" +
                             "Left contact resistance: " + component.left_resistance + " mK/W\n" +
                             "Right contact resistance: " + component.right_resistance + " mK/W\n" +
-                            "Generated heat: " + "TBD" + " W/m²\n\n";
+                            "Generated heat: " + 0.0 + " W/m²\n\n";
                 }
             }
             dump += "\nTemperatures:\n";
@@ -3847,16 +3848,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             dump += "\nFluxes:\n";
             heatCircuit.calculateHeatFluxes();
             for (int i = 0; i < heatCircuit.num_cvs; i++) {
-                dump += String.valueOf(heatCircuit.fluxes[i]) + "\t";
+                dump += heatCircuit.fluxes[i] + "\t";
             }
         } else if (simDimensionality == 2) {
             dump =
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + theSim.dt + "\n" +
-                            "Inner loop tolerance: " + "\n" +
                             "Dimensionality: 2D\n" +
-                            "Boundary condition on the left: " + "\n" +
-                            "Boundary condition on the right: " + "\n" +
+                            "Boundary condition on the left: " + heatCircuit.left_boundary + "\n" +
+                            "Boundary condition on the right: " + heatCircuit.right_boundary + "\n" +
                             "Temperature on the left: " + " K\n" +
                             "Convection coefficient on the left: " + " W/(m²K)\n" +
                             "Temperature on the right: " + " K\n" +
@@ -3871,16 +3871,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         "Material: " + component.material.materialName + "\n" +
                         "X-discretizaton number:  " + component.n + "\n" +
                         "Y-discretizaton number:  " + component.m + "\n" +
-                        "Control volume length: " + component.cvs.get(0).dx + " m\n" +
-                        "Control volume height: " + component.cvs.get(0).dy + " m\n" +
-                        "Constant density:" + component.cvs.get(0).constRho + "kg/m³\n" +
-                        "Constant specific heat:" + component.cvs.get(0).constCp + "J/(kgK)\n" +
-                        "Constant thermal conductivity: " + component.cvs.get(0).constK + " W/(mK)\n" +
+                        "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
+                        "Control volume height: " + formatLength(component.cvs.get(0).dy) + "\n" +
+                        "Constant density: " + (component.cvs.get(0).constRho == -1 ? "not set" : component.cvs.get(0).constRho) + "kg/m³\n" +
+                        "Constant specific heat: " + (component.cvs.get(0).constCp == -1 ? "not set" : component.cvs.get(0).constCp) + "J/(kgK)\n" +
+                        "Constant thermal conductivity: " + (component.cvs.get(0).constK == -1 ? "not set" : component.cvs.get(0).constK) + " W/(mK)\n" +
                         "Left contact resistance: " + component.resistances[0] + "mK/W\n" +
                         "Right contact resistance: " + component.resistances[1] + "mK/W\n" +
                         "Bottom contact resistance: " + component.resistances[2] + "mK/W\n" +
                         "Top contact resistance: " + component.resistances[3] + "mK/W\n" +
-                        "Generated heat: " + "W/m²\n\n";
+                        "Generated heat: " + 0.0 + "W/m²\n\n";
             }
             dump += "\nTemperatures at " + NumberFormat.getFormat("0.00").format(time) + "s\n";
             Vector<TwoDimCV> cvs = twoDimTCE.cvs;
