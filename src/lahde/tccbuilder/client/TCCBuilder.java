@@ -34,7 +34,7 @@ import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Window;
 import lahde.tccbuilder.client.util.Locale;
 
-public class circuitjs1 implements EntryPoint {
+public class TCCBuilder implements EntryPoint {
 
     public static final String versionString = "2.7.6js";
 
@@ -45,7 +45,7 @@ public class circuitjs1 implements EntryPoint {
     static CirSim mysim;
 
     // This is the program entrypoint! 
-    // Called by gtw automagically (see circuitjs1.gwt.xml)
+    // Called by gtw automagically (see app.gwt.xml)
     public void onModuleLoad() {
         // loadLocale() launches the sim after determining the language (see below)
         loadLocale();

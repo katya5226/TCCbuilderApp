@@ -45,7 +45,7 @@ public class ExportAsUrlDialog extends Dialog {
 	String requrl;
 	
 	public boolean shortIsSupported() {
-		return circuitjs1.shortRelaySupported;
+		return TCCBuilder.shortRelaySupported;
 	}
 	
 //	static public final native boolean bitlyIsSupported() 

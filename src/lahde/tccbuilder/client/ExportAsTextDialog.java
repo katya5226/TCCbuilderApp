@@ -46,7 +46,7 @@ public class ExportAsTextDialog extends Dialog {
 		Label  la2;
 		SafeHtml html;
 		vp=new VerticalPanel();
-		vp.setWidth("80vw");
+		vp.setWidth("90vw");
 		setWidget(vp);
 		setText(Locale.LS("Export as Text"));
 		vp.add(new Label(Locale.LS("Text file for this circuit is...")));

@@ -49,7 +49,7 @@ setup() {
         mv build.xml build.xml.backup
     fi
     chmod +x "$GWT_DIR/webAppCreator"
-    "$GWT_DIR/webAppCreator" -out ../tempProject com.lushprojects.circuitjs1.circuitjs1
+    "$GWT_DIR/webAppCreator" -out ../tempProject lahde.tccbuilder.app
     cp ../tempProject/build.xml ./
     sed -i 's/source="1.7"/source="1.8"/g' build.xml
     sed -i 's/target="1.7"/target="1.8"/g' build.xml
@@ -61,7 +61,7 @@ codeserver() {
     java -classpath "src:$GWT_DIR/gwt-codeserver.jar:$GWT_DIR/gwt-dev.jar:$GWT_DIR/gwt-user.jar" \
         com.google.gwt.dev.codeserver.CodeServer \
         -launcherDir war \
-        lahde.tccbuilder.circuitjs1
+        lahde.tccbuilder.app
 }
 
 webserver() {

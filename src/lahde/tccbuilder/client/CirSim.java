@@ -72,7 +72,6 @@ import com.google.gwt.storage.client.Storage;
 
 import static com.google.gwt.event.dom.client.KeyCodes.*;
 
-import lahde.tccbuilder.client.math3.linear.*;
 import lahde.tccbuilder.client.util.Locale;
 import lahde.tccbuilder.client.util.PerfMonitor;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -3501,7 +3500,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         }
         if (item == "about")
-            aboutBox = new AboutBox(circuitjs1.versionString);
+            aboutBox = new AboutBox(TCCBuilder.versionString);
         if (item == "importfromlocalfile") {
             pushUndo();
             if (isElectron())
@@ -3900,7 +3899,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 dump += "\nflow(" + i + ")=" + NumberFormat.getFormat("0.0000").format(flow);
 
             }
-            dump += "fe\n";
+            dump += "\nfe\n";
         }
 
         return dump;

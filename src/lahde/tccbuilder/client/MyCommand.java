@@ -31,7 +31,7 @@ public class MyCommand implements Command {
 	}
 	
 	public void execute() {
-		circuitjs1.mysim.menuPerformed(menuName, itemName);
+		TCCBuilder.mysim.menuPerformed(menuName, itemName);
 	}
 
 }
