@@ -603,12 +603,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         showTemperaturesCheckItem.setState(true);
-        m.addItem(showOverlayCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperature Overlay (2D)"), new Command() {
+/*        m.addItem(showOverlayCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperature Overlay (2D)"), new Command() {
             public void execute() {
                 viewTempsOverlay = !viewTempsOverlay;
             }
         }));
-        showOverlayCheckItem.setState(true);
+        showOverlayCheckItem.setState(true);*/
         dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current"));
         dotsCheckItem.setState(true);
         voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"), new Command() {
@@ -784,7 +784,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         l.addStyleName("topSpace");
         dimensionality = new ListBox();
         dimensionality.addItem("1D");
-        dimensionality.addItem("2D");
+        //dimensionality.addItem("2D");
         dimensionality.addStyleName("topSpace");
         verticalPanel.add(dimensionality);
 
@@ -1106,6 +1106,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         heatCircuit.h_right = h_right;
         heatCircuit.temp_left = temp_left;
         heatCircuit.temp_right = temp_right;
+        heatCircuit.q_in = qIn;
+        heatCircuit.q_out = qOut;
 
         heatCircuit.build_TCC();
         heatCircuit.initializeMatrix();

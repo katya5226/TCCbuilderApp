@@ -1,2 +1,0 @@
-### setuplist.txt first line must be a comments
-KlinarDiode.txt MCWithFluidicSwitch

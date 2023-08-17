@@ -75,7 +75,7 @@ public class StartDialog extends Dialog {
         cyclicContainer.add(cyclic);
         cyclicContainer.add(cyclicButton);
 
-        includingRadiaton = new Checkbox("Including radiation");
+        //includingRadiaton = new Checkbox("Including radiation");
 
 
         timeStep = new DoubleBox();
@@ -144,7 +144,7 @@ public class StartDialog extends Dialog {
         vp.add(rightConvectionCoefficient);
         vp.add(cyclicContainer);
 
-        vp.add(includingRadiaton);
+        //vp.add(includingRadiaton);
 
         vp.setSpacing(1);
 

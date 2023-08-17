@@ -450,11 +450,11 @@ public class CyclicDialog extends Dialog {
                     Component c = components.get(i);
                     label.setHTML(label.getHTML() + "&emsp;&emsp;" + c.name + " " + c.index);
                     if (cyclePart.newProperties.get(i).get(0) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;Rho: " + cyclePart.newProperties.get(i).get(0) + ", ");
+                        label.setHTML(label.getHTML() + "&emsp;rho: " + cyclePart.newProperties.get(i).get(0) + ", ");
                     if (cyclePart.newProperties.get(i).get(1) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;Cp: " + cyclePart.newProperties.get(i).get(1) + ", ");
+                        label.setHTML(label.getHTML() + "&emsp;cp: " + cyclePart.newProperties.get(i).get(1) + ", ");
                     if (cyclePart.newProperties.get(i).get(2) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;K: " + cyclePart.newProperties.get(i).get(2) + ", ");
+                        label.setHTML(label.getHTML() + "&emsp;k: " + cyclePart.newProperties.get(i).get(2) + ", ");
                 }
                 label.setHTML(label.getHTML() + "</br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
