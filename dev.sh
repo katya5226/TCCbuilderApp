@@ -61,7 +61,7 @@ codeserver() {
     java -classpath "src:$GWT_DIR/gwt-codeserver.jar:$GWT_DIR/gwt-dev.jar:$GWT_DIR/gwt-user.jar" \
         com.google.gwt.dev.codeserver.CodeServer \
         -launcherDir war \
-        com.lushprojects.circuitjs1.circuitjs1
+        lahde.tccbuilder.circuitjs1
 }
 
 webserver() {
