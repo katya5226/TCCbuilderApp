@@ -83,7 +83,6 @@ class SwitchElm extends CircuitElm {
         interpPoint(lead1, lead2, ps2, 1, hs2);
 
         drawThickLine(g, ps, ps2);
-        drawPosts(g);
     }
 
     Rectangle getSwitchRect() {

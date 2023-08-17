@@ -279,7 +279,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
         doDots(g);
-        drawPosts(g);
 
     }
 

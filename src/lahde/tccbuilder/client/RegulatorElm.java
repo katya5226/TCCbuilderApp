@@ -112,7 +112,6 @@ class RegulatorElm extends CircuitElm {
             drawValues(g, s, hs + 2);
         }*/
         doDots(g);
-        drawPosts(g);
     }
 
     void calculateCurrent() {

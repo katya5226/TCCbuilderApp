@@ -104,7 +104,6 @@ class CapacitorElm extends CircuitElm {
 		drawDots(g, point1, lead1, curcount);
 		drawDots(g, point2, lead2, -curcount);
 	    }
-	    drawPosts(g);
 	    if (sim.showValuesCheckItem.getState()) {
 		String s = getShortUnitText(capacitance, "F");
 		drawValues(g, s, hs);

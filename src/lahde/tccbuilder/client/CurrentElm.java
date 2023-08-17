@@ -68,7 +68,6 @@ package lahde.tccbuilder.client;
 		if (dx == 0 || dy == 0)
 		    drawValues(g, s, cr);
 	    }
-	    drawPosts(g);
 	}
 	
 	// analyzeCircuit determines if current source has a path or if it's broken

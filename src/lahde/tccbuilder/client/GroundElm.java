@@ -77,7 +77,6 @@ package lahde.tccbuilder.client;
 	    interpPoint(point1, point2, ps2, 1+11./dn);
 	    doDots(g);
 	    setBbox(point1, ps2, 11);
-	    drawPosts(g);
 	}
 	
 	void setOldStyle() {

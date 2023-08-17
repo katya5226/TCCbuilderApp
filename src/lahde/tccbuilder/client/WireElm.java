@@ -40,7 +40,6 @@ package lahde.tccbuilder.client;
 	        s = (s.length() > 0 ? s + " " : "") + getShortUnitText(volts[0], "V");
 	    }
 	    drawValues(g, s, 4);
-	    drawPosts(g);
 	}
 	void stamp() {
 //	    sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);

@@ -113,7 +113,6 @@ class DiodeElm extends CircuitElm {
     void draw(Graphics g) {
         drawDiode(g);
         doDots(g);
-        drawPosts(g);
     }
 
     void reset() {

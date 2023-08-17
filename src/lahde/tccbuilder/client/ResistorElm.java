@@ -77,6 +77,7 @@ class ResistorElm extends CircuitElm {
             g.context.setStrokeStyle(grad);
         } else
             setPowerColor(g, true);
+
         if (dn < 30)
             hs = 2;
         if (!sim.euroResistorCheckItem.getState()) {
@@ -98,7 +99,6 @@ class ResistorElm extends CircuitElm {
             drawValues(g, s, hs + 2);
         }
         doDots(g);
-        drawPosts(g);
     }
 
     void calculateCurrent() {

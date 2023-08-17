@@ -720,9 +720,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         layoutPanel.add(cv);
         verticalPanel.add(buttonPanel);
         //buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
-        buttonPanel.add(resetButton = new Button(Locale.LS("Build TCC")));
-        buttonPanel.add(quickResetButton = new Button(Locale.LS("Reset TCC")));
-        buttonPanel.add(testButton = new Button(Locale.LS("Test TCC")));
+        resetButton = new Button(Locale.LS("Build TCC"));
+        quickResetButton = new Button(Locale.LS("Reset TCC"));
+        testButton = new Button(Locale.LS("Test TCC"));
+        runStopButton = new Button(Locale.LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop"));
+        buttonPanel.add(resetButton);
+        buttonPanel.add(quickResetButton);
+        //buttonPanel.add(testButton);
+        buttonPanel.add(runStopButton);
         resetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (simDimensionality == 1)
@@ -743,7 +748,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         });
 
 
-        buttonPanel.add(runStopButton = new Button(Locale.LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
         runStopButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 setSimRunning(!simIsRunning());
@@ -1785,8 +1789,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // Draw posts normally
         if (mouseMode != CirSim.MODE_DRAG_ROW && mouseMode != CirSim.MODE_DRAG_COLUMN) {
-            for (int i = 0; i != postDrawList.size(); i++)
-                CircuitElm.drawPost(g, postDrawList.get(i));
+            for (CircuitElm elm : elmList) {
+                if (elm.needsHighlight())
+                    elm.drawPosts(g);
+            }
+            for (CircuitElm elm : elmList) {
+                if (!elm.needsHighlight())
+                    elm.drawPosts(g);
+            }
+
         }
 
         // for some mouse modes, what matters is not the posts but the endpoints (which
@@ -6172,12 +6183,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         context.setLineCap(Context2d.LineCap.ROUND);
 
         // draw elements
-        int i;
-        for (i = 0; i != elmList.size(); i++) {
-            getElm(i).draw(g);
+        for (CircuitElm elm : elmList) {
+            elm.draw(g);
+            if (elm.needsHighlight())
+                elm.drawPosts(g);
         }
-        for (i = 0; i != postDrawList.size(); i++) {
-            CircuitElm.drawPost(g, postDrawList.get(i));
+        for (CircuitElm elm : elmList) {
+            if (!elm.needsHighlight())
+                elm.drawPosts(g);
         }
 
         // restore everything

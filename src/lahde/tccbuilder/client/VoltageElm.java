@@ -201,7 +201,6 @@ class VoltageElm extends CircuitElm {
                 drawDots(g, point2, lead2, -curcount);
             }
         }
-        drawPosts(g);
     }
 
     void drawWaveform(Graphics g, Point center) {

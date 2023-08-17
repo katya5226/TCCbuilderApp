@@ -581,23 +581,6 @@ public abstract class CircuitElm implements Editable {
         setPoints();
     }
 
-    void drawPosts(Graphics g) {
-        // we normally do this in updateCircuit() now because the logic is more
-        // complicated.
-        // we only handle the case where we have to draw all the posts. That happens
-        // when
-        // this element is selected or is being created
-        if (sim.dragElm == null && !needsHighlight())
-            return;
-        if (sim.mouseMode == CirSim.MODE_DRAG_ROW || sim.mouseMode == CirSim.MODE_DRAG_COLUMN)
-            return;
-        int i;
-        for (i = 0; i != getPostCount(); i++) {
-            Point p = getPost(i);
-            drawPost(g, p);
-        }
-    }
-
     int getNumHandles() {
         return getPostCount();
     }
@@ -694,15 +677,24 @@ public abstract class CircuitElm implements Editable {
         return 0;
     }
 
-    /*
-     * void drawPost(Graphics g, int x0, int y0, int n) { if (sim.dragElm == null &&
-     * !needsHighlight() && sim.getCircuitNode(n).links.size() == 2) return; if
-     * (sim.mouseMode == CirSim.MODE_DRAG_ROW || sim.mouseMode ==
-     * CirSim.MODE_DRAG_COLUMN) return; drawPost(g, x0, y0); }
-     */
-    static void drawPost(Graphics g, Point pt) {
-        g.setColor(whiteColor);
+
+/*    void drawPost(Graphics g, int x0, int y0, int n) {
+        if (sim.dragElm == null &&
+                !needsHighlight() && sim.getCircuitNode(n).links.size() == 2) return;
+        if
+        (sim.mouseMode == CirSim.MODE_DRAG_ROW || sim.mouseMode ==
+                CirSim.MODE_DRAG_COLUMN) return;
+        drawPost(g, x0, y0);
+    }*/
+
+    void drawPost(Graphics g, Point pt) {
+        g.setColor(!needsHighlight() ? Color.white : Color.cyan);
         g.fillOval(pt.x - 3, pt.y - 3, 7, 7);
+    }
+
+    void drawPosts(Graphics g) {
+        drawPost(g, point1);
+        drawPost(g, point2);
     }
 
     // set/adjust bounding box used for selecting elements. getCircuitBounds() does
@@ -907,7 +899,6 @@ public abstract class CircuitElm implements Editable {
         g.context.setLineWidth(3.0);
         g.setLineWidth(3.0);
     }
-
 
 
     static void drawThickPolygon(Graphics g, int xs[], int ys[], int c) {
@@ -1315,7 +1306,9 @@ public abstract class CircuitElm implements Editable {
         return getClass().getName().replace("lahde.tccbuilder.client.", "");
     }
 
-    native JsArrayString getJsArrayString() /*-{ return []; }-*/;
+    native JsArrayString getJsArrayString() /*-{
+        return [];
+    }-*/;
 
     JsArrayString getInfoJS() {
         JsArrayString jsarr = getJsArrayString();
@@ -1335,15 +1328,31 @@ public abstract class CircuitElm implements Editable {
 
     native void addJSMethods() /*-{
         var that = this;
-        this.getType = $entry(function() { return that.@lahde.tccbuilder.client.CircuitElm::getClassName()(); });
-        this.getInfo = $entry(function() { return that.@lahde.tccbuilder.client.CircuitElm::getInfoJS()(); });
-        this.getVoltageDiff = $entry(function() { return that.@lahde.tccbuilder.client.CircuitElm::getVoltageDiff()(); });
-        this.getVoltage = $entry(function(n) { return that.@lahde.tccbuilder.client.CircuitElm::getVoltageJS(I)(n); });
-        this.getCurrent = $entry(function() { return that.@lahde.tccbuilder.client.CircuitElm::getCurrent()(); });
-        this.getLabelName = $entry(function() { return that.@lahde.tccbuilder.client.LabeledNodeElm::getName()(); });
-        this.getPostCount = $entry(function() { return that.@lahde.tccbuilder.client.CircuitElm::getPostCount()(); });
+        this.getType = $entry(function () {
+            return that.@lahde.tccbuilder.client.CircuitElm::getClassName()();
+        });
+        this.getInfo = $entry(function () {
+            return that.@lahde.tccbuilder.client.CircuitElm::getInfoJS()();
+        });
+        this.getVoltageDiff = $entry(function () {
+            return that.@lahde.tccbuilder.client.CircuitElm::getVoltageDiff()();
+        });
+        this.getVoltage = $entry(function (n) {
+            return that.@lahde.tccbuilder.client.CircuitElm::getVoltageJS(I)(n);
+        });
+        this.getCurrent = $entry(function () {
+            return that.@lahde.tccbuilder.client.CircuitElm::getCurrent()();
+        });
+        this.getLabelName = $entry(function () {
+            return that.@lahde.tccbuilder.client.LabeledNodeElm::getName()();
+        });
+        this.getPostCount = $entry(function () {
+            return that.@lahde.tccbuilder.client.CircuitElm::getPostCount()();
+        });
     }-*/;
 
-    native JavaScriptObject getJavaScriptObject() /*-{ return this; }-*/;
+    native JavaScriptObject getJavaScriptObject() /*-{
+        return this;
+    }-*/;
 
 }

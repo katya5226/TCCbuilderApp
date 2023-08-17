@@ -140,7 +140,6 @@ abstract class ChipElm extends CircuitElm {
 	    }
 	    g.setColor(needsHighlight() ? selectColor : lightGrayColor);
 	    drawThickPolygon(g, rectPointsX, rectPointsY, 4);
-	    drawPosts(g);
 	    g.restore();
 	}
 	int rectPointsX[], rectPointsY[];

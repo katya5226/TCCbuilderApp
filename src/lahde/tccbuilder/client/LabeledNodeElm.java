@@ -123,7 +123,6 @@ class LabeledNodeElm extends CircuitElm {
 
 	curcount = updateDotCount(current, curcount);
 	drawDots(g, point1, lead1, curcount);
-	drawPosts(g);
     }
     double getCurrentIntoNode(int n) { return -current; }
     void setCurrent(int x, double c) { current = c; }
