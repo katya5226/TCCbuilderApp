@@ -61,12 +61,12 @@ public class CyclicDialog extends Dialog {
         vp.add(addBox);
         addBox.addItem("< Choose Cycle Part >");
         addBox.addItem("Heat Transfer");
-        addBox.addItem("Heat Input");
-        addBox.addItem("Mechanic Displacement");
+        //addBox.addItem("Heat Input");
+        //addBox.addItem("Mechanic Displacement");
         addBox.addItem("Magnetic Field Change");
-        addBox.addItem("Electric Field Change");
-        addBox.addItem("Pressure change");
-        addBox.addItem("Shear Stress Change");
+        //addBox.addItem("Electric Field Change");
+        //addBox.addItem("Pressure change");
+        //addBox.addItem("Shear Stress Change");
         addBox.addItem("Properties Change");
 
 
