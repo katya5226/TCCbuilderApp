@@ -109,19 +109,8 @@ class VoltageElm extends CircuitElm {
         return voltSource;
     }
 
-    void stamp() {
-        if (waveform == WF_DC)
-            sim.stampVoltageSource(nodes[0], nodes[1], voltSource,
-                    getVoltage());
-        else
-            sim.stampVoltageSource(nodes[0], nodes[1], voltSource);
-    }
 
-    void doStep() {
-        if (waveform != WF_DC)
-            sim.updateVoltageSource(nodes[0], nodes[1], voltSource,
-                    getVoltage());
-    }
+
 
     void stepFinished() {
         if (waveform == WF_NOISE)

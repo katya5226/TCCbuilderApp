@@ -23,7 +23,6 @@ class DiodeElm extends CircuitElm {
     static final int FLAG_FWDROP = 1;
     static final int FLAG_MODEL = 2;
     String modelName;
-    DiodeModel model;
     static String lastModelName = "default";
     boolean hasResistance;
     int diodeEndNode;
@@ -37,22 +36,6 @@ class DiodeElm extends CircuitElm {
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f);
-        final double defaultdrop = .805904783;
-        double fwdrop = defaultdrop;
-        double zvoltage = 0;
-        if ((f & FLAG_MODEL) != 0) {
-            modelName = CustomLogicModel.unescape(st.nextToken());
-        } else {
-            if ((f & FLAG_FWDROP) > 0) {
-                try {
-                    fwdrop = new Double(st.nextToken()).doubleValue();
-                } catch (Exception e) {
-                }
-            }
-            model = DiodeModel.getModelWithParameters(fwdrop, zvoltage);
-            modelName = model.name;
-//	    CirSim.console("model name wparams = " + modelName);
-        }
         setup();
     }
 
@@ -62,9 +45,6 @@ class DiodeElm extends CircuitElm {
 
     void setup() {
 //	CirSim.console("setting up for model " + modelName + " " + model);
-        model = DiodeModel.getModelWithNameOrCopy(modelName, model);
-        modelName = model.name;   // in case we couldn't find that model
-        hasResistance = (model.seriesResistance > 0);
         diodeEndNode = (hasResistance) ? 2 : 1;
         allocNodes();
     }
@@ -81,20 +61,6 @@ class DiodeElm extends CircuitElm {
         return 'd';
     }
 
-    String dump() {
-        flags |= FLAG_MODEL;
-/*	if (modelName == null) {
-	    sim.console("model name is null??");
-	    modelName = "default";
-	}*/
-        return super.dump() + " " + CustomLogicModel.escape(modelName);
-    }
-
-    String dumpModel() {
-        if (model.builtIn || model.dumped)
-            return null;
-        return model.dump();
-    }
 
     final int hs = 8;
     Polygon poly;
@@ -139,9 +105,6 @@ class DiodeElm extends CircuitElm {
         setPowerColor(g, true);
         drawThickLine(g, cathode[0], cathode[1]);
     }
-
-
-
 
 
 }

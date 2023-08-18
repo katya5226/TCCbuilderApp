@@ -24,26 +24,20 @@ import com.google.gwt.canvas.dom.client.CanvasGradient;
 import lahde.tccbuilder.client.util.Locale;
 
 class ResistorElm extends CircuitElm {
-    double resistance;
 
     public ResistorElm(int xx, int yy) {
         super(xx, yy);
-        resistance = 1000;
     }
 
     public ResistorElm(int xa, int ya, int xb, int yb, int f,
                        StringTokenizer st) {
         super(xa, ya, xb, yb, f);
-        resistance = new Double(st.nextToken()).doubleValue();
     }
 
     int getDumpType() {
         return 'r';
     }
 
-    String dump() {
-        return super.dump() + " " + resistance;
-    }
 
     Point ps3, ps4;
 
@@ -94,54 +88,21 @@ class ResistorElm extends CircuitElm {
             g.context.strokeRect(0, -hs, len, 2.0 * hs);
         }
         g.context.restore();
-        if (sim.showValuesCheckItem.getState()) {
-            String s = getShortUnitText(resistance, "");
-            drawValues(g, s, hs + 2);
-        }
         doDots(g);
     }
 
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        //System.out.print(this + " res current set to " + current + "\n");
-    }
 
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
+
+
 
     void getInfo(String arr[]) {
         arr[0] = "resistor";
-        getBasicInfo(arr);
-        arr[3] = "R = " + getUnitText(resistance, Locale.ohmString);
-        arr[4] = "P = " + getUnitText(getPower(), "W");
     }
 
-    @Override
-    String getScopeText(int v) {
-        return Locale.LS("resistor") + ", " + getUnitText(resistance, Locale.ohmString);
-    }
-
-    public EditInfo getEditInfo(int n) {
-        // ohmString doesn't work here on linux
-        if (n == 0)
-            return new EditInfo("Resistance (ohms)", resistance, 0, 0);
-        return null;
-    }
-
-    public void setEditValue(int n, EditInfo ei) {
-        resistance = (ei.value <= 0) ? 1e-9 : ei.value;
-    }
 
     int getShortcut() {
         return 'r';
     }
 
-    double getResistance() {
-        return resistance;
-    }
 
-    void setResistance(double r) {
-        resistance = r;
-    }
 }

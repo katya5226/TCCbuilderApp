@@ -158,7 +158,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
             ControlVolume cv = this.cvs.get(i);
             if (cv.temperature >= cv.temperature_old) {
                 cv.mode = 1;
-            } else if (cv.temperature < cv.temperature_old) {
+            } else {
                 cv.mode = -1;
             }
         }
@@ -237,11 +237,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
         arr[3] = "Length = " + CirSim.formatLength(this.length);
         arr[4] = "#CVs = " + this.num_cvs;
         arr[5] = "CV dx = " + CirSim.formatLength(this.cvs.get(0).dx);
-    }
-
-    @Override
-    String getScopeText(int v) {
-        return lahde.tccbuilder.client.util.Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
     }
 
 
@@ -426,9 +421,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
         this.field = !this.field;
     }
 
-    @Override
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
+
 
 }

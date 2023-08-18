@@ -25,7 +25,7 @@ import lahde.tccbuilder.client.util.Locale;
 class LabeledNodeElm extends CircuitElm {
     final int FLAG_ESCAPE = 4;
     final int FLAG_INTERNAL = 1;
-    
+
     public LabeledNodeElm(int xx, int yy) {
 	super(xx, yy);
 	text = "label";
@@ -38,23 +38,20 @@ class LabeledNodeElm extends CircuitElm {
 	    // old-style dump before escape/unescape
 	    while (st.hasMoreTokens())
 		text += ' ' + st.nextToken();
-	} else {
-	    // new-style dump
-	    text = CustomLogicModel.unescape(text); 
 	}
     }
     String dump() {
 	flags |= FLAG_ESCAPE;
-	return super.dump() + " " + CustomLogicModel.escape(text);
+	return super.dump();
     }
 
     String text;
-    
+
     class LabelEntry {
 	Point point;
 	int node;
     }
-    
+
     static HashMap<String,LabelEntry> labelList;
     boolean isInternal() { return (flags & FLAG_INTERNAL) != 0; }
 
@@ -71,13 +68,13 @@ class LabeledNodeElm extends CircuitElm {
 	super.setPoints();
 	lead1 = interpPoint(point1, point2, 1-circleSize/dn);
     }
-    
+
     // get post we're connected to
     Point getConnectedPost() {
 	LabelEntry le = labelList.get(text);
 	if (le != null)
 	    return le.point;
-	
+
 	// this is the first time calcWireClosure() encountered this label.  so save point1 and
 	// return null for now, but return point1 the next time we see this label so that all nodes
 	// with the same label are connected
@@ -86,23 +83,23 @@ class LabeledNodeElm extends CircuitElm {
 	labelList.put(text, le);
 	return null;
     }
-    
+
     void setNode(int p, int n) {
 	super.setNode(p, n);
-	
+
 	// save node number so we can return it in getByName()
 	LabelEntry le = labelList.get(text);
 	if (le != null) // should never happen
 	    le.node = n;
     }
-    
+
     int getDumpType() { return 207; }
     int getPostCount() { return 1; }
-    
+
     // this is basically a wire, since it just connects two or more nodes together
     boolean isWireEquivalent() { return true; }
     boolean isRemovableWire() { return true; }
-    
+
     static Integer getByName(String n) {
 	if (labelList == null)
 	    return null;
@@ -111,7 +108,7 @@ class LabeledNodeElm extends CircuitElm {
 	    return null;
 	return le.node;
     }
-    
+
     void draw(Graphics g) {
 	setVoltageColor(g, volts[0]);
 	drawThickLine(g, point1, lead1);
@@ -155,6 +152,6 @@ class LabeledNodeElm extends CircuitElm {
     @Override String getScopeText(int v) {
 	return text;
     }
-    
+
     String getName() { return text; }
 }

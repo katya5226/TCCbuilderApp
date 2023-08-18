@@ -109,38 +109,8 @@ class CapacitorElm extends CircuitElm {
 		drawValues(g, s, hs);
 	    }
 	}
-	void stamp() {
-	    if (sim.dcAnalysisFlag) {
-		// when finding DC operating point, replace cap with a 100M resistor
-		sim.stampResistor(nodes[0], nodes[1], 1e8);
-		curSourceValue = 0;
-		return;
-	    }
-	    
-	    // capacitor companion model using trapezoidal approximation
-	    // (Norton equivalent) consists of a current source in
-	    // parallel with a resistor.  Trapezoidal is more accurate
-	    // than backward euler but can cause oscillatory behavior
-	    // if RC is small relative to the timestep.
-	    if (isTrapezoidal())
-		compResistance = sim.timeStep/(2*capacitance);
-	    else
-		compResistance = sim.timeStep/capacitance;
-	    sim.stampResistor(nodes[0], nodes[1], compResistance);
-	    sim.stampRightSide(nodes[0]);
-	    sim.stampRightSide(nodes[1]);
-	}
-	void startIteration() {
-	    if (isTrapezoidal())
-		curSourceValue = -voltdiff/compResistance-current;
-	    else
-		curSourceValue = -voltdiff/compResistance;
-	}
-	
-	void stepFinished() {
-	    voltdiff = volts[0]-volts[1];
-	    calculateCurrent();
-	}
+
+
 	
 	void setNodeVoltage(int n, double c) {
 	    // do not calculate current, that only gets done in stepFinished().  otherwise calculateCurrent() may get
@@ -162,11 +132,7 @@ class CapacitorElm extends CircuitElm {
 		current = voltdiff/compResistance + curSourceValue;
 	}
 	double curSourceValue;
-	void doStep() {
-	    if (sim.dcAnalysisFlag)
-		return;
-	    sim.stampCurrentSource(nodes[0], nodes[1], curSourceValue);
- 	}
+
 	void getInfo(String arr[]) {
 	    arr[0] = "capacitor";
 	    getBasicInfo(arr);

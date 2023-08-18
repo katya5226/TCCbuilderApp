@@ -464,8 +464,5 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
     }
 
-    @Override
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
+
 }

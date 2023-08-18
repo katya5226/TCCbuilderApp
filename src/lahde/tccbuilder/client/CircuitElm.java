@@ -21,7 +21,6 @@ package lahde.tccbuilder.client;
 
 import java.util.Vector;
 
-import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -751,14 +750,6 @@ public abstract class CircuitElm implements Editable {
     }
 
     void drawCenteredText(Graphics g, String s, int x, int y, boolean cx) {
-        // FontMetrics fm = g.getFontMetrics();
-        // int w = fm.stringWidth(s);
-        // int w=0;
-        // if (cx)
-        // x -= w/2;
-        // g.drawString(s, x, y+fm.getAscent()/2);
-        // adjustBbox(x, y-fm.getAscent()/2,
-        // x+w, y+fm.getAscent()/2+fm.getDescent());
         int w = (int) g.context.measureText(s).getWidth();
         int h2 = (int) g.currentFontSize / 2;
         g.save();
@@ -831,36 +822,6 @@ public abstract class CircuitElm implements Editable {
         }
     }
 
-    void drawCoil(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
-        double len = distance(p1, p2);
-
-        g.save();
-        g.context.setLineWidth(3.0);
-        g.context.transform(((double) (p2.x - p1.x)) / len, ((double) (p2.y - p1.y)) / len,
-                -((double) (p2.y - p1.y)) / len, ((double) (p2.x - p1.x)) / len, p1.x, p1.y);
-        if (sim.voltsCheckItem.getState()) {
-            CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
-            grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
-            grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
-            g.context.setStrokeStyle(grad);
-        }
-        g.context.setLineCap(LineCap.ROUND);
-        g.context.scale(1, hs > 0 ? 1 : -1);
-
-        int loop;
-        // draw more loops for a longer coil
-        int loopCt = (int) Math.ceil(len / 11);
-        for (loop = 0; loop != loopCt; loop++) {
-            g.context.beginPath();
-            double start = len * loop / loopCt;
-            g.context.moveTo(start, 0);
-            g.context.arc(len * (loop + .5) / loopCt, 0, len / (2 * loopCt), Math.PI, Math.PI * 2);
-            g.context.lineTo(len * (loop + 1) / loopCt, 0);
-            g.context.stroke();
-        }
-
-        g.restore();
-    }
 
     static void drawThickLine(Graphics g, int x, int y, int x2, int y2) {
         g.setLineWidth(3.0);
@@ -900,29 +861,6 @@ public abstract class CircuitElm implements Editable {
         g.setLineWidth(3.0);
     }
 
-
-    static void drawThickPolygon(Graphics g, int xs[], int ys[], int c) {
-        // int i;
-        // for (i = 0; i != c-1; i++)
-        // drawThickLine(g, xs[i], ys[i], xs[i+1], ys[i+1]);
-        // drawThickLine(g, xs[i], ys[i], xs[0], ys[0]);
-        g.setLineWidth(3.0);
-        g.drawPolyline(xs, ys, c);
-        g.setLineWidth(1.0);
-    }
-
-    static void drawThickPolygon(Graphics g, Polygon p) {
-        drawThickPolygon(g, p.xpoints, p.ypoints, p.npoints);
-    }
-
-    static void drawPolygon(Graphics g, Polygon p) {
-        g.drawPolyline(p.xpoints, p.ypoints, p.npoints);
-        /*
-         * int i; int xs[] = p.xpoints; int ys[] = p.ypoints; int np = p.npoints; np -=
-         * 3; for (i = 0; i != np-1; i++) g.drawLine(xs[i], ys[i], xs[i+1], ys[i+1]);
-         * g.drawLine(xs[i], ys[i], xs[0], ys[0]);
-         */
-    }
 
     static void drawThickCircle(Graphics g, int cx, int cy, int ri) {
         g.setLineWidth(3.0);
