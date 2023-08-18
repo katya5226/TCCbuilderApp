@@ -1634,6 +1634,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int steps = 0;
     int framerate = 0, steprate = 0;
     static CirSim theSim;
+
     public void setSimRunning(boolean s) {
 
         if (awaitedResponses.size() == 0)
@@ -3847,9 +3848,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
             dump += "\nFluxes:\n";
             heatCircuit.calculateHeatFluxes();
-            for (int i = 0; i < heatCircuit.num_cvs; i++) {
-                dump += heatCircuit.fluxes[i] + "\t";
-            }
+            for (Double f : heatCircuit.fluxes)
+                dump += f + "\t";
+
         } else if (simDimensionality == 2) {
             dump =
                     "Data directory: " + "/materials\n" +
