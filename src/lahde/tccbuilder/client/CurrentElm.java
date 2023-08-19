@@ -55,8 +55,7 @@ package lahde.tccbuilder.client;
 	    int cr = 12;
 	    draw2Leads(g);
 	    setVoltageColor(g, (volts[0]+volts[1])/2);
-	    setPowerColor(g, false);
-	    
+
 	    drawThickCircle(g, center.x, center.y, cr);
 	    drawThickLine(g, ashaft1, ashaft2);
 
@@ -88,7 +87,6 @@ package lahde.tccbuilder.client;
 	}
 	void getInfo(String arr[]) {
 	    arr[0] = "current source";
-	    getBasicInfo(arr);
 	}
 	double getVoltageDiff() {
 	    return volts[1] - volts[0];

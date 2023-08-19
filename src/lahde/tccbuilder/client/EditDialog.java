@@ -225,19 +225,6 @@ class EditDialog extends Dialog {
 
     static final double ROOT2 = 1.41421356237309504880;
 
-    double diffFromInteger(double x) {
-        return Math.abs(x - Math.round(x));
-    }
-
-    String unitString(EditInfo ei) {
-        // for voltage elements, express values in rms if that would be shorter
-        if (elm != null && elm instanceof VoltageElm &&
-                Math.abs(ei.value) > 1e-4 &&
-                diffFromInteger(ei.value * 1e4) > diffFromInteger(ei.value * 1e4 / ROOT2))
-            return unitString(ei, ei.value / ROOT2) + "rms";
-        return unitString(ei, ei.value);
-    }
-
     static String unitString(EditInfo ei, double v) {
         double va = Math.abs(v);
         if (ei != null && ei.dimensionless)

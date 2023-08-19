@@ -74,7 +74,7 @@ class RegulatorElm extends CircuitElm {
             grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
             g.context.setStrokeStyle(grad);
         } else
-            setPowerColor(g, true);
+            g.setColor(Color.gray);
         if (dn < 30)
             hs = 2;
         g.context.beginPath();
@@ -114,22 +114,11 @@ class RegulatorElm extends CircuitElm {
         doDots(g);
     }
 
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        //System.out.print(this + " res current set to " + current + "\n");
-    }
-
 
     void getInfo(String arr[]) {
         arr[0] = "resistor";
-        getBasicInfo(arr);
         arr[3] = "R = " + getUnitText(resistance, Locale.ohmString);
         arr[4] = "P = " + getUnitText(getPower(), "W");
-    }
-
-    @Override
-    String getScopeText(int v) {
-        return Locale.LS("resistor") + ", " + getUnitText(resistance, Locale.ohmString);
     }
 
     public EditInfo getEditInfo(int n) {

@@ -39,10 +39,6 @@ class DiodeElm extends CircuitElm {
         setup();
     }
 
-    boolean nonLinear() {
-        return true;
-    }
-
     void setup() {
 //	CirSim.console("setting up for model " + modelName + " " + model);
         diodeEndNode = (hasResistance) ? 2 : 1;
@@ -51,10 +47,6 @@ class DiodeElm extends CircuitElm {
 
     int getInternalNodeCount() {
         return hasResistance ? 1 : 0;
-    }
-
-    public void updateModels() {
-        setup();
     }
 
     int getDumpType() {
@@ -97,12 +89,12 @@ class DiodeElm extends CircuitElm {
 
         // draw arrow thingy
         setVoltageColor(g, v1);
-        setPowerColor(g, true);
+        g.setColor(Color.gray);
         g.fillPolygon(poly);
 
         // draw thing arrow is pointing to
         setVoltageColor(g, v2);
-        setPowerColor(g, true);
+        g.setColor(Color.gray);
         drawThickLine(g, cathode[0], cathode[1]);
     }
 

@@ -19,8 +19,6 @@
 
 package lahde.tccbuilder.client;
 
-import lahde.tccbuilder.client.util.Locale;
-
 class CapacitorElm extends CircuitElm {
 	double capacitance;
 	double compResistance, voltdiff;
@@ -82,7 +80,6 @@ class CapacitorElm extends CircuitElm {
 	    // draw first lead and plate
 	    setVoltageColor(g, volts[0]);
 	    drawThickLine(g, point1, lead1);
-	    setPowerColor(g, false);
 	    drawThickLine(g, plate1[0], plate1[1]);
 	    if (sim.powerCheckItem.getState())
 		g.setColor(Color.gray);
@@ -90,7 +87,6 @@ class CapacitorElm extends CircuitElm {
 	    // draw second lead and plate
 	    setVoltageColor(g, volts[1]);
 	    drawThickLine(g, point2, lead2);
-	    setPowerColor(g, false);
 	    if (platePoints == null)
 		drawThickLine(g, plate2[0], plate2[1]);
 	    else {
@@ -99,7 +95,6 @@ class CapacitorElm extends CircuitElm {
 		    drawThickLine(g,  platePoints[i], platePoints[i+1]);
 	    }
 	    
-	    updateDotCount();
 	    if (sim.dragElm != this) {
 		drawDots(g, point1, lead1, curcount);
 		drawDots(g, point2, lead2, -curcount);
@@ -111,39 +106,11 @@ class CapacitorElm extends CircuitElm {
 	}
 
 
-	
-	void setNodeVoltage(int n, double c) {
-	    // do not calculate current, that only gets done in stepFinished().  otherwise calculateCurrent() may get
-	    // called while stamping the circuit, which might discharge the cap (since we use that current to calculate
-	    // curSourceValue in startIteration)
-	    volts[n] = c;
-	}	
-	
-	void calculateCurrent() {
-	    double voltdiff = volts[0] - volts[1];
-	    if (sim.dcAnalysisFlag) {
-		current = voltdiff/1e8;
-		return;
-	    }
-	    // we check compResistance because this might get called
-	    // before stamp(), which sets compResistance, causing
-	    // infinite current
-	    if (compResistance > 0)
-		current = voltdiff/compResistance + curSourceValue;
-	}
 	double curSourceValue;
 
 	void getInfo(String arr[]) {
 	    arr[0] = "capacitor";
-	    getBasicInfo(arr);
-	    arr[3] = "C = " + getUnitText(capacitance, "F");
-	    arr[4] = "P = " + getUnitText(getPower(), "W");
-	    //double v = getVoltageDiff();
-	    //arr[4] = "U = " + getUnitText(.5*capacitance*v*v, "J");
-	}
-	@Override
-	String getScopeText(int v) {
-	    return Locale.LS("capacitor") + ", " + getUnitText(capacitance, "F");
+
 	}
 	public EditInfo getEditInfo(int n) {
 	    if (n == 0)

@@ -114,7 +114,6 @@ public class Adjustable implements Command {
     }
 
     void executeSlider() {
-        elm.sim.analyzeFlag = true;
         EditInfo ei = elm.getEditInfo(editItem);
         ei.value = getSliderValue();
         elm.setEditValue(editItem, ei);

@@ -70,7 +70,7 @@ class ResistorElm extends CircuitElm {
             grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
             g.context.setStrokeStyle(grad);
         } else
-            setPowerColor(g, true);
+            g.setColor(Color.gray);
 
         if (dn < 30)
             hs = 2;

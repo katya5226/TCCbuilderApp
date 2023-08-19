@@ -123,7 +123,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem elmSplitMenuItem;
     MenuItem elmSliderMenuItem;
     MenuBar mainMenuBar;
-    MenuBar subcircuitMenuBar[];
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -133,7 +132,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int mouseMode = MODE_SELECT;
     int tempMouseMode = MODE_SELECT;
     String mouseModeStr = "Select";
-    static final double pi = 3.14159265358979323846;
     static final int MODE_ADD_ELM = 0;
     static final int MODE_DRAG_ALL = 1;
     static final int MODE_DRAG_ROW = 2;
@@ -142,7 +140,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     static final int MODE_DRAG_POST = 5;
     static final int MODE_SELECT = 6;
     static final int MODE_DRAG_SPLITTER = 7;
-    static final int infoWidth = 160;
     int dragGridX, dragGridY, dragScreenX, dragScreenY, initDragGridX, initDragGridY;
     long mouseDownTime;
     long zoomTime;
@@ -151,17 +148,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Rectangle selectedArea;
     int gridSize, gridMask, gridRound;
     boolean dragging;
-    boolean analyzeFlag, needsStamp, savedFlag;
     boolean dcAnalysisFlag;
     // boolean useBufferedImage;
     boolean isMac;
     String ctrlMetaKey;
-    int pause = 10;
     double t;
-    int scopeSelected = -1;
-    int scopeMenuSelected = -1;
-    int menuScope = -1;
-    int menuPlot = -1;
     int hintType = -1, hintItem1, hintItem2;
     String stopMessage;
 
@@ -181,31 +172,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     boolean adjustTimeStep;
     boolean developerMode;
-    static final int HINT_LC = 1;
-    static final int HINT_RC = 2;
-    static final int HINT_3DB_C = 3;
-    static final int HINT_TWINT = 4;
-    static final int HINT_3DB_L = 5;
     Vector<CircuitElm> elmList;
     Vector<Adjustable> adjustables;
-    // Vector setupList;
     CircuitElm dragElm, menuElm, stopElm;
-    CircuitElm elmArr[];
 
     private CircuitElm mouseElm = null;
     boolean didSwitch = false;
     int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
-    double circuitMatrix[][], circuitRightSide[], lastNodeVoltages[], nodeVoltages[], origRightSide[], origMatrix[][];
-    RowInfo circuitRowInfo[];
-    int circuitPermute[];
+    double[] nodeVoltages;
     boolean simRunning;
-    boolean circuitNonLinear;
-    int voltageSourceCount;
-    int circuitMatrixSize, circuitMatrixFullSize;
-    boolean circuitNeedsMap;
-    // public boolean useFrame;
     ArrayList<Component> trackedTemperatures;
     boolean showResistanceInVoltageSources;
     boolean hideInfoBox;
@@ -262,13 +239,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public Vector<Component> simComponents;
     public Vector<TCE> simTCEs;
     public int num_cvs;
-    // public int[] special_boundaries;
-    public ControlVolume[] sim_cvs;
     public double[] underdiag;
     public double[] diag;
     public double[] upperdiag;
     public double[] rhs;
-    public int left_boundary;
+    public int      left_boundary;
     public int right_boundary;
     public double h_left;
     public double h_right;
@@ -296,14 +271,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public int cyclePartIndex;
     public int numCycleParts;
 
-    public Vector<Double> cparts_duration;
     public int printing_interval;
-    public int[] num_cpart_steps;
-    public int[][] cycle_part_start_indeces;
     // public double sim_file;
     // public double temperatures_file;
     public int ud;
-    public String[] user_defined_functions;
     double[] x_prev;
     double[] x_mod;
 
@@ -350,13 +321,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     // *********************************************************************************************
-
-    int getrand(int x) {
-        int q = random.nextInt();
-        if (q < 0)
-            q = -q;
-        return q % x;
-    }
 
     static native float devicePixelRatio() /*-{
         return window.devicePixelRatio;
@@ -981,7 +945,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
 
         this.ud = 0;
-        // this.user_defined_functions = new String[this.num_cvs];
         this.x_prev = new double[this.num_cvs];
         this.x_mod = new double[this.num_cvs];
         colorChoices.add("white");  // I will fix this later.
@@ -1600,7 +1563,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         checkCanvasSize();
 
         // Analyze circuit
-        boolean didAnalyze = analyzeFlag;
 
         if (stopElm != null && stopElm != mouseElm)
             stopElm.setMouseElm(true);
@@ -1620,8 +1582,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // Run circuit
         if (simRunning) {
-            if (needsStamp)
-                console("needsStamp while simRunning?");
 
             perfmon.startContext("runCircuit()");
             try {
@@ -1781,7 +1741,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // cleared.
         if (dcAnalysisFlag) {
             dcAnalysisFlag = false;
-            analyzeFlag = true;
         }
 
         lastFrameTime = lastTime;
@@ -2035,7 +1994,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void needAnalyze() {
-        analyzeFlag = true;
         repaint();
     }
 
@@ -2170,7 +2128,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void resetAction() {
         int i;
-        analyzeFlag = true;
         if (t == 0)
             setSimRunning(true);
         t = timeStepAccum = 0;
@@ -2192,12 +2149,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         s = s.substring(s.lastIndexOf('\\') + 1);
         theSim.setCircuitTitle(s);
         theSim.allowSave(true);
-        theSim.savedFlag = true;
         theSim.repaint();
     }
 
     static void electronSaveCallback() {
-        theSim.savedFlag = true;
         theSim.repaint();
     }
 
@@ -3071,8 +3026,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         needAnalyze();
         if ((flags & RC_NO_CENTER) == 0)
             centreCircuit();
-        if ((flags & RC_SUBCIRCUITS) != 0)
-            updateModels();
 
     }
 
@@ -3526,7 +3479,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         }
         mouseSelect(e);
-        scopeMenuSelected = -1;
     }
 
     // convert screen coordinates to grid coordinates by inverting circuit transform
@@ -3615,7 +3567,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 } // for
             }
         }
-        scopeSelected = -1;
         if (newMouseElm == null) {
             // // the mouse pointer was not in any of the bounding boxes, but we
             // // might still be close to a post
@@ -3667,11 +3618,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (noEditCheckItem.getState() || dialogIsShowing())
             return;
         menuElm = mouseElm;
-        menuScope = -1;
-        menuPlot = -1;
         int x, y;
         if (mouseElm != null) {
-            elmTempsMenuItem.setEnabled(mouseElm.canViewInScope());
+            elmTempsMenuItem.setEnabled(false);
 
             elmEditMenuItem.setEnabled(mouseElm.getEditInfo(0) != null);
             elmFlipMenuItem.setEnabled(mouseElm.getPostCount() == 2);
@@ -3755,7 +3704,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void clearMouseElm() {
-        scopeSelected = -1;
         setMouseElm(null);
         plotXElm = plotYElm = null;
     }
@@ -3987,7 +3935,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         undoStack.add(new UndoItem(s));
         enableUndoRedo();
-        savedFlag = false;
     }
 
     void doUndo() {
@@ -4511,8 +4458,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new CurrentElm(x1, y1, x2, y2, f, st);
             case 'r':
                 return new ResistorElm(x1, y1, x2, y2, f, st);
-            case 'v':
-                return new VoltageElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new WireElm(x1, y1, x2, y2, f, st);
             case 'x':
@@ -4548,9 +4493,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new CurrentElm(x1, y1);
             case "ResistorElm":
                 return new ResistorElm(x1, y1);
-            case "DCVoltageElm":
-            case "VoltageElm":
-                return new DCVoltageElm(x1, y1);
             case "WireElm":
                 return new WireElm(x1, y1);
             case "TextElm":
@@ -4566,12 +4508,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-
-    public void updateModels() {
-        int i;
-        for (i = 0; i != elmList.size(); i++)
-            elmList.get(i).updateModels();
-    }
 
     native boolean weAreInUS(boolean orCanada) /*-{
         try {

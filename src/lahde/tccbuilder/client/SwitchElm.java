@@ -90,11 +90,6 @@ class SwitchElm extends CircuitElm {
         return new Rectangle(lead1).union(new Rectangle(lead2)).union(new Rectangle(ps));
     }
 
-    void calculateCurrent() {
-        if (position == 1)
-            current = 0;
-    }
-
     void mouseUp() {
         if (momentary)
             toggle();
@@ -116,18 +111,6 @@ class SwitchElm extends CircuitElm {
             arr[2] = "V = " + getVoltageText(volts[0]);
             arr[3] = "I = " + getCurrentDText(getCurrent());
         }
-    }
-
-    boolean getConnection(int n1, int n2) {
-        return position == 0;
-    }
-
-    boolean isWireEquivalent() {
-        return position == 0;
-    }
-
-    boolean isRemovableWire() {
-        return position == 0;
     }
 
     public EditInfo getEditInfo(int n) {

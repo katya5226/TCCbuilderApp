@@ -97,23 +97,6 @@ class GroundElm extends CircuitElm {
         return (flags & FLAG_OLD_STYLE) != 0;
     }
 
-    int getVoltageSourceCount() {
-        return (isOldStyle()) ? 1 : 0;
-    }
-
-
-
-    void setCurrent(int x, double c) {
-        current = isOldStyle() ? -c : c;
-    }
-
-    boolean isWireEquivalent() {
-        return true;
-    }
-
-    boolean isRemovableWire() {
-        return true;
-    }
 
     static Point firstGround;
 
@@ -121,25 +104,12 @@ class GroundElm extends CircuitElm {
         firstGround = null;
     }
 
-    Point getConnectedPost() {
-        if (firstGround != null)
-            return firstGround;
-        firstGround = point1;
-        return null;
-    }
-
-    //	void setCurrent(int x, double c) { current = -c; }
     double getVoltageDiff() {
         return 0;
     }
 
     void getInfo(String arr[]) {
         arr[0] = "ground";
-        arr[1] = "I = " + getCurrentText(getCurrent());
-    }
-
-    boolean hasGroundConnection(int n1) {
-        return true;
     }
 
     int getShortcut() {
@@ -165,8 +135,4 @@ class GroundElm extends CircuitElm {
             lastSymbolType = symbolType = ei.choice.getSelectedIndex();
     }
 
-    @Override
-    double getCurrentIntoNode(int n) {
-        return -current;
-    }
 }
