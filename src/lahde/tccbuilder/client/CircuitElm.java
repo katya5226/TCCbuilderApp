@@ -62,7 +62,8 @@ public abstract class CircuitElm implements Editable {
     // this is the second node/post
     int x2, y2;
 
-    int flags, nodes[], voltSource;
+    int flags;
+    int nodes[];
 
     // length along x and y axes, and sign of difference
     int dx, dy, dsign;
@@ -91,8 +92,6 @@ public abstract class CircuitElm implements Editable {
 
     public boolean selected;
 
-    boolean hasWireInfo; // used in calcWireInfo()
-
     // abstract int getDumpType();
     int getDumpType() {
 
@@ -110,10 +109,6 @@ public abstract class CircuitElm implements Editable {
 
     int getDefaultFlags() {
         return 0;
-    }
-
-    boolean hasFlag(int f) {
-        return (flags & f) != 0;
     }
 
     static void initClass(CirSim s) {
@@ -198,7 +193,6 @@ public abstract class CircuitElm implements Editable {
         x = x2 = xx;
         y = y2 = yy;
         flags = getDefaultFlags();
-        allocNodes();
         initBoundingBox();
     }
 
@@ -209,23 +203,12 @@ public abstract class CircuitElm implements Editable {
         x2 = xb;
         y2 = yb;
         flags = f;
-        allocNodes();
         initBoundingBox();
     }
 
     void initBoundingBox() {
         boundingBox = new Rectangle();
         boundingBox.setBounds(min(x, x2), min(y, y2), abs(x2 - x) + 1, abs(y2 - y) + 1);
-    }
-
-    // allocate nodes/volts arrays we need
-    void allocNodes() {
-        int n = getPostCount() + getInternalNodeCount();
-        // preserve voltages if possible
-        if (nodes == null || nodes.length != n) {
-            nodes = new int[n];
-            volts = new double[n];
-        }
     }
 
     // dump component state for export/undo
@@ -236,19 +219,12 @@ public abstract class CircuitElm implements Editable {
 
     // handle reset button
     void reset() {
-        int i;
-        for (i = 0; i != getPostCount() + getInternalNodeCount(); i++)
-            volts[i] = 0;
         curcount = 0;
     }
 
     void draw(Graphics g) {
     }
 
-    // get current for one- or two-terminal elements
-    double getCurrent() {
-        return current;
-    }
 
     void delete() {
         if (mouseElmRef == this)
@@ -354,12 +330,8 @@ public abstract class CircuitElm implements Editable {
     }
 
     void draw2Leads(Graphics g) {
-        // draw first lead
-        setVoltageColor(g, volts[0]);
+        g.setColor(Color.gray);
         drawThickLine(g, point1, lead1);
-
-        // draw second lead
-        setVoltageColor(g, volts[1]);
         drawThickLine(g, lead2, point2);
     }
 
@@ -883,32 +855,6 @@ public abstract class CircuitElm implements Editable {
         g.setColor(getVoltageColor(g, volts));
     }
 
-    // yellow argument is unused, can't remember why it was there
-    void setPowerColor(Graphics g, boolean yellow) {
-        setPowerColor(g, getPower());
-    }
-
-    void setPowerColor(Graphics g, double w0) {
-        if (!sim.powerCheckItem.getState())
-            return;
-        if (needsHighlight()) {
-            g.setColor(selectColor);
-            return;
-        }
-        w0 *= powerMult;
-        // System.out.println(w);
-        int i = (int) ((colorScaleCount / 2) + (colorScaleCount / 2) * -w0);
-        if (i < 0)
-            i = 0;
-        if (i >= colorScaleCount)
-            i = colorScaleCount - 1;
-        g.setColor(colorScale[i]);
-    }
-
-    double getPower() {
-        return getVoltageDiff() * current;
-    }
-
 
     public EditInfo getEditInfo(int n) {
         return null;
@@ -1036,12 +982,7 @@ public abstract class CircuitElm implements Editable {
         this.getVoltage = $entry(function (n) {
             return that.@lahde.tccbuilder.client.CircuitElm::getVoltageJS(I)(n);
         });
-        this.getCurrent = $entry(function () {
-            return that.@lahde.tccbuilder.client.CircuitElm::getCurrent()();
-        });
-        this.getLabelName = $entry(function () {
-            return that.@lahde.tccbuilder.client.LabeledNodeElm::getName()();
-        });
+
         this.getPostCount = $entry(function () {
             return that.@lahde.tccbuilder.client.CircuitElm::getPostCount()();
         });

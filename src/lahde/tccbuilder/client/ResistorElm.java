@@ -49,13 +49,8 @@ class ResistorElm extends CircuitElm {
     }
 
     void draw(Graphics g) {
-        int segments = 16;
         int i;
-        int ox = 0;
-        //int hs = sim.euroResistorCheckItem.getState() ? 6 : 8;
         int hs = 6;
-        double v1 = volts[0];
-        double v2 = volts[1];
         setBbox(point1, point2, hs);
         draw2Leads(g);
 
@@ -64,13 +59,8 @@ class ResistorElm extends CircuitElm {
         g.context.save();
         g.context.setLineWidth(3.0);
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
-        if (sim.voltsCheckItem.getState()) {
-            CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
-            grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
-            grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
-            g.context.setStrokeStyle(grad);
-        } else
-            g.setColor(Color.gray);
+
+        g.setColor(Color.gray);
 
         if (dn < 30)
             hs = 2;
@@ -90,9 +80,6 @@ class ResistorElm extends CircuitElm {
         g.context.restore();
         doDots(g);
     }
-
-
-
 
 
     void getInfo(String arr[]) {

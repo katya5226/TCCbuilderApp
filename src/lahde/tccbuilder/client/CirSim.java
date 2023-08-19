@@ -181,7 +181,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
-    double[] nodeVoltages;
     boolean simRunning;
     ArrayList<Component> trackedTemperatures;
     boolean showResistanceInVoltageSources;
@@ -4446,22 +4445,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         switch (tint) {
 
 
-            case 207:
-                return new LabeledNodeElm(x1, y1, x2, y2, f, st);
 
 
             case 'b':
                 return new BoxElm(x1, y1, x2, y2, f, st);
             case 'g':
                 return new GroundElm(x1, y1, x2, y2, f, st);
-            case 'i':
-                return new CurrentElm(x1, y1, x2, y2, f, st);
             case 'r':
                 return new ResistorElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new WireElm(x1, y1, x2, y2, f, st);
-            case 'x':
-                return new TextElm(x1, y1, x2, y2, f, st);
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
             case 521:
@@ -4474,9 +4467,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public static CircuitElm constructElement(String n, int x1, int y1) {
         switch (n) {
-            // TODO: figure out if LabeledNodeElm is needed
-            case "LabeledNodeElm":
-                return new LabeledNodeElm(x1, y1);
             case "BoxElm":
                 return new BoxElm(x1, y1);
             case "DiodeElm":
@@ -4489,14 +4479,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new RegulatorElm(x1, y1);
             case "GroundElm":
                 return new GroundElm(x1, y1);
-            case "CurrentElm":
-                return new CurrentElm(x1, y1);
             case "ResistorElm":
                 return new ResistorElm(x1, y1);
             case "WireElm":
                 return new WireElm(x1, y1);
-            case "TextElm":
-                return new TextElm(x1, y1);
             case "Component":
                 return new Component(x1, y1);
             case "2DComponent":
@@ -4692,15 +4678,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
 
-    double getLabeledNodeVoltage(String name) {
-        Integer node = LabeledNodeElm.getByName(name);
-        if (node == null || node == 0)
-            return 0;
-        // subtract one because ground is not included in nodeVoltages[]
-        return nodeVoltages[node.intValue() - 1];
-    }
-
-
     native JsArray<JavaScriptObject> getJSArray() /*-{
         return [];
     }-*/;
@@ -4733,9 +4710,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }),
             isRunning: $entry(function () {
                 return that.@lahde.tccbuilder.client.CirSim::simIsRunning()();
-            }),
-            getNodeVoltage: $entry(function (n) {
-                return that.@lahde.tccbuilder.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n);
             }),
             getElements: $entry(function () {
                 return that.@lahde.tccbuilder.client.CirSim::getJSElements()();

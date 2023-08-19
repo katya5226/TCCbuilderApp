@@ -68,13 +68,8 @@ class RegulatorElm extends CircuitElm {
         g.context.save();
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
         g.context.setLineWidth(2);
-        if (sim.voltsCheckItem.getState()) {
-            CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
-            grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
-            grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
-            g.context.setStrokeStyle(grad);
-        } else
-            g.setColor(Color.gray);
+
+        g.setColor(Color.gray);
         if (dn < 30)
             hs = 2;
         g.context.beginPath();
@@ -117,8 +112,6 @@ class RegulatorElm extends CircuitElm {
 
     void getInfo(String arr[]) {
         arr[0] = "resistor";
-        arr[3] = "R = " + getUnitText(resistance, Locale.ohmString);
-        arr[4] = "P = " + getUnitText(getPower(), "W");
     }
 
     public EditInfo getEditInfo(int n) {

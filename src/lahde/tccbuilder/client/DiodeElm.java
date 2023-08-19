@@ -42,7 +42,7 @@ class DiodeElm extends CircuitElm {
     void setup() {
 //	CirSim.console("setting up for model " + modelName + " " + model);
         diodeEndNode = (hasResistance) ? 2 : 1;
-        allocNodes();
+
     }
 
     int getInternalNodeCount() {
