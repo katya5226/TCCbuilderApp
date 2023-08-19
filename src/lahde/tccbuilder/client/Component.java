@@ -20,7 +20,6 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
-import lahde.tccbuilder.client.util.Locale;
 
 import java.lang.Math;
 import java.util.*;
@@ -34,18 +33,18 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public String name;
     public int index;
     public Material material;
-    public int num_cvs;
-    public double left_resistance;
-    public double right_resistance;
-    public Component left_neighbour;
-    public Component right_neighbour;
-    public int left_boundary;
-    public int right_boundary;
+    public int numCvs;
+    public double westResistance;
+    public double eastResistance;
+    public Component westNeighbour;
+    public Component eastNeighbour;
+    public int westBoundary;
+    public int eastBoundary;
     public double constRho;
     public double constCp;
     public double constK;
 
-    public Vector<ControlVolume> cvs;
+    public Vector<ControlVolume> controlVolumes;
 
     public boolean isDisabled;
     public boolean field;
@@ -55,19 +54,19 @@ public class Component extends CircuitElm implements Comparable<Component> {
         super(xx, yy);
         initializeComponent();
 
-        this.index = -1;
+        index = -1;
         for (Component c : sim.simComponents) {
             if (c.index > index)
                 index = c.index;
         }
-        this.index++;
-        this.material = sim.materialHashMap.get("100001-Inox");
+        index++;
+        material = sim.materialHashMap.get("100001-Inox");
 
         if (!material.isLoaded())
             material.readFiles();
 
         isDisabled = false;
-        this.field = false;
+        field = false;
         fieldIndex = 1;
         buildComponent();
 
@@ -77,18 +76,18 @@ public class Component extends CircuitElm implements Comparable<Component> {
         super(xa, ya, xb, yb, f);
         initializeComponent();
 
-        this.index = Integer.parseInt(st.nextToken());
-        this.material = sim.materialHashMap.get(st.nextToken(" "));
+        index = Integer.parseInt(st.nextToken());
+        material = sim.materialHashMap.get(st.nextToken(" "));
         if (!material.isLoaded()) {
             material.readFiles();
         }
 
-        this.color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
-        this.length = Double.parseDouble(st.nextToken());
-        this.name = st.nextToken();
-        this.num_cvs = Integer.parseInt(st.nextToken());
+        color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
+        length = Double.parseDouble(st.nextToken());
+        name = st.nextToken();
+        numCvs = Integer.parseInt(st.nextToken());
         isDisabled = false;
-        this.field = false;
+        field = false;
         fieldIndex = 1;
         buildComponent();
 
@@ -96,23 +95,23 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
     public void initializeComponent() {
         resistance = 1000;
-        this.color = Color.green;
+        color = Color.green;
         calculateLength();
-        this.name = "Component";
-        this.num_cvs = 3;
-        this.cvs = new Vector<ControlVolume>();
-        this.left_resistance = 0.0; // This is yet to be linked to the CV.
-        this.right_resistance = 0.0;
-        this.left_neighbour = null;
-        this.right_neighbour = null;
-        this.left_boundary = 51;
-        this.right_boundary = 52;
-        this.constRho = -1;
-        this.constCp = -1;
-        this.constK = -1;
-        double tmpDx = this.length / this.num_cvs;
+        name = "Component";
+        numCvs = 3;
+        controlVolumes = new Vector<ControlVolume>();
+        westResistance = 0.0; // This is yet to be linked to the CV.
+        eastResistance = 0.0;
+        westNeighbour = null;
+        eastNeighbour = null;
+        westBoundary = 51;
+        eastBoundary = 52;
+        constRho = -1;
+        constCp = -1;
+        constK = -1;
+        double tmpDx = length / numCvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
-            this.set_dx(tmpDx);
+            setDx(tmpDx);
             sim.simComponents.add(this);
             Collections.sort(sim.trackedTemperatures);
             sim.trackedTemperatures.add(this);
@@ -120,43 +119,36 @@ public class Component extends CircuitElm implements Comparable<Component> {
     }
 
     public void calculateLength() {
-        this.length = Math.sqrt(Math.pow((y2 - y), 2) + Math.pow((x2 - x), 2)) / sim.selectedLengthUnit.conversionFactor;
+        length = Math.sqrt(Math.pow((y2 - y), 2) + Math.pow((x2 - x), 2)) / sim.selectedLengthUnit.conversionFactor;
         //gridSize px = 1 unit of measurement
-        this.length /= sim.gridSize;
+        length /= sim.gridSize;
     }
 
     public void buildComponent() {
-        this.cvs.clear();
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.cvs.add(new ControlVolume(i));
-            this.cvs.get(i).parent = this;
+        controlVolumes.clear();
+        for (int i = 0; i < numCvs; i++) {
+            controlVolumes.add(new ControlVolume(i));
+            controlVolumes.get(i).parent = this;
 
-            if (this.constRho != -1) {
-                this.cvs.get(i).const_rho = this.constRho;
+            if (constRho != -1) {
+                controlVolumes.get(i).constRho = constRho;
             }
-            if (this.constCp != -1) {
-                this.cvs.get(i).const_cp = this.constCp;
+            if (constCp != -1) {
+                controlVolumes.get(i).constCp = constCp;
             }
-            if (this.constK != -1) {
-                this.cvs.get(i).const_k = this.constK;
+            if (constK != -1) {
+                controlVolumes.get(i).constK = constK;
             }
         }
 
-        this.cvs.get(0).left_resistance = this.left_resistance;
-        this.cvs.get(this.num_cvs - 1).right_resistance = this.right_resistance;
-    }
-
-    public void set_starting_temps(double start_temp) {
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.cvs.get(i).temperature = start_temp;
-            this.cvs.get(i).temperature_old = start_temp;
-        }
+        controlVolumes.get(0).westResistance = westResistance;
+        controlVolumes.get(numCvs - 1).eastResistance = eastResistance;
     }
 
     public void updateModes() {
-        for (int i = 0; i < this.num_cvs; i++) {
-            ControlVolume cv = this.cvs.get(i);
-            if (cv.temperature >= cv.temperature_old) {
+        for (int i = 0; i < numCvs; i++) {
+            ControlVolume cv = controlVolumes.get(i);
+            if (cv.temperature >= cv.temperatureOld) {
                 cv.mode = 1;
             } else {
                 cv.mode = -1;
@@ -164,9 +156,17 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
     }
 
+    double[] listTemps() {
+        double[] temps = new double[numCvs];
+        for (int i = 0; i < temps.length; i++) {
+            temps[i] = Math.round(controlVolumes.get(i).temperature * 100) / 100.0;
+        }
+        return temps;
+    }
+
     @Override
     public int compareTo(Component o) {
-        return this.index - o.index;
+        return index - o.index;
     }
 
     @Override
@@ -188,7 +188,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         sb.append(length).append(' ');
         sb.append(name).append(' ');
-        sb.append(num_cvs);
+        sb.append(numCvs);
 
         return sb.toString();
     }
@@ -205,38 +205,29 @@ public class Component extends CircuitElm implements Comparable<Component> {
         int hs = 13;
         setBbox(point1, point2, hs);
 
-        double tmpDx = this.length / this.num_cvs;
+        double tmpDx = length / numCvs;
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("Component can't have a dx < 1µ, current is " + tmpDx);
             drawThickerLine(g, point1, point2, Color.red.getHexValue());
-            this.set_dx(tmpDx);
+            setDx(tmpDx);
             isDisabled = true;
         } else {
             drawThickerLine(g, point1, point2, color.getHexValue());
-            this.set_dx(tmpDx);
+            setDx(tmpDx);
             isDisabled = false;
         }
 
 
-
-    }
-
-    double[] listTemps() {
-        double[] temps = new double[this.num_cvs];
-        for (int i = 0; i < temps.length; i++) {
-            temps[i] = Math.round(this.cvs.get(i).temperature * 100) / 100.0;
-        }
-        return temps;
     }
 
     @Override
     void getInfo(String[] arr) {
-        arr[0] = this.name;
-        arr[1] = "Component index = " + this.index;
-        arr[2] = "Material = " + this.material.materialName;
-        arr[3] = "Length = " + CirSim.formatLength(this.length);
-        arr[4] = "#CVs = " + this.num_cvs;
-        arr[5] = "CV dx = " + CirSim.formatLength(this.cvs.get(0).dx);
+        arr[0] = name;
+        arr[1] = "Component index = " + index;
+        arr[2] = "Material = " + material.materialName;
+        arr[3] = "Length = " + CirSim.formatLength(length);
+        arr[4] = "#CVs = " + numCvs;
+        arr[5] = "CV dx = " + CirSim.formatLength(controlVolumes.get(0).dx);
     }
 
 
@@ -244,19 +235,19 @@ public class Component extends CircuitElm implements Comparable<Component> {
     public EditInfo getEditInfo(int n) {
         switch (n) {
             case 0:
-                return new EditInfo("Name", String.valueOf(this.name));
+                return new EditInfo("Name", String.valueOf(name));
             case 1:
-                return new EditInfo("Index", this.index);
+                return new EditInfo("Index", index);
             case 2:
                 EditInfo ei = new EditInfo("Material", 0);
                 ei.choice = new Choice();
                 for (String m : sim.materialNames) {
                     ei.choice.add(m);
                 }
-                ei.choice.select(sim.materialNames.indexOf(this.material.materialName));
+                ei.choice.select(sim.materialNames.indexOf(material.materialName));
                 return ei;
             case 3:
-                return new EditInfo("Number of control volumes", (double) this.num_cvs);
+                return new EditInfo("Number of control volumes", (double) numCvs);
             case 4:
                 EditInfo ei2 = new EditInfo("Color", 0);
                 ei2.choice = new Choice();
@@ -264,14 +255,14 @@ public class Component extends CircuitElm implements Comparable<Component> {
                     ei2.choice.add(sim.colorChoices.get(ch));
                 }
 
-                ei2.choice.select(Color.colorToIndex(this.color));
+                ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 5:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", this.length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 6:
-                return new EditInfo("Left contact resistance (mK/W)", this.left_resistance);
+                return new EditInfo("Left contact resistance (mK/W)", westResistance);
             case 7:
-                return new EditInfo("Right contact resistance (mK/W)", this.right_resistance);
+                return new EditInfo("Right contact resistance (mK/W)", eastResistance);
             default:
                 return null;
         }
@@ -282,25 +273,25 @@ public class Component extends CircuitElm implements Comparable<Component> {
 
         switch (n) {
             case 0:
-                this.name = ei.textf.getText();
+                name = ei.textf.getText();
                 break;
             case 1:
-                this.index = (int) ei.value;
+                index = (int) ei.value;
                 break;
             case 2:
-                this.material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-                if (!this.material.isLoaded())
-                    this.material.readFiles();
+                material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
+                if (!material.isLoaded())
+                    material.readFiles();
                 break;
             case 3:
-                this.num_cvs = (int) ei.value;
+                numCvs = (int) ei.value;
                 break;
             case 4:
-                this.color = Color.translateColorIndex(ei.choice.getSelectedIndex());
+                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 5:
-                double prevLength = this.length;
-                this.length = (ei.value / sim.selectedLengthUnit.conversionFactor);
+                double prevLength = length;
+                length = (ei.value / sim.selectedLengthUnit.conversionFactor);
 
                 double ratio = length / prevLength;
                 int deltaX = (int) ((point2.x - point1.x) * ratio);
@@ -308,119 +299,110 @@ public class Component extends CircuitElm implements Comparable<Component> {
                 point2.x = sim.snapGrid(point2.x);
                 break;
             case 6:
-                this.left_resistance = ei.value;
+                westResistance = ei.value;
                 break;
             case 7:
-                this.right_resistance = ei.value;
+                eastResistance = ei.value;
                 break;
         }
 
         //TODO: Implement this with better functionality
 
-        if (this.length / this.num_cvs < 1e-6) {
-            String input = String.valueOf(this.num_cvs);
+        if (length / numCvs < 1e-6) {
+            String input = String.valueOf(numCvs);
             if (!isDisabled)
-                Window.alert("Component can't have a dx < 1e-6, current is " + (this.length / this.num_cvs) + "\n Please enter a smaller number of control volumes!");
+                Window.alert("Component can't have a dx < 1e-6, current is " + (length / numCvs) + "\n Please enter a smaller number of control volumes!");
             isDisabled = true;
         } else {
-            this.set_dx(this.length / this.num_cvs);
+            setDx(length / numCvs);
             buildComponent();
             isDisabled = false;
         }
 
     }
 
-
-    public void set_constant_parameters(String[] parameters, double[] values) {
-        for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i].equals("rho")) {
-                for (ControlVolume cv : this.cvs) {
-                    cv.const_rho = values[i];
-                }
-            }
-            if (parameters[i].equals("cp")) {
-                for (ControlVolume cv : this.cvs) {
-                    cv.const_cp = values[i];
-                }
-            }
-            if (parameters[i].equals("k")) {
-                for (ControlVolume cv : this.cvs) {
-                    cv.const_k = values[i];
-                }
-            }
-        }
-    }
-
     public void setConstProperties(Vector<Double> newProps) {
         if (newProps.size() != 3) {
             GWT.log("Vector of new properties must contain three values.");
         }
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.cvs.get(i).const_rho = newProps.get(0);
-            this.cvs.get(i).const_cp = newProps.get(1);
-            this.cvs.get(i).const_k = newProps.get(2);
+        for (int i = 0; i < numCvs; i++) {
+            controlVolumes.get(i).constRho = newProps.get(0);
+            controlVolumes.get(i).constCp = newProps.get(1);
+            controlVolumes.get(i).constK = newProps.get(2);
         }
     }
+
+    public void set_constant_parameters(String[] parameters, double[] values) {
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i].equals("rho")) {
+                for (ControlVolume cv : controlVolumes) {
+                    cv.constRho = values[i];
+                }
+            }
+            if (parameters[i].equals("cp")) {
+                for (ControlVolume cv : controlVolumes) {
+                    cv.constCp = values[i];
+                }
+            }
+            if (parameters[i].equals("k")) {
+                for (ControlVolume cv : controlVolumes) {
+                    cv.constK = values[i];
+                }
+            }
+        }
+    }
+
 
     public void setConstProperty(String property, double value) {
         if (property.equals("rho")) {
-            for (int i = 0; i < this.num_cvs; i++) {
-                this.cvs.get(i).const_rho = value;
+            for (int i = 0; i < numCvs; i++) {
+                controlVolumes.get(i).constRho = value;
             }
         }
         if (property.equals("cp")) {
-            for (int i = 0; i < this.num_cvs; i++) {
-                this.cvs.get(i).const_cp = value;
+            for (int i = 0; i < numCvs; i++) {
+                controlVolumes.get(i).constCp = value;
             }
         }
         if (property.equals("k")) {
-            for (int i = 0; i < this.num_cvs; i++) {
-                this.cvs.get(i).const_k = value;
+            for (int i = 0; i < numCvs; i++) {
+                controlVolumes.get(i).constK = value;
             }
         }
     }
 
-    public void set_dx(double dx) {
-
-        for (ControlVolume cv : this.cvs) {
+    public void setDx(double dx) {
+        for (ControlVolume cv : controlVolumes) {
             cv.dx = dx;
         }
     }
 
-    public void set_temperatures(double temp) {
-        for (ControlVolume cv : this.cvs) {
-            cv.temperature = temp;
-            cv.temperature_old = temp;
+    public void setQGenerated(double q_gen) {
+        for (ControlVolume cv : controlVolumes) {
+            cv.qGenerated = q_gen;
         }
     }
 
-    public void set_q_gen(double q_gen) {
-        for (ControlVolume cv : this.cvs) {
-            cv.q_gen = q_gen;
-        }
-    }
-
-    public void set_resistance(String side, double r) {
+    public void setResistance(String side, double r) {
         if (side.equals("left")) {
-            this.left_resistance = r;
-            this.cvs.get(0).left_resistance = r;
+            westResistance = r;
+            controlVolumes.get(0).westResistance = r;
         }
         if (side.equals("right")) {
-            this.right_resistance = r;
-            this.cvs.get(this.num_cvs - 1).right_resistance = r;
+            eastResistance = r;
+            controlVolumes.get(numCvs - 1).eastResistance = r;
         }
     }
 
     public void magnetize() {
         // Check if given component's' material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
-        for (int i = 0; i < cvs.size(); i++) {
-            cvs.get(i).magnetize();
+        for (int i = 0; i < controlVolumes.size(); i++) {
+            controlVolumes.get(i).magnetize();
         }
         // GWT.log("Finished (de)magnetization.");
-        this.field = !this.field;
+        field = !field;
     }
-
 
 
 }

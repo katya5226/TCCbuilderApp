@@ -387,9 +387,9 @@ public class CyclicDialog extends Dialog {
                     return;
                 }
                 chosenComponent = sim.simComponents.get(chosen);
-                newRho.setValue(chosenComponent.cvs.get(0).const_rho);
-                newCp.setValue(chosenComponent.cvs.get(0).const_cp);
-                newK.setValue(chosenComponent.cvs.get(0).const_k);
+                newRho.setValue(chosenComponent.controlVolumes.get(0).constRho);
+                newCp.setValue(chosenComponent.controlVolumes.get(0).constCp);
+                newK.setValue(chosenComponent.controlVolumes.get(0).constK);
                 rhoLabel.setVisible(true);
                 newRho.setVisible(true);
                 cpLabel.setVisible(true);

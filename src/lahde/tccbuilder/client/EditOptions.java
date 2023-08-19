@@ -86,7 +86,7 @@ class EditOptions implements Editable {
             return new EditInfo("Minimum time step size (s)", sim.minTimeStep, 0, 0);
 
         if (n == 13)
-            return new EditInfo("Left temperature", sim.heatCircuit.temp_left);
+            return new EditInfo("Left temperature", sim.heatCircuit.temperatureWest);
 
         return null;
     }

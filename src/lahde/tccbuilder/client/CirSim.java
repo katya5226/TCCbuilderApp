@@ -999,18 +999,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         simTCEs.clear();
         simTCEs.add(new TCE("TCE1", 0, simComponents));
         heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.left_boundary = left_boundary;
-        heatCircuit.right_boundary = right_boundary;
-        heatCircuit.h_left = h_left;
-        heatCircuit.h_right = h_right;
-        heatCircuit.temp_left = temp_left;
-        heatCircuit.temp_right = temp_right;
-        heatCircuit.q_in = qIn;
-        heatCircuit.q_out = qOut;
+        heatCircuit.westBoundary = left_boundary;
+        heatCircuit.eastBoundary = right_boundary;
+        heatCircuit.hWest = h_left;
+        heatCircuit.hEast = h_right;
+        heatCircuit.temperatureWest = temp_left;
+        heatCircuit.temperatureEast = temp_right;
+        heatCircuit.qWest = qIn;
+        heatCircuit.qEast = qOut;
 
-        heatCircuit.build_TCC();
+        heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();
-        int n = heatCircuit.num_cvs;
+        int n = heatCircuit.numCvs;
         double[] temps = new double[n];
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
@@ -1055,13 +1055,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void setHeatSim() {
-        num_cvs = heatCircuit.num_cvs;
+        num_cvs = heatCircuit.numCvs;
         underdiag = new double[this.num_cvs];
         diag = new double[this.num_cvs];
         upperdiag = new double[this.num_cvs];
         rhs = new double[this.num_cvs];
-        left_boundary = heatCircuit.left_boundary;
-        right_boundary = heatCircuit.right_boundary;
+        left_boundary = heatCircuit.westBoundary;
+        right_boundary = heatCircuit.eastBoundary;
         start_temperatures = new double[this.num_cvs];
         numCycleParts = this.cycleParts.size();
         if (!cycleParts.isEmpty())
@@ -1084,7 +1084,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public void append_new_temps() {
         Double[] ttemps = new Double[this.num_cvs];
         for (int i = 0; i < this.num_cvs; i++) {
-            ttemps[i] = heatCircuit.cvs.get(i).temperature;
+            ttemps[i] = heatCircuit.controlVolumes.get(i).temperature;
         }
         this.temperatures.add(ttemps);
         this.times.add(this.time);
@@ -1093,17 +1093,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public void heat_transfer_step() {
 
         for (int i = 0; i < this.num_cvs; i++) {
-            this.x_prev[i] = heatCircuit.cvs.get(i).temperature_old;
+            this.x_prev[i] = heatCircuit.controlVolumes.get(i).temperatureOld;
         }
         //while (true) {
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
-            heatCircuit.calc_conduct_lr();
+            heatCircuit.calculateConductivities();
 
             heatCircuit.makeMatrix(this.dt);
-            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
+            ModelMethods.tdmaSolve(heatCircuit.controlVolumes, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
             for (int i = 0; i < this.num_cvs; i++) {
-                this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
+                this.x_mod[i] = heatCircuit.controlVolumes.get(i).temperature;
             }
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
@@ -1117,15 +1117,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             // }
         }
 
-        heatCircuit.calc_conduct_lr();
+        heatCircuit.calculateConductivities();
         heatCircuit.makeMatrix(this.dt);
-        ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
+        ModelMethods.tdmaSolve(heatCircuit.controlVolumes, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
                 heatCircuit.rhs);
         // if len(this.PCMs) > 0:
         // for i in range(0, len(this.PCMs)):
         // this.PCMs[i].update_temperatures()
         // this.PCMs[i].raise_latent_heat(pa.dt)
-        heatCircuit.replace_old_new();
+        heatCircuit.replaceTemperatures();
         this.append_new_temps();
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
@@ -2467,12 +2467,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + dt + "\n" +
                             "Dimensionality: 1D\n" +
-                            "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.left_boundary) + "\n" +
-                            "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.right_boundary) + "\n" +
-                            "Temperature on the left: " + heatCircuit.temp_left + " K\n" +
-                            "Convection coefficient on the left: " + heatCircuit.h_left + " W/(m²K)\n" +
-                            "Temperature on the right: " + heatCircuit.temp_right + " K\n" +
-                            "Convection coefficient on the right: " + heatCircuit.h_right + " W/(m²K)\n";
+                            "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" +
+                            "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" +
+                            "Temperature on the left: " + heatCircuit.temperatureWest + " K\n" +
+                            "Convection coefficient on the left: " + heatCircuit.hWest + " W/(m²K)\n" +
+                            "Temperature on the right: " + heatCircuit.temperatureEast + " K\n" +
+                            "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
 
             dump += "\nThermal control elements: \n";
             for (TCE tce : simTCEs) {
@@ -2482,13 +2482,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     dump += "Component name: " + component.name + "\n" +
                             "Component index: " + component.index + "\n" +
                             "Material: " + component.material.materialName + "\n" +
-                            "Number of control volumes:  " + component.num_cvs + "\n" +
-                            "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
+                            "Number of control volumes:  " + component.numCvs + "\n" +
+                            "Control volume length: " + formatLength(component.controlVolumes.get(0).dx) + "\n" +
                             "Constant density: " + ((component.constRho == -1) ? "not set" : component.constRho + " kg/m³") + "\n" +
                             "Constant specific heat: " + ((component.constCp == -1) ? "not set" : component.constCp + " J/(kgK)") + "\n" +
                             "Constant thermal conductivity: " + ((component.constK == -1) ? "not set" : component.constK + " W/(mK)") + "\n" +
-                            "Left contact resistance: " + component.left_resistance + " mK/W\n" +
-                            "Right contact resistance: " + component.right_resistance + " mK/W\n" +
+                            "Left contact resistance: " + component.westResistance + " mK/W\n" +
+                            "Right contact resistance: " + component.eastResistance + " mK/W\n" +
                             "Generated heat: " + 0.0 + " W/m²\n\n";
                 }
             }
@@ -2517,8 +2517,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + theSim.dt + "\n" +
                             "Dimensionality: 2D\n" +
-                            "Boundary condition on the left: " + heatCircuit.left_boundary + "\n" +
-                            "Boundary condition on the right: " + heatCircuit.right_boundary + "\n" +
+                            "Boundary condition on the left: " + heatCircuit.westBoundary + "\n" +
+                            "Boundary condition on the right: " + heatCircuit.eastBoundary + "\n" +
                             "Temperature on the left: " + " K\n" +
                             "Convection coefficient on the left: " + " W/(m²K)\n" +
                             "Temperature on the right: " + " K\n" +

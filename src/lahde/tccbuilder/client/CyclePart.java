@@ -101,7 +101,7 @@ public class CyclePart {
             cp.setConstProperties(newProps);
         }
         GWT.log("Properties changed for component: " + String.valueOf(this.components.get(0).index));
-        GWT.log("Component k: " + String.valueOf(this.components.get(0).cvs.get(0).const_k));
+        GWT.log("Component k: " + String.valueOf(this.components.get(0).controlVolumes.get(0).constK));
     }
 
 }
