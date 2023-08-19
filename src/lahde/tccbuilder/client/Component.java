@@ -218,7 +218,6 @@ public class Component extends CircuitElm implements Comparable<Component> {
         }
 
 
-        doDots(g);
 
     }
 
@@ -230,6 +229,7 @@ public class Component extends CircuitElm implements Comparable<Component> {
         return temps;
     }
 
+    @Override
     void getInfo(String[] arr) {
         arr[0] = this.name;
         arr[1] = "Component index = " + this.index;

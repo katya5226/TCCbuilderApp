@@ -37,16 +37,19 @@ class RegulatorElm extends CircuitElm {
         resistance = new Double(st.nextToken()).doubleValue();
     }
 
+    @Override
     int getDumpType() {
         return 'r';
     }
 
+    @Override
     String dump() {
         return super.dump() + " " + resistance;
     }
 
     Point ps3, ps4;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(32);
@@ -54,13 +57,12 @@ class RegulatorElm extends CircuitElm {
         ps4 = new Point();
     }
 
+    @Override
     void draw(Graphics g) {
         int segments = 16;
         int i;
         int ox = 0;
         int hs = 6;
-        double v1 = volts[0];
-        double v2 = volts[1];
         setBbox(point1, point2, hs);
         draw2Leads(g);
 
@@ -106,14 +108,15 @@ class RegulatorElm extends CircuitElm {
             String s = getShortUnitText(resistance, "");
             drawValues(g, s, hs + 2);
         }*/
-        doDots(g);
     }
 
 
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "resistor";
     }
 
+    @Override
     public EditInfo getEditInfo(int n) {
         // ohmString doesn't work here on linux
         if (n == 0)
@@ -121,10 +124,12 @@ class RegulatorElm extends CircuitElm {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         resistance = (ei.value <= 0) ? 1e-9 : ei.value;
     }
 
+    @Override
     int getShortcut() {
         return 'r';
     }

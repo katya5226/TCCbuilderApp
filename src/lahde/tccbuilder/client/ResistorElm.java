@@ -34,6 +34,7 @@ class ResistorElm extends CircuitElm {
         super(xa, ya, xb, yb, f);
     }
 
+    @Override
     int getDumpType() {
         return 'r';
     }
@@ -41,6 +42,7 @@ class ResistorElm extends CircuitElm {
 
     Point ps3, ps4;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(64);
@@ -48,6 +50,7 @@ class ResistorElm extends CircuitElm {
         ps4 = new Point();
     }
 
+    @Override
     void draw(Graphics g) {
         int i;
         int hs = 6;
@@ -78,15 +81,16 @@ class ResistorElm extends CircuitElm {
             g.context.strokeRect(0, -hs, len, 2.0 * hs);
         }
         g.context.restore();
-        doDots(g);
     }
 
 
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "resistor";
     }
 
 
+    @Override
     int getShortcut() {
         return 'r';
     }

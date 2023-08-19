@@ -42,20 +42,24 @@ class GroundElm extends CircuitElm {
         }
     }
 
+    @Override
     String dump() {
         return super.dump() + " " + symbolType;
     }
 
+    @Override
     int getDumpType() {
         return 'g';
     }
 
+    @Override
     int getPostCount() {
         return 1;
     }
 
+    @Override
     void draw(Graphics g) {
-        setVoltageColor(g, 0);
+        g.setColor(Color.gray);
         drawThickLine(g, point1, point2);
         if (symbolType == 0) {
             int i;
@@ -85,7 +89,6 @@ class GroundElm extends CircuitElm {
             drawThickLine(g, ps1, ps2);
         }
         interpPoint(point1, point2, ps2, 1 + 11. / dn);
-        doDots(g);
         setBbox(point1, ps2, 11);
     }
 
@@ -104,18 +107,17 @@ class GroundElm extends CircuitElm {
         firstGround = null;
     }
 
-    double getVoltageDiff() {
-        return 0;
-    }
-
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "ground";
     }
 
+    @Override
     int getShortcut() {
         return 'g';
     }
 
+    @Override
     public EditInfo getEditInfo(int n) {
         if (n == 0) {
             EditInfo ei = new EditInfo("Symbol", 0);
@@ -130,6 +132,7 @@ class GroundElm extends CircuitElm {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         if (n == 0)
             lastSymbolType = symbolType = ei.choice.getSelectedIndex();

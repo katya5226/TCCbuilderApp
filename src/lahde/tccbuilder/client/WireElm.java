@@ -29,17 +29,20 @@ class WireElm extends CircuitElm {
         super(xa, ya, xb, yb, f);
     }
 
+    @Override
     void draw(Graphics g) {
         g.setColor(Color.gray);
         drawThickLine(g, point1, point2);
 
     }
 
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "wire";
     }
 
 
+    @Override
     int getShortcut() {
         return 'w';
     }

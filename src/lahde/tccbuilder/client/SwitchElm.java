@@ -49,16 +49,19 @@ class SwitchElm extends CircuitElm {
         posCount = 2;
     }
 
+    @Override
     int getDumpType() {
         return 's';
     }
 
+    @Override
     String dump() {
         return super.dump() + " " + position + " " + momentary;
     }
 
     Point ps, ps2;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(64);
@@ -68,6 +71,7 @@ class SwitchElm extends CircuitElm {
 
     final int openhs = 16;
 
+    @Override
     void draw(Graphics g) {
         int hs1 = (position == 1) ? 0 : 2;
         int hs2 = (position == 1) ? openhs : 2;
@@ -75,8 +79,6 @@ class SwitchElm extends CircuitElm {
 
         draw2Leads(g);
 
-        if (position == 0)
-            doDots(g);
 
 
         interpPoint(lead1, lead2, ps, 0, hs1);
@@ -101,16 +103,17 @@ class SwitchElm extends CircuitElm {
             position = 0;
     }
 
+    @Override
     void getInfo(String arr[]) {
         arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
         if (position == 1) {
             arr[1] = "open";
-            arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
         } else {
             arr[1] = "closed";
         }
     }
 
+    @Override
     public EditInfo getEditInfo(int n) {
         if (n == 0) {
             EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -120,11 +123,13 @@ class SwitchElm extends CircuitElm {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         if (n == 0)
             momentary = ei.checkbox.getState();
     }
 
+    @Override
     int getShortcut() {
         return 's';
     }

@@ -242,7 +242,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public double[] diag;
     public double[] upperdiag;
     public double[] rhs;
-    public int      left_boundary;
+    public int left_boundary;
     public int right_boundary;
     public double h_left;
     public double h_right;
@@ -623,10 +623,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         conventionCheckItem = new CheckboxMenuItem(Locale.LS("Conventional Current Motion"), new Command() {
             public void execute() {
                 setOptionInStorage("conventionalCurrent", conventionCheckItem.getState());
-                String cc = CircuitElm.currentColor.getHexValue();
-                // change the current color if it hasn't changed from the default
-                if (cc.equals("#ffff00") || cc.equals("#00ffff"))
-                    CircuitElm.currentColor = conventionCheckItem.getState() ? Color.yellow : Color.cyan;
             }
         });
         conventionCheckItem.setState(convention);
@@ -1172,27 +1168,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 currentColor = stor.getItem("currentColor");
         }
 
-        if (positiveColor != null)
-            CircuitElm.positiveColor = new Color(URL.decodeQueryString(positiveColor));
-        else if (getOptionFromStorage("alternativeColor", false))
-            CircuitElm.positiveColor = Color.blue;
-
-        if (negativeColor != null)
-            CircuitElm.negativeColor = new Color(URL.decodeQueryString(negativeColor));
-        if (neutralColor != null)
-            CircuitElm.neutralColor = new Color(URL.decodeQueryString(neutralColor));
 
         if (selectColor != null)
             CircuitElm.selectColor = new Color(URL.decodeQueryString(selectColor));
         else
             CircuitElm.selectColor = Color.cyan;
 
-        if (currentColor != null)
-            CircuitElm.currentColor = new Color(URL.decodeQueryString(currentColor));
-        else
-            CircuitElm.currentColor = conventionCheckItem.getState() ? Color.yellow : Color.cyan;
 
-        CircuitElm.setColorScale();
     }
 
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
@@ -1570,8 +1552,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Graphics g = new Graphics(cvcontext);
 
 
-        CircuitElm.whiteColor = Color.white;
-        CircuitElm.lightGrayColor = Color.lightGray;
         g.setColor(Color.black);
         cv.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
 
@@ -1596,14 +1576,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         long sysTime = System.currentTimeMillis();
         if (simRunning) {
-            if (lastTime != 0) {
-                int inc = (int) (sysTime - lastTime);
-                double c = 0;
-                c = java.lang.Math.exp(c / 3.5 - 14.2);
-                CircuitElm.currentMult = 1.7 * inc * c;
-                if (!conventionCheckItem.getState())
-                    CircuitElm.currentMult = -CircuitElm.currentMult;
-            }
+
             lastTime = sysTime;
         } else {
             lastTime = 0;
@@ -1617,11 +1590,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             secTime = sysTime;
         }
 
-        CircuitElm.powerMult = Math.exp(0 / 4.762 - 7);
 
         perfmon.startContext("graphics");
 
-        g.setFont(CircuitElm.unitsFont);
 
         if (noEditCheckItem.getState())
             g.drawLock(20, 30);
@@ -1974,7 +1945,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void drawBottomArea(Graphics g) {
-        g.setColor(CircuitElm.whiteColor);
+        g.setColor(Color.white);
 
         // in JS it doesn't matter how big this is, there's no out-of-bounds exception
         String[] info = new String[10];
@@ -2058,7 +2029,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         // Check if we don't need to run simulation (for very slow simulation speeds).
         // If the circuit changed, do at least one iteration to make sure everything is consistent.
-        if (1000 >= steprate * (tm - lastIterTime) )
+        if (1000 >= steprate * (tm - lastIterTime))
             return;
         int timeStepCountAtFrameStart = timeStepCount;
 
@@ -2928,7 +2899,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             showValuesCheckItem.setState(true);
             setGrid();
             speedBar.setValue(57); // 57
-            CircuitElm.voltageRange = 5;
             lastIterTime = 0;
 
 
@@ -3120,7 +3090,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int sp2 = (int) (Math.log(10 * sp) * 24 + 61.5);
         // int sp2 = (int) (Math.log(sp)*24+1.5);
         speedBar.setValue(57);
-        CircuitElm.voltageRange = Double.parseDouble(st.nextToken());
 
         try {
             minTimeStep = Double.parseDouble(st.nextToken());
@@ -3287,12 +3256,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     boolean onlyGraphicsElmsSelected() {
-        if (mouseElm != null && !(mouseElm instanceof GraphicElm))
+        if (mouseElm != null)
             return false;
         int i;
         for (i = 0; i != elmList.size(); i++) {
             CircuitElm ce = getElm(i);
-            if (ce.isSelected() && !(ce instanceof GraphicElm))
+            if (ce.isSelected())
                 return false;
         }
         return true;
@@ -4445,10 +4414,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         switch (tint) {
 
 
-
-
-            case 'b':
-                return new BoxElm(x1, y1, x2, y2, f, st);
             case 'g':
                 return new GroundElm(x1, y1, x2, y2, f, st);
             case 'r':
@@ -4467,8 +4432,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public static CircuitElm constructElement(String n, int x1, int y1) {
         switch (n) {
-            case "BoxElm":
-                return new BoxElm(x1, y1);
             case "DiodeElm":
                 return new DiodeElm(x1, y1);
             case "SwitchElm":
@@ -4636,12 +4599,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (print)
             printableCheckItem.setState(true);
         if (printableCheckItem.getState()) {
-            CircuitElm.whiteColor = Color.black;
-            CircuitElm.lightGrayColor = Color.black;
             g.setColor(Color.white);
         } else {
-            CircuitElm.whiteColor = Color.white;
-            CircuitElm.lightGrayColor = Color.lightGray;
             g.setColor(Color.black);
             g.fillRect(0, 0, w, h);
         }

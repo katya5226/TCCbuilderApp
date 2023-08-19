@@ -48,22 +48,17 @@ class CapacitorElm extends CircuitElm {
         return (flags & FLAG_BACK_EULER) == 0;
     }
 
+    @Override
     void reset() {
         super.reset();
-        current = curcount = curSourceValue = 0;
-        // put small charge on caps when reset to start oscillators
-        voltdiff = initialVoltage;
     }
 
-    void shorted() {
-        super.reset();
-        voltdiff = current = curcount = curSourceValue = 0;
-    }
-
+    @Override
     int getDumpType() {
         return 'c';
     }
 
+    @Override
     String dump() {
         return super.dump() + " " + capacitance + " " + voltdiff + " " + initialVoltage;
     }
@@ -71,6 +66,7 @@ class CapacitorElm extends CircuitElm {
     // used for PolarCapacitorElm
     Point platePoints[];
 
+    @Override
     void setPoints() {
         super.setPoints();
         double f = (dn / 2 - 4) / dn;
@@ -84,6 +80,7 @@ class CapacitorElm extends CircuitElm {
         interpPoint2(point1, point2, plate2[0], plate2[1], 1 - f, 12);
     }
 
+    @Override
     void draw(Graphics g) {
         int hs = 12;
         setBbox(point1, point2, hs);
@@ -93,7 +90,7 @@ class CapacitorElm extends CircuitElm {
         drawThickLine(g, point1, lead1);
         drawThickLine(g, plate1[0], plate1[1]);
         drawThickLine(g, point2, lead2);
-        
+
         if (platePoints == null)
             drawThickLine(g, plate2[0], plate2[1]);
         else {
@@ -102,24 +99,20 @@ class CapacitorElm extends CircuitElm {
                 drawThickLine(g, platePoints[i], platePoints[i + 1]);
         }
 
-        if (sim.dragElm != this) {
-            drawDots(g, point1, lead1, curcount);
-            drawDots(g, point2, lead2, -curcount);
-        }
-        if (sim.showValuesCheckItem.getState()) {
-            String s = getShortUnitText(capacitance, "F");
-            drawValues(g, s, hs);
-        }
+
+
     }
 
 
     double curSourceValue;
 
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "capacitor";
 
     }
 
+    @Override
     public EditInfo getEditInfo(int n) {
         if (n == 0)
             return new EditInfo("Capacitance (F)", capacitance, 1e-6, 1e-3);
@@ -134,6 +127,7 @@ class CapacitorElm extends CircuitElm {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         if (n == 0)
             capacitance = (ei.value > 0) ? ei.value : 1e-12;
@@ -147,6 +141,7 @@ class CapacitorElm extends CircuitElm {
             initialVoltage = ei.value;
     }
 
+    @Override
     int getShortcut() {
         return 'c';
     }

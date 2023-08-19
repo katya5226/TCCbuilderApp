@@ -45,10 +45,7 @@ class DiodeElm extends CircuitElm {
 
     }
 
-    int getInternalNodeCount() {
-        return hasResistance ? 1 : 0;
-    }
-
+    @Override
     int getDumpType() {
         return 'd';
     }
@@ -58,6 +55,7 @@ class DiodeElm extends CircuitElm {
     Polygon poly;
     Point cathode[];
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(16);
@@ -68,33 +66,23 @@ class DiodeElm extends CircuitElm {
         poly = createPolygon(pa[0], pa[1], lead2);
     }
 
+    @Override
     void draw(Graphics g) {
         drawDiode(g);
-        doDots(g);
     }
 
-    void reset() {
-        volts[0] = volts[1] = curcount = 0;
-        if (hasResistance)
-            volts[2] = 0;
-    }
+
 
     void drawDiode(Graphics g) {
         setBbox(point1, point2, hs);
 
-        double v1 = volts[0];
-        double v2 = volts[1];
-
         draw2Leads(g);
 
-        // draw arrow thingy
-        setVoltageColor(g, v1);
         g.setColor(Color.gray);
+        // draw arrow thingy
         g.fillPolygon(poly);
 
         // draw thing arrow is pointing to
-        setVoltageColor(g, v2);
-        g.setColor(Color.gray);
         drawThickLine(g, cathode[0], cathode[1]);
     }
 

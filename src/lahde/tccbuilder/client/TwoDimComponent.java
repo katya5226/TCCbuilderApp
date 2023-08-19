@@ -277,7 +277,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
-        doDots(g);
 
     }
 
@@ -347,6 +346,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
+    @Override
     void getInfo(String[] arr) {
         arr[0] = name;
         // getBasicInfo(arr);
@@ -361,6 +361,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
+    @Override
     public EditInfo getEditInfo(int n) {
         switch (n) {
             case 0:
