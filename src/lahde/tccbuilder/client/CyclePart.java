@@ -23,7 +23,7 @@ public class CyclePart {
 
     int partIndex;
     PartType partType;
-    Vector<ThermalControlElement> tces;
+    Vector<ThermalControlElement> TCEs;
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
     // rho, cp and k. In Cyclic dialog, the value of const_x (x = rho, cp or k) is set to -1 if a constant value needs not be set.
     CirSim sim;
@@ -32,7 +32,7 @@ public class CyclePart {
     public CyclePart(int index, CirSim sim) {
         this.partIndex = index;
         this.partType = PartType.HEAT_TRANSFER;
-        this.tces = new Vector<ThermalControlElement>();
+        this.TCEs = new Vector<ThermalControlElement>();
         this.newProperties = new Vector<Vector<Double>>();
         this.sim = sim;
         this.duration = 0;
@@ -76,10 +76,10 @@ public class CyclePart {
     }
 
     void magneticFieldChange() {
-        for (int i = 0; i < tces.size(); i++) {
+        for (int i = 0; i < TCEs.size(); i++) {
             // Check if given component's' material's magnetocaloric flag is TRUE;
             // if not, abort and inform the user.
-            tces.get(i).magnetize();
+            TCEs.get(i).magnetize();
         }
     }
 
@@ -94,14 +94,14 @@ public class CyclePart {
 
     // This method must be modified by Katni - use constProperty, also change in cyclic dialog
     void propertiesChange() {
-        for (int i = 0; i < this.components.size(); i++) {
-            Component cp = this.components.get(i);
+        for (int i = 0; i < TCEs.size(); i++) {
+            ThermalControlElement tce = TCEs.get(i);
             GWT.log(this.newProperties.size()+"");
             Vector<Double> newProps = this.newProperties.get(i);
-            cp.setConstProperties(newProps);
+            tce.setConstProperties(newProps);
         }
-        GWT.log("Properties changed for component: " + String.valueOf(tces.get(0).index));
-        GWT.log("Component k: " + String.valueOf(tces.get(0).controlVolumes.get(0).constK));
+        GWT.log("Properties changed for component: " + String.valueOf(TCEs.get(0).index));
+        GWT.log("Component k: " + String.valueOf(TCEs.get(0).cvs.get(0).constK));
     }
 
 }

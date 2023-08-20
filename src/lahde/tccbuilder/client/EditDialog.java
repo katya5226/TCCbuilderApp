@@ -203,9 +203,9 @@ class EditDialog extends Dialog {
         if (elm instanceof Component || elm instanceof TwoDimComponent) {
             vp.insert(constantParametersButton, vp.getWidgetCount() - 1);
 
-            double constRho = elm instanceof Component ? ((Component) elm).controlVolumes.get(0).constRho : ((TwoDimComponent) elm).cvs.get(0).constRho;
-            double constCp = elm instanceof Component ? ((Component) elm).controlVolumes.get(0).constCp : ((TwoDimComponent) elm).cvs.get(0).constCp;
-            double constK = elm instanceof Component ? ((Component) elm).controlVolumes.get(0).constK : ((TwoDimComponent) elm).cvs.get(0).constK;
+            double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).constRho : ((TwoDimComponent) elm).cvs.get(0).constRho;
+            double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).constCp : ((TwoDimComponent) elm).cvs.get(0).constCp;
+            double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).constK : ((TwoDimComponent) elm).cvs.get(0).constK;
             if (constRho != -1) {
                 vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");

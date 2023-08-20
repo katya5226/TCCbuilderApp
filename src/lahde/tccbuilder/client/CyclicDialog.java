@@ -29,7 +29,7 @@ public class CyclicDialog extends Dialog {
 
     CyclePart cyclePart;
     List<Integer> componentIndices;
-    Component chosenComponent;
+    ThermalControlElement chosenComponent;
 
     public CyclicDialog(CirSim sim) {
         super();
@@ -81,10 +81,10 @@ public class CyclicDialog extends Dialog {
         magneticComponents = new ListBox();
         magneticComponents.addItem("< Choose Component >");
         componentIndices.clear();
-        for (int i = 0; i < sim.simComponents.size(); i++) {
-            if (sim.simComponents.get(i).material.magnetocaloric) {  // TODO: This has to be modified, the flag will depend on the chosen cycle part type.
+        for (int i = 0; i < sim.simTCEs.size(); i++) {
+            if (sim.simTCEs.get(i).cvs.get(0).material.magnetocaloric) {  // TODO: This has to be modified, the flag will depend on the chosen cycle part type.
                 componentIndices.add(i);
-                magneticComponents.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+                magneticComponents.addItem(String.valueOf(sim.simTCEs.get(i).index) + " " + sim.simTCEs.get(i).name);
             }
         }
         inputWidgets.add(componentsLabel);
@@ -92,8 +92,8 @@ public class CyclicDialog extends Dialog {
 
         availableComponents = new ListBox();
         availableComponents.addItem("< Choose Component >");
-        for (int i = 0; i < sim.simComponents.size(); i++) {
-            availableComponents.addItem(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+        for (int i = 0; i < sim.simTCEs.size(); i++) {
+            availableComponents.addItem(String.valueOf(sim.simTCEs.get(i).index) + " " + sim.simTCEs.get(i).name);
         }
         inputWidgets.add(availableComponents);
 
@@ -226,21 +226,21 @@ public class CyclicDialog extends Dialog {
             public void onClick(ClickEvent event) {
                 switch (cyclePart.partType) {
                     case MAGNETIC_FIELD_CHANGE:
-                        if (magneticFieldStrength.isVisible() && !cyclePart.components.contains(chosenComponent)) {
-                            cyclePart.components.add(chosenComponent);
+                        if (magneticFieldStrength.isVisible() && !cyclePart.TCEs.contains(chosenComponent)) {
+                            cyclePart.TCEs.add(chosenComponent);
                             chosenComponent.fieldIndex = magneticFieldStrength.getSelectedIndex();
                             cyclePart.duration = 0.0;
                         }
                         break;
                     case PROPERTIES_CHANGE:
-                        if (propsChangeDuration.isVisible() && !cyclePart.components.contains(chosenComponent)) {
+                        if (propsChangeDuration.isVisible() && !cyclePart.TCEs.contains(chosenComponent)) {
                             if (newRho.getValue() == 0 || newCp.getValue() == 0 || newK.getValue() == 0) {
                                 Window.alert("Value must be -1 or greater than 0.001!");
                                 sim.cycleParts.remove(sim.cycleParts.size() - 1);
                                 break;
                             }
 
-                            cyclePart.components.add(chosenComponent);
+                            cyclePart.TCEs.add(chosenComponent);
                             cyclePart.duration = 0.0;
                             cyclePart.newProperties.add(new Vector<Double>());
                             cyclePart.newProperties.lastElement().add(newRho.getValue());
@@ -358,22 +358,22 @@ public class CyclicDialog extends Dialog {
                     return;
                 }
                 int ci = componentIndices.get(chosen);
-                chosenComponent = sim.simComponents.get(ci);
+                chosenComponent = sim.simTCEs.get(ci);
                 magneticFieldStrength.clear();
-                for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
-                    magneticFieldStrength.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
+                for (int fi = 0; fi < chosenComponent.cvs.get(0).material.fields.size(); fi++) {
+                    magneticFieldStrength.addItem(String.valueOf(chosenComponent.cvs.get(0).material.fields.get(fi)));
                 }
                 magneticFieldStrengthLabel.setVisible(true);
                 magneticFieldStrength.setVisible(true);
 
                 GWT.log("Chosen: " + String.valueOf(chosen));
                 GWT.log("Indeces size: " + String.valueOf(componentIndices.size()));
-                for (int i = 0; i < sim.simComponents.size(); i++) {
-                    GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+                for (int i = 0; i < sim.simTCEs.size(); i++) {
+                    GWT.log(String.valueOf(sim.simTCEs.get(i).index) + " " + sim.simTCEs.get(i).name);
                 }
                 GWT.log("Chosen component: " + chosenComponent.name);
-                GWT.log("Material name: " + chosenComponent.material.materialName);
-                GWT.log("Fields size: " + String.valueOf(chosenComponent.material.fields.size()));
+                GWT.log("Material name: " + chosenComponent.cvs.get(0).material.materialName);  // TODO: correct this
+                GWT.log("Fields size: " + String.valueOf(chosenComponent.cvs.get(0).material.fields.size()));
                 center();
 
             }
@@ -386,10 +386,10 @@ public class CyclicDialog extends Dialog {
                 if (chosen < 0) {
                     return;
                 }
-                chosenComponent = sim.simComponents.get(chosen);
-                newRho.setValue(chosenComponent.controlVolumes.get(0).constRho);
-                newCp.setValue(chosenComponent.controlVolumes.get(0).constCp);
-                newK.setValue(chosenComponent.controlVolumes.get(0).constK);
+                chosenComponent = sim.simTCEs.get(chosen);
+                newRho.setValue(chosenComponent.cvs.get(0).constRho);
+                newCp.setValue(chosenComponent.cvs.get(0).constCp);
+                newK.setValue(chosenComponent.cvs.get(0).constK);
                 rhoLabel.setVisible(true);
                 newRho.setVisible(true);
                 cpLabel.setVisible(true);
@@ -397,8 +397,8 @@ public class CyclicDialog extends Dialog {
                 kLabel.setVisible(true);
                 newK.setVisible(true);
                 GWT.log("Chosen: " + String.valueOf(chosen));
-                for (int i = 0; i < sim.simComponents.size(); i++)
-                    GWT.log(String.valueOf(sim.simComponents.get(i).index) + " " + sim.simComponents.get(i).name);
+                for (int i = 0; i < sim.simTCEs.size(); i++)
+                    GWT.log(String.valueOf(sim.simTCEs.get(i).index) + " " + sim.simTCEs.get(i).name);
                 GWT.log("Chosen component: " + chosenComponent.name);
                 center();
 
@@ -429,12 +429,12 @@ public class CyclicDialog extends Dialog {
                 break;
             case MAGNETIC_FIELD_CHANGE:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components:</b></br>");
-                for (Component c : cp.components)
+                for (ThermalControlElement c : cp.TCEs)
                     label.setHTML(label.getHTML() + "&emsp;&emsp;&emsp;" + c.name + " " + c.index);
                 label.setHTML(label.getHTML() + "<br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Magnetic Field Strength:</b> </br> ");
-                for (Component c : cp.components)
-                    label.setHTML(label.getHTML() + "&emsp;&emsp;&emsp;" + c.material.fields.get(c.fieldIndex) + "T for " + c.name + " " + c.index + "</br>");
+                for (ThermalControlElement c : cp.TCEs)
+                    label.setHTML(label.getHTML() + "&emsp;&emsp;&emsp;" + c.cvs.get(0).material.fields.get(c.fieldIndex) + "T for " + c.name + " " + c.index + "</br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
             case ELECTRIC_FIELD_CHANGE:
@@ -445,9 +445,9 @@ public class CyclicDialog extends Dialog {
                 break;
             case PROPERTIES_CHANGE:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Changed properties: </b></br>");
-                Vector<Component> components = cp.components;
-                for (int i = 0; i < components.size(); i++) {
-                    Component c = components.get(i);
+                Vector<ThermalControlElement> TCEs = cp.TCEs;
+                for (int i = 0; i < TCEs.size(); i++) {
+                    ThermalControlElement c = TCEs.get(i);
                     label.setHTML(label.getHTML() + "&emsp;&emsp;" + c.name + " " + c.index);
                     if (cyclePart.newProperties.get(i).get(0) != -1)
                         label.setHTML(label.getHTML() + "&emsp;rho: " + cyclePart.newProperties.get(i).get(0) + ", ");

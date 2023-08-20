@@ -1084,7 +1084,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public void append_new_temps() {
         Double[] ttemps = new Double[this.num_cvs];
         for (int i = 0; i < this.num_cvs; i++) {
-            ttemps[i] = heatCircuit.controlVolumes.get(i).temperature;
+            ttemps[i] = heatCircuit.cvs.get(i).temperature;
         }
         this.temperatures.add(ttemps);
         this.times.add(this.time);
@@ -1093,7 +1093,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public void heat_transfer_step() {
 
         for (int i = 0; i < this.num_cvs; i++) {
-            this.x_prev[i] = heatCircuit.controlVolumes.get(i).temperatureOld;
+            this.x_prev[i] = heatCircuit.cvs.get(i).temperatureOld;
         }
         //while (true) {
         for (int k = 0; k < 3; k++) {
@@ -1101,9 +1101,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             heatCircuit.calculateConductivities();
 
             heatCircuit.makeMatrix(this.dt);
-            ModelMethods.tdmaSolve(heatCircuit.controlVolumes, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
+            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
             for (int i = 0; i < this.num_cvs; i++) {
-                this.x_mod[i] = heatCircuit.controlVolumes.get(i).temperature;
+                this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
             }
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
@@ -1119,7 +1119,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         heatCircuit.calculateConductivities();
         heatCircuit.makeMatrix(this.dt);
-        ModelMethods.tdmaSolve(heatCircuit.controlVolumes, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
+        ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
                 heatCircuit.rhs);
         // if len(this.PCMs) > 0:
         // for i in range(0, len(this.PCMs)):
@@ -2483,7 +2483,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             "Component index: " + component.index + "\n" +
                             "Material: " + component.material.materialName + "\n" +
                             "Number of control volumes:  " + component.numCvs + "\n" +
-                            "Control volume length: " + formatLength(component.controlVolumes.get(0).dx) + "\n" +
+                            "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
                             "Constant density: " + ((component.constRho == -1) ? "not set" : component.constRho + " kg/m³") + "\n" +
                             "Constant specific heat: " + ((component.constCp == -1) ? "not set" : component.constCp + " J/(kgK)") + "\n" +
                             "Constant thermal conductivity: " + ((component.constK == -1) ? "not set" : component.constK + " W/(mK)") + "\n" +

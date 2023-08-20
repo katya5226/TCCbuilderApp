@@ -2,15 +2,12 @@ package lahde.tccbuilder.client;
 
 import java.lang.Math;
 import java.util.Vector;
+import java.util.Collections;
 
 public class TCC {
     public String name;
-    public Vector<TCE> TCEs;
-    public int numTCEs;
-    public int numCvs;
-    public Vector<ControlVolume> controlVolumes;
-    public TCC westNeighbour;
-    public TCC eastNeighbour;
+    public Vector<ThermalControlElement> TCEs;
+    public Vector<ControlVolume> cvs;
     public double[] underdiag;
     public double[] diag;
     public double[] upperdiag;
@@ -24,18 +21,16 @@ public class TCC {
 
     public Vector<Double> fluxes;
 
-    public TCC(String name, Vector<TCE> TCEs) {
+    public TCC(String name, Vector<ThermalControlElement> TCEs) {
         //parent_sim = null;
         this.name = name;
         this.TCEs = TCEs;
         numTCEs = TCEs.size();
         numCvs = 0;
-        for (TCE tce : TCEs) {
-            numCvs += tce.numCvs;
+        for (ThermalControlElement tce : TCEs) {
+            numCvs += tce.cvs.size();
         }
-        controlVolumes = new Vector<ControlVolume>();
-        westNeighbour = null;
-        eastNeighbour = null;
+        cvs = new Vector<ControlVolume>();
         underdiag = new double[numCvs];
         diag = new double[numCvs];
         upperdiag = new double[numCvs];
@@ -54,87 +49,76 @@ public class TCC {
     }
 
     public void setNeighbours() {
-        //for (int i = 0; i < num_cvs; i++) {
-        for (ControlVolume cv : controlVolumes) {
-            int i = cv.globalIndex;
-            if (i != 0 && i != numCvs - 1) {
-                cv.westNeighbour = controlVolumes.get(i - 1);
-                cv.eastNeighbour = controlVolumes.get(i + 1);
+        cvs.get(0).westNeighbour = cvs.get(0);
+        cvs.get(cvs.size() - 1).eastNeighbour = cvs.get(cvs.size() - 1);
+        if (cvs.size() > 1) {
+            for (int i = 0; i < cvs.size(); i++) {
+                ControlVolume cv = cvs.get(i);
+                if (i != 0 && i != cvs.size() - 1) {
+                    cv.westNeighbour = cvs.get(i - 1);
+                    cv.eastNeighbour = cvs.get(i + 1);
+                }
+                if (i == 0) {
+                    cv.eastNeighbour = cvs.get(1);
+                }
+                if (i == cvs.size() - 1) {
+                    cv.westNeighbour = cvs.get(cvs.size() - 2);
+                }
             }
-            if (i == 0) {
-                cv.eastNeighbour = controlVolumes.get(1);
-            }
-            if (i == numCvs - 1) {
-                cv.westNeighbour = controlVolumes.get(numCvs - 2);
-            }
-            //Window.alert(String.valueOf(cv.left_neighbour.global_index) + "\t" + String.valueOf(cv.right_neighbour.global_index));
         }
-        //}
     }
 
     //TODO: add condition to check if TCC has <3 control volumes 
     public void buildTCC() {  // DOPOLNITI!
-        //Arrays.sort(TCEs);
-        int n1 = numTCEs;
-        int m2 = 0;
-        TCEs.get(0).westNeighbour = null;
-        TCEs.get(n1 - 1).eastNeighbour = null;
-        if (TCEs.size() == 1) {
-            TCEs.get(0).eastNeighbour = null;
-            TCEs.get(n1 - 1).westNeighbour = null;
-        } else {
-            int m1 = TCEs.get(n1 - 1).numComponents;
-            TCEs.get(0).eastNeighbour = TCEs.get(1);
-            TCEs.get(n1 - 1).westNeighbour = TCEs.get(n1 - 2);
-            TCEs.get(0).components.get(0).westNeighbour = null;
-            TCEs.get(n1 - 1).components.get(m1 - 1).eastNeighbour = null;
-        }
-        for (int i = 1; i < numTCEs - 1; i++) {
+        Collections.sort(TCEs);
+        // TCEs.get(0).westBoundary = westBoundary;
+        // TCEs.get(TCEs.size() - 1).eastBoundary = eastBoundary;
+        for (int i = 0; i < TCEs.size() - 1; i++) {
+            TCEs.get(i).eastBoundary = 52;
             TCEs.get(i).eastNeighbour = TCEs.get(i + 1);
-            TCEs.get(i).westNeighbour = TCEs.get(i - 1);
-            m2 = TCEs.get(i).numComponents;
-            TCEs.get(i).components.get(m2 - 1).eastNeighbour = TCEs.get(i + 1).components.get(0);
             TCEs.get(i + 1).westNeighbour = TCEs.get(i);
-            TCEs.get(i + 1).components.get(0).westNeighbour = TCEs.get(i).components.get(TCEs.get(i).numComponents - 1);
         }
-
-        for (int i = 0; i < numTCEs; i++) {
-            TCEs.get(i).buildTCE();
+        for (int i = 1; i < TCEs.size(); i++) {
+            TCEs.get(i).westBoundary = 51;
+            int l = TCEs.get(i - 1).cvs.size();
+            TCEs.get(i - 1).cvs.get(l - 1).eastNeighbour = TCEs.get(i).cvs.get(0);
+            TCEs.get(i).cvs.get(0).westNeighbour = TCEs.get(i - 1).cvs.get(l - 1);
         }
-        controlVolumes.clear();
-        int global_index = 0;
-        for (int i = 0; i < numTCEs; i++) {
-            TCEs.get(i).parentCircuit = this;
-            for (int j = 0; j < TCEs.get(i).numCvs; j++) {
-                TCEs.get(i).controlVolumes.get(j).globalIndex = global_index;
-                controlVolumes.add(TCEs.get(i).controlVolumes.get(j));
-                global_index++;
+        cvs.clear();
+        int globalIndex = 0;
+        for (int i = 0; i < TCEs.size(); i++) {
+            TCEs.get(i).cvs.get(0).westResistance = TCEs.get(i).westResistance;
+            TCEs.get(i).cvs.get(TCEs.get(i).cvs.size() - 1).eastResistance = TCEs.get(i).eastResistance;
+            for (int j = 0; j < TCEs.get(i).cvs.size(); j++) {
+                TCEs.get(i).cvs.get(j).globalIndex = globalIndex;
+                cvs.add(TCEs.get(i).cvs.get(j));
+                globalIndex++;
             }
         }
         setNeighbours();
     }
 
     public void calculateConductivities() {
-        for (ControlVolume cv : controlVolumes) {
+        for (ControlVolume cv : cvs) {
             cv.calculateConductivities();
         }
     }
 
     public void setTemperatures(double[] temps) {
-        for (int i = 0; i < numCvs; i++) {
-            controlVolumes.get(i).temperature = temps[i];
-            controlVolumes.get(i).temperatureOld = temps[i];
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).temperature = temps[i];
+            cvs.get(i).temperatureOld = temps[i];
         }
     }
 
     public void replaceTemperatures() {
-        for (ControlVolume cv : controlVolumes)
+        for (ControlVolume cv : cvs)
             cv.temperatureOld = cv.temperature;
     }
 
 
     public void initializeMatrix() {
-        for (int i = 0; i < numCvs; i++) {
+        for (int i = 0; i < cvs.size(); i++) {
             underdiag[i] = 0.0;
             diag[i] = 0.0;
             upperdiag[i] = 0.0;
@@ -148,10 +132,10 @@ public class TCC {
 
     public String printAttributes() {
         String txt = "";
-        String bcleft = ModelMethods.return_bc_name(westBoundary);
-        String bcright = ModelMethods.return_bc_name(eastBoundary);
-        txt += "\nBoundary condition on the left: " + bcleft;
-        txt += "\nBoundary condition on the right: " + bcright;
+        String bcWest = ModelMethods.return_bc_name(westBoundary);
+        String bcEast = ModelMethods.return_bc_name(eastBoundary);
+        txt += "\nBoundary condition on the left: " + bcWest;
+        txt += "\nBoundary condition on the right: " + bcEast;
         if (westBoundary == 31 || westBoundary == 41)
             txt += "\nTemperature on the left: " + String.valueOf(temperatureWest) + " K";
         if (westBoundary == 41)
@@ -174,15 +158,15 @@ public class TCC {
     // This is a temporary method that needs to be modified in the future
     public void calculateHeatFluxes() {
         fluxes.clear();
-        ControlVolume cv1 = controlVolumes.get(0);
-        ControlVolume cv1r = controlVolumes.get(1);
-        ControlVolume cv2 = controlVolumes.get(controlVolumes.size() - 1);
-        ControlVolume cv2l = controlVolumes.get(controlVolumes.size() - 2);
+        ControlVolume cv1 = cvs.get(0);
+        ControlVolume cv1r = cvs.get(1);
+        ControlVolume cv2 = cvs.get(cvs.size() - 1);
+        ControlVolume cv2l = cvs.get(cvs.size() - 2);
         double Tw = cv1.temperature + 2 * ((cv1.temperature - cv1r.temperature) / (cv1.dx + cv1r.dx)) * (0.5 * cv1.dx);
         double Te = cv2.temperature - 2 * ((cv2l.temperature - cv2.temperature) / (cv2.dx + cv2l.dx)) * (0.5 * cv2.dx);
         for (int i = 0; i < numCvs - 1; i++) {
-            ControlVolume cv = controlVolumes.get(i);
-            ControlVolume cvR = controlVolumes.get(i).eastNeighbour;
+            ControlVolume cv = cvs.get(i);
+            ControlVolume cvR = cvs.get(i).eastNeighbour;
             fluxes.add((double) Math.round(2 * cv.kEastFace * (cv.temperature - cvR.temperature) / (cv.dx + cvR.dx)));
         }
     }

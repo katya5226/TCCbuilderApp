@@ -7,9 +7,9 @@ public class EquationSystem {
 
     public static void conductionTridag(TCC circuit, double dt) {
         //double dt = circuit.parent_sim.dt;
-        int n = circuit.numCvs;
+        int n = circuit.cvs.size();
         for (int i = 0; i < n; i++) {
-            ControlVolume cv = circuit.controlVolumes.get(i);
+            ControlVolume cv = circuit.cvs.get(i);
 
             circuit.underdiag[i] = -cv.kWest * dt;
             circuit.diag[i] = (cv.kWest + cv.kEast) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);

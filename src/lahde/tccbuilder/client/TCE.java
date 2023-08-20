@@ -10,7 +10,7 @@ public class TCE implements Comparable<TCE> {
     public Vector<Component> components;
     public int numComponents;
     public int numCvs;
-    public Vector<ControlVolume> controlVolumes;
+    public Vector<ControlVolume> cvs;
     public TCE westNeighbour;
     public TCE eastNeighbour;
     public double[] underdiag;
@@ -33,7 +33,7 @@ public class TCE implements Comparable<TCE> {
         for (Component c : components) {
             numCvs += c.numCvs;
         }
-        controlVolumes = new Vector<ControlVolume>();
+        cvs = new Vector<ControlVolume>();
         westNeighbour = this;
         eastNeighbour = this;
         underdiag = new double[numCvs];
@@ -58,16 +58,16 @@ public class TCE implements Comparable<TCE> {
     public void setNeighbours() {
         if (numCvs > 1)
             for (int i = 0; i < numCvs; i++) {
-                ControlVolume cv = controlVolumes.get(i);
+                ControlVolume cv = cvs.get(i);
                 if (i != 0 && i != numCvs - 1) {
-                    cv.westNeighbour = controlVolumes.get(i - 1);
-                    cv.eastNeighbour = controlVolumes.get(i + 1);
+                    cv.westNeighbour = cvs.get(i - 1);
+                    cv.eastNeighbour = cvs.get(i + 1);
                 }
                 if (i == 0) {
-                    cv.eastNeighbour = controlVolumes.get(1);
+                    cv.eastNeighbour = cvs.get(1);
                 }
                 if (i == numCvs - 1) {
-                    cv.westNeighbour = controlVolumes.get(numCvs - 2);
+                    cv.westNeighbour = cvs.get(numCvs - 2);
                 }
             }
     }
@@ -78,20 +78,20 @@ public class TCE implements Comparable<TCE> {
         int num_cvs1 = components.get(num_components1 - 1).numCvs;
         if (westNeighbour == null) {
             components.get(0).westNeighbour = null;
-            components.get(0).controlVolumes.get(0).westNeighbour = components.get(0).controlVolumes.get(0);
+            components.get(0).cvs.get(0).westNeighbour = components.get(0).cvs.get(0);
         } else {
             int m1 = westNeighbour.numComponents;
             int m2 = westNeighbour.components.get(m1 - 1).numCvs;
             components.get(0).westNeighbour = westNeighbour.components.get(m1 - 1);
-            components.get(0).controlVolumes.get(0).westNeighbour = westNeighbour.components.get(m1 - 1).controlVolumes.get(m2 - 1);
+            components.get(0).cvs.get(0).westNeighbour = westNeighbour.components.get(m1 - 1).cvs.get(m2 - 1);
         }
 
         if (eastNeighbour == null) {
             components.get(num_components1 - 1).eastNeighbour = null;
-            components.get(num_components1 - 1).controlVolumes.get(num_cvs1 - 1).eastNeighbour = components.get(num_components1 - 1).controlVolumes.get(num_cvs1 - 1);
+            components.get(num_components1 - 1).cvs.get(num_cvs1 - 1).eastNeighbour = components.get(num_components1 - 1).cvs.get(num_cvs1 - 1);
         } else {
             components.get(num_components1 - 1).eastNeighbour = eastNeighbour.components.get(0);
-            components.get(num_components1 - 1).controlVolumes.get(num_cvs1 - 1).eastNeighbour = eastNeighbour.components.get(0).controlVolumes.get(0);
+            components.get(num_components1 - 1).cvs.get(num_cvs1 - 1).eastNeighbour = eastNeighbour.components.get(0).cvs.get(0);
         }
 
         for (int i = 0; i < num_components1 - 1; i++) {
@@ -102,19 +102,19 @@ public class TCE implements Comparable<TCE> {
         for (int i = 1; i < num_components1; i++) {
             components.get(i).westBoundary = 51;
             int l = components.get(i - 1).numCvs;
-            components.get(i - 1).controlVolumes.get(l - 1).eastNeighbour = components.get(i).controlVolumes.get(0);
-            components.get(i).controlVolumes.get(0).westNeighbour = components.get(i - 1).controlVolumes.get(l - 1);
+            components.get(i - 1).cvs.get(l - 1).eastNeighbour = components.get(i).cvs.get(0);
+            components.get(i).cvs.get(0).westNeighbour = components.get(i - 1).cvs.get(l - 1);
         }
-        controlVolumes.clear();
+        cvs.clear();
         int TCE_index = 0;
         components.get(0).westBoundary = westBoundary;
         for (int i = 0; i < num_components1; i++) {
             components.get(num_components1 - 1).eastBoundary = eastBoundary;
-            components.get(i).controlVolumes.get(0).westResistance = components.get(i).westResistance;
-            components.get(i).controlVolumes.get(components.get(i).numCvs - 1).eastResistance = components.get(i).eastResistance;
+            components.get(i).cvs.get(0).westResistance = components.get(i).westResistance;
+            components.get(i).cvs.get(components.get(i).numCvs - 1).eastResistance = components.get(i).eastResistance;
             for (int j = 0; j < components.get(i).numCvs; j++) {
-                components.get(i).controlVolumes.get(j).TCEIndex = TCE_index;
-                controlVolumes.add(components.get(i).controlVolumes.get(j));
+                components.get(i).cvs.get(j).TCEIndex = TCE_index;
+                cvs.add(components.get(i).cvs.get(j));
                 TCE_index++;
             }
         }
@@ -122,19 +122,19 @@ public class TCE implements Comparable<TCE> {
     }
 
     public void calculateConductivities() {
-        for (ControlVolume cv : controlVolumes)
+        for (ControlVolume cv : cvs)
             cv.calculateConductivities();
     }
 
     public void setStartingTemperatures(double[] start_temps) {
         for (int i = 0; i < numCvs; i++) {
-            controlVolumes.get(i).temperature = start_temps[i];
-            controlVolumes.get(i).temperatureOld = start_temps[i];
+            cvs.get(i).temperature = start_temps[i];
+            cvs.get(i).temperatureOld = start_temps[i];
         }
     }
 
     public void replaceTemperatures() {
-        for (ControlVolume cv : controlVolumes)
+        for (ControlVolume cv : cvs)
             cv.temperatureOld = cv.temperature;
     }
 

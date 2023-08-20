@@ -241,7 +241,7 @@ public class StartDialog extends Dialog {
                         GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
                     }
                     GWT.log("------");
-                    GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).controlVolumes.get(0).constK));
+                    GWT.log("Inox k: " + String.valueOf(sim.simTCEs.get(0).cvs.get(0).constK));
                 }
                 apply();
             }
@@ -363,7 +363,7 @@ public class StartDialog extends Dialog {
     @Override
     void apply() {
 
-        if (!sim.simComponents.isEmpty()) {
+        if (!sim.simTCEs.isEmpty()) {
             sim.resetAction();
 
 
