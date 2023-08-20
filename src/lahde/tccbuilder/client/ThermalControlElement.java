@@ -70,7 +70,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         numCvs = 3;
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.
-        rightResistance = 0.0;
+        eastResistance = 0.0;
         westNeighbour = null;
         eastNeighbour = null;
         westBoundary = 51;
@@ -117,14 +117,14 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public void set_starting_temps(double start_temp) {
         for (int i = 0; i < numCvs; i++) {
             cvs.get(i).temperature = start_temp;
-            cvs.get(i).temperature_old = start_temp;
+            cvs.get(i).temperatureOld = start_temp;
         }
     }
 
     public void updateModes() {
         for (int i = 0; i < numCvs; i++) {
             ControlVolume cv = cvs.get(i);
-            if (cv.temperature >= cv.temperature_old) {
+            if (cv.temperature >= cv.temperatureOld) {
                 cv.mode = 1;
             } else {
                 cv.mode = -1;
@@ -156,7 +156,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         sb.append(length).append(' ');
         sb.append(name).append(' ');
-        sb.append(num_cvs);
+        sb.append(numCvs);
 
         return sb.toString();
     }
@@ -225,7 +225,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 ei.choice.select(sim.materialNames.indexOf("100001-Inox"));
                 return ei;
             case 3:
-                return new EditInfo("Number of control volumes", (double) num_cvs);
+                return new EditInfo("Number of control volumes", (double) numCvs);
             case 4:
                 EditInfo ei2 = new EditInfo("Color", 0);
                 ei2.choice = new Choice();
@@ -288,7 +288,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         //TODO: Implement this with better functionality
 
-        if (length / num_cvs < 1e-6) {
+        if (length / numCvs < 1e-6) {
             String input = String.valueOf(numCvs);
             if (!isDisabled)
                 Window.alert("TCE can't have a dx < 1e-6, current is " + (length / numCvs) + "\n Please enter a smaller number of control volumes!");
@@ -367,16 +367,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     public void set_q_gen(double qGen) {
         for (ControlVolume cv : cvs) {
-            cv.qGen = qGen;
+            cv.qGenerated = qGen;
         }
     }
 
     public void set_resistance(String side, double r) {
-        if (side.equals("left")) {
+        if (side.equals("west")) {
             westResistance = r;
             cvs.get(0).westResistance = r;
         }
-        if (side.equals("right")) {
+        if (side.equals("east")) {
             eastResistance = r;
             cvs.get(numCvs - 1).eastResistance = r;
         }

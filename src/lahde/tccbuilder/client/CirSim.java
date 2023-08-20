@@ -182,7 +182,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
     boolean simRunning;
-    ArrayList<Component> trackedTemperatures;
+    ArrayList<ThermalControlElement> trackedTemperatures;
     boolean showResistanceInVoltageSources;
     boolean hideInfoBox;
     static Dialog editDialog, customLogicEditDialog, diodeModelEditDialog;
@@ -236,7 +236,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public Vector<String> colorChoices;
     public TCC heatCircuit;
     public Vector<Component> simComponents;
-    public Vector<TCE> simTCEs;
+    public Vector<ThermalControlElement> simTCEs;
     public int num_cvs;
     public double[] underdiag;
     public double[] diag;
