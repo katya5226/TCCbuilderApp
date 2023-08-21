@@ -25,8 +25,7 @@ public class TCC {
         //parent_sim = null;
         this.name = name;
         this.TCEs = TCEs;
-        numTCEs = TCEs.size();
-        numCvs = 0;
+        int numCvs = 0;
         for (ThermalControlElement tce : TCEs) {
             numCvs += tce.cvs.size();
         }
@@ -164,7 +163,7 @@ public class TCC {
         ControlVolume cv2l = cvs.get(cvs.size() - 2);
         double Tw = cv1.temperature + 2 * ((cv1.temperature - cv1r.temperature) / (cv1.dx + cv1r.dx)) * (0.5 * cv1.dx);
         double Te = cv2.temperature - 2 * ((cv2l.temperature - cv2.temperature) / (cv2.dx + cv2l.dx)) * (0.5 * cv2.dx);
-        for (int i = 0; i < numCvs - 1; i++) {
+        for (int i = 0; i < cvs.size() - 1; i++) {
             ControlVolume cv = cvs.get(i);
             ControlVolume cvR = cvs.get(i).eastNeighbour;
             fluxes.add((double) Math.round(2 * cv.kEastFace * (cv.temperature - cvR.temperature) / (cv.dx + cvR.dx)));

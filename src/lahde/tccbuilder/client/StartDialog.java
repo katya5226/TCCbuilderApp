@@ -274,8 +274,6 @@ public class StartDialog extends Dialog {
                         leftConvectionCoefficientLabel.setVisible(true);
                         leftConvectionCoefficient.setVisible(true);
                         leftConvectionCoefficient.setValue(sim.h_left);
-
-
                         break;
                     default:
 
@@ -312,7 +310,6 @@ public class StartDialog extends Dialog {
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
                         rightConvectionCoefficient.setValue(sim.h_right);
-
                         break;
                     default:
                         break;
@@ -362,11 +359,8 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-
         if (!sim.simTCEs.isEmpty()) {
             sim.resetAction();
-
-
             closeDialog();
         }
     }

@@ -235,13 +235,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public HashMap<String, Material> materialHashMap;
     public Vector<String> colorChoices;
     public TCC heatCircuit;
-    public Vector<Component> simComponents;
+    // public Vector<Component> simComponents;
     public Vector<ThermalControlElement> simTCEs;
     public int num_cvs;
-    public double[] underdiag;
-    public double[] diag;
-    public double[] upperdiag;
-    public double[] rhs;
+    // public double[] underdiag;
+    // public double[] diag;
+    // public double[] upperdiag;
+    // public double[] rhs;
     public int left_boundary;
     public int right_boundary;
     public double h_left;
@@ -311,12 +311,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public LengthUnit selectedLengthUnit = LengthUnit.MILLIMETER;
 
-    String printComponents() {
-        String comps = "";
-        for (Component c : simComponents) {
-            comps += c.index + (c == simComponents.get(simComponents.size() - 1) ? "" : ", ");
+    String printTCEs() {
+        String tces = "";
+        for (ThermalControlElement tce : simTCEs) {
+            tces += tce.index + (tce == simTCEs.get(simTCEs.size() - 1) ? "" : ", ");
         }
-        return comps;
+        return tces;
     }
 
     // *********************************************************************************************
@@ -764,7 +764,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 composeMainMenu(mainMenuBar, 1);
                 loadShortcuts();
                 simTwoDimComponents = new Vector<TwoDimComponent>();
-                simComponents = new Vector<Component>();
+                simTCEs = new Vector<ThermalControlElement>();
             }
         });
 
@@ -785,7 +785,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         selectedLengthUnit = CirSim.LengthUnit.METER;
                         break;
                 }
-                for (Component c : simComponents)
+                for (ThermalControlElement c : simTCEs)
                     c.calculateLength();
 
                 for (TwoDimComponent c : simTwoDimComponents)
@@ -813,7 +813,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // setupList = new Vector();
         undoStack = new Vector<UndoItem>();
         redoStack = new Vector<UndoItem>();
-        trackedTemperatures = new ArrayList<Component>();
+        trackedTemperatures = new ArrayList<ThermalControlElement>();
 
         awaitedResponses = new ArrayList<String>();
         random = new Random();
@@ -903,8 +903,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         materialNames = new Vector<String>();
         materialHashMap = new HashMap<String, Material>();
         colorChoices = new Vector<String>();
-        simComponents = new Vector<Component>();
-        this.simTCEs = new Vector<TCE>();
+        // simComponents = new Vector<Component>();
+        this.simTCEs = new Vector<ThermalControlElement>();
         this.num_cvs = 0;// this.circuit.num_cvs;
         // this.special_boundaries = []
         this.left_boundary = 41;
@@ -996,8 +996,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void makeTCC() {
-        simTCEs.clear();
-        simTCEs.add(new TCE("TCE1", 0, simComponents));
+        // simTCEs.clear();
+        // simTCEs.add(new TCE("TCE1", 0, simComponents));
         heatCircuit = new TCC("Heat circuit", simTCEs);
         heatCircuit.westBoundary = left_boundary;
         heatCircuit.eastBoundary = right_boundary;
@@ -1010,19 +1010,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();
-        int n = heatCircuit.numCvs;
+        int n = heatCircuit.cvs.size();
         double[] temps = new double[n];
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
 
         double maxValue = 0;
-        for (Component c : simComponents) {
-            if (c.material.magnetocaloric) {
-                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
+        for (ThermalControlElement c : simTCEs) {
+            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
+                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
                     maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
                 }
 
-                for (Vector<Double> dTheatingVector : c.material.dTheating) {
+                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
                     maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
                 }
             }
@@ -1035,7 +1035,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             maxTemp = startTemp + maxValue;
         }
 
-
+        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
+        for(ControlVolume cv : heatCircuit.cvs) {
+            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
+        }
     }
 
     void makeTwoDimTCE() {
@@ -1055,14 +1058,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void setHeatSim() {
-        num_cvs = heatCircuit.numCvs;
-        underdiag = new double[this.num_cvs];
-        diag = new double[this.num_cvs];
-        upperdiag = new double[this.num_cvs];
-        rhs = new double[this.num_cvs];
-        left_boundary = heatCircuit.westBoundary;
+        // underdiag = new double[heatCircuit.cvs.size()];
+        // diag = new double[heatCircuit.cvs.size()];
+        // upperdiag = new double[heatCircuit.cvs.size()];
+        // rhs = new double[heatCircuit.cvs.size()];
+        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
         right_boundary = heatCircuit.eastBoundary;
-        start_temperatures = new double[this.num_cvs];
+        start_temperatures = new double[heatCircuit.cvs.size()];
         numCycleParts = this.cycleParts.size();
         if (!cycleParts.isEmpty())
             cyclePart = this.cycleParts.get(0);
@@ -1092,7 +1094,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void heat_transfer_step() {
 
-        for (int i = 0; i < this.num_cvs; i++) {
+        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
             this.x_prev[i] = heatCircuit.cvs.get(i).temperatureOld;
         }
         //while (true) {
@@ -1102,15 +1104,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             heatCircuit.makeMatrix(this.dt);
             ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-            for (int i = 0; i < this.num_cvs; i++) {
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
                 this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
             }
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
             this.x_prev = this.x_mod;
-            for (int i = 0; i < simComponents.size(); i++) {
-                if (simComponents.get(i).material.cpThysteresis == true)
-                    simComponents.get(i).updateModes();
+            for (int i = 0; i < simTCEs.size(); i++) {
+                if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
+                    simTCEs.get(i).updateModes();
             }
             // if (flag) {
             //     break;
@@ -1658,9 +1660,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ((TwoDimComponent) dragElm).calculateLengthHeight();
             if (dragElm instanceof TwoDimComponent)
                 ((TwoDimComponent) dragElm).calculateLengthHeight();
-            if (dragElm instanceof Component)
-                ((Component) dragElm).calculateLength();
-
+            if (dragElm instanceof ThermalControlElement)
+                ((ThermalControlElement) dragElm).calculateLength();
 
             dragElm.drawHandles(g, CircuitElm.selectColor);
         }
@@ -1688,7 +1689,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // draw the temperature display
 
-        if (simComponents.size() > 0)
+        if (simTCEs.size() > 0)
             if (viewTempsInGraph)
                 drawTemperatureGraphs(g);
             else
@@ -1756,16 +1757,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double YOffset = circuitArea.height - h;
         double XOffSet = 0;
         // drawing the displays
-        for (Component component : trackedTemperatures) {
+        for (ThermalControlElement tce : trackedTemperatures) {
             try {
                 XOffSet = 0;
-                double[] temps = component.listTemps();
+                double[] temps = tce.listTemps();
                 double elementWidth = (circuitArea.width * 1.00 - indexWidth) / (temps.length);
-                drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, component.index + "",
-                        component.color.getHexValue());
+                drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, tce.index + "",
+                        tce.color.getHexValue());
                 XOffSet += indexWidth;
                 for (double temp : temps) {
-                    drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), component.color.getHexValue());
+                    drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), tce.color.getHexValue());
                     XOffSet += elementWidth;
                 }
             } catch (Exception e) {
@@ -1827,16 +1828,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((num_cvs) - 1));
         double innerX = XOffSet;
         Color prevColor = Color.NONE;
-        for (Component component : trackedTemperatures) {
+        for (ThermalControlElement tce : trackedTemperatures) {
             try {
-                double[] temps = component.listTemps();
+                double[] temps = tce.listTemps();
                 double tempHeight = elementHeight;
                 double innerY = YOffset;
 
 /*                if (trackedTemperatures.size() > 1) {
-                    drawRectangleWithText(g, innerX, YOffset - 25, tempWidth * temps.length, 25, String.valueOf(component.index), component.color.getHexValue(), false);
+                    drawRectangleWithText(g, innerX, YOffset - 25, tempWidth * temps.length, 25, String.valueOf(tce.index), tce.color.getHexValue(), false);
                 }*/
-                if (component == trackedTemperatures.get(0)) {
+                if (tce == trackedTemperatures.get(0)) {
                     innerX -= tempWidth / 2;
                 }
 
@@ -1853,19 +1854,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
                                 minTemp,
                                 maxTemp,
-                                component.color.getHexValue());
+                                tce.color.getHexValue());
                     }
 
                     tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
                             minTemp,
                             maxTemp,
-                            component.color.getHexValue());
+                            tce.color.getHexValue());
 
                     prevX = tmp[0];
                     prevY = tmp[1];
                     innerX += tempWidth;
                 }
-                prevColor = component.color;
+                prevColor = tce.color;
 
             } catch (Exception ignored) {
 
@@ -1956,7 +1957,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else {
             info[0] = Locale.LS("t = ") + (double) Math.round(this.time * 100) / 100 + " s";
             info[1] = Locale.LS("time step = ") + this.dt + " s";
-            info[2] = Locale.LS("components = " + printComponents());
+            info[2] = Locale.LS("components = " + printTCEs());
         }
         for (int i = 0; info[i] != null; i++)
             g.drawString(info[i], 8, 8 + 16 * (i + 1));
@@ -2297,11 +2298,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         if (item == "viewTemps" && menuElm != null) {
-            Component component = (Component) menuElm;
-            if (trackedTemperatures.contains(component)) {
-                trackedTemperatures.remove(component);
+            ThermalControlElement tce = (ThermalControlElement) menuElm;
+            if (trackedTemperatures.contains(tce)) {
+                trackedTemperatures.remove(tce);
             } else {
-                trackedTemperatures.add((Component) component);
+                trackedTemperatures.add((ThermalControlElement) tce);
             }
         }
 
@@ -2475,23 +2476,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
 
             dump += "\nThermal control elements: \n";
-            for (TCE tce : simTCEs) {
-                dump += "\nTCE: " + tce.name + "\n";
-                dump += "Components: \n";
-                for (Component component : tce.components) {
-                    dump += "Component name: " + component.name + "\n" +
-                            "Component index: " + component.index + "\n" +
-                            "Material: " + component.material.materialName + "\n" +
-                            "Number of control volumes:  " + component.numCvs + "\n" +
-                            "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
-                            "Constant density: " + ((component.constRho == -1) ? "not set" : component.constRho + " kg/m³") + "\n" +
-                            "Constant specific heat: " + ((component.constCp == -1) ? "not set" : component.constCp + " J/(kgK)") + "\n" +
-                            "Constant thermal conductivity: " + ((component.constK == -1) ? "not set" : component.constK + " W/(mK)") + "\n" +
-                            "Left contact resistance: " + component.westResistance + " mK/W\n" +
-                            "Right contact resistance: " + component.eastResistance + " mK/W\n" +
+            for (ThermalControlElement tce : simTCEs) {
+                dump += "TCE name: " + tce.name + "\n" +
+                        "TCE index: " + tce.index + "\n" +
+                            //"Material: " + component.material.materialName + "\n" +
+                            "Number of control volumes:  " + tce.numCvs + "\n" +
+                            "Control volume length: " + formatLength(tce.cvs.get(0).dx) + "\n" +
+                            "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" +
+                            "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" +
+                            "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" +
+                            "Left contact resistance: " + tce.westResistance + " mK/W\n" +
+                            "Right contact resistance: " + tce.eastResistance + " mK/W\n" +
                             "Generated heat: " + 0.0 + " W/m²\n\n";
                 }
-            }
             dump += "\nTemperatures:\n";
             dump += "Time\t";
             for (int i = 0; i < num_cvs; i++) {
@@ -2700,8 +2697,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
         cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
-        cyclePartMagneticFieldChange.components.add(simComponents.get(2));
-        simComponents.get(2).fieldIndex = 2;
+        cyclePartMagneticFieldChange.TCEs.add(simTCEs.get(2));
+        simTCEs.get(2).fieldIndex = 2;
         cycleParts.add(cyclePartMagneticFieldChange);
 
         // CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
@@ -2887,8 +2884,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
             t = timeStepAccum = 0;
             elmList.removeAllElements();
-            simComponents = new Vector<Component>();
-            trackedTemperatures = new ArrayList<Component>();
+            simTCEs = new Vector<ThermalControlElement>();
+            trackedTemperatures = new ArrayList<ThermalControlElement>();
             hintType = -1;
             maxTimeStep = 5e-6;
             minTimeStep = 50e-12;
@@ -3160,8 +3157,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     dragPost(snapGrid(gx), snapGrid(gy), e.isShiftKeyDown());
                     if (mouseElm instanceof TwoDimComponent)
                         ((TwoDimComponent) mouseElm).calculateLengthHeight();
-                    else if (mouseElm instanceof Component)
-                        ((Component) mouseElm).calculateLength();
+                    else if (mouseElm instanceof ThermalControlElement)
+                        ((ThermalControlElement) mouseElm).calculateLength();
                     changed = true;
                 }
                 break;
@@ -3413,8 +3410,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             CircuitElm ce = getElm(i);
             if (ce.x == ce.x2 && ce.y == ce.y2) {
                 elmList.remove(ce);
-                simComponents.remove((Component) ce);
-                trackedTemperatures.remove((Component) ce);
+                simTCEs.remove((ThermalControlElement) ce);
+                trackedTemperatures.remove((ThermalControlElement) ce);
                 Collections.sort(trackedTemperatures);
                 ce.delete();
                 changed = true;
@@ -4034,8 +4031,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ce.delete();
                 elmList.removeElementAt(i);
                 // Katni *******************************************************************
-                if (ce instanceof Component) {
-                    simComponents.remove((Component) ce);
+                if (ce instanceof ThermalControlElement) {
+                    simTCEs.remove((ThermalControlElement) ce);
                     resetHeatSim();
                     trackedTemperatures.remove(ce);
                     Collections.sort(trackedTemperatures);
@@ -4447,7 +4444,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case "WireElm":
                 return new WireElm(x1, y1);
             case "Component":
-                return new Component(x1, y1);
+                return new ThermalControlElement(x1, y1);  // TODO, add both
             case "2DComponent":
                 return new TwoDimComponent(x1, y1);
             case "ZigZagInterface":

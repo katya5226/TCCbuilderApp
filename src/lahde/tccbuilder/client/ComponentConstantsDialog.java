@@ -116,19 +116,19 @@ public class ComponentConstantsDialog extends Dialog {
             double value = doubleBox.getValue();
             // Apply the value to the component or perform necessary actions
             // For example:
-            if (circuitElm instanceof Component) {
+            if (circuitElm instanceof ThermalControlElement) {
                 switch (selectedValue) {
                     case "Density":
-                        ((Component) circuitElm).constRho = value;
+                        ((ThermalControlElement) circuitElm).constRho = value;
                         break;
                     case "Specific Heat Capacity":
-                        ((Component) circuitElm).constCp = value;
+                        ((ThermalControlElement) circuitElm).constCp = value;
                         break;
                     case "Thermal Conductivity":
-                        ((Component) circuitElm).constK = value;
+                        ((ThermalControlElement) circuitElm).constK = value;
                         break;
                 }
-                ((Component) circuitElm).buildComponent();
+                ((ThermalControlElement) circuitElm).buildThermalControlElement();
             }
 
             if (circuitElm instanceof TwoDimComponent) {
