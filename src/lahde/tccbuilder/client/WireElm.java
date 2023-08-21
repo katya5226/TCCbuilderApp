@@ -19,14 +19,14 @@
 
 package lahde.tccbuilder.client;
 
-class WireElm extends CircuitElm {
+class WireElm extends ThermalControlElement {
     public WireElm(int xx, int yy) {
         super(xx, yy);
     }
 
     public WireElm(int xa, int ya, int xb, int yb, int f,
                    StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
+        super(xa, ya, xb, yb, f,st);
     }
 
     @Override
@@ -35,12 +35,10 @@ class WireElm extends CircuitElm {
         drawThickLine(g, point1, point2);
 
     }
-
     @Override
-    void getInfo(String arr[]) {
-        arr[0] = "wire";
+    int getDumpType() {
+        return 'w';
     }
-
 
     @Override
     int getShortcut() {

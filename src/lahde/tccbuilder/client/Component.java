@@ -17,5 +17,8 @@ public class Component extends ThermalControlElement {
     public Component(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
-
+    @Override
+    int getDumpType() {
+        return 520;
+    }
 }

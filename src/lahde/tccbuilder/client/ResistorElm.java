@@ -23,7 +23,7 @@ package lahde.tccbuilder.client;
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import lahde.tccbuilder.client.util.Locale;
 
-class ResistorElm extends CircuitElm {
+class ResistorElm extends ThermalControlElement {
 
     public ResistorElm(int xx, int yy) {
         super(xx, yy);
@@ -31,11 +31,16 @@ class ResistorElm extends CircuitElm {
 
     public ResistorElm(int xa, int ya, int xb, int yb, int f,
                        StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
+        super(xa, ya, xb, yb, f,st);
     }
 
     @Override
     int getDumpType() {
+        return 'r';
+    }
+
+    @Override
+    int getShortcut() {
         return 'r';
     }
 
@@ -58,42 +63,25 @@ class ResistorElm extends CircuitElm {
         draw2Leads(g);
 
         //   double segf = 1./segments;
+        g.setColor(Color.gray);
         double len = distance(lead1, lead2);
         g.context.save();
         g.context.setLineWidth(3.0);
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
 
-        g.setColor(Color.gray);
 
         if (dn < 30)
             hs = 2;
-        if (!sim.euroResistorCheckItem.getState()) {
-            g.context.beginPath();
-            g.context.moveTo(0, 0);
-            for (i = 0; i < 4; i++) {
-                g.context.lineTo((1 + 4 * i) * len / 16, hs);
-                g.context.lineTo((3 + 4 * i) * len / 16, -hs);
-            }
-            g.context.lineTo(len, 0);
-            g.context.stroke();
 
-        } else {
-            g.context.strokeRect(0, -hs, len, 2.0 * hs);
+        g.context.beginPath();
+        g.context.moveTo(0, 0);
+        for (i = 0; i < 4; i++) {
+            g.context.lineTo((1 + 4 * i) * len / 16, hs);
+            g.context.lineTo((3 + 4 * i) * len / 16, -hs);
         }
+        g.context.lineTo(len, 0);
+        g.context.stroke();
+
         g.context.restore();
     }
-
-
-    @Override
-    void getInfo(String arr[]) {
-        arr[0] = "resistor";
-    }
-
-
-    @Override
-    int getShortcut() {
-        return 'r';
-    }
-
-
 }

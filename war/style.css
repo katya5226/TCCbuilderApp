@@ -12,6 +12,7 @@
     --gray: #404B59;
     --light-gray: #5d6e83;
 }
+
 .example::-webkit-scrollbar {
     display: none;
 }
@@ -104,6 +105,10 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
 
 .dialogButtonPanel > tbody > tr > td > * {
     width: 90%;
+}
+
+.gwt-MenuItemSeparator {
+    background-color: var(--deep-blue);
 }
 
 .gwt-ListBox {
@@ -256,6 +261,7 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
 .radioPanel label {
     margin-right: 15px;
 }
-.glassBackdrop{
+
+.glassBackdrop {
     background-color: rgba(24, 28, 36, 0.33);
 }
