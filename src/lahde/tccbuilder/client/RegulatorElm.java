@@ -20,32 +20,26 @@
 
 package lahde.tccbuilder.client;
 
-import com.google.gwt.canvas.dom.client.CanvasGradient;
-import lahde.tccbuilder.client.util.Locale;
-
-class RegulatorElm extends CircuitElm {
-    double resistance;
+class RegulatorElm extends ThermalControlElement {
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
-        resistance = 1000;
     }
 
     public RegulatorElm(int xa, int ya, int xb, int yb, int f,
                         StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
-        resistance = new Double(st.nextToken()).doubleValue();
+        super(xa, ya, xb, yb, f,st);
     }
 
     @Override
     int getDumpType() {
-        return 'r';
+        return 'e';
+    }
+    @Override
+    int getShortcut() {
+        return 'e';
     }
 
-    @Override
-    String dump() {
-        return super.dump() + " " + resistance;
-    }
 
     Point ps3, ps4;
 
@@ -59,21 +53,20 @@ class RegulatorElm extends CircuitElm {
 
     @Override
     void draw(Graphics g) {
-        int segments = 16;
         int i;
-        int ox = 0;
         int hs = 6;
         setBbox(point1, point2, hs);
         draw2Leads(g);
 
         double len = distance(lead1, lead2);
+        g.setColor(Color.gray);
         g.context.save();
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
         g.context.setLineWidth(2);
 
-        g.setColor(Color.gray);
         if (dn < 30)
             hs = 2;
+        
         g.context.beginPath();
         g.context.moveTo(0, 0);
         for (i = 0; i < 4; i++) {
@@ -104,41 +97,10 @@ class RegulatorElm extends CircuitElm {
         g.context.stroke();
         g.context.restore();
 
-/*        if (sim.showValuesCheckItem.getState()) {
-            String s = getShortUnitText(resistance, "");
-            drawValues(g, s, hs + 2);
-        }*/
+
     }
 
 
-    @Override
-    void getInfo(String arr[]) {
-        arr[0] = "resistor";
-    }
 
-    @Override
-    public EditInfo getEditInfo(int n) {
-        // ohmString doesn't work here on linux
-        if (n == 0)
-            return new EditInfo("Resistance (ohms)", resistance, 0, 0);
-        return null;
-    }
 
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        resistance = (ei.value <= 0) ? 1e-9 : ei.value;
-    }
-
-    @Override
-    int getShortcut() {
-        return 'r';
-    }
-
-    double getResistance() {
-        return resistance;
-    }
-
-    void setResistance(double r) {
-        resistance = r;
-    }
 }

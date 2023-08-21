@@ -19,8 +19,7 @@
 
 package lahde.tccbuilder.client;
 
-// SPST switch
-class SwitchElm extends CircuitElm {
+class SwitchElm extends ThermalControlElement {
     boolean momentary;
     // position 0 == closed, position 1 == open
     int position, posCount;
@@ -41,11 +40,9 @@ class SwitchElm extends CircuitElm {
 
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
-        String str = st.nextToken();
-
-        position = new Integer(str).intValue();
-        momentary = new Boolean(st.nextToken()).booleanValue();
+        super(xa, ya, xb, yb, f,st);
+        position =  Integer.parseInt(st.nextToken());
+        momentary = st.nextToken().equals("true");
         posCount = 2;
     }
 
@@ -54,9 +51,15 @@ class SwitchElm extends CircuitElm {
         return 's';
     }
 
+
+    @Override
+    int getShortcut() {
+        return 's';
+    }
+
     @Override
     String dump() {
-        return super.dump() + " " + position + " " + momentary;
+        return super.dump()+ position + " " + momentary;
     }
 
     Point ps, ps2;
@@ -87,15 +90,8 @@ class SwitchElm extends CircuitElm {
         drawThickLine(g, ps, ps2);
     }
 
-    Rectangle getSwitchRect() {
-        interpPoint(lead1, lead2, ps, 0, openhs);
-        return new Rectangle(lead1).union(new Rectangle(lead2)).union(new Rectangle(ps));
-    }
 
-    void mouseUp() {
-        if (momentary)
-            toggle();
-    }
+
 
     void toggle() {
         position++;
@@ -103,34 +99,6 @@ class SwitchElm extends CircuitElm {
             position = 0;
     }
 
-    @Override
-    void getInfo(String arr[]) {
-        arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
-        if (position == 1) {
-            arr[1] = "open";
-        } else {
-            arr[1] = "closed";
-        }
-    }
 
-    @Override
-    public EditInfo getEditInfo(int n) {
-        if (n == 0) {
-            EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox = new Checkbox("Momentary Switch", momentary);
-            return ei;
-        }
-        return null;
-    }
 
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        if (n == 0)
-            momentary = ei.checkbox.getState();
-    }
-
-    @Override
-    int getShortcut() {
-        return 's';
-    }
 }

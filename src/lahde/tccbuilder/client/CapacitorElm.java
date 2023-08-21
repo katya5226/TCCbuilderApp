@@ -19,33 +19,16 @@
 
 package lahde.tccbuilder.client;
 
-class CapacitorElm extends CircuitElm {
-    double capacitance;
-    double compResistance, voltdiff;
-    double initialVoltage;
+class CapacitorElm extends ThermalControlElement {
     Point plate1[], plate2[];
-    public static final int FLAG_BACK_EULER = 2;
 
     public CapacitorElm(int xx, int yy) {
         super(xx, yy);
-        capacitance = 1e-5;
-        initialVoltage = 1e-3;
     }
 
     public CapacitorElm(int xa, int ya, int xb, int yb, int f,
                         StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
-        capacitance = new Double(st.nextToken()).doubleValue();
-        voltdiff = new Double(st.nextToken()).doubleValue();
-        initialVoltage = 1e-3;
-        try {
-            initialVoltage = new Double(st.nextToken()).doubleValue();
-        } catch (Exception e) {
-        }
-    }
-
-    boolean isTrapezoidal() {
-        return (flags & FLAG_BACK_EULER) == 0;
+        super(xa, ya, xb, yb, f, st);
     }
 
     @Override
@@ -56,11 +39,6 @@ class CapacitorElm extends CircuitElm {
     @Override
     int getDumpType() {
         return 'c';
-    }
-
-    @Override
-    String dump() {
-        return super.dump() + " " + capacitance + " " + voltdiff + " " + initialVoltage;
     }
 
     // used for PolarCapacitorElm
@@ -100,45 +78,6 @@ class CapacitorElm extends CircuitElm {
         }
 
 
-
-    }
-
-
-    double curSourceValue;
-
-    @Override
-    void getInfo(String arr[]) {
-        arr[0] = "capacitor";
-
-    }
-
-    @Override
-    public EditInfo getEditInfo(int n) {
-        if (n == 0)
-            return new EditInfo("Capacitance (F)", capacitance, 1e-6, 1e-3);
-        if (n == 1) {
-            EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox = new Checkbox("Trapezoidal Approximation", isTrapezoidal());
-            return ei;
-        }
-        if (n == 2)
-            return new EditInfo("Initial Voltage (on Reset)", initialVoltage);
-        // if you add more things here, check PolarCapacitorElm
-        return null;
-    }
-
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        if (n == 0)
-            capacitance = (ei.value > 0) ? ei.value : 1e-12;
-        if (n == 1) {
-            if (ei.checkbox.getState())
-                flags &= ~FLAG_BACK_EULER;
-            else
-                flags |= FLAG_BACK_EULER;
-        }
-        if (n == 2)
-            initialVoltage = ei.value;
     }
 
     @Override
@@ -146,11 +85,4 @@ class CapacitorElm extends CircuitElm {
         return 'c';
     }
 
-    public double getCapacitance() {
-        return capacitance;
-    }
-
-    public void setCapacitance(double c) {
-        capacitance = c;
-    }
 }

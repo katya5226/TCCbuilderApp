@@ -19,30 +19,15 @@
 
 package lahde.tccbuilder.client;
 
-class DiodeElm extends CircuitElm {
-    static final int FLAG_FWDROP = 1;
-    static final int FLAG_MODEL = 2;
-    String modelName;
-    static String lastModelName = "default";
-    boolean hasResistance;
-    int diodeEndNode;
+class DiodeElm extends ThermalControlElement {
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
-        modelName = lastModelName;
-        setup();
     }
 
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
-        setup();
-    }
-
-    void setup() {
-//	CirSim.console("setting up for model " + modelName + " " + model);
-        diodeEndNode = (hasResistance) ? 2 : 1;
-
+        super(xa, ya, xb, yb, f, st);
     }
 
     @Override
@@ -50,6 +35,9 @@ class DiodeElm extends CircuitElm {
         return 'd';
     }
 
+    int getShortcut() {
+        return 'd';
+    }
 
     final int hs = 8;
     Polygon poly;
@@ -68,12 +56,6 @@ class DiodeElm extends CircuitElm {
 
     @Override
     void draw(Graphics g) {
-        drawDiode(g);
-    }
-
-
-
-    void drawDiode(Graphics g) {
         setBbox(point1, point2, hs);
 
         draw2Leads(g);

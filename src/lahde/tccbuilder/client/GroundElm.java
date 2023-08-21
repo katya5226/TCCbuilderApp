@@ -19,21 +19,17 @@
 
 package lahde.tccbuilder.client;
 
-class GroundElm extends CircuitElm {
-    static int lastSymbolType = 0;
+class GroundElm extends ThermalControlElement {
     int symbolType;
-
-    // this is needed for old subcircuits which have GroundElm dumped
-    final int FLAG_OLD_STYLE = 1;
 
     public GroundElm(int xx, int yy) {
         super(xx, yy);
-        symbolType = lastSymbolType;
+        symbolType = 0;
     }
 
     public GroundElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
+        super(xa, ya, xb, yb, f, st);
         if (st.hasMoreTokens()) {
             try {
                 symbolType = Integer.parseInt(st.nextToken());
@@ -49,6 +45,11 @@ class GroundElm extends CircuitElm {
 
     @Override
     int getDumpType() {
+        return 'g';
+    }
+
+    @Override
+    int getShortcut() {
         return 'g';
     }
 
@@ -92,50 +93,5 @@ class GroundElm extends CircuitElm {
         setBbox(point1, ps2, 11);
     }
 
-    void setOldStyle() {
-        flags |= FLAG_OLD_STYLE;
-    }
-
-    boolean isOldStyle() {
-        return (flags & FLAG_OLD_STYLE) != 0;
-    }
-
-
-    static Point firstGround;
-
-    static void resetNodeList() {
-        firstGround = null;
-    }
-
-    @Override
-    void getInfo(String arr[]) {
-        arr[0] = "ground";
-    }
-
-    @Override
-    int getShortcut() {
-        return 'g';
-    }
-
-    @Override
-    public EditInfo getEditInfo(int n) {
-        if (n == 0) {
-            EditInfo ei = new EditInfo("Symbol", 0);
-            ei.choice = new Choice();
-            ei.choice.add("Earth");
-            ei.choice.add("Chassis");
-            ei.choice.add("Signal");
-            ei.choice.add("Common");
-            ei.choice.select(symbolType);
-            return ei;
-        }
-        return null;
-    }
-
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        if (n == 0)
-            lastSymbolType = symbolType = ei.choice.getSelectedIndex();
-    }
 
 }
