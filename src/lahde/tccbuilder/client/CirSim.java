@@ -237,7 +237,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public TCC heatCircuit;
     // public Vector<Component> simComponents;
     public Vector<ThermalControlElement> simTCEs;
-    public int num_cvs;
+    // public int num_cvs;
     // public double[] underdiag;
     // public double[] diag;
     // public double[] upperdiag;
@@ -274,8 +274,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // public double sim_file;
     // public double temperatures_file;
     public int ud;
-    double[] x_prev;
-    double[] x_mod;
+    Vector<Double> x_prev;
+    Vector<Double> x_mod;
 
     boolean viewTempsInGraph = true;
     boolean viewTempsOverlay = true;
@@ -905,7 +905,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         colorChoices = new Vector<String>();
         // simComponents = new Vector<Component>();
         this.simTCEs = new Vector<ThermalControlElement>();
-        this.num_cvs = 0;// this.circuit.num_cvs;
+        // this.num_cvs = 0;// this.circuit.num_cvs;
         // this.special_boundaries = []
         this.left_boundary = 41;
         this.right_boundary = 42;
@@ -940,8 +940,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
 
         this.ud = 0;
-        this.x_prev = new double[this.num_cvs];
-        this.x_mod = new double[this.num_cvs];
+        x_prev = new Vector<Double>();
+        x_mod = new Vector<Double>();
         colorChoices.add("white");  // I will fix this later.
         colorChoices.add("lightGray");
         colorChoices.add("gray");
@@ -1084,8 +1084,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void append_new_temps() {
-        Double[] ttemps = new Double[this.num_cvs];
-        for (int i = 0; i < this.num_cvs; i++) {
+        Double[] ttemps = new Double[heatCircuit.cvs.size()];
+        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
             ttemps[i] = heatCircuit.cvs.get(i).temperature;
         }
         this.temperatures.add(ttemps);
@@ -1093,23 +1093,28 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void heat_transfer_step() {
+        x_mod.clear();
+        x_prev.clear();
 
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-            this.x_prev[i] = heatCircuit.cvs.get(i).temperatureOld;
+            x_prev.add(heatCircuit.cvs.get(i).temperatureOld);
+            x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
         }
         //while (true) {
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
             heatCircuit.calculateConductivities();
 
-            heatCircuit.makeMatrix(this.dt);
+            heatCircuit.makeMatrix(dt);
             ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
             for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-                this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
+                x_mod.set(i, heatCircuit.cvs.get(i).temperature);
             }
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
-            this.x_prev = this.x_mod;
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+                x_prev.set(i, x_mod.get(i));
+            }
             for (int i = 0; i < simTCEs.size(); i++) {
                 if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
                     simTCEs.get(i).updateModes();
@@ -1825,7 +1830,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             ctx.fillText(text, textX, textY);
         }
 
-        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((num_cvs) - 1));
+        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((heatCircuit.cvs.size()) - 1));
         double innerX = XOffSet;
         Color prevColor = Color.NONE;
         for (ThermalControlElement tce : trackedTemperatures) {
@@ -2491,7 +2496,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 }
             dump += "\nTemperatures:\n";
             dump += "Time\t";
-            for (int i = 0; i < num_cvs; i++) {
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
                 dump += "CV# " + i + "\t";
             }
             dump += "\n";
