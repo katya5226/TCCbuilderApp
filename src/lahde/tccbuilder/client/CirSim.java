@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 // import java.security.InvalidParameterException;
 // import java.util.InputMismatchException;
@@ -79,7 +78,6 @@ import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.canvas.dom.client.TextMetrics;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 @SuppressWarnings({"Convert2Lambda", "CStyleArrayDeclaration"})
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, ClickHandler, DoubleClickHandler,
@@ -125,7 +123,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem elmSplitMenuItem;
     MenuItem elmSliderMenuItem;
     MenuBar mainMenuBar;
-    MenuBar subcircuitMenuBar[];
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -135,7 +132,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int mouseMode = MODE_SELECT;
     int tempMouseMode = MODE_SELECT;
     String mouseModeStr = "Select";
-    static final double pi = 3.14159265358979323846;
     static final int MODE_ADD_ELM = 0;
     static final int MODE_DRAG_ALL = 1;
     static final int MODE_DRAG_ROW = 2;
@@ -144,7 +140,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     static final int MODE_DRAG_POST = 5;
     static final int MODE_SELECT = 6;
     static final int MODE_DRAG_SPLITTER = 7;
-    static final int infoWidth = 160;
     int dragGridX, dragGridY, dragScreenX, dragScreenY, initDragGridX, initDragGridY;
     long mouseDownTime;
     long zoomTime;
@@ -153,18 +148,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Rectangle selectedArea;
     int gridSize, gridMask, gridRound;
     boolean dragging;
-    boolean analyzeFlag, needsStamp, savedFlag;
-    boolean dumpMatrix;
     boolean dcAnalysisFlag;
     // boolean useBufferedImage;
     boolean isMac;
     String ctrlMetaKey;
-    int pause = 10;
     double t;
-    int scopeSelected = -1;
-    int scopeMenuSelected = -1;
-    int menuScope = -1;
-    int menuPlot = -1;
     int hintType = -1, hintItem1, hintItem2;
     String stopMessage;
 
@@ -184,32 +172,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     boolean adjustTimeStep;
     boolean developerMode;
-    static final int HINT_LC = 1;
-    static final int HINT_RC = 2;
-    static final int HINT_3DB_C = 3;
-    static final int HINT_TWINT = 4;
-    static final int HINT_3DB_L = 5;
     Vector<CircuitElm> elmList;
     Vector<Adjustable> adjustables;
-    // Vector setupList;
     CircuitElm dragElm, menuElm, stopElm;
-    CircuitElm elmArr[];
 
     private CircuitElm mouseElm = null;
     boolean didSwitch = false;
     int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
-    double circuitMatrix[][], circuitRightSide[], lastNodeVoltages[], nodeVoltages[], origRightSide[], origMatrix[][];
-    RowInfo circuitRowInfo[];
-    int circuitPermute[];
     boolean simRunning;
-    boolean circuitNonLinear;
-    int voltageSourceCount;
-    int circuitMatrixSize, circuitMatrixFullSize;
-    boolean circuitNeedsMap;
-    // public boolean useFrame;
-    ArrayList<Component> trackedTemperatures;
+    ArrayList<ThermalControlElement> trackedTemperatures;
     boolean showResistanceInVoltageSources;
     boolean hideInfoBox;
     static Dialog editDialog, customLogicEditDialog, diodeModelEditDialog;
@@ -262,15 +235,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public HashMap<String, Material> materialHashMap;
     public Vector<String> colorChoices;
     public TCC heatCircuit;
-    public Vector<Component> simComponents;
-    public Vector<TCE> simTCEs;
-    public int num_cvs;
-    // public int[] special_boundaries;
-    public ControlVolume[] sim_cvs;
-    public double[] underdiag;
-    public double[] diag;
-    public double[] upperdiag;
-    public double[] rhs;
+    // public Vector<Component> simComponents;
+    public Vector<ThermalControlElement> simTCEs;
+    // public int num_cvs;
+    // public double[] underdiag;
+    // public double[] diag;
+    // public double[] upperdiag;
+    // public double[] rhs;
     public int left_boundary;
     public int right_boundary;
     public double h_left;
@@ -299,16 +270,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public int cyclePartIndex;
     public int numCycleParts;
 
-    public Vector<Double> cparts_duration;
     public int printing_interval;
-    public int[] num_cpart_steps;
-    public int[][] cycle_part_start_indeces;
     // public double sim_file;
     // public double temperatures_file;
     public int ud;
-    public String[] user_defined_functions;
-    double[] x_prev;
-    double[] x_mod;
+    Vector<Double> x_prev;
+    Vector<Double> x_mod;
 
     boolean viewTempsInGraph = true;
     boolean viewTempsOverlay = true;
@@ -344,22 +311,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public LengthUnit selectedLengthUnit = LengthUnit.MILLIMETER;
 
-    String printComponents() {
-        String comps = "";
-        for (Component c : simComponents) {
-            comps += c.index + (c == simComponents.get(simComponents.size() - 1) ? "" : ", ");
+    String printTCEs() {
+        String tces = "";
+        for (ThermalControlElement tce : simTCEs) {
+            tces += tce.index + (tce == simTCEs.get(simTCEs.size() - 1) ? "" : ", ");
         }
-        return comps;
+        return tces;
     }
 
     // *********************************************************************************************
-
-    int getrand(int x) {
-        int q = random.nextInt();
-        if (q < 0)
-            q = -q;
-        return q % x;
-    }
 
     static native float devicePixelRatio() /*-{
         return window.devicePixelRatio;
@@ -663,10 +623,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         conventionCheckItem = new CheckboxMenuItem(Locale.LS("Conventional Current Motion"), new Command() {
             public void execute() {
                 setOptionInStorage("conventionalCurrent", conventionCheckItem.getState());
-                String cc = CircuitElm.currentColor.getHexValue();
-                // change the current color if it hasn't changed from the default
-                if (cc.equals("#ffff00") || cc.equals("#00ffff"))
-                    CircuitElm.currentColor = conventionCheckItem.getState() ? Color.yellow : Color.cyan;
             }
         });
         conventionCheckItem.setState(convention);
@@ -808,7 +764,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 composeMainMenu(mainMenuBar, 1);
                 loadShortcuts();
                 simTwoDimComponents = new Vector<TwoDimComponent>();
-                simComponents = new Vector<Component>();
+                simTCEs = new Vector<ThermalControlElement>();
             }
         });
 
@@ -829,7 +785,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         selectedLengthUnit = CirSim.LengthUnit.METER;
                         break;
                 }
-                for (Component c : simComponents)
+                for (ThermalControlElement c : simTCEs)
                     c.calculateLength();
 
                 for (TwoDimComponent c : simTwoDimComponents)
@@ -857,7 +813,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // setupList = new Vector();
         undoStack = new Vector<UndoItem>();
         redoStack = new Vector<UndoItem>();
-        trackedTemperatures = new ArrayList<Component>();
+        trackedTemperatures = new ArrayList<ThermalControlElement>();
 
         awaitedResponses = new ArrayList<String>();
         random = new Random();
@@ -947,9 +903,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         materialNames = new Vector<String>();
         materialHashMap = new HashMap<String, Material>();
         colorChoices = new Vector<String>();
-        simComponents = new Vector<Component>();
-        this.simTCEs = new Vector<TCE>();
-        this.num_cvs = 0;// this.circuit.num_cvs;
+        // simComponents = new Vector<Component>();
+        this.simTCEs = new Vector<ThermalControlElement>();
+        // this.num_cvs = 0;// this.circuit.num_cvs;
         // this.special_boundaries = []
         this.left_boundary = 41;
         this.right_boundary = 42;
@@ -984,9 +940,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
 
         this.ud = 0;
-        // this.user_defined_functions = new String[this.num_cvs];
-        this.x_prev = new double[this.num_cvs];
-        this.x_mod = new double[this.num_cvs];
+        x_prev = new Vector<Double>();
+        x_mod = new Vector<Double>();
         colorChoices.add("white");  // I will fix this later.
         colorChoices.add("lightGray");
         colorChoices.add("gray");
@@ -1004,30 +959,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
 /*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
         baseURL = "http://127.0.0.1:8888/";*/
+        //TODO: Add a callback to setSimRunning()
         readMaterialFlags(baseURL + "materials_flags.csv");
-        /*readMaterialNames(new AsyncCallback<String[]>() {
-            @Override
-            public void onSuccess(String[] materialNames) {
-                RegExp pattern = RegExp.compile("<a\\s+[^>]*href\\s*=\\s*\"([^\"]*)\"[^>]*>");
-                for (String m : materialNames) {
-                    if (pattern.test(m)) {
-                        MatchResult matcher = pattern.exec(m);
-                        if (matcher != null) {
-                            String hrefText = matcher.getGroup(1);
-                            String decodedHrefText = URL.decodeQueryString(hrefText.substring(0, hrefText.length() - 1));
-                            CirSim.this.materialNames.add(decodedHrefText);
-                            materialHashMap.put(decodedHrefText, new Material(decodedHrefText, theSim));
-
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                Window.alert(throwable.getMessage());
-            }
-        });*/
     }
 
     private void readMaterialFlags(String url) {
@@ -1062,68 +995,34 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    private void readMaterialNames(final AsyncCallback<String[]> callback) {
-        final String folderPath = GWT.getModuleBaseURL() + "material_data/materials/";
-        // Create a request to the server to get the names of the subfolders
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, folderPath);
-        requestBuilder.setCallback(new RequestCallback() {
-            @Override
-            public void onResponseReceived(Request request, Response response) {
-                if (response.getStatusCode() == 200) {
-                    // Split the response text by newline characters to get the folder names
-                    String[] folderNames = response.getText().split("\n");
-                    // Invoke the callback with the folder names array
-                    callback.onSuccess(folderNames);
-                } else {
-                    // Invoke the callback with the error message
-                    callback.onFailure(new Throwable(response.getStatusCode() + " " + response.getStatusText()));
-                }
-            }
-
-            @Override
-            public void onError(Request request, Throwable exception) {
-                // Invoke the callback with the error message
-                callback.onFailure(new Throwable("Error: " + exception.getMessage()));
-            }
-        });
-
-        try {
-            // Send the request to the server
-            requestBuilder.send();
-        } catch (RequestException e) {
-            // Invoke the callback with the error message
-            callback.onFailure(new Throwable("Failed to get folder names: " + e.getMessage()));
-        }
-    }
-
     void makeTCC() {
-        simTCEs.clear();
-        simTCEs.add(new TCE("TCE1", 0, simComponents));
+        // simTCEs.clear();
+        // simTCEs.add(new TCE("TCE1", 0, simComponents));
         heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.left_boundary = left_boundary;
-        heatCircuit.right_boundary = right_boundary;
-        heatCircuit.h_left = h_left;
-        heatCircuit.h_right = h_right;
-        heatCircuit.temp_left = temp_left;
-        heatCircuit.temp_right = temp_right;
-        heatCircuit.q_in = qIn;
-        heatCircuit.q_out = qOut;
+        heatCircuit.westBoundary = left_boundary;
+        heatCircuit.eastBoundary = right_boundary;
+        heatCircuit.hWest = h_left;
+        heatCircuit.hEast = h_right;
+        heatCircuit.temperatureWest = temp_left;
+        heatCircuit.temperatureEast = temp_right;
+        heatCircuit.qWest = qIn;
+        heatCircuit.qEast = qOut;
 
-        heatCircuit.build_TCC();
+        heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();
-        int n = heatCircuit.num_cvs;
+        int n = heatCircuit.cvs.size();
         double[] temps = new double[n];
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
 
         double maxValue = 0;
-        for (Component c : simComponents) {
-            if (c.material.magnetocaloric) {
-                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
+        for (ThermalControlElement c : simTCEs) {
+            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
+                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
                     maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
                 }
 
-                for (Vector<Double> dTheatingVector : c.material.dTheating) {
+                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
                     maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
                 }
             }
@@ -1136,7 +1035,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             maxTemp = startTemp + maxValue;
         }
 
-
+        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
+        for(ControlVolume cv : heatCircuit.cvs) {
+            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
+        }
     }
 
     void makeTwoDimTCE() {
@@ -1156,14 +1058,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void setHeatSim() {
-        num_cvs = heatCircuit.num_cvs;
-        underdiag = new double[this.num_cvs];
-        diag = new double[this.num_cvs];
-        upperdiag = new double[this.num_cvs];
-        rhs = new double[this.num_cvs];
-        left_boundary = heatCircuit.left_boundary;
-        right_boundary = heatCircuit.right_boundary;
-        start_temperatures = new double[this.num_cvs];
+        // underdiag = new double[heatCircuit.cvs.size()];
+        // diag = new double[heatCircuit.cvs.size()];
+        // upperdiag = new double[heatCircuit.cvs.size()];
+        // rhs = new double[heatCircuit.cvs.size()];
+        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
+        right_boundary = heatCircuit.eastBoundary;
+        start_temperatures = new double[heatCircuit.cvs.size()];
         numCycleParts = this.cycleParts.size();
         if (!cycleParts.isEmpty())
             cyclePart = this.cycleParts.get(0);
@@ -1183,8 +1084,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void append_new_temps() {
-        Double[] ttemps = new Double[this.num_cvs];
-        for (int i = 0; i < this.num_cvs; i++) {
+        Double[] ttemps = new Double[heatCircuit.cvs.size()];
+        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
             ttemps[i] = heatCircuit.cvs.get(i).temperature;
         }
         this.temperatures.add(ttemps);
@@ -1192,33 +1093,38 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void heat_transfer_step() {
+        x_mod.clear();
+        x_prev.clear();
 
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.x_prev[i] = heatCircuit.cvs.get(i).temperature_old;
+        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+            x_prev.add(heatCircuit.cvs.get(i).temperatureOld);
+            x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
         }
         //while (true) {
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
-            heatCircuit.calc_conduct_lr();
+            heatCircuit.calculateConductivities();
 
-            heatCircuit.makeMatrix(this.dt);
+            heatCircuit.makeMatrix(dt);
             ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-            for (int i = 0; i < this.num_cvs; i++) {
-                this.x_mod[i] = heatCircuit.cvs.get(i).temperature;
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+                x_mod.set(i, heatCircuit.cvs.get(i).temperature);
             }
             // flag = hf.compare(x_mod, x_prev, pa.tolerance)
             boolean flag = true;
-            this.x_prev = this.x_mod;
-            for (int i = 0; i < simComponents.size(); i++) {
-                if (simComponents.get(i).material.cpThysteresis == true)
-                    simComponents.get(i).updateModes();
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+                x_prev.set(i, x_mod.get(i));
+            }
+            for (int i = 0; i < simTCEs.size(); i++) {
+                if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
+                    simTCEs.get(i).updateModes();
             }
             // if (flag) {
             //     break;
             // }
         }
 
-        heatCircuit.calc_conduct_lr();
+        heatCircuit.calculateConductivities();
         heatCircuit.makeMatrix(this.dt);
         ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag,
                 heatCircuit.rhs);
@@ -1226,7 +1132,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // for i in range(0, len(this.PCMs)):
         // this.PCMs[i].update_temperatures()
         // this.PCMs[i].raise_latent_heat(pa.dt)
-        heatCircuit.replace_old_new();
+        heatCircuit.replaceTemperatures();
         this.append_new_temps();
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
@@ -1269,27 +1175,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 currentColor = stor.getItem("currentColor");
         }
 
-        if (positiveColor != null)
-            CircuitElm.positiveColor = new Color(URL.decodeQueryString(positiveColor));
-        else if (getOptionFromStorage("alternativeColor", false))
-            CircuitElm.positiveColor = Color.blue;
-
-        if (negativeColor != null)
-            CircuitElm.negativeColor = new Color(URL.decodeQueryString(negativeColor));
-        if (neutralColor != null)
-            CircuitElm.neutralColor = new Color(URL.decodeQueryString(neutralColor));
 
         if (selectColor != null)
             CircuitElm.selectColor = new Color(URL.decodeQueryString(selectColor));
         else
             CircuitElm.selectColor = Color.cyan;
 
-        if (currentColor != null)
-            CircuitElm.currentColor = new Color(URL.decodeQueryString(currentColor));
-        else
-            CircuitElm.currentColor = conventionCheckItem.getState() ? Color.yellow : Color.cyan;
 
-        CircuitElm.setColorScale();
     }
 
     MenuItem menuItemWithShortcut(String icon, String text, String shortcut, MyCommand cmd) {
@@ -1473,13 +1365,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
-/*            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "GroundElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "GroundElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));*/
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
         }
 
 
@@ -1502,30 +1394,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mainMenuBar.addItem(mi = getClassCheckItem(Locale.LS("Select/Drag Sel."), "Select"));
     }
 
-    void composeSubcircuitMenu() {
-        if (subcircuitMenuBar == null)
-            return;
-        int mi;
-
-        // there are two menus to update: the one in the Draw menu, and the one in the
-        // right mouse menu
-        for (mi = 0; mi != 2; mi++) {
-            MenuBar menu = subcircuitMenuBar[mi];
-            menu.clearItems();
-            Vector<CustomCompositeModel> list = CustomCompositeModel.getModelList();
-            int i;
-            for (i = 0; i != list.size(); i++) {
-                String name = list.get(i).name;
-                menu.addItem(getClassCheckItem(Locale.LS("Add ") + name, "CustomCompositeElm:" + name));
-            }
-        }
-        lastSubcircuitMenuUpdate = CustomCompositeModel.sequenceNumber;
-    }
-
-    public void composeSelectScopeMenu(MenuBar sb) {
-        sb.clearItems();
-
-    }
 
     public void setiFrameHeight() {
         if (iFrame == null)
@@ -1683,24 +1551,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         checkCanvasSize();
 
         // Analyze circuit
-        boolean didAnalyze = analyzeFlag;
-        if (analyzeFlag || dcAnalysisFlag) {
-            perfmon.startContext("analyzeCircuit()");
-            analyzeCircuit();
-            analyzeFlag = false;
-            perfmon.stopContext();
-        }
-
-        // Stamp circuit
-        if (needsStamp && simRunning) {
-            perfmon.startContext("stampCircuit()");
-            try {
-                stampCircuit();
-            } catch (Exception e) {
-                stop("Exception in stampCircuit()", null);
-            }
-            perfmon.stopContext();
-        }
 
         if (stopElm != null && stopElm != mouseElm)
             stopElm.setMouseElm(true);
@@ -1708,30 +1558,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         Graphics g = new Graphics(cvcontext);
 
-        if (printableCheckItem.getState()) {
-            CircuitElm.whiteColor = Color.black;
-            CircuitElm.lightGrayColor = Color.black;
-            g.setColor(Color.white);
-            cv.getElement().getStyle().setBackgroundColor(Color.white.getHexValue());
-        } else {
-            CircuitElm.whiteColor = Color.white;
-            CircuitElm.lightGrayColor = Color.lightGray;
-            g.setColor(Color.black);
-            cv.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
-        }
+
+        g.setColor(Color.black);
+        cv.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
+
 
         // Clear the frame
         g.fillRect(0, 0, canvasWidth, canvasHeight);
 
         // Run circuit
         if (simRunning) {
-            if (needsStamp)
-                console("needsStamp while simRunning?");
 
             perfmon.startContext("runCircuit()");
             try {
-                if (awaitedResponses.size() == 0)
-                    runCircuit(didAnalyze);
+                if (awaitedResponses.isEmpty())
+                    runCircuit();
             } catch (Exception e) {
                 console("exception in runCircuit " + e.toString());
                 //debugger();
@@ -1742,14 +1583,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         long sysTime = System.currentTimeMillis();
         if (simRunning) {
-            if (lastTime != 0) {
-                int inc = (int) (sysTime - lastTime);
-                double c = 0;
-                c = java.lang.Math.exp(c / 3.5 - 14.2);
-                CircuitElm.currentMult = 1.7 * inc * c;
-                if (!conventionCheckItem.getState())
-                    CircuitElm.currentMult = -CircuitElm.currentMult;
-            }
+
             lastTime = sysTime;
         } else {
             lastTime = 0;
@@ -1763,11 +1597,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             secTime = sysTime;
         }
 
-        CircuitElm.powerMult = Math.exp(0 / 4.762 - 7);
 
         perfmon.startContext("graphics");
 
-        g.setFont(CircuitElm.unitsFont);
 
         if (noEditCheckItem.getState())
             g.drawLock(20, 30);
@@ -1833,19 +1665,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ((TwoDimComponent) dragElm).calculateLengthHeight();
             if (dragElm instanceof TwoDimComponent)
                 ((TwoDimComponent) dragElm).calculateLengthHeight();
-            if (dragElm instanceof Component)
-                ((Component) dragElm).calculateLength();
-
+            if (dragElm instanceof ThermalControlElement)
+                ((ThermalControlElement) dragElm).calculateLength();
 
             dragElm.drawHandles(g, CircuitElm.selectColor);
         }
 
-        // draw bad connections. do this last so they will not be overdrawn.
-        for (int i = 0; i != badConnectionList.size(); i++) {
-            Point cn = badConnectionList.get(i);
-            g.setColor(Color.red);
-            g.fillOval(cn.x - 3, cn.y - 3, 7, 7);
-        }
 
         // draw the selection rect
         if (selectedArea != null) {
@@ -1869,7 +1694,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // draw the temperature display
 
-        if (simComponents.size() > 0)
+        if (simTCEs.size() > 0)
             if (viewTempsInGraph)
                 drawTemperatureGraphs(g);
             else
@@ -1892,7 +1717,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // cleared.
         if (dcAnalysisFlag) {
             dcAnalysisFlag = false;
-            analyzeFlag = true;
         }
 
         lastFrameTime = lastTime;
@@ -1938,16 +1762,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double YOffset = circuitArea.height - h;
         double XOffSet = 0;
         // drawing the displays
-        for (Component component : trackedTemperatures) {
+        for (ThermalControlElement tce : trackedTemperatures) {
             try {
                 XOffSet = 0;
-                double[] temps = component.listTemps();
+                double[] temps = tce.listTemps();
                 double elementWidth = (circuitArea.width * 1.00 - indexWidth) / (temps.length);
-                drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, component.index + "",
-                        component.color.getHexValue());
+                drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, tce.index + "",
+                        tce.color.getHexValue());
                 XOffSet += indexWidth;
                 for (double temp : temps) {
-                    drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), component.color.getHexValue());
+                    drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), tce.color.getHexValue());
                     XOffSet += elementWidth;
                 }
             } catch (Exception e) {
@@ -2006,19 +1830,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             ctx.fillText(text, textX, textY);
         }
 
-        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((num_cvs) - 1));
+        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((heatCircuit.cvs.size()) - 1));
         double innerX = XOffSet;
         Color prevColor = Color.NONE;
-        for (Component component : trackedTemperatures) {
+        for (ThermalControlElement tce : trackedTemperatures) {
             try {
-                double[] temps = component.listTemps();
+                double[] temps = tce.listTemps();
                 double tempHeight = elementHeight;
                 double innerY = YOffset;
 
 /*                if (trackedTemperatures.size() > 1) {
-                    drawRectangleWithText(g, innerX, YOffset - 25, tempWidth * temps.length, 25, String.valueOf(component.index), component.color.getHexValue(), false);
+                    drawRectangleWithText(g, innerX, YOffset - 25, tempWidth * temps.length, 25, String.valueOf(tce.index), tce.color.getHexValue(), false);
                 }*/
-                if (component == trackedTemperatures.get(0)) {
+                if (tce == trackedTemperatures.get(0)) {
                     innerX -= tempWidth / 2;
                 }
 
@@ -2035,19 +1859,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
                                 minTemp,
                                 maxTemp,
-                                component.color.getHexValue());
+                                tce.color.getHexValue());
                     }
 
                     tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp,
                             minTemp,
                             maxTemp,
-                            component.color.getHexValue());
+                            tce.color.getHexValue());
 
                     prevX = tmp[0];
                     prevY = tmp[1];
                     innerX += tempWidth;
                 }
-                prevColor = component.color;
+                prevColor = tce.color;
 
             } catch (Exception ignored) {
 
@@ -2127,152 +1951,26 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void drawBottomArea(Graphics g) {
-        int leftX = 0;
-        int h = 0;
-        if (stopMessage != null && circuitArea.height > canvasHeight - 30)
-            h = 30;
-        g.setColor(printableCheckItem.getState() ? "#eee" : "#111");
+        g.setColor(Color.white);
 
-
-        g.setFont(CircuitElm.unitsFont);
-        g.setColor(CircuitElm.whiteColor);
-        //GWT.log(dragElm.toString());
-        if (stopMessage != null) {
-            g.drawString(stopMessage, 10, canvasHeight - 10);
-        } else if (!hideInfoBox) {
-            // in JS it doesn't matter how big this is, there's no out-of-bounds exception
-            String[] info = new String[10];
-            if (dragElm != null) {
-                dragElm.getInfo(info);
-            } else if (mouseElm != null) {
-                mouseElm.getInfo(info);
-            } else {
-                info[0] = Locale.LS("t = ") + (double) Math.round(this.time * 100) / 100 + " s";
-                info[1] = Locale.LS("time step = ") + this.dt + " s";
-                info[2] = Locale.LS("components = " + printComponents());
-
-            }
-            int i;
-            if (hintType != -1) {
-                i = 0;
-                while (info[i] != null)
-                    i++;
-                String s = getHint();
-                if (s == null)
-                    hintType = -1;
-                else
-                    info[i] = s;
-            }
-            int x = leftX + 5;
-
-            // x = max(x, canvasWidth*2/3);
-            // x=cv.getCoordinateSpaceWidth()*2/3;
-
-            // count lines of data
-            for (i = 0; info[i] != null; i++)
-                ;
-            int badnodes = badConnectionList.size();
-            if (badnodes > 0)
-                info[i++] = badnodes + ((badnodes == 1) ? Locale.LS(" bad connection") : Locale.LS(" bad connections"));
-            if (savedFlag)
-                info[i++] = "(saved)";
-
-            for (i = 0; info[i] != null; i++)
-                g.drawString(info[i], x, 15 * (i + 1));
+        // in JS it doesn't matter how big this is, there's no out-of-bounds exception
+        String[] info = new String[10];
+        if (dragElm != null) {
+            dragElm.getInfo(info);
+        } else if (mouseElm != null) {
+            mouseElm.getInfo(info);
+        } else {
+            info[0] = Locale.LS("t = ") + (double) Math.round(this.time * 100) / 100 + " s";
+            info[1] = Locale.LS("time step = ") + this.dt + " s";
+            info[2] = Locale.LS("components = " + printTCEs());
         }
+        for (int i = 0; info[i] != null; i++)
+            g.drawString(info[i], 8, 8 + 16 * (i + 1));
+
     }
-
-    Color getBackgroundColor() {
-        if (printableCheckItem.getState())
-            return Color.white;
-        return Color.black;
-    }
-
-
-    String getHint() {
-/*        CircuitElm c1 = getElm(hintItem1);
-        CircuitElm c2 = getElm(hintItem2);
-        if (c1 == null || c2 == null)
-            return null;
-        if (hintType == HINT_LC) {
-            if (!(c1 instanceof InductorElm))
-                return null;
-            if (!(c2 instanceof CapacitorElm))
-                return null;
-            InductorElm ie = (InductorElm) c1;
-            CapacitorElm ce = (CapacitorElm) c2;
-            return Locale.LS("res.f = ")
-                    + CircuitElm.getUnitText(1 / (2 * pi * Math.sqrt(ie.inductance * ce.capacitance)), "Hz");
-        }
-        if (hintType == HINT_RC) {
-            if (!(c1 instanceof ResistorElm))
-                return null;
-            if (!(c2 instanceof CapacitorElm))
-                return null;
-            ResistorElm re = (ResistorElm) c1;
-            CapacitorElm ce = (CapacitorElm) c2;
-            return "RC = " + CircuitElm.getUnitText(re.resistance * ce.capacitance, "s");
-        }
-        if (hintType == HINT_3DB_C) {
-            if (!(c1 instanceof ResistorElm))
-                return null;
-            if (!(c2 instanceof CapacitorElm))
-                return null;
-            ResistorElm re = (ResistorElm) c1;
-            CapacitorElm ce = (CapacitorElm) c2;
-            return Locale.LS("f.3db = ") + CircuitElm.getUnitText(1 / (2 * pi * re.resistance * ce.capacitance), "Hz");
-        }
-        if (hintType == HINT_3DB_L) {
-            if (!(c1 instanceof ResistorElm))
-                return null;
-            if (!(c2 instanceof InductorElm))
-                return null;
-            ResistorElm re = (ResistorElm) c1;
-            InductorElm ie = (InductorElm) c2;
-            return Locale.LS("f.3db = ") + CircuitElm.getUnitText(re.resistance / (2 * pi * ie.inductance), "Hz");
-        }
-        if (hintType == HINT_TWINT) {
-            if (!(c1 instanceof ResistorElm))
-                return null;
-            if (!(c2 instanceof CapacitorElm))
-                return null;
-            ResistorElm re = (ResistorElm) c1;
-            CapacitorElm ce = (CapacitorElm) c2;
-            return Locale.LS("fc = ") + CircuitElm.getUnitText(1 / (2 * pi * re.resistance * ce.capacitance), "Hz");
-        }*/
-        return null;
-    }
-
-    // public void toggleSwitch(int n) {
-    // int i;
-    // for (i = 0; i != elmList.size(); i++) {
-    // CircuitElm ce = getElm(i);
-    // if (ce instanceof SwitchElm) {
-    // n--;
-    // if (n == 0) {
-    // ((SwitchElm) ce).toggle();
-    // analyzeFlag = true;
-    // cv.repaint();
-    // return;
-    // }
-    // }
-    // }
-    // }
 
     void needAnalyze() {
-        analyzeFlag = true;
         repaint();
-    }
-
-    Vector<CircuitNode> nodeList;
-    Vector<Point> postDrawList = new Vector<Point>();
-    Vector<Point> badConnectionList = new Vector<Point>();
-    CircuitElm voltageSources[];
-
-    public CircuitNode getCircuitNode(int n) {
-        if (n >= nodeList.size())
-            return null;
-        return nodeList.elementAt(n);
     }
 
     public CircuitElm getElm(int n) {
@@ -2300,34 +1998,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         debugger;
     }-*/;
 
-    class NodeMapEntry {
-        int node;
-
-        NodeMapEntry() {
-            node = -1;
-        }
-
-        NodeMapEntry(int n) {
-            node = n;
-        }
-    }
-
-    // map points to node numbers
-    HashMap<Point, NodeMapEntry> nodeMap;
-    HashMap<Point, Integer> postCountMap;
-
-    class WireInfo {
-        CircuitElm wire;
-        Vector<CircuitElm> neighbors;
-        int post;
-
-        WireInfo(CircuitElm w) {
-            wire = w;
-        }
-    }
-
-    // info about each wire and its neighbors, used to calculate wire currents
-    Vector<WireInfo> wireInfoList;
 
     public static String formatLength(double value) {
         if (value < 1e-3) { // less than 1 millimeter
@@ -2340,909 +2010,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return (Math.round(value * 1000) / 1000.0) + " m";
         }
     }
-    // find groups of nodes connected by wire equivalents and map them to the same
-    // node. this speeds things
-    // up considerably by reducing the size of the matrix. We do this for wires,
-    // labeled nodes, and ground.
-    // The actual node we map to is not assigned yet. Instead we map to the same
-    // NodeMapEntry.
 
-    void calculateWireClosure() {
-        int i;
-        LabeledNodeElm.resetNodeList();
-        GroundElm.resetNodeList();
-        nodeMap = new HashMap<Point, NodeMapEntry>();
-        // int mergeCount = 0;
-        wireInfoList = new Vector<WireInfo>();
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (!ce.isRemovableWire())
-                continue;
-            ce.hasWireInfo = false;
-            wireInfoList.add(new WireInfo(ce));
-            Point p0 = ce.getPost(0);
-            NodeMapEntry cn = nodeMap.get(p0);
-
-            // what post are we connected to
-            Point p1 = ce.getConnectedPost();
-            if (p1 == null) {
-                // no connected post (true for labeled node the first time it's encountered, or
-                // ground)
-                if (cn == null) {
-                    cn = new NodeMapEntry();
-                    nodeMap.put(p0, cn);
-                }
-                continue;
-            }
-            NodeMapEntry cn2 = nodeMap.get(p1);
-            if (cn != null && cn2 != null) {
-                // merge nodes; go through map and change all keys pointing to cn2 to point to
-                // cn
-                for (Map.Entry<Point, NodeMapEntry> entry : nodeMap.entrySet()) {
-                    if (entry.getValue() == cn2)
-                        entry.setValue(cn);
-                }
-                // mergeCount++;
-                continue;
-            }
-            if (cn != null) {
-                nodeMap.put(p1, cn);
-                continue;
-            }
-            if (cn2 != null) {
-                nodeMap.put(p0, cn2);
-                continue;
-            }
-            // new entry
-            cn = new NodeMapEntry();
-            nodeMap.put(p0, cn);
-            nodeMap.put(p1, cn);
-        }
-
-        // console("got " + (groupCount-mergeCount) + " groups with " + nodeMap.size() +
-        // " nodes " + mergeCount);
-    }
-
-    // generate info we need to calculate wire currents. Most other elements
-    // calculate currents using
-    // the voltage on their terminal nodes. But wires have the same voltage at both
-    // ends, so we need
-    // to use the neighbors' currents instead. We used to treat wires as zero
-    // voltage sources to make
-    // this easier, but this is very inefficient, since it makes the matrix 2 rows
-    // bigger for each wire.
-    // We create a list of WireInfo objects instead to help us calculate the wire
-    // currents instead,
-    // so we make the matrix less complex, and we only calculate the wire currents
-    // when we need them
-    // (once per frame, not once per subiteration). We need the WireInfos arranged
-    // in the correct order,
-    // each one containing a list of neighbors and which end to use (since one end
-    // may be ready before
-    // the other)
-    boolean calcWireInfo() {
-        int i;
-        int moved = 0;
-
-        for (i = 0; i != wireInfoList.size(); i++) {
-            WireInfo wi = wireInfoList.get(i);
-            CircuitElm wire = wi.wire;
-            CircuitNode cn1 = nodeList.get(wire.getNode(0)); // both ends of wire have same node #
-            int j;
-
-            Vector<CircuitElm> neighbors0 = new Vector<CircuitElm>();
-            Vector<CircuitElm> neighbors1 = new Vector<CircuitElm>();
-
-            // assume each end is ready (except ground nodes which have one end)
-            // labeled nodes are treated as having 2 terminals, see below
-            boolean isReady0 = true, isReady1 = !(wire instanceof GroundElm);
-
-            // go through elements sharing a node with this wire (may be connected
-            // indirectly
-            // by other wires, but at least it's faster than going through all elements)
-            for (j = 0; j != cn1.links.size(); j++) {
-                CircuitNodeLink cnl = cn1.links.get(j);
-                CircuitElm ce = cnl.elm;
-                if (ce == wire)
-                    continue;
-                Point pt = ce.getPost(cnl.num);
-
-                // is this a wire that doesn't have wire info yet? If so we can't use it yet.
-                // That would create a circular dependency. So that side isn't ready.
-                boolean notReady = (ce.isRemovableWire() && !ce.hasWireInfo);
-
-                // which post does this element connect to, if any?
-                if (pt.x == wire.x && pt.y == wire.y) {
-                    neighbors0.add(ce);
-                    if (notReady)
-                        isReady0 = false;
-                } else if (wire.getPostCount() > 1) {
-                    Point p2 = wire.getConnectedPost();
-                    if (pt.x == p2.x && pt.y == p2.y) {
-                        neighbors1.add(ce);
-                        if (notReady)
-                            isReady1 = false;
-                    }
-                } else if (ce instanceof LabeledNodeElm && wire instanceof LabeledNodeElm
-                        && ((LabeledNodeElm) ce).text == ((LabeledNodeElm) wire).text) {
-                    // ce and wire are both labeled nodes with matching labels. treat them as
-                    // neighbors
-                    neighbors1.add(ce);
-                    if (notReady)
-                        isReady1 = false;
-                }
-            }
-
-            // does one of the posts have all information necessary to calculate current?
-            if (isReady0) {
-                wi.neighbors = neighbors0;
-                wi.post = 0;
-                wire.hasWireInfo = true;
-                moved = 0;
-            } else if (isReady1) {
-                wi.neighbors = neighbors1;
-                wi.post = 1;
-                wire.hasWireInfo = true;
-                moved = 0;
-            } else {
-                // no, so move to the end of the list and try again later
-                wireInfoList.add(wireInfoList.remove(i--));
-                moved++;
-                if (moved > wireInfoList.size() * 2) {
-                    stop("wire loop detected", wire);
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    // find or allocate ground node
-    void setGroundNode() {
-        int i;
-        boolean gotGround = false;
-        boolean gotRail = false;
-        CircuitElm volt = null;
-
-        // System.out.println("ac1");
-        // look for voltage or ground element
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (ce instanceof GroundElm) {
-                gotGround = true;
-
-                // set ground node to 0
-                NodeMapEntry nme = nodeMap.get(ce.getPost(0));
-                nme.node = 0;
-                break;
-            }
-
-            if (volt == null && ce instanceof VoltageElm)
-                volt = ce;
-        }
-
-        // if no ground, and no rails, then the voltage elm's first terminal
-        // is ground
-        if (!gotGround && volt != null && !gotRail) {
-            CircuitNode cn = new CircuitNode();
-            Point pt = volt.getPost(0);
-            nodeList.addElement(cn);
-
-            // update node map
-            NodeMapEntry cln = nodeMap.get(pt);
-            if (cln != null)
-                cln.node = 0;
-            else
-                nodeMap.put(pt, new NodeMapEntry(0));
-        } else {
-            // otherwise allocate extra node for ground
-            CircuitNode cn = new CircuitNode();
-            nodeList.addElement(cn);
-        }
-    }
-
-    // make list of nodes
-    void makeNodeList() {
-        int i, j;
-        int vscount = 0;
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            int inodes = ce.getInternalNodeCount();
-            int ivs = ce.getVoltageSourceCount();
-            int posts = ce.getPostCount();
-
-            // allocate a node for each post and match posts to nodes
-            for (j = 0; j != posts; j++) {
-                Point pt = ce.getPost(j);
-                Integer g = postCountMap.get(pt);
-                postCountMap.put(pt, g == null ? 1 : g + 1);
-                NodeMapEntry cln = nodeMap.get(pt);
-
-                // is this node not in map yet? or is the node number unallocated?
-                // (we don't allocate nodes before this because changing the allocation order
-                // of nodes changes circuit behavior and breaks backward compatibility;
-                // the code below to connect unconnected nodes may connect a different node to
-                // ground)
-                if (cln == null || cln.node == -1) {
-                    CircuitNode cn = new CircuitNode();
-                    CircuitNodeLink cnl = new CircuitNodeLink();
-                    cnl.num = j;
-                    cnl.elm = ce;
-                    cn.links.addElement(cnl);
-                    ce.setNode(j, nodeList.size());
-                    if (cln != null)
-                        cln.node = nodeList.size();
-                    else
-                        nodeMap.put(pt, new NodeMapEntry(nodeList.size()));
-                    nodeList.addElement(cn);
-                } else {
-                    int n = cln.node;
-                    CircuitNodeLink cnl = new CircuitNodeLink();
-                    cnl.num = j;
-                    cnl.elm = ce;
-                    getCircuitNode(n).links.addElement(cnl);
-                    ce.setNode(j, n);
-                    // if it's the ground node, make sure the node voltage is 0,
-                    // cause it may not get set later
-                    if (n == 0)
-                        ce.setNodeVoltage(j, 0);
-                }
-            }
-            for (j = 0; j != inodes; j++) {
-                CircuitNode cn = new CircuitNode();
-                cn.internal = true;
-                CircuitNodeLink cnl = new CircuitNodeLink();
-                cnl.num = j + posts;
-                cnl.elm = ce;
-                cn.links.addElement(cnl);
-                ce.setNode(cnl.num, nodeList.size());
-                nodeList.addElement(cn);
-            }
-
-            // also count voltage sources so we can allocate array
-            vscount += ivs;
-        }
-
-        voltageSources = new CircuitElm[vscount];
-    }
-
-    Vector<Integer> unconnectedNodes;
-    Vector<CircuitElm> nodesWithGroundConnection;
-    int nodesWithGroundConnectionCount;
-
-    void findUnconnectedNodes() {
-        int i, j;
-
-        // determine nodes that are not connected indirectly to ground.
-        // all nodes must be connected to ground somehow, or else we
-        // will get a matrix error.
-        boolean closure[] = new boolean[nodeList.size()];
-        boolean changed = true;
-        unconnectedNodes = new Vector<Integer>();
-        nodesWithGroundConnection = new Vector<CircuitElm>();
-        closure[0] = true;
-        while (changed) {
-            changed = false;
-            for (i = 0; i != elmList.size(); i++) {
-                CircuitElm ce = getElm(i);
-                if (ce instanceof WireElm)
-                    continue;
-                // loop through all ce's nodes to see if they are connected
-                // to other nodes not in closure
-                boolean hasGround = false;
-                for (j = 0; j < ce.getConnectionNodeCount(); j++) {
-                    boolean hg = ce.hasGroundConnection(j);
-                    if (hg)
-                        hasGround = true;
-                    if (!closure[ce.getConnectionNode(j)]) {
-                        if (hg)
-                            closure[ce.getConnectionNode(j)] = changed = true;
-                        continue;
-                    }
-                    int k;
-                    for (k = 0; k != ce.getConnectionNodeCount(); k++) {
-                        if (j == k)
-                            continue;
-                        int kn = ce.getConnectionNode(k);
-                        if (ce.getConnection(j, k) && !closure[kn]) {
-                            closure[kn] = true;
-                            changed = true;
-                        }
-                    }
-                }
-                if (hasGround)
-                    nodesWithGroundConnection.add(ce);
-            }
-            if (changed)
-                continue;
-
-            // connect one of the unconnected nodes to ground with a big resistor, then try
-            // again
-            for (i = 0; i != nodeList.size(); i++)
-                if (!closure[i] && !getCircuitNode(i).internal) {
-                    unconnectedNodes.add(i);
-                    //console("node " + i + " unconnected");
-                    // stampResistor(0, i, 1e8); // do this later in connectUnconnectedNodes()
-                    closure[i] = true;
-                    changed = true;
-                    break;
-                }
-        }
-    }
-
-    // take list of unconnected nodes, which we identifie222211d earlier, and connect them
-    // to ground
-    // with a big resistor. otherwise we will get matrix errors. The resistor has to
-    // be big,
-    // otherwise circuits like 555 Square Wave will break
-    void connectUnconnectedNodes() {
-        int i;
-        if (unconnectedNodes.size() > 1)
-            Window.alert("Nodes not properly connected!");
-        for (i = 0; i != unconnectedNodes.size(); i++) {
-            int n = unconnectedNodes.get(i);
-            stampResistor(0, n, 1e8);
-        }
-    }
-
-    boolean validateCircuit() {
-        int i, j;
-
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-
-            // look for current sources with no current path
-            if (ce instanceof CurrentElm) {
-                CurrentElm cur = (CurrentElm) ce;
-                FindPathInfo fpi = new FindPathInfo(FindPathInfo.INDUCT, ce, ce.getNode(1));
-                cur.setBroken(!fpi.findPath(ce.getNode(0)));
-            }
-
-
-            // look for voltage source or wire loops. we do this for voltage sources
-            if (ce.getPostCount() == 2) {
-                if (ce instanceof VoltageElm) {
-                    FindPathInfo fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(1));
-                    if (fpi.findPath(ce.getNode(0))) {
-                        stop("Voltage source/wire loop with no resistance!", ce);
-                        return false;
-                    }
-                }
-            }
-
-
-        }
-        return true;
-    }
-
-    // analyze the circuit when something changes, so it can be simulated
-    void analyzeCircuit() {
-        stopMessage = null;
-        stopElm = null;
-        if (elmList.isEmpty()) {
-            postDrawList = new Vector<Point>();
-            badConnectionList = new Vector<Point>();
-            return;
-        }
-        int i, j;
-        nodeList = new Vector<CircuitNode>();
-        postCountMap = new HashMap<Point, Integer>();
-
-        calculateWireClosure();
-        setGroundNode();
-
-        // allocate nodes and voltage sources
-        makeNodeList();
-
-        makePostDrawList();
-        if (!calcWireInfo())
-            return;
-        nodeMap = null; // done with this
-
-        int vscount = 0;
-        circuitNonLinear = false;
-
-        // determine if circuit is nonlinear. also set voltage sources
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (ce.nonLinear())
-                circuitNonLinear = true;
-            int ivs = ce.getVoltageSourceCount();
-            for (j = 0; j != ivs; j++) {
-                voltageSources[vscount] = ce;
-                ce.setVoltageSource(j, vscount++);
-            }
-        }
-        voltageSourceCount = vscount;
-
-        // show resistance in voltage sources if there's only one.
-        // can't use voltageSourceCount here since that counts internal voltage sources,
-        // like the one in GroundElm
-        boolean gotVoltageSource = false;
-        showResistanceInVoltageSources = true;
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (ce instanceof VoltageElm) {
-                if (gotVoltageSource)
-                    showResistanceInVoltageSources = false;
-                else
-                    gotVoltageSource = true;
-            }
-        }
-
-        findUnconnectedNodes();
-        if (!validateCircuit())
-            return;
-
-        nodesWithGroundConnectionCount = nodesWithGroundConnection.size();
-        // only need this for validation
-        nodesWithGroundConnection = null;
-
-        timeStep = maxTimeStep;
-        needsStamp = true;
-
-        callAnalyzeHook();
-    }
-
-    // stamp the matrix, meaning populate the matrix as required to simulate the
-    // circuit (for all linear elements, at least)
-    void stampCircuit() {
-        int i;
-        int matrixSize = nodeList.size() - 1 + voltageSourceCount;
-        circuitMatrix = new double[matrixSize][matrixSize];
-        circuitRightSide = new double[matrixSize];
-        nodeVoltages = new double[nodeList.size() - 1];
-        if (lastNodeVoltages == null || lastNodeVoltages.length != nodeVoltages.length)
-            lastNodeVoltages = new double[nodeList.size() - 1];
-        origMatrix = new double[matrixSize][matrixSize];
-        origRightSide = new double[matrixSize];
-        circuitMatrixSize = circuitMatrixFullSize = matrixSize;
-        circuitRowInfo = new RowInfo[matrixSize];
-        circuitPermute = new int[matrixSize];
-        for (i = 0; i != matrixSize; i++)
-            circuitRowInfo[i] = new RowInfo();
-        circuitNeedsMap = false;
-
-        connectUnconnectedNodes();
-
-        // stamp linear circuit elements
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            ce.setParentList(elmList);
-            ce.stamp();
-        }
-
-        if (!simplifyMatrix(matrixSize))
-            return;
-
-        // check if we called stop()
-        if (circuitMatrix == null)
-            return;
-
-        // if a matrix is linear, we can do the lu_factor here instead of
-        // needing to do it every frame
-        if (!circuitNonLinear) {
-            if (!lu_factor(circuitMatrix, circuitMatrixSize, circuitPermute)) {
-                stop("Singular matrix!", null);
-                return;
-            }
-        }
-
-
-        // ******************************* Katni
-        // **************************************************
-        // ****************************************************************************************
-
-        needsStamp = false;
-    }
-
-    // simplify the matrix; this speeds things up quite a bit, especially for
-    // digital circuits.
-    // or at least it did before we added wire removal
-    boolean simplifyMatrix(int matrixSize) {
-        int i, j;
-        for (i = 0; i != matrixSize; i++) {
-            int qp = -1;
-            double qv = 0;
-            RowInfo re = circuitRowInfo[i];
-            /*
-             * System.out.println("row " + i + " " + re.lsChanges + " " + re.rsChanges + " "
-             * + re.dropRow);
-             */
-
-            // if (qp != -100) continue; // uncomment this line to disable matrix
-            // simplification for debugging purposes
-
-            if (re.lsChanges || re.dropRow || re.rsChanges)
-                continue;
-            double rsadd = 0;
-
-            // see if this row can be removed
-            for (j = 0; j != matrixSize; j++) {
-                double q = circuitMatrix[i][j];
-                if (circuitRowInfo[j].type == RowInfo.ROW_CONST) {
-                    // keep a running total of const values that have been
-                    // removed already
-                    rsadd -= circuitRowInfo[j].value * q;
-                    continue;
-                }
-                // ignore zeroes
-                if (q == 0)
-                    continue;
-                // keep track of first nonzero element that is not ROW_CONST
-                if (qp == -1) {
-                    qp = j;
-                    qv = q;
-                    continue;
-                }
-                // more than one nonzero element? give up
-                break;
-            }
-            if (j == matrixSize) {
-                if (qp == -1) {
-                    // probably a singular matrix, try disabling matrix simplification above to
-                    // check this
-                    stop("Matrix error", null);
-                    return false;
-                }
-                RowInfo elt = circuitRowInfo[qp];
-                // we found a row with only one nonzero nonconst entry; that value
-                // is a constant
-                if (elt.type != RowInfo.ROW_NORMAL) {
-                    System.out.println("type already " + elt.type + " for " + qp + "!");
-                    continue;
-                }
-                elt.type = RowInfo.ROW_CONST;
-                // console("ROW_CONST " + i + " " + rsadd);
-                elt.value = (circuitRightSide[i] + rsadd) / qv;
-                circuitRowInfo[i].dropRow = true;
-                // find first row that referenced the element we just deleted
-                for (j = 0; j != i; j++)
-                    if (circuitMatrix[j][qp] != 0)
-                        break;
-                // start over just before that
-                i = j - 1;
-            }
-        }
-        // System.out.println("ac7");
-
-        // find size of new matrix
-        int nn = 0;
-        for (i = 0; i != matrixSize; i++) {
-            RowInfo elt = circuitRowInfo[i];
-            if (elt.type == RowInfo.ROW_NORMAL) {
-                elt.mapCol = nn++;
-                // System.out.println("col " + i + " maps to " + elt.mapCol);
-                continue;
-            }
-            if (elt.type == RowInfo.ROW_CONST)
-                elt.mapCol = -1;
-        }
-
-        // make the new, simplified matrix
-        int newsize = nn;
-        double newmatx[][] = new double[newsize][newsize];
-        double newrs[] = new double[newsize];
-        int ii = 0;
-        for (i = 0; i != matrixSize; i++) {
-            RowInfo rri = circuitRowInfo[i];
-            if (rri.dropRow) {
-                rri.mapRow = -1;
-                continue;
-            }
-            newrs[ii] = circuitRightSide[i];
-            rri.mapRow = ii;
-            // System.out.println("Row " + i + " maps to " + ii);
-            for (j = 0; j != matrixSize; j++) {
-                RowInfo ri = circuitRowInfo[j];
-                if (ri.type == RowInfo.ROW_CONST)
-                    newrs[ii] -= ri.value * circuitMatrix[i][j];
-                else
-                    newmatx[ii][ri.mapCol] += circuitMatrix[i][j];
-            }
-            ii++;
-        }
-
-        // console("old size = " + matrixSize + " new size = " + newsize);
-
-        circuitMatrix = newmatx;
-        circuitRightSide = newrs;
-        matrixSize = circuitMatrixSize = newsize;
-        for (i = 0; i != matrixSize; i++)
-            origRightSide[i] = circuitRightSide[i];
-        for (i = 0; i != matrixSize; i++)
-            for (j = 0; j != matrixSize; j++)
-                origMatrix[i][j] = circuitMatrix[i][j];
-        circuitNeedsMap = true;
-        return true;
-    }
-
-    // make list of posts we need to draw. posts shared by 2 elements should be
-    // hidden, all
-    // others should be drawn. We can't use the node list for this purpose anymore
-    // because wires
-    // have the same node number at both ends.
-    void makePostDrawList() {
-        postDrawList = new Vector<Point>();
-        badConnectionList = new Vector<Point>();
-        for (Map.Entry<Point, Integer> entry : postCountMap.entrySet()) {
-            if (entry.getValue() != 2)
-                postDrawList.add(entry.getKey());
-
-            // look for bad connections, posts not connected to other elements which
-            // intersect
-            // other elements' bounding boxes
-            if (entry.getValue() == 1) {
-                int j;
-                boolean bad = false;
-                Point cn = entry.getKey();
-                for (j = 0; j != elmList.size() && !bad; j++) {
-                    CircuitElm ce = getElm(j);
-                    if (ce instanceof GraphicElm)
-                        continue;
-                    // does this post intersect elm's bounding box?
-                    if (!ce.boundingBox.contains(cn.x, cn.y))
-                        continue;
-                    int k;
-                    // does this post belong to the elm?
-                    int pc = ce.getPostCount();
-                    for (k = 0; k != pc; k++)
-                        if (ce.getPost(k).equals(cn))
-                            break;
-                    if (k == pc)
-                        bad = true;
-                }
-                if (bad)
-                    badConnectionList.add(cn);
-            }
-        }
-        postCountMap = null;
-    }
-
-    class FindPathInfo {
-        static final int INDUCT = 1;
-        static final int VOLTAGE = 2;
-        static final int SHORT = 3;
-        static final int CAP_V = 4;
-        boolean visited[];
-        int dest;
-        CircuitElm firstElm;
-        int type;
-
-        // State object to help find loops in circuit subject to various conditions
-        // (depending on type_)
-        // elm_ = source and destination element. dest_ = destination node.
-        FindPathInfo(int type_, CircuitElm elm_, int dest_) {
-            dest = dest_;
-            type = type_;
-            firstElm = elm_;
-            visited = new boolean[nodeList.size()];
-        }
-
-        // look through circuit for loop starting at node n1 of firstElm, for a path
-        // back to
-        // dest node of firstElm
-        boolean findPath(int n1) {
-            if (n1 == dest)
-                return true;
-
-            // depth first search, don't need to revisit already visited nodes!
-            if (visited[n1])
-                return false;
-
-            visited[n1] = true;
-            CircuitNode cn = getCircuitNode(n1);
-            int i;
-            if (cn == null)
-                return false;
-            for (i = 0; i != cn.links.size(); i++) {
-                CircuitNodeLink cnl = cn.links.get(i);
-                CircuitElm ce = cnl.elm;
-                if (checkElm(n1, ce))
-                    return true;
-            }
-            if (n1 == 0) {
-                for (i = 0; i != nodesWithGroundConnection.size(); i++)
-                    if (checkElm(0, nodesWithGroundConnection.get(i)))
-                        return true;
-            }
-            return false;
-        }
-
-        boolean checkElm(int n1, CircuitElm ce) {
-            if (ce == firstElm)
-                return false;
-            if (type == INDUCT) {
-                // inductors need a path free of current sources
-                if (ce instanceof CurrentElm)
-                    return false;
-            }
-            if (type == VOLTAGE) {
-                // when checking for voltage loops, we only care about voltage
-                // sources/wires/ground
-                if (!(ce.isWireEquivalent() || ce instanceof VoltageElm || ce instanceof GroundElm))
-                    return false;
-            }
-            // when checking for shorts, just check wires
-            if (type == SHORT && !ce.isWireEquivalent())
-                return false;
-
-            if (n1 == 0) {
-                // look for posts which have a ground connection;
-                // our path can go through ground
-                int j;
-                for (j = 0; j != ce.getConnectionNodeCount(); j++)
-                    if (ce.hasGroundConnection(j) && findPath(ce.getConnectionNode(j)))
-                        return true;
-            }
-            int j;
-            for (j = 0; j != ce.getConnectionNodeCount(); j++) {
-                if (ce.getConnectionNode(j) == n1) {
-                    if (ce.hasGroundConnection(j) && findPath(0))
-                        return true;
-                    int k;
-                    for (k = 0; k != ce.getConnectionNodeCount(); k++) {
-                        if (j == k)
-                            continue;
-                        if (ce.getConnection(j, k) && findPath(ce.getConnectionNode(k))) {
-                            // System.out.println("got findpath " + n1);
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
-    void stop(String s, CircuitElm ce) {
-        stopMessage = Locale.LS(s);
-        circuitMatrix = null; // causes an exception
-        stopElm = ce;
-        setSimRunning(false);
-        analyzeFlag = false;
-        // cv.repaint();
-    }
-
-    // control voltage source vs with voltage from n1 to n2 (must
-    // also call stampVoltageSource())
-    void stampVCVS(int n1, int n2, double coef, int vs) {
-        int vn = nodeList.size() + vs;
-        stampMatrix(vn, n1, coef);
-        stampMatrix(vn, n2, -coef);
-    }
-
-    // stamp independent voltage source #vs, from n1 to n2, amount v
-    void stampVoltageSource(int n1, int n2, int vs, double v) {
-        int vn = nodeList.size() + vs;
-        stampMatrix(vn, n1, -1);
-        stampMatrix(vn, n2, 1);
-        stampRightSide(vn, v);
-        stampMatrix(n1, vn, 1);
-        stampMatrix(n2, vn, -1);
-    }
-
-    // use this if the amount of voltage is going to be updated in doStep(), by
-    // updateVoltageSource()
-    void stampVoltageSource(int n1, int n2, int vs) {
-        int vn = nodeList.size() + vs;
-        stampMatrix(vn, n1, -1);
-        stampMatrix(vn, n2, 1);
-        stampRightSide(vn);
-        stampMatrix(n1, vn, 1);
-        stampMatrix(n2, vn, -1);
-    }
-
-    // update voltage source in doStep()
-    void updateVoltageSource(int n1, int n2, int vs, double v) {
-        int vn = nodeList.size() + vs;
-        stampRightSide(vn, v);
-    }
-
-    void stampResistor(int n1, int n2, double r) {
-        double r0 = 1 / r;
-        if (Double.isNaN(r0) || Double.isInfinite(r0)) {
-            System.out.print("bad resistance " + r + " " + r0 + "\n");
-            int a = 0;
-            a /= a;
-        }
-        stampMatrix(n1, n1, r0);
-        stampMatrix(n2, n2, r0);
-        stampMatrix(n1, n2, -r0);
-        stampMatrix(n2, n1, -r0);
-    }
-
-    void stampConductance(int n1, int n2, double r0) {
-        stampMatrix(n1, n1, r0);
-        stampMatrix(n2, n2, r0);
-        stampMatrix(n1, n2, -r0);
-        stampMatrix(n2, n1, -r0);
-    }
-
-    // specify that current from cn1 to cn2 is equal to voltage from vn1 to 2,
-    // divided by g
-    void stampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
-        stampMatrix(cn1, vn1, g);
-        stampMatrix(cn2, vn2, g);
-        stampMatrix(cn1, vn2, -g);
-        stampMatrix(cn2, vn1, -g);
-    }
-
-    void stampCurrentSource(int n1, int n2, double i) {
-        stampRightSide(n1, -i);
-        stampRightSide(n2, i);
-    }
-
-    // stamp a current source from n1 to n2 depending on current through vs
-    void stampCCCS(int n1, int n2, int vs, double gain) {
-        int vn = nodeList.size() + vs;
-        stampMatrix(n1, vn, gain);
-        stampMatrix(n2, vn, -gain);
-    }
-
-    // Katni
-    // void buildTCC(){
-
-    // }
-
-    // ******************************* Katni
-    // **************************************************
-    void stampHeatMatrix() {
-
-    }
-    // ****************************************************************************************
-
-    // stamp value x in row i, column j, meaning that a voltage change
-    // of dv in node j will increase the current into node i by x dv.
-    // (Unless i or j is a voltage source node.)
-    void stampMatrix(int i, int j, double x) {
-        if (Double.isInfinite(x))
-            debugger();
-        if (i > 0 && j > 0) {
-            if (circuitNeedsMap) {
-                i = circuitRowInfo[i - 1].mapRow;
-                RowInfo ri = circuitRowInfo[j - 1];
-                if (ri.type == RowInfo.ROW_CONST) {
-                    // System.out.println("Stamping constant " + i + " " + j + " " + x);
-                    circuitRightSide[i] -= x * ri.value;
-                    return;
-                }
-                j = ri.mapCol;
-                // System.out.println("stamping " + i + " " + j + " " + x);
-            } else {
-                i--;
-                j--;
-            }
-            circuitMatrix[i][j] += x;
-        }
-    }
-
-    // stamp value x on the right side of row i, representing an
-    // independent current source flowing into node i
-    void stampRightSide(int i, double x) {
-        if (i > 0) {
-            if (circuitNeedsMap) {
-                i = circuitRowInfo[i - 1].mapRow;
-                // System.out.println("stamping " + i + " " + x);
-            } else
-                i--;
-            circuitRightSide[i] += x;
-        }
-    }
-
-    // indicate that the value on the right side of row i changes in doStep()
-    void stampRightSide(int i) {
-        // System.out.println("rschanges true " + (i-1));
-        if (i > 0)
-            circuitRowInfo[i - 1].rsChanges = true;
-    }
-
-    // indicate that the values on the left side of row i change in doStep()
-    void stampNonLinear(int i) {
-        if (i > 0)
-            circuitRowInfo[i - 1].lsChanges = true;
-    }
 
     double getIterCount() {
         // IES - remove interaction
@@ -3253,28 +2021,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     }
 
-    // we need to calculate wire currents for every iteration if someone is viewing
-    // a wire in the
-    // scope. Otherwise we can do it only once per frame.
-    boolean canDelayWireProcessing() {
-
-        return true;
-    }
-
     boolean converged;
-    int subIterations;
 
-    void runCircuit(boolean didAnalyze) {
+    void runCircuit() {
 
-        // Katni commented lines bellow
-        if (circuitMatrix == null || elmList.size() == 0) {
-            circuitMatrix = null;
-            return;
-        }
-        int iter;
         //int maxIter = getIterCount();
-        boolean debugprint = dumpMatrix;
-        dumpMatrix = false;
         long steprate = (long) (160 * getIterCount());
         long tm = System.currentTimeMillis();
         long lit = lastIterTime;
@@ -3284,14 +2035,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         // Check if we don't need to run simulation (for very slow simulation speeds).
         // If the circuit changed, do at least one iteration to make sure everything is consistent.
-        if (1000 >= steprate * (tm - lastIterTime) && !didAnalyze)
+        if (1000 >= steprate * (tm - lastIterTime))
             return;
-        boolean delayWireProcessing = canDelayWireProcessing();
         int timeStepCountAtFrameStart = timeStepCount;
 
-        stampCircuit();
-        //Window.alert(String.valueOf(didAnalyze));
-
+        //stampCircuit();
+        int iter;
         for (iter = 1; ; iter++) {
             // *************************** Katni *******************************
             if (simDimensionality == 1) {
@@ -3299,10 +2048,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     heat_transfer_step();
                     time += dt;
                 } else {
-                    //CirSim.debugger();
-                    if (this.cycleParts.size() == 0) {
+                    if (this.cycleParts.isEmpty())
                         Window.alert("Sim set to cyclic but cycle parts undefined");
-                    }
+
                     this.cyclePart.execute();
 
                     if (this.cyclePart.duration > 0.0) {
@@ -3340,79 +2088,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
         lastIterTime = lit;
-        if (delayWireProcessing)
-            calcWireCurrents();
+        //calcWireCurrents();
 
 
     }
 
-    // set node voltages given right side found by solving matrix
-    void applySolvedRightSide(double rs[]) {
-        // console("setvoltages " + rs);
-        int j;
-        for (j = 0; j != circuitMatrixFullSize; j++) {
-            RowInfo ri = circuitRowInfo[j];
-            double res = 0;
-            if (ri.type == RowInfo.ROW_CONST)
-                res = ri.value;
-            else
-                res = rs[ri.mapCol];
-            if (Double.isNaN(res)) {
-                converged = false;
-                break;
-            }
-            if (j < nodeList.size() - 1) {
-                nodeVoltages[j] = res;
-            } else {
-                int ji = j - (nodeList.size() - 1);
-                voltageSources[ji].setCurrent(ji, res);
-            }
-        }
-
-        setNodeVoltages(nodeVoltages);
-    }
-
-    // set node voltages in each element given an array of node voltages
-    void setNodeVoltages(double nv[]) {
-        int j, k;
-        for (j = 0; j != nv.length; j++) {
-            double res = nv[j];
-            CircuitNode cn = getCircuitNode(j + 1);
-            for (k = 0; k != cn.links.size(); k++) {
-                CircuitNodeLink cnl = cn.links.elementAt(k);
-                cnl.elm.setNodeVoltage(cnl.num, res);
-            }
-        }
-    }
-
-    // we removed wires from the matrix to speed things up. in order to display wire
-    // currents,
-    // we need to calculate them now.
-    void calcWireCurrents() {
-        int i;
-
-        // for debugging
-        // for (i = 0; i != wireInfoList.size(); i++)
-        // wireInfoList.get(i).wire.setCurrent(-1, 1.23);
-
-        for (i = 0; i != wireInfoList.size(); i++) {
-            WireInfo wi = wireInfoList.get(i);
-            double cur = 0;
-            int j;
-            Point p = wi.wire.getPost(wi.post);
-            for (j = 0; j != wi.neighbors.size(); j++) {
-                CircuitElm ce = wi.neighbors.get(j);
-                int n = ce.getNodeAtPoint(p.x, p.y);
-                cur += ce.getCurrentIntoNode(n);
-            }
-            // get correct current polarity
-            // (LabeledNodes may have wi.post == 1, in which case we flip the current sign)
-            if (wi.post == 0 || (wi.wire instanceof LabeledNodeElm))
-                wi.wire.setCurrent(-1, cur);
-            else
-                wi.wire.setCurrent(-1, -cur);
-        }
-    }
 
     int min(int a, int b) {
         return (a < b) ? a : b;
@@ -3424,7 +2104,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void resetAction() {
         int i;
-        analyzeFlag = true;
         if (t == 0)
             setSimRunning(true);
         t = timeStepAccum = 0;
@@ -3446,12 +2125,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         s = s.substring(s.lastIndexOf('\\') + 1);
         theSim.setCircuitTitle(s);
         theSim.allowSave(true);
-        theSim.savedFlag = true;
         theSim.repaint();
     }
 
     static void electronSaveCallback() {
-        theSim.savedFlag = true;
         theSim.repaint();
     }
 
@@ -3540,8 +2217,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             doExportAsImage();
         if (item == "exportassvg")
             doExportAsSVG();
-        if (item == "createsubcircuit")
-            doCreateSubcircuit();
+
 
         if (item == "print")
             doPrint();
@@ -3627,11 +2303,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         if (item == "viewTemps" && menuElm != null) {
-            Component component = (Component) menuElm;
-            if (trackedTemperatures.contains(component)) {
-                trackedTemperatures.remove(component);
+            ThermalControlElement tce = (ThermalControlElement) menuElm;
+            if (trackedTemperatures.contains(tce)) {
+                trackedTemperatures.remove(tce);
             } else {
-                trackedTemperatures.add((Component) component);
+                trackedTemperatures.add((ThermalControlElement) tce);
             }
         }
 
@@ -3736,12 +2412,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void doCreateSubcircuit() {
-        EditCompositeModelDialog dlg = new EditCompositeModelDialog();
-        if (!dlg.createModel())
-            return;
-        dlg.createDialog();
-        dialogShowing = dlg;
-        dialogShowing.show();
+
     }
 
     void doExportAsLocalFile() {
@@ -3773,10 +2444,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     String dumpCircuit() {
         int i;
-        CustomLogicModel.clearDumpedFlags();
-        CustomCompositeModel.clearDumpedFlags();
-        DiodeModel.clearDumpedFlags();
-        TransistorModel.clearDumpedFlags();
 
         String dump = dumpOptions();
 
@@ -3806,34 +2473,30 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + dt + "\n" +
                             "Dimensionality: 1D\n" +
-                            "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.left_boundary) + "\n" +
-                            "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.right_boundary) + "\n" +
-                            "Temperature on the left: " + heatCircuit.temp_left + " K\n" +
-                            "Convection coefficient on the left: " + heatCircuit.h_left + " W/(m²K)\n" +
-                            "Temperature on the right: " + heatCircuit.temp_right + " K\n" +
-                            "Convection coefficient on the right: " + heatCircuit.h_right + " W/(m²K)\n";
+                            "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" +
+                            "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" +
+                            "Temperature on the left: " + heatCircuit.temperatureWest + " K\n" +
+                            "Convection coefficient on the left: " + heatCircuit.hWest + " W/(m²K)\n" +
+                            "Temperature on the right: " + heatCircuit.temperatureEast + " K\n" +
+                            "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
 
             dump += "\nThermal control elements: \n";
-            for (TCE tce : simTCEs) {
-                dump += "\nTCE: " + tce.name + "\n";
-                dump += "Components: \n";
-                for (Component component : tce.components) {
-                    dump += "Component name: " + component.name + "\n" +
-                            "Component index: " + component.index + "\n" +
-                            "Material: " + component.material.materialName + "\n" +
-                            "Number of control volumes:  " + component.num_cvs + "\n" +
-                            "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" +
-                            "Constant density: " + ((component.constRho == -1) ? "not set" : component.constRho + " kg/m³") + "\n" +
-                            "Constant specific heat: " + ((component.constCp == -1) ? "not set" : component.constCp + " J/(kgK)") + "\n" +
-                            "Constant thermal conductivity: " + ((component.constK == -1) ? "not set" : component.constK + " W/(mK)") + "\n" +
-                            "Left contact resistance: " + component.left_resistance + " mK/W\n" +
-                            "Right contact resistance: " + component.right_resistance + " mK/W\n" +
+            for (ThermalControlElement tce : simTCEs) {
+                dump += "TCE name: " + tce.name + "\n" +
+                        "TCE index: " + tce.index + "\n" +
+                            //"Material: " + component.material.materialName + "\n" +
+                            "Number of control volumes:  " + tce.numCvs + "\n" +
+                            "Control volume length: " + formatLength(tce.cvs.get(0).dx) + "\n" +
+                            "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" +
+                            "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" +
+                            "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" +
+                            "Left contact resistance: " + tce.westResistance + " mK/W\n" +
+                            "Right contact resistance: " + tce.eastResistance + " mK/W\n" +
                             "Generated heat: " + 0.0 + " W/m²\n\n";
                 }
-            }
             dump += "\nTemperatures:\n";
             dump += "Time\t";
-            for (int i = 0; i < num_cvs; i++) {
+            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
                 dump += "CV# " + i + "\t";
             }
             dump += "\n";
@@ -3856,8 +2519,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     "Data directory: " + "/materials\n" +
                             "Time step dt: " + theSim.dt + "\n" +
                             "Dimensionality: 2D\n" +
-                            "Boundary condition on the left: " + heatCircuit.left_boundary + "\n" +
-                            "Boundary condition on the right: " + heatCircuit.right_boundary + "\n" +
+                            "Boundary condition on the left: " + heatCircuit.westBoundary + "\n" +
+                            "Boundary condition on the right: " + heatCircuit.eastBoundary + "\n" +
                             "Temperature on the left: " + " K\n" +
                             "Convection coefficient on the left: " + " W/(m²K)\n" +
                             "Temperature on the right: " + " K\n" +
@@ -4039,8 +2702,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
         cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
-        cyclePartMagneticFieldChange.components.add(simComponents.get(2));
-        simComponents.get(2).fieldIndex = 2;
+        cyclePartMagneticFieldChange.TCEs.add(simTCEs.get(2));
+        simTCEs.get(2).fieldIndex = 2;
         cycleParts.add(cyclePartMagneticFieldChange);
 
         // CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
@@ -4226,8 +2889,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
             t = timeStepAccum = 0;
             elmList.removeAllElements();
-            simComponents = new Vector<Component>();
-            trackedTemperatures = new ArrayList<Component>();
+            simTCEs = new Vector<ThermalControlElement>();
+            trackedTemperatures = new ArrayList<ThermalControlElement>();
             hintType = -1;
             maxTimeStep = 5e-6;
             minTimeStep = 50e-12;
@@ -4238,7 +2901,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             showValuesCheckItem.setState(true);
             setGrid();
             speedBar.setValue(57); // 57
-            CircuitElm.voltageRange = 5;
             lastIterTime = 0;
 
 
@@ -4273,10 +2935,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         readOptions(st, flags);
                         break;
                     }
-                    if (tint == '!') {
-                        CustomLogicModel.undumpModel(st);
-                        break;
-                    }
+
                     if (tint == '%' || tint == '?' || tint == 'B') {
                         // ignore afilter-specific stuff
                         break;
@@ -4287,24 +2946,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     if (tint >= '0' && tint <= '9')
                         tint = Integer.parseInt(type);
 
-                    if (tint == 34) {
-                        DiodeModel.undumpModel(st);
-                        break;
-                    }
-                    if (tint == 32) {
-                        TransistorModel.undumpModel(st);
-                        break;
-                    }
+
                     if (tint == 38) {
                         Adjustable adj = new Adjustable(st, this);
                         if (adj.elm != null)
                             adjustables.add(adj);
                         break;
                     }
-                    if (tint == '.') {
-                        CustomCompositeModel.undumpModel(st);
-                        break;
-                    }
+
                     int x1 = Integer.parseInt(st.nextToken());
                     int y1 = Integer.parseInt(st.nextToken());
                     int x2 = Integer.parseInt(st.nextToken());
@@ -4348,8 +2997,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         needAnalyze();
         if ((flags & RC_NO_CENTER) == 0)
             centreCircuit();
-        if ((flags & RC_SUBCIRCUITS) != 0)
-            updateModels();
 
     }
 
@@ -4445,7 +3092,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int sp2 = (int) (Math.log(10 * sp) * 24 + 61.5);
         // int sp2 = (int) (Math.log(sp)*24+1.5);
         speedBar.setValue(57);
-        CircuitElm.voltageRange = Double.parseDouble(st.nextToken());
 
         try {
             minTimeStep = Double.parseDouble(st.nextToken());
@@ -4516,8 +3162,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     dragPost(snapGrid(gx), snapGrid(gy), e.isShiftKeyDown());
                     if (mouseElm instanceof TwoDimComponent)
                         ((TwoDimComponent) mouseElm).calculateLengthHeight();
-                    else if (mouseElm instanceof Component)
-                        ((Component) mouseElm).calculateLength();
+                    else if (mouseElm instanceof ThermalControlElement)
+                        ((ThermalControlElement) mouseElm).calculateLength();
                     changed = true;
                 }
                 break;
@@ -4612,12 +3258,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     boolean onlyGraphicsElmsSelected() {
-        if (mouseElm != null && !(mouseElm instanceof GraphicElm))
+        if (mouseElm != null)
             return false;
         int i;
         for (i = 0; i != elmList.size(); i++) {
             CircuitElm ce = getElm(i);
-            if (ce.isSelected() && !(ce instanceof GraphicElm))
+            if (ce.isSelected())
                 return false;
         }
         return true;
@@ -4769,8 +3415,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             CircuitElm ce = getElm(i);
             if (ce.x == ce.x2 && ce.y == ce.y2) {
                 elmList.remove(ce);
-                simComponents.remove((Component) ce);
-                trackedTemperatures.remove((Component) ce);
+                simTCEs.remove((ThermalControlElement) ce);
+                trackedTemperatures.remove((ThermalControlElement) ce);
                 Collections.sort(trackedTemperatures);
                 ce.delete();
                 changed = true;
@@ -4803,7 +3449,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         }
         mouseSelect(e);
-        scopeMenuSelected = -1;
     }
 
     // convert screen coordinates to grid coordinates by inverting circuit transform
@@ -4892,7 +3537,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 } // for
             }
         }
-        scopeSelected = -1;
         if (newMouseElm == null) {
             // // the mouse pointer was not in any of the bounding boxes, but we
             // // might still be close to a post
@@ -4944,11 +3588,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (noEditCheckItem.getState() || dialogIsShowing())
             return;
         menuElm = mouseElm;
-        menuScope = -1;
-        menuPlot = -1;
         int x, y;
         if (mouseElm != null) {
-            elmTempsMenuItem.setEnabled(mouseElm.canViewInScope());
+            elmTempsMenuItem.setEnabled(false);
 
             elmEditMenuItem.setEnabled(mouseElm.getEditInfo(0) != null);
             elmFlipMenuItem.setEnabled(mouseElm.getPostCount() == 2);
@@ -5032,7 +3674,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void clearMouseElm() {
-        scopeSelected = -1;
         setMouseElm(null);
         plotXElm = plotYElm = null;
     }
@@ -5148,9 +3789,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
 
-        // also update the subcircuit menu if necessary
-        if (lastSubcircuitMenuUpdate != CustomCompositeModel.sequenceNumber)
-            composeSubcircuitMenu();
     }
 
     public void onMouseUp(MouseUpEvent e) {
@@ -5267,7 +3905,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         undoStack.add(new UndoItem(s));
         enableUndoRedo();
-        savedFlag = false;
     }
 
     void doUndo() {
@@ -5399,8 +4036,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ce.delete();
                 elmList.removeElementAt(i);
                 // Katni *******************************************************************
-                if (ce instanceof Component) {
-                    simComponents.remove((Component) ce);
+                if (ce instanceof ThermalControlElement) {
+                    simTCEs.remove((ThermalControlElement) ce);
                     resetHeatSim();
                     trackedTemperatures.remove(ce);
                     Collections.sort(trackedTemperatures);
@@ -5430,10 +4067,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     String copyOfSelectedElms() {
         String r = dumpOptions();
-        CustomLogicModel.clearDumpedFlags();
-        CustomCompositeModel.clearDumpedFlags();
-        DiodeModel.clearDumpedFlags();
-        TransistorModel.clearDumpedFlags();
         for (int i = elmList.size() - 1; i >= 0; i--) {
             CircuitElm ce = getElm(i);
             String m = ce.dumpModel();
@@ -5750,130 +4383,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    // factors a matrix into upper and lower triangular matrices by
-    // gaussian elimination. On entry, a[0..n-1][0..n-1] is the
-    // matrix to be factored. ipvt[] returns an integer vector of pivot
-    // indices, used in the lu_solve() routine.
-    static boolean lu_factor(double a[][], int n, int ipvt[]) {
-        int i, j, k;
-
-        // check for a possible singular matrix by scanning for rows that
-        // are all zeroes
-        for (i = 0; i != n; i++) {
-            boolean row_all_zeros = true;
-            for (j = 0; j != n; j++) {
-                if (a[i][j] != 0) {
-                    row_all_zeros = false;
-                    break;
-                }
-            }
-            // if all zeros, it's a singular matrix
-            if (row_all_zeros)
-                return false;
-        }
-
-        // use Crout's method; loop through the columns
-        for (j = 0; j != n; j++) {
-
-            // calculate upper triangular elements for this column
-            for (i = 0; i != j; i++) {
-                double q = a[i][j];
-                for (k = 0; k != i; k++)
-                    q -= a[i][k] * a[k][j];
-                a[i][j] = q;
-            }
-
-            // calculate lower triangular elements for this column
-            double largest = 0;
-            int largestRow = -1;
-            for (i = j; i != n; i++) {
-                double q = a[i][j];
-                for (k = 0; k != j; k++)
-                    q -= a[i][k] * a[k][j];
-                a[i][j] = q;
-                double x = Math.abs(q);
-                if (x >= largest) {
-                    largest = x;
-                    largestRow = i;
-                }
-            }
-
-            // pivoting
-            if (j != largestRow) {
-                if (largestRow == -1) {
-                    console("largestRow == -1");
-                    return false;
-                }
-                double x;
-                for (k = 0; k != n; k++) {
-                    x = a[largestRow][k];
-                    a[largestRow][k] = a[j][k];
-                    a[j][k] = x;
-                }
-            }
-
-            // keep track of row interchanges
-            ipvt[j] = largestRow;
-
-            // check for zeroes; if we find one, it's a singular matrix.
-            // we used to avoid them, but that caused weird bugs. For example,
-            // two inverters with outputs connected together should be flagged
-            // as a singular matrix, but it was allowed (with weird currents)
-            if (a[j][j] == 0.0) {
-                console("didn't avoid zero");
-                // a[j][j]=1e-18;
-                return false;
-            }
-
-            if (j != n - 1) {
-                double mult = 1.0 / a[j][j];
-                for (i = j + 1; i != n; i++)
-                    a[i][j] *= mult;
-            }
-        }
-        return true;
-    }
-
-    // Solves the set of n linear equations using a LU factorization
-    // previously performed by lu_factor. On input, b[0..n-1] is the right
-    // hand side of the equations, and on output, contains the solution.
-    static void lu_solve(double a[][], int n, int ipvt[], double b[]) {
-        int i;
-
-        // find first nonzero b element
-        for (i = 0; i != n; i++) {
-            int row = ipvt[i];
-
-            double swap = b[row];
-            b[row] = b[i];
-            b[i] = swap;
-            if (swap != 0)
-                break;
-        }
-
-        int bi = i++;
-        for (; i < n; i++) {
-            int row = ipvt[i];
-            int j;
-            double tot = b[row];
-
-            b[row] = b[i];
-            // forward substitution using the lower triangular matrix
-            for (j = bi; j < i; j++)
-                tot -= a[i][j] * b[j];
-            b[i] = tot;
-        }
-        for (i = n - 1; i >= 0; i--) {
-            double tot = b[i];
-
-            // back-substitution using the upper triangular matrix
-            int j;
-            for (j = i + 1; j != n; j++)
-                tot -= a[i][j] * b[j];
-            b[i] = tot / a[i][i];
-
-        }
-    }
 
     void createNewLoadFile() {
         // This is a hack to fix what IMHO is a bug in the <INPUT FILE element
@@ -5907,24 +4416,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         switch (tint) {
 
 
-            case 207:
-                return new LabeledNodeElm(x1, y1, x2, y2, f, st);
-
-
-            case 'b':
-                return new BoxElm(x1, y1, x2, y2, f, st);
             case 'g':
                 return new GroundElm(x1, y1, x2, y2, f, st);
-            case 'i':
-                return new CurrentElm(x1, y1, x2, y2, f, st);
             case 'r':
                 return new ResistorElm(x1, y1, x2, y2, f, st);
-            case 'v':
-                return new VoltageElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new WireElm(x1, y1, x2, y2, f, st);
-            case 'x':
-                return new TextElm(x1, y1, x2, y2, f, st);
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
             case 521:
@@ -5937,11 +4434,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public static CircuitElm constructElement(String n, int x1, int y1) {
         switch (n) {
-            // TODO: figure out if LabeledNodeElm is needed
-            case "LabeledNodeElm":
-                return new LabeledNodeElm(x1, y1);
-            case "BoxElm":
-                return new BoxElm(x1, y1);
             case "DiodeElm":
                 return new DiodeElm(x1, y1);
             case "SwitchElm":
@@ -5952,19 +4444,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new RegulatorElm(x1, y1);
             case "GroundElm":
                 return new GroundElm(x1, y1);
-            case "CurrentElm":
-                return new CurrentElm(x1, y1);
             case "ResistorElm":
                 return new ResistorElm(x1, y1);
-            case "DCVoltageElm":
-            case "VoltageElm":
-                return new DCVoltageElm(x1, y1);
             case "WireElm":
                 return new WireElm(x1, y1);
-            case "TextElm":
-                return new TextElm(x1, y1);
             case "Component":
-                return new Component(x1, y1);
+                return new ThermalControlElement(x1, y1);  // TODO, add both
             case "2DComponent":
                 return new TwoDimComponent(x1, y1);
             case "ZigZagInterface":
@@ -5974,12 +4459,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-
-    public void updateModels() {
-        int i;
-        for (i = 0; i != elmList.size(); i++)
-            elmList.get(i).updateModels();
-    }
 
     native boolean weAreInUS(boolean orCanada) /*-{
         try {
@@ -6005,44 +4484,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }-*/;
 
-    // For debugging
-    void dumpNodelist() {
-
-        CircuitNode nd;
-        CircuitElm e;
-        int i, j;
-        String s;
-        String cs;
-        //
-        // for(i=0; i<nodeList.size(); i++) {
-        // s="Node "+i;
-        // nd=nodeList.get(i);
-        // for(j=0; j<nd.links.size();j++) {
-        // s=s+" " + nd.links.get(j).num + " " +nd.links.get(j).elm.getDumpType();
-        // }
-        // console(s);
-        // }
-        console("Elm list Dump");
-        for (i = 0; i < elmList.size(); i++) {
-            e = elmList.get(i);
-            cs = e.getDumpClass().toString();
-            int p = cs.lastIndexOf('.');
-            cs = cs.substring(p + 1);
-            if (cs == "WireElm")
-                continue;
-            if (cs == "LabeledNodeElm")
-                cs = cs + " " + ((LabeledNodeElm) e).text;
-            if (cs == "TransistorElm") {
-
-                cs = "NTransistorElm";
-            }
-            s = cs;
-            for (j = 0; j < e.getPostCount(); j++) {
-                s = s + " " + e.nodes[j];
-            }
-            console(s);
-        }
-    }
 
     native void printCanvas(CanvasElement cv) /*-{
         var img = cv.toDataURL("image/png");
@@ -6160,12 +4601,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (print)
             printableCheckItem.setState(true);
         if (printableCheckItem.getState()) {
-            CircuitElm.whiteColor = Color.black;
-            CircuitElm.lightGrayColor = Color.black;
             g.setColor(Color.white);
         } else {
-            CircuitElm.whiteColor = Color.white;
-            CircuitElm.lightGrayColor = Color.lightGray;
             g.setColor(Color.black);
             g.fillRect(0, 0, w, h);
         }
@@ -6201,173 +4638,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         transform = oldTransform;
     }
 
-    boolean isSelection() {
-        for (int i = 0; i != elmList.size(); i++)
-            if (getElm(i).isSelected())
-                return true;
-        return false;
-    }
-
-    public CustomCompositeModel getCircuitAsComposite() {
-        int i;
-        String nodeDump = "";
-        String dump = "";
-        // String models = "";
-        CustomLogicModel.clearDumpedFlags();
-        DiodeModel.clearDumpedFlags();
-        TransistorModel.clearDumpedFlags();
-        Vector<LabeledNodeElm> sideLabels[] = new Vector[]{new Vector<LabeledNodeElm>(), new Vector<LabeledNodeElm>(),
-                new Vector<LabeledNodeElm>(), new Vector<LabeledNodeElm>()};
-        Vector<ExtListEntry> extList = new Vector<ExtListEntry>();
-        boolean sel = isSelection();
-
-        boolean used[] = new boolean[nodeList.size()];
-        boolean extnodes[] = new boolean[nodeList.size()];
-
-        // find all the labeled nodes, get a list of them, and create a node number map
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (sel && !ce.isSelected())
-                continue;
-            if (ce instanceof LabeledNodeElm) {
-                LabeledNodeElm lne = (LabeledNodeElm) ce;
-                String label = lne.text;
-                if (lne.isInternal())
-                    continue;
-
-                // already added to list?
-                if (extnodes[ce.getNode(0)])
-                    continue;
-
-                int side = ChipElm.SIDE_W;
-                if (Math.abs(ce.dx) >= Math.abs(ce.dy) && ce.dx > 0)
-                    side = ChipElm.SIDE_E;
-                if (Math.abs(ce.dx) <= Math.abs(ce.dy) && ce.dy < 0)
-                    side = ChipElm.SIDE_N;
-                if (Math.abs(ce.dx) <= Math.abs(ce.dy) && ce.dy > 0)
-                    side = ChipElm.SIDE_S;
-
-                // create ext list entry for external nodes
-                sideLabels[side].add(lne);
-                extnodes[ce.getNode(0)] = true;
-            }
-        }
-
-        Collections.sort(sideLabels[ChipElm.SIDE_W], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.y - b.y));
-        Collections.sort(sideLabels[ChipElm.SIDE_E], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.y - b.y));
-        Collections.sort(sideLabels[ChipElm.SIDE_N], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.x - b.x));
-        Collections.sort(sideLabels[ChipElm.SIDE_S], (LabeledNodeElm a, LabeledNodeElm b) -> Integer.signum(a.x - b.x));
-
-        for (int side = 0; side < sideLabels.length; side++) {
-            for (int pos = 0; pos < sideLabels[side].size(); pos++) {
-                LabeledNodeElm lne = sideLabels[side].get(pos);
-                ExtListEntry ent = new ExtListEntry(lne.text, lne.getNode(0), pos, side);
-                extList.add(ent);
-            }
-        }
-
-        // output all the elements
-        for (i = 0; i != elmList.size(); i++) {
-            CircuitElm ce = getElm(i);
-            if (sel && !ce.isSelected())
-                continue;
-            // don't need these elements dumped
-            if (ce instanceof WireElm || ce instanceof LabeledNodeElm)
-                continue;
-            if (ce instanceof GraphicElm || ce instanceof GroundElm)
-                continue;
-            int j;
-            if (nodeDump.length() > 0)
-                nodeDump += "\r";
-            nodeDump += ce.getClass().getSimpleName();
-            for (j = 0; j != ce.getPostCount(); j++) {
-                int n = ce.getNode(j);
-                used[n] = true;
-                nodeDump += " " + n;
-            }
-
-            // save positions
-            int x1 = ce.x;
-            int y1 = ce.y;
-            int x2 = ce.x2;
-            int y2 = ce.y2;
-
-            // set them to 0 so they're easy to remove
-            ce.x = ce.y = ce.x2 = ce.y2 = 0;
-
-            String tstring = ce.dump();
-            tstring = tstring.replaceFirst("[A-Za-z0-9]+ 0 0 0 0 ", ""); // remove unused tint_x1 y1 x2 y2 coords for
-            // internal components
-
-            // restore positions
-            ce.x = x1;
-            ce.y = y1;
-            ce.x2 = x2;
-            ce.y2 = y2;
-            if (dump.length() > 0)
-                dump += " ";
-            dump += CustomLogicModel.escape(tstring);
-        }
-
-        for (i = 0; i != extList.size(); i++) {
-            ExtListEntry ent = extList.get(i);
-            if (!used[ent.node]) {
-                Window.alert("Node \"" + ent.name + "\" is not used!");
-                return null;
-            }
-        }
-
-        boolean first = true;
-        for (i = 0; i != unconnectedNodes.size(); i++) {
-            int q = unconnectedNodes.get(i);
-            if (!extnodes[q] && used[q]) {
-                if (nodesWithGroundConnectionCount == 0 && first) {
-                    first = false;
-                    continue;
-                }
-                Window.alert("Some nodes are unconnected!");
-                return null;
-            }
-        }
-
-        CustomCompositeModel ccm = new CustomCompositeModel();
-        ccm.nodeList = nodeDump;
-        ccm.elmDump = dump;
-        ccm.extList = extList;
-        return ccm;
-    }
-
-    static void invertMatrix(double a[][], int n) {
-        int ipvt[] = new int[n];
-        lu_factor(a, n, ipvt);
-        int i, j;
-        double b[] = new double[n];
-        double inva[][] = new double[n][n];
-
-        // solve for each column of identity matrix
-        for (i = 0; i != n; i++) {
-            for (j = 0; j != n; j++)
-                b[j] = 0;
-            b[i] = 1;
-            lu_solve(a, n, ipvt, b);
-            for (j = 0; j != n; j++)
-                inva[j][i] = b[j];
-        }
-
-        // return in original matrix
-        for (i = 0; i != n; i++)
-            for (j = 0; j != n; j++)
-                a[i][j] = inva[i][j];
-    }
-
-    double getLabeledNodeVoltage(String name) {
-        Integer node = LabeledNodeElm.getByName(name);
-        if (node == null || node == 0)
-            return 0;
-        // subtract one because ground is not included in nodeVoltages[]
-        return nodeVoltages[node.intValue() - 1];
-    }
-
 
     native JsArray<JavaScriptObject> getJSArray() /*-{
         return [];
@@ -6401,9 +4671,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }),
             isRunning: $entry(function () {
                 return that.@lahde.tccbuilder.client.CirSim::simIsRunning()();
-            }),
-            getNodeVoltage: $entry(function (n) {
-                return that.@lahde.tccbuilder.client.CirSim::getLabeledNodeVoltage(Ljava/lang/String;)(n);
             }),
             getElements: $entry(function () {
                 return that.@lahde.tccbuilder.client.CirSim::getJSElements()();

@@ -59,7 +59,7 @@ public class Adjustable implements Command {
                 int ano = Integer.parseInt(st.nextToken());
                 sharedSlider = ano == -1 ? null : sim.adjustables.get(ano);
             }
-            sliderText = CustomLogicModel.unescape(st.nextToken());
+            //sliderText = CustomLogicModel.unescape(st.nextToken());
         } catch (Exception ex) {
         }
         try {
@@ -114,7 +114,6 @@ public class Adjustable implements Command {
     }
 
     void executeSlider() {
-        elm.sim.analyzeFlag = true;
         EditInfo ei = elm.getEditInfo(editItem);
         ei.value = getSliderValue();
         elm.setEditValue(editItem, ei);
@@ -154,8 +153,7 @@ public class Adjustable implements Command {
         if (sharedSlider != null)
             ano = CirSim.theSim.adjustables.indexOf(sharedSlider);
 
-        return elm.sim.locateElm(elm) + " F1 " + editItem + " " + minValue + " " + maxValue + " " + ano + " " +
-                CustomLogicModel.escape(sliderText);
+        return elm.sim.locateElm(elm) + " F1 " + editItem + " " + minValue + " " + maxValue + " " + ano + " " ;
     }
 
     // reorder adjustables so that items with sliders come first in the list, followed by items that reference them.

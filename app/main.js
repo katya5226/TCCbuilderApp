@@ -30,7 +30,7 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     // pathname: path.join(__dirname, 'index.html'),
-    pathname: path.join(__dirname, 'war/circuitjs.html'),
+    pathname: path.join(__dirname, 'war/app.html'),
     protocol: 'file:',
     slashes: true
   }))
@@ -52,7 +52,7 @@ function createWindow () {
   mainWindow.webContents.on('new-window', (evt, url, frameName, disposition, options) => {
 	if (disposition == 'save-to-disk')
 		return;
-	if (!url.endsWith("circuitjs.html"))
+	if (!url.endsWith("app.html"))
 		return;
         // app is opening a new window.  override it by creating a BrowserWindow to work around an electron bug (11128)
 	evt.preventDefault();

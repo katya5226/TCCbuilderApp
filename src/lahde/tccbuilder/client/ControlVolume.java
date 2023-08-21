@@ -5,86 +5,90 @@ import com.google.gwt.core.client.GWT;
 import java.util.*;
 
 public class ControlVolume {
-    public Component parent;
-    public int element_index;
-    public int TCE_index;
-    public int global_index;
+    public ThermalControlElement parent;
+    public Material material;
+    public int elementIndex;
+    public int TCEIndex;
+    public int globalIndex;
     public double temperature;
-    public double temperature_old;
-    public ControlVolume left_neighbour;
-    public ControlVolume right_neighbour;
+    public double temperatureOld;
+    public ControlVolume westNeighbour;
+    public ControlVolume eastNeighbour;
     public double dx;
-    public double left_resistance;
-    public double right_resistance;
-    public double k_hl;
-    public double k_hr;
-    public double k_left;
-    public double k_right;
-    public double q_in;
-    public double q_out;
-    public double q_gen;
-    public double const_rho;
-    public double const_cp;
-    public double const_k;
+    public double westResistance;
+    public double eastResistance;
+    public double kWestFace;
+    public double kEastFace;
+    public double kWest;
+    public double kEast;
+    public double qWest;
+    public double qEast;
+    public double qGenerated;
+    public double constRho;
+    public double constCp;
+    public double constK;
     public double eps;
     public int mode;
 
-    //public ControlVolume(Component parent, int index) {
+
     public ControlVolume(int index) {
-        this.parent = parent;
-        this.element_index = index;
-        this.TCE_index = 0;
-        this.global_index = 0;
-        this.temperature = 0.0;
-        this.temperature_old = 0.0;
-        this.left_neighbour = null;
-        this.right_neighbour = null;
-        this.dx = 0.001;
-        this.left_resistance = 0.0;
-        this.right_resistance = 0.0;
-        this.k_hl = 0.0;
-        this.k_hr = 0.0;
-        this.k_left = 0.0;
-        this.k_right = 0.0;
-        this.q_in = 0.0;
-        this.q_out = 0.0;
-        this.q_gen = 0.0;
-        this.const_rho = -1;
-        this.const_cp = -1;
-        this.const_k = -1;
-        this.eps = 1.0;
-        this.mode = 0;
+        elementIndex = index;
+        TCEIndex = 0;
+        globalIndex = 0;
+        temperature = 0.0;
+        temperatureOld = 0.0;
+        westNeighbour = null;
+        eastNeighbour = null;
+        dx = 0.001;
+        westResistance = 0.0;
+        eastResistance = 0.0;
+        kWestFace = 0.0;
+        kEastFace = 0.0;
+        kWest = 0.0;
+        kEast = 0.0;
+        qWest = 0.0;
+        qEast = 0.0;
+        qGenerated = 0.0;
+        constRho = -1;
+        constCp = -1;
+        constK = -1;
+        eps = 1.0;
+        mode = 0;
+
+        material = parent.sim.materialHashMap.get("100001-Inox");
+        if (!material.isLoaded()) {
+            material.readFiles();
+        }
     }
 
     double rho() {
         //GWT.log("Calculating rho");
         double rho = 0.0;
-        if (this.const_rho != -1)
-            rho = this.const_rho;
+        if (constRho != -1)
+            rho = constRho;
         else {
-            rho = ModelMethods.linInterp(this.temperature, this.parent.material.interpTemps, this.parent.material.rho);
+            rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
         }
         return rho;
     }
 
     double cp() {
         double cp = 0.0;
-        Material m = this.parent.material;
         int fI = 0;
         //GWT.log("Calculating cp");
-        if (this.const_cp != -1) {
-            cp = this.const_cp;
+        if (constCp != -1) {
+            cp = constCp;
         } else {
-            if (this.parent.field) {
-                fI = this.parent.fieldIndex;
+            if (parent.field) {
+                fI = parent.fieldIndex;
             }
-            if (m.cpThysteresis) {
-                if (this.mode == 1)
-                    cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpHeating.get(fI));
-                else if (this.mode == -1)
-                    cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cpCooling.get(fI));
+            if (material.cpThysteresis) {
+                if (mode == 1)
+                    cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpHeating.get(fI));
+                else if (mode == -1)
+                    cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpCooling.get(fI));
             } else {
-                cp = ModelMethods.linInterp(this.temperature, m.interpTemps, m.cp.get(fI));
+                cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
             }
         }
         return cp;
@@ -94,46 +98,40 @@ public class ControlVolume {
         //TODO: update this method for kThysteresis
         //GWT.log("Calculating k");
         double k = 0.01;
-        Material m = this.parent.material;
-        if (this.const_k != -1)
-            k = this.const_k;
+        if (constK != -1)
+            k = constK;
         else {
-            k = ModelMethods.linInterp(this.temperature, m.interpTemps, m.k.get(0));
+            k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
         }
         return k;
     }
 
-    void calc_k_hl() {
-        this.k_hl = this.left_neighbour.k() * this.k() * (this.left_neighbour.dx + this.dx) /
-                (this.left_neighbour.k() * this.dx + this.k() * this.left_neighbour.dx +
-                        this.left_neighbour.k() * this.k() * this.left_resistance * (this.dx + this.left_neighbour.dx) / 2);
+    void calculateKWestFace() {
+        kWestFace = westNeighbour.k() * k() * (westNeighbour.dx + dx) /
+                (westNeighbour.k() * dx + k() * westNeighbour.dx +
+                        westNeighbour.k() * k() * westResistance * (dx + westNeighbour.dx) / 2);
     }
 
-    void calc_k_hr() {
-        this.k_hr = this.k() * this.right_neighbour.k() * (this.dx + this.right_neighbour.dx) /
-                (this.k() * this.right_neighbour.dx + this.right_neighbour.k() * this.dx +
-                        this.right_neighbour.k() * this.k() * this.right_resistance * (this.right_neighbour.dx + this.dx) / 2);
+    void calculateKEastFace() {
+        kEastFace = k() * eastNeighbour.k() * (dx + eastNeighbour.dx) /
+                (k() * eastNeighbour.dx + eastNeighbour.k() * dx +
+                        eastNeighbour.k() * k() * eastResistance * (eastNeighbour.dx + dx) / 2);
     }
 
-    void calc_k_left() {
-        this.k_left = 2 * this.k_hl * this.dx / (this.left_neighbour.dx + this.dx);
+    void calculateKWest() {
+        kWest = 2 * kWestFace * dx / (westNeighbour.dx + dx);
     }
 
-    void calc_k_right() {
-        this.k_right = 2 * this.k_hr * this.dx / (this.right_neighbour.dx + this.dx);
+    void calculateKEast() {
+        kEast = 2 * kEastFace * dx / (eastNeighbour.dx + dx);
     }
 
-    void calc_conduct_lr() {
-        this.calc_k_hl();
-        this.calc_k_hr();
-        this.calc_k_left();
-        this.calc_k_right();
+    void calculateConductivities() {
+        calculateKWestFace();
+        calculateKEastFace();
+        calculateKWest();
+        calculateKEast();
     }
-
-    double get_q_gen() {
-        return this.q_gen;
-    }
-
 
     public void magnetize() {
         // TODO: inform user
@@ -141,24 +139,24 @@ public class ControlVolume {
         Vector<Double> dTheatcool = new Vector<Double>();
         double dT = 0.0;
         double T = 0.0;
-        Component p = (Component) this.parent;
-        if (!p.field) {
-            dTheatcool = p.material.dTheating.get(p.fieldIndex - 1);
-            dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
-            T = this.temperature + dT;
-            this.temperature = T;
-            this.temperature_old = T;
-            GWT.log("Field = " + String.valueOf(p.field));
-            GWT.log("dT = " + String.valueOf(dT));
+        ThermalControlElement tce = (ThermalControlElement) parent;
+        if (!tce.field) {
+            dTheatcool = material.dTheating.get(tce.fieldIndex - 1);
+            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            T = temperature + dT;
+            temperature = T;
+            temperatureOld = T;
+            // GWT.log("Field = " + String.valueOf(tce.field));
+            // GWT.log("dT = " + String.valueOf(dT));
         }
-        if (p.field) {
-            dTheatcool = p.material.dTcooling.get(p.fieldIndex - 1);
-            dT = ModelMethods.linInterp(this.temperature, p.material.interpTemps, dTheatcool);
-            T = this.temperature - dT;
-            GWT.log("Field = " + String.valueOf(p.field));
+        if (tce.field) {
+            dTheatcool = material.dTcooling.get(tce.fieldIndex - 1);
+            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            T = temperature - dT;
+            GWT.log("Field = " + String.valueOf(tce.field));
             GWT.log("dT = -" + String.valueOf(dT));
-            this.temperature = T;
-            this.temperature_old = T;
+            temperature = T;
+            temperatureOld = T;
         }
     }
 

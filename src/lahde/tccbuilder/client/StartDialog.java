@@ -241,7 +241,7 @@ public class StartDialog extends Dialog {
                         GWT.log(String.valueOf(sim.cycleParts.get(cpi).partType));
                     }
                     GWT.log("------");
-                    GWT.log("Inox k: " + String.valueOf(sim.simComponents.get(0).cvs.get(0).const_k));
+                    GWT.log("Inox k: " + String.valueOf(sim.simTCEs.get(0).cvs.get(0).constK));
                 }
                 apply();
             }
@@ -274,8 +274,6 @@ public class StartDialog extends Dialog {
                         leftConvectionCoefficientLabel.setVisible(true);
                         leftConvectionCoefficient.setVisible(true);
                         leftConvectionCoefficient.setValue(sim.h_left);
-
-
                         break;
                     default:
 
@@ -312,7 +310,6 @@ public class StartDialog extends Dialog {
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
                         rightConvectionCoefficient.setValue(sim.h_right);
-
                         break;
                     default:
                         break;
@@ -362,11 +359,8 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-
-        if (!sim.simComponents.isEmpty()) {
+        if (!sim.simTCEs.isEmpty()) {
             sim.resetAction();
-
-
             closeDialog();
         }
     }

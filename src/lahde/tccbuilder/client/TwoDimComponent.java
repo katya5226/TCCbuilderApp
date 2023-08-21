@@ -2,7 +2,6 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.Window;
-import lahde.tccbuilder.client.util.Locale;
 
 import java.lang.Math;
 import java.util.*;
@@ -278,7 +277,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         }
         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
-        doDots(g);
 
     }
 
@@ -348,6 +346,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     }
 
 
+    @Override
     void getInfo(String[] arr) {
         arr[0] = name;
         // getBasicInfo(arr);
@@ -363,10 +362,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
 
     @Override
-    String getScopeText(int v) {
-        return lahde.tccbuilder.client.util.Locale.LS("component") + ", " + getUnitText(resistance, Locale.ohmString);
-    }
-
     public EditInfo getEditInfo(int n) {
         switch (n) {
             case 0:
@@ -464,8 +459,5 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
     }
 
-    @Override
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
+
 }

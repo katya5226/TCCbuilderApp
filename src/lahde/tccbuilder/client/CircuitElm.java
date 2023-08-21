@@ -19,43 +19,24 @@
 
 package lahde.tccbuilder.client;
 
-import java.util.Vector;
-
-import com.google.gwt.canvas.dom.client.CanvasGradient;
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.storage.client.Storage;
-import com.google.gwt.user.client.Random;
 import lahde.tccbuilder.client.util.Locale;
 
 // circuit element class
 public abstract class CircuitElm implements Editable {
-    static double voltageRange = 5;
-    static int colorScaleCount = 201; // odd so ground = gray
-    static Color colorScale[];
-    static double currentMult, powerMult;
-
     // scratch points for convenience
     static Point ps1, ps2;
 
     static CirSim sim;
-    static public Color whiteColor, lightGrayColor, selectColor;
-    static public Color positiveColor, negativeColor, neutralColor, currentColor;
-    static Font unitsFont;
+    static public Color selectColor;
 
-    static NumberFormat showFormat, shortFormat, fixedFormat;
-    static final double pi = 3.14159265358979323846;
+    static NumberFormat showFormat;
     static CircuitElm mouseElmRef = null;
 
-    static final int SCALE_AUTO = 0;
-    static final int SCALE_1 = 1;
-    static final int SCALE_M = 2;
-    static final int SCALE_MU = 3;
-
-    static int decimalDigits, shortDecimalDigits;
 
     // initial point where user created element. For simple two-terminal elements,
     // this is the first node/post.
@@ -65,7 +46,7 @@ public abstract class CircuitElm implements Editable {
     // this is the second node/post
     int x2, y2;
 
-    int flags, nodes[], voltSource;
+    int flags;
 
     // length along x and y axes, and sign of difference
     int dx, dy, dsign;
@@ -83,10 +64,6 @@ public abstract class CircuitElm implements Editable {
     // lead points (ends of wire stubs for simple two-terminal elements)
     Point lead1, lead2;
 
-    // voltages at each node
-    double volts[];
-
-    double current, curcount;
     Rectangle boundingBox;
 
     // if subclasses set this to true, element will be horizontal or vertical only
@@ -94,9 +71,6 @@ public abstract class CircuitElm implements Editable {
 
     public boolean selected;
 
-    boolean hasWireInfo; // used in calcWireInfo()
-
-    // abstract int getDumpType();
     int getDumpType() {
 
         throw new IllegalStateException(); // Seems necessary to work-around what appears to be a compiler
@@ -106,93 +80,10 @@ public abstract class CircuitElm implements Editable {
         // CompositeElm.java and try again
     }
 
-    // leftover from java, doesn't do anything anymore.
-    Class getDumpClass() {
-        return getClass();
-    }
-
-    int getDefaultFlags() {
-        return 0;
-    }
-
-    boolean hasFlag(int f) {
-        return (flags & f) != 0;
-    }
-
     static void initClass(CirSim s) {
-        unitsFont = new Font("SansSerif", 0, 12);
         sim = s;
-
-        colorScale = new Color[colorScaleCount];
-
         ps1 = new Point();
         ps2 = new Point();
-
-        Storage stor = Storage.getLocalStorageIfSupported();
-        decimalDigits = 3;
-        shortDecimalDigits = 1;
-        if (stor != null) {
-            String s1 = stor.getItem("decimalDigits");
-            String s2 = stor.getItem("decimalDigitsShort");
-            if (s1 != null)
-                decimalDigits = Integer.parseInt(s1);
-            if (s2 != null)
-                shortDecimalDigits = Integer.parseInt(s2);
-        }
-        setDecimalDigits(decimalDigits, false, false);
-        setDecimalDigits(shortDecimalDigits, true, false);
-    }
-
-    static void setDecimalDigits(int num, boolean sf, boolean save) {
-        if (sf)
-            shortDecimalDigits = num;
-        else
-            decimalDigits = num;
-
-        String s = "####.";
-        int ct = num;
-        for (; ct > 0; ct--)
-            s += '#';
-        NumberFormat nf = NumberFormat.getFormat(s);
-        if (sf)
-            shortFormat = nf;
-        else
-            showFormat = nf;
-
-        if (save) {
-            Storage stor = Storage.getLocalStorageIfSupported();
-            if (stor != null)
-                stor.setItem(sf ? "decimalDigitsShort" : "decimalDigits", Integer.toString(num));
-        }
-
-        if (!sf) {
-            s = "####.";
-            ct = num;
-            for (; ct > 0; ct--)
-                s += '0';
-            fixedFormat = NumberFormat.getFormat(s);
-        }
-    }
-
-    static void setColorScale() {
-
-        int i;
-
-        if (positiveColor == null)
-            positiveColor = Color.green;
-        if (negativeColor == null)
-            negativeColor = Color.red;
-        if (neutralColor == null)
-            neutralColor = Color.gray;
-
-        for (i = 0; i != colorScaleCount; i++) {
-            double v = i * 2. / colorScaleCount - 1;
-            if (v < 0) {
-                colorScale[i] = new Color(neutralColor, negativeColor, -v);
-            } else {
-                colorScale[i] = new Color(neutralColor, positiveColor, v);
-            }
-        }
 
     }
 
@@ -200,8 +91,7 @@ public abstract class CircuitElm implements Editable {
     CircuitElm(int xx, int yy) {
         x = x2 = xx;
         y = y2 = yy;
-        flags = getDefaultFlags();
-        allocNodes();
+        flags = 0;
         initBoundingBox();
     }
 
@@ -212,23 +102,12 @@ public abstract class CircuitElm implements Editable {
         x2 = xb;
         y2 = yb;
         flags = f;
-        allocNodes();
         initBoundingBox();
     }
 
     void initBoundingBox() {
         boundingBox = new Rectangle();
         boundingBox.setBounds(min(x, x2), min(y, y2), abs(x2 - x) + 1, abs(y2 - y) + 1);
-    }
-
-    // allocate nodes/volts arrays we need
-    void allocNodes() {
-        int n = getPostCount() + getInternalNodeCount();
-        // preserve voltages if possible
-        if (nodes == null || nodes.length != n) {
-            nodes = new int[n];
-            volts = new double[n];
-        }
     }
 
     // dump component state for export/undo
@@ -239,62 +118,16 @@ public abstract class CircuitElm implements Editable {
 
     // handle reset button
     void reset() {
-        int i;
-        for (i = 0; i != getPostCount() + getInternalNodeCount(); i++)
-            volts[i] = 0;
-        curcount = 0;
     }
 
     void draw(Graphics g) {
     }
 
-    // set current for voltage source vn to c. vn will be the same value as in a
-    // previous call to setVoltageSource(n, vn)
-    void setCurrent(int vn, double c) {
-        current = c;
-    }
-
-    // get current for one- or two-terminal elements
-    double getCurrent() {
-        return current;
-    }
-
-    void setParentList(Vector<CircuitElm> elmList) {
-    }
-
-    // stamp matrix values for linear elements.
-    // for non-linear elements, use this to stamp values that don't change each
-    // iteration, and call stampRightSide() or stampNonLinear() as needed
-    void stamp() {
-
-    }
-
-    // stamp matrix values for non-linear elements
-    void doStep() {
-    }
 
     void delete() {
         if (mouseElmRef == this)
             mouseElmRef = null;
         sim.deleteSliders(this);
-    }
-
-    void startIteration() {
-    }
-
-    // get voltage of x'th node
-    double getPostVoltage(int x) {
-        return volts[x];
-    }
-
-    // set voltage of x'th node, called by simulator logic
-    void setNodeVoltage(int n, double c) {
-        volts[n] = c;
-        calculateCurrent();
-    }
-
-    // calculate current in response to node voltages changing
-    void calculateCurrent() {
     }
 
     // calculate post locations and other convenience values used for drawing.
@@ -356,22 +189,6 @@ public abstract class CircuitElm implements Editable {
     }
 
     /**
-     * Returns a point fraction f along the line between a and b and offset
-     * perpendicular by g
-     *
-     * @param a 1st Point
-     * @param b 2nd Point
-     * @param f Fraction along line
-     * @param g Fraction perpendicular to line
-     * @return Interpolated point
-     */
-    Point interpPoint(Point a, Point b, double f, double g) {
-        Point p = new Point();
-        interpPoint(a, b, p, f, g);
-        return p;
-    }
-
-    /**
      * Calculates two points fraction f along the line between a and b and offest
      * perpendicular by +/-g
      *
@@ -395,12 +212,8 @@ public abstract class CircuitElm implements Editable {
     }
 
     void draw2Leads(Graphics g) {
-        // draw first lead
-        setVoltageColor(g, volts[0]);
+        g.setColor(Color.gray);
         drawThickLine(g, point1, lead1);
-
-        // draw second lead
-        setVoltageColor(g, volts[1]);
         drawThickLine(g, lead2, point2);
     }
 
@@ -411,84 +224,11 @@ public abstract class CircuitElm implements Editable {
         return a;
     }
 
-    final int CURRENT_TOO_FAST = 100;
-
-    // draw current dots from point a to b
-    void drawDots(Graphics g, Point pa, Point pb, double pos) {
-        if ((!sim.simIsRunning()) || pos == 0 || !sim.dotsCheckItem.getState())
-            return;
-        int dx = pb.x - pa.x;
-        int dy = pb.y - pa.y;
-        double dn = Math.sqrt(dx * dx + dy * dy);
-        g.setColor(currentColor);
-        int ds = 16;
-        if (pos == CURRENT_TOO_FAST || pos == -CURRENT_TOO_FAST) {
-            // current is moving too fast, avoid aliasing by drawing dots at
-            // random position with transparent yellow line underneath
-            g.save();
-            Context2d ctx = g.context;
-            ctx.setLineWidth(4);
-            ctx.setGlobalAlpha(.5);
-            ctx.beginPath();
-            ctx.moveTo(pa.x, pa.y);
-            ctx.lineTo(pb.x, pb.y);
-            ctx.stroke();
-            g.restore();
-            pos = Random.nextDouble() * ds;
-        }
-        pos %= ds;
-        if (pos < 0)
-            pos += ds;
-        double di = 0;
-        for (di = pos; di < dn; di += ds) {
-            int x0 = (int) (pa.x + di * dx / dn);
-            int y0 = (int) (pa.y + di * dy / dn);
-            g.fillRect(x0 - 2, y0 - 2, 4, 4);
-        }
-    }
-
-    double addCurCount(double c, double a) {
-        if (c == CURRENT_TOO_FAST || c == -CURRENT_TOO_FAST)
-            return c;
-        return c + a;
-    }
-
-    Polygon calcArrow(Point a, Point b, double al, double aw) {
-        Polygon poly = new Polygon();
-        Point p1 = new Point();
-        Point p2 = new Point();
-        int adx = b.x - a.x;
-        int ady = b.y - a.y;
-        double l = Math.sqrt(adx * adx + ady * ady);
-        poly.addPoint(b.x, b.y);
-        interpPoint2(a, b, p1, p2, 1 - al / l, aw);
-        poly.addPoint(p1.x, p1.y);
-        poly.addPoint(p2.x, p2.y);
-        return poly;
-    }
-
     Polygon createPolygon(Point a, Point b, Point c) {
         Polygon p = new Polygon();
         p.addPoint(a.x, a.y);
         p.addPoint(b.x, b.y);
         p.addPoint(c.x, c.y);
-        return p;
-    }
-
-    Polygon createPolygon(Point a, Point b, Point c, Point d) {
-        Polygon p = new Polygon();
-        p.addPoint(a.x, a.y);
-        p.addPoint(b.x, b.y);
-        p.addPoint(c.x, c.y);
-        p.addPoint(d.x, d.y);
-        return p;
-    }
-
-    Polygon createPolygon(Point a[]) {
-        Polygon p = new Polygon();
-        int i;
-        for (i = 0; i != a.length; i++)
-            p.addPoint(a[i].x, a[i].y);
         return p;
     }
 
@@ -521,16 +261,6 @@ public abstract class CircuitElm implements Editable {
     // size and should be deleted
     boolean creationFailed() {
         return (x == x2 && y == y2);
-    }
-
-    // this is used to set the position of an internal element so we can draw it
-    // inside the parent
-    void setPosition(int x_, int y_, int x2_, int y2_) {
-        x = x_;
-        y = y_;
-        x2 = x2_;
-        y2 = y2_;
-        setPoints();
     }
 
     // determine if moving this element by (dx,dy) will put it on top of another
@@ -610,50 +340,11 @@ public abstract class CircuitElm implements Editable {
         return lastHandleGrabbed;
     }
 
-    // number of voltage sources this element needs
-    int getVoltageSourceCount() {
-        return 0;
-    }
-
-    // number of internal nodes (nodes not visible in UI that are needed for
-    // implementation)
-    int getInternalNodeCount() {
-        return 0;
-    }
-
-    // notify this element that its pth node is n. This value n can be passed to
-    // stampMatrix()
-    void setNode(int p, int n) {
-        nodes[p] = n;
-    }
-
-    // notify this element that its nth voltage source is v. This value v can be
-    // passed to stampVoltageSource(), etc and will be passed back in calls to
-    // setCurrent()
-    void setVoltageSource(int n, int v) {
-        // default implementation only makes sense for subclasses with one voltage
-        // source. If we have 0 this isn't used, if we have >1 this won't work
-        voltSource = v;
-    }
-
     // int getVoltageSource() { return voltSource; } // Never used except for debug
     // code which is commented out
 
-    double getVoltageDiff() {
-        return volts[0] - volts[1];
-    }
-
-    boolean nonLinear() {
-        return false;
-    }
-
     int getPostCount() {
         return 2;
-    }
-
-    // get (global) node number of nth node
-    int getNode(int n) {
-        return nodes[n];
     }
 
     // get position of nth node
@@ -661,31 +352,6 @@ public abstract class CircuitElm implements Editable {
         return (n == 0) ? point1 : (n == 1) ? point2 : null;
     }
 
-    // return post we're connected to (for wires, so we can optimize them out in
-    // calculateWireClosure())
-    Point getConnectedPost() {
-        return point2;
-    }
-
-    int getNodeAtPoint(int xp, int yp) {
-        int i;
-        for (i = 0; i != getPostCount(); i++) {
-            Point p = getPost(i);
-            if (p.x == xp && p.y == yp)
-                return i;
-        }
-        return 0;
-    }
-
-
-/*    void drawPost(Graphics g, int x0, int y0, int n) {
-        if (sim.dragElm == null &&
-                !needsHighlight() && sim.getCircuitNode(n).links.size() == 2) return;
-        if
-        (sim.mouseMode == CirSim.MODE_DRAG_ROW || sim.mouseMode ==
-                CirSim.MODE_DRAG_COLUMN) return;
-        drawPost(g, x0, y0);
-    }*/
 
     void drawPost(Graphics g, Point pt) {
         g.setColor(!needsHighlight() ? Color.white : Color.cyan);
@@ -740,127 +406,12 @@ public abstract class CircuitElm implements Editable {
         boundingBox.setBounds(x1, y1, x2 - x1, y2 - y1);
     }
 
-    void adjustBbox(Point p1, Point p2) {
-        adjustBbox(p1.x, p1.y, p2.x, p2.y);
-    }
-
     // needed for calculating circuit bounds (need to special-case centered text
     // elements)
     boolean isCenteredText() {
         return false;
     }
 
-    void drawCenteredText(Graphics g, String s, int x, int y, boolean cx) {
-        // FontMetrics fm = g.getFontMetrics();
-        // int w = fm.stringWidth(s);
-        // int w=0;
-        // if (cx)
-        // x -= w/2;
-        // g.drawString(s, x, y+fm.getAscent()/2);
-        // adjustBbox(x, y-fm.getAscent()/2,
-        // x+w, y+fm.getAscent()/2+fm.getDescent());
-        int w = (int) g.context.measureText(s).getWidth();
-        int h2 = (int) g.currentFontSize / 2;
-        g.save();
-        g.context.setTextBaseline("middle");
-        if (cx) {
-            g.context.setTextAlign("center");
-            adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
-        } else {
-            adjustBbox(x, y - h2, x + w, y + h2);
-        }
-
-        if (cx)
-            g.context.setTextAlign("center");
-        g.drawString(s, x, y);
-        g.restore();
-    }
-
-    // draw component values (number of resistor ohms, etc). hs = offset
-    void drawValues(Graphics g, String s, double hs) {
-        if (s == null)
-            return;
-        g.setFont(unitsFont);
-        // FontMetrics fm = g.getFontMetrics();
-        int w = (int) g.context.measureText(s).getWidth();
-        g.setColor(whiteColor);
-        int ya = (int) g.currentFontSize / 2;
-        int xc, yc;
-
-        xc = (x2 + x) / 2;
-        yc = (y2 + y) / 2;
-
-        int dpx = (int) (dpx1 * hs);
-        int dpy = (int) (dpy1 * hs);
-        if (dpx == 0)
-            g.drawString(s, xc - w / 2, yc - abs(dpy) - 2);
-        else {
-            int xx = xc + abs(dpx) + 2;
-            if (this instanceof VoltageElm || (x < x2 && y > y2))
-                xx = xc - (w + abs(dpx) + 2);
-            g.drawString(s, xx, yc + dpy + ya);
-        }
-    }
-
-    void drawLabeledNode(Graphics g, String str, Point pt1, Point pt2) {
-        boolean lineOver = false;
-        if (str.startsWith("/")) {
-            lineOver = true;
-            str = str.substring(1);
-        }
-        int w = (int) g.context.measureText(str).getWidth();
-        int h = (int) g.currentFontSize;
-        g.save();
-        g.context.setTextBaseline("middle");
-        int x = pt2.x, y = pt2.y;
-        if (pt1.y != pt2.y) {
-            x -= w / 2;
-            y += sign(pt2.y - pt1.y) * h;
-        } else {
-            if (pt2.x > pt1.x)
-                x += 4;
-            else
-                x -= 4 + w;
-        }
-        g.drawString(str, x, y);
-        adjustBbox(x, y - h / 2, x + w, y + h / 2);
-        g.restore();
-        if (lineOver) {
-            int ya = y - h / 2 - 1;
-            g.drawLine(x, ya, x + w, ya);
-        }
-    }
-
-    void drawCoil(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
-        double len = distance(p1, p2);
-
-        g.save();
-        g.context.setLineWidth(3.0);
-        g.context.transform(((double) (p2.x - p1.x)) / len, ((double) (p2.y - p1.y)) / len,
-                -((double) (p2.y - p1.y)) / len, ((double) (p2.x - p1.x)) / len, p1.x, p1.y);
-        if (sim.voltsCheckItem.getState()) {
-            CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
-            grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
-            grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
-            g.context.setStrokeStyle(grad);
-        }
-        g.context.setLineCap(LineCap.ROUND);
-        g.context.scale(1, hs > 0 ? 1 : -1);
-
-        int loop;
-        // draw more loops for a longer coil
-        int loopCt = (int) Math.ceil(len / 11);
-        for (loop = 0; loop != loopCt; loop++) {
-            g.context.beginPath();
-            double start = len * loop / loopCt;
-            g.context.moveTo(start, 0);
-            g.context.arc(len * (loop + .5) / loopCt, 0, len / (2 * loopCt), Math.PI, Math.PI * 2);
-            g.context.lineTo(len * (loop + 1) / loopCt, 0);
-            g.context.stroke();
-        }
-
-        g.restore();
-    }
 
     static void drawThickLine(Graphics g, int x, int y, int x2, int y2) {
         g.setLineWidth(3.0);
@@ -872,19 +423,6 @@ public abstract class CircuitElm implements Editable {
         g.setLineWidth(3.0);
         g.context.setLineCap(LineCap.BUTT);
         g.drawLine(pa.x, pa.y, pb.x, pb.y);
-        g.setLineWidth(1.0);
-    }
-
-    static void drawThickerLine(Graphics g, Point pa, Point pb) {
-        g.setLineWidth(15.0);
-        g.drawLine(pb.x, pb.y, pa.x, pa.y);
-        g.setLineWidth(3.0);
-    }
-
-    static void drawThickLine(Graphics g, int x, int y, int x2, int y2, String color) {
-        g.setLineWidth(3.0);
-        g.setColor(color);
-        g.drawLine(x, y, x2, y2);
         g.setLineWidth(1.0);
     }
 
@@ -901,29 +439,6 @@ public abstract class CircuitElm implements Editable {
     }
 
 
-    static void drawThickPolygon(Graphics g, int xs[], int ys[], int c) {
-        // int i;
-        // for (i = 0; i != c-1; i++)
-        // drawThickLine(g, xs[i], ys[i], xs[i+1], ys[i+1]);
-        // drawThickLine(g, xs[i], ys[i], xs[0], ys[0]);
-        g.setLineWidth(3.0);
-        g.drawPolyline(xs, ys, c);
-        g.setLineWidth(1.0);
-    }
-
-    static void drawThickPolygon(Graphics g, Polygon p) {
-        drawThickPolygon(g, p.xpoints, p.ypoints, p.npoints);
-    }
-
-    static void drawPolygon(Graphics g, Polygon p) {
-        g.drawPolyline(p.xpoints, p.ypoints, p.npoints);
-        /*
-         * int i; int xs[] = p.xpoints; int ys[] = p.ypoints; int np = p.npoints; np -=
-         * 3; for (i = 0; i != np-1; i++) g.drawLine(xs[i], ys[i], xs[i+1], ys[i+1]);
-         * g.drawLine(xs[i], ys[i], xs[0], ys[0]);
-         */
-    }
-
     static void drawThickCircle(Graphics g, int cx, int cy, int ri) {
         g.setLineWidth(3.0);
 
@@ -933,50 +448,8 @@ public abstract class CircuitElm implements Editable {
         g.setLineWidth(1.0);
     }
 
-    Polygon getSchmittPolygon(float gsize, float ctr) {
-        Point pts[] = newPointArray(6);
-        float hs = 3 * gsize;
-        float h1 = 3 * gsize;
-        float h2 = h1 * 2;
-        double len = distance(lead1, lead2);
-        pts[0] = interpPoint(lead1, lead2, ctr - h2 / len, hs);
-        pts[1] = interpPoint(lead1, lead2, ctr + h1 / len, hs);
-        pts[2] = interpPoint(lead1, lead2, ctr + h1 / len, -hs);
-        pts[3] = interpPoint(lead1, lead2, ctr + h2 / len, -hs);
-        pts[4] = interpPoint(lead1, lead2, ctr - h1 / len, -hs);
-        pts[5] = interpPoint(lead1, lead2, ctr - h1 / len, hs);
-        return createPolygon(pts);
-    }
-
-    static String getVoltageDText(double v) {
-        return getUnitText(Math.abs(v), "V");
-    }
-
-    static String getVoltageText(double v) {
-        return getUnitText(v, "V");
-    }
-
-    static String getTimeText(double v) {
-        if (v >= 60) {
-            double h = Math.floor(v / 3600);
-            v -= 3600 * h;
-            double m = Math.floor(v / 60);
-            v -= 60 * m;
-            if (h == 0)
-                return m + ":" + ((v >= 10) ? "" : "0") + showFormat.format(v);
-            return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + showFormat.format(v);
-        }
-        return getUnitText(v, "s");
-    }
-
     static String format(double v, boolean sf) {
-        // if (sf && Math.abs(v) > 10)
-        // return shortFormat.format(Math.round(v));
-        return (sf ? shortFormat : showFormat).format(v);
-    }
-
-    static String getUnitText(double v, String u) {
-        return getUnitText(v, u, false);
+        return NumberFormat.getFormat("####.").format(v);
     }
 
     static String getShortUnitText(double v, String u) {
@@ -1008,194 +481,18 @@ public abstract class CircuitElm implements Editable {
         return NumberFormat.getFormat("#.##E000").format(v) + sp + u;
     }
 
-    static String getCurrentText(double i) {
-        return getUnitText(i, "A");
-    }
-
-    static String getCurrentDText(double i) {
-        return getUnitText(Math.abs(i), "A");
-    }
-
-    static String getUnitTextWithScale(double val, String utext, int scale) {
-        return getUnitTextWithScale(val, utext, scale, false);
-    }
-
-    static String getUnitTextWithScale(double val, String utext, int scale, boolean fixed) {
-        if (Math.abs(val) > 1e12)
-            return getUnitText(val, utext);
-        NumberFormat nf = fixed ? fixedFormat : showFormat;
-        if (scale == SCALE_1)
-            return nf.format(val) + " " + utext;
-        if (scale == SCALE_M)
-            return nf.format(1e3 * val) + " m" + utext;
-        if (scale == SCALE_MU)
-            return nf.format(1e6 * val) + " " + Locale.muString + utext;
-        return getUnitText(val, utext);
-    }
-
-    // update dot positions (curcount) for drawing current (simple case for single
-    // current)
-    void updateDotCount() {
-        curcount = updateDotCount(current, curcount);
-    }
-
-    // update dot positions (curcount) for drawing current (general case for
-    // multiple currents)
-    double updateDotCount(double cur, double cc) {
-
-        if (!sim.simIsRunning())
-            return cc;
-        double cadd = cur * currentMult;
-        if (cadd > 6 || cadd < -6)
-            return CURRENT_TOO_FAST;
-        if (cc == CURRENT_TOO_FAST)
-            cc = 0;
-        cadd %= 8;
-        return cc + cadd;
-    }
-
-    // update and draw current for simple two-terminal element
-    void doDots(Graphics g) {
-        updateDotCount();
-        if (sim.dragElm != this)
-            drawDots(g, point1, point2, curcount);
-    }
-
-    void doAdjust() {
-    }
-
-    void setupAdjust() {
-    }
-
     // get component info for display in lower right
     void getInfo(String arr[]) {
     }
 
-    int getBasicInfo(String arr[]) {
-        arr[1] = "I = " + getCurrentDText(getCurrent());
-        arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
-        return 3;
-    }
 
-    String getScopeText(int v) {
-        String info[] = new String[10];
-        getInfo(info);
-        return info[0];
-    }
-
-    Color getVoltageColor(Graphics g, double volts) {
-        if (needsHighlight()) {
-            return (selectColor);
-        }
-        if (!sim.voltsCheckItem.getState()) {
-            return (whiteColor);
-        }
-        int c = (int) ((volts + voltageRange) * (colorScaleCount - 1) / (voltageRange * 2));
-        if (c < 0)
-            c = 0;
-        if (c >= colorScaleCount)
-            c = colorScaleCount - 1;
-        return (colorScale[c]);
-    }
-
-    void setVoltageColor(Graphics g, double volts) {
-        g.setColor(getVoltageColor(g, volts));
-    }
-
-    // yellow argument is unused, can't remember why it was there
-    void setPowerColor(Graphics g, boolean yellow) {
-
-        /*
-         * if (conductanceCheckItem.getState()) { setConductanceColor(g,
-         * current/getVoltageDiff()); return; }
-         */
-        if (!sim.powerCheckItem.getState())
-            return;
-        setPowerColor(g, getPower());
-    }
-
-    void setPowerColor(Graphics g, double w0) {
-        if (!sim.powerCheckItem.getState())
-            return;
-        if (needsHighlight()) {
-            g.setColor(selectColor);
-            return;
-        }
-        w0 *= powerMult;
-        // System.out.println(w);
-        int i = (int) ((colorScaleCount / 2) + (colorScaleCount / 2) * -w0);
-        if (i < 0)
-            i = 0;
-        if (i >= colorScaleCount)
-            i = colorScaleCount - 1;
-        g.setColor(colorScale[i]);
-    }
-
-    void setConductanceColor(Graphics g, double w0) {
-        w0 *= powerMult;
-        // System.out.println(w);
-        double w = (w0 < 0) ? -w0 : w0;
-        if (w > 1)
-            w = 1;
-        int rg = (int) (w * 255);
-        g.setColor(new Color(rg, rg, rg));
-    }
-
-    double getPower() {
-        return getVoltageDiff() * current;
-    }
-
-
-    int getScopeUnits(int x) {
-        return -1;
-    }
-
+    @Override
     public EditInfo getEditInfo(int n) {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
-    }
-
-    // get number of nodes that can be retrieved by getConnectionNode()
-    int getConnectionNodeCount() {
-        return getPostCount();
-    }
-
-    // get nodes that can be passed to getConnection(), to test if this element
-    // connects
-    // those two nodes; this is the same as getNode() for all but labeled nodes.
-    int getConnectionNode(int n) {
-        return getNode(n);
-    }
-
-    // are n1 and n2 connected by this element? this is used to determine
-    // unconnected nodes, and look for loops
-    boolean getConnection(int n1, int n2) {
-        return true;
-    }
-
-    // is n1 connected to ground somehow?
-    boolean hasGroundConnection(int n1) {
-        return false;
-    }
-
-    // is this a wire or equivalent to a wire? (used for circuit validation)
-    boolean isWireEquivalent() {
-        return false;
-    }
-
-    // is this a wire we can remove?
-    boolean isRemovableWire() {
-        return false;
-    }
-
-    boolean canViewInScope() {
-        return getPostCount() <= 2;
-    }
-
-    boolean comparePair(int x1, int x2, int y1, int y2) {
-        return ((x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1));
     }
 
     boolean needsHighlight() {
@@ -1204,10 +501,6 @@ public abstract class CircuitElm implements Editable {
 
     boolean isSelected() {
         return selected;
-    }
-
-    boolean canShowValueInScope(int v) {
-        return false;
     }
 
     void setSelected(boolean x) {
@@ -1255,10 +548,6 @@ public abstract class CircuitElm implements Editable {
         return 0;
     }
 
-    boolean isGraphicElmt() {
-        return false;
-    }
-
     void setMouseElm(boolean v) {
         if (v)
             mouseElmRef = this;
@@ -1275,21 +564,6 @@ public abstract class CircuitElm implements Editable {
 
     boolean isMouseElm() {
         return mouseElmRef == this;
-    }
-
-    void updateModels() {
-    }
-
-    void stepFinished() {
-    }
-
-    // get current flowing into node n out of this element
-    double getCurrentIntoNode(int n) {
-        // if we take out the getPostCount() == 2 it gives the wrong value for rails
-        if (n == 0 && getPostCount() == 2)
-            return -current;
-        else
-            return current;
     }
 
     void flipPosts() {
@@ -1320,12 +594,6 @@ public abstract class CircuitElm implements Editable {
         return jsarr;
     }
 
-    double getVoltageJS(int n) {
-        if (n >= volts.length)
-            return 0;
-        return volts[n];
-    }
-
     native void addJSMethods() /*-{
         var that = this;
         this.getType = $entry(function () {
@@ -1334,18 +602,8 @@ public abstract class CircuitElm implements Editable {
         this.getInfo = $entry(function () {
             return that.@lahde.tccbuilder.client.CircuitElm::getInfoJS()();
         });
-        this.getVoltageDiff = $entry(function () {
-            return that.@lahde.tccbuilder.client.CircuitElm::getVoltageDiff()();
-        });
-        this.getVoltage = $entry(function (n) {
-            return that.@lahde.tccbuilder.client.CircuitElm::getVoltageJS(I)(n);
-        });
-        this.getCurrent = $entry(function () {
-            return that.@lahde.tccbuilder.client.CircuitElm::getCurrent()();
-        });
-        this.getLabelName = $entry(function () {
-            return that.@lahde.tccbuilder.client.LabeledNodeElm::getName()();
-        });
+
+
         this.getPostCount = $entry(function () {
             return that.@lahde.tccbuilder.client.CircuitElm::getPostCount()();
         });

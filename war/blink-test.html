@@ -13,8 +13,8 @@
 
     <h1>Blink Test</h1>
     <h2 name="fname">LCR</h2>
-    <iframe name="local" src="http://127.0.0.1:8888/circuitjs.html" width=49% height=700px></iframe>
-    <iframe name="remote" src="https://lushprojects.com/circuitjs/circuitjs.html" width=49% height=700px></iframe>
+    <iframe name="local" src="http://127.0.0.1:8888/app.html" width=49% height=700px></iframe>
+    <iframe name="remote" src="https://lushprojects.com/circuitjs/app.html" width=49% height=700px></iframe>
      
 	<button onclick="next()">Next File</button>
 	<br>
@@ -31,8 +31,8 @@
     
       
     function setScr(msg, fname) {
-    document.getElementsByName("local")[0].src = "http://127.0.0.1:8888/circuitjs.html?startCircuit="+fname;
-    document.getElementsByName("remote")[0].src = "https://lushprojects.com/circuitjs/circuitjs.html?startCircuit="+fname;
+    document.getElementsByName("local")[0].src = "http://127.0.0.1:8888/app.html?startCircuit="+fname;
+    document.getElementsByName("remote")[0].src = "https://lushprojects.com/circuitjs/app.html?startCircuit="+fname;
     document.getElementsByName("fname")[0].innerHTML= msg+" "+fname;
     }
     

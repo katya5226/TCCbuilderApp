@@ -203,9 +203,9 @@ class EditDialog extends Dialog {
         if (elm instanceof Component || elm instanceof TwoDimComponent) {
             vp.insert(constantParametersButton, vp.getWidgetCount() - 1);
 
-            double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).const_rho : ((TwoDimComponent) elm).cvs.get(0).constRho;
-            double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).const_cp : ((TwoDimComponent) elm).cvs.get(0).constCp;
-            double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).const_k : ((TwoDimComponent) elm).cvs.get(0).constK;
+            double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).constRho : ((TwoDimComponent) elm).cvs.get(0).constRho;
+            double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).constCp : ((TwoDimComponent) elm).cvs.get(0).constCp;
+            double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).constK : ((TwoDimComponent) elm).cvs.get(0).constK;
             if (constRho != -1) {
                 vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
@@ -224,19 +224,6 @@ class EditDialog extends Dialog {
     }
 
     static final double ROOT2 = 1.41421356237309504880;
-
-    double diffFromInteger(double x) {
-        return Math.abs(x - Math.round(x));
-    }
-
-    String unitString(EditInfo ei) {
-        // for voltage elements, express values in rms if that would be shorter
-        if (elm != null && elm instanceof VoltageElm &&
-                Math.abs(ei.value) > 1e-4 &&
-                diffFromInteger(ei.value * 1e4) > diffFromInteger(ei.value * 1e4 / ROOT2))
-            return unitString(ei, ei.value / ROOT2) + "rms";
-        return unitString(ei, ei.value);
-    }
 
     static String unitString(EditInfo ei, double v) {
         double va = Math.abs(v);

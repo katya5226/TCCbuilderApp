@@ -368,7 +368,7 @@ public class Material {
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == Response.SC_OK) {
-                        String text = response.getText();
+                        String text = response.getText().trim();
                         for (String line : text.split("\n"))
                             vector.add(Double.parseDouble(line));
                         if (vector.size() == 1) {
@@ -388,38 +388,6 @@ public class Material {
             });
         } catch (RequestException e) {
             GWT.log("failed file reading", e);
-        }
-
-    }
-
-    void loadFieldsFromUrl(String url, final Callback callback) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-        try {
-            requestBuilder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    // Handle error
-                    GWT.log("File Error Response", exception);
-                    callback.onFailure(exception);
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                        String text = response.getText();
-                        for (String line : text.split("\n"))
-                            fields.add(Double.parseDouble(line));
-                        callback.onSuccess(response);
-                    } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
-                        GWT.log("File \"" + url + "\" not found");
-                        callback.onFailure(response.getStatusText());
-                    } else {
-                        GWT.log("Bad file server response: " + response.getStatusText());
-                        callback.onFailure(response.getStatusText());
-                    }
-                }
-            });
-        } catch (RequestException e) {
-            GWT.log("failed file reading", e);
-            callback.onFailure(e);
         }
 
     }

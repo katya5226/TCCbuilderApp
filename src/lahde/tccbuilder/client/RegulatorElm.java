@@ -37,16 +37,19 @@ class RegulatorElm extends CircuitElm {
         resistance = new Double(st.nextToken()).doubleValue();
     }
 
+    @Override
     int getDumpType() {
         return 'r';
     }
 
+    @Override
     String dump() {
         return super.dump() + " " + resistance;
     }
 
     Point ps3, ps4;
 
+    @Override
     void setPoints() {
         super.setPoints();
         calcLeads(32);
@@ -54,13 +57,12 @@ class RegulatorElm extends CircuitElm {
         ps4 = new Point();
     }
 
+    @Override
     void draw(Graphics g) {
         int segments = 16;
         int i;
         int ox = 0;
         int hs = 6;
-        double v1 = volts[0];
-        double v2 = volts[1];
         setBbox(point1, point2, hs);
         draw2Leads(g);
 
@@ -68,13 +70,8 @@ class RegulatorElm extends CircuitElm {
         g.context.save();
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
         g.context.setLineWidth(2);
-        if (sim.voltsCheckItem.getState()) {
-            CanvasGradient grad = g.context.createLinearGradient(0, 0, len, 0);
-            grad.addColorStop(0, getVoltageColor(g, v1).getHexValue());
-            grad.addColorStop(1.0, getVoltageColor(g, v2).getHexValue());
-            g.context.setStrokeStyle(grad);
-        } else
-            setPowerColor(g, true);
+
+        g.setColor(Color.gray);
         if (dn < 30)
             hs = 2;
         g.context.beginPath();
@@ -111,30 +108,15 @@ class RegulatorElm extends CircuitElm {
             String s = getShortUnitText(resistance, "");
             drawValues(g, s, hs + 2);
         }*/
-        doDots(g);
     }
 
-    void calculateCurrent() {
-        current = (volts[0] - volts[1]) / resistance;
-        //System.out.print(this + " res current set to " + current + "\n");
-    }
 
-    void stamp() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
-
+    @Override
     void getInfo(String arr[]) {
         arr[0] = "resistor";
-        getBasicInfo(arr);
-        arr[3] = "R = " + getUnitText(resistance, Locale.ohmString);
-        arr[4] = "P = " + getUnitText(getPower(), "W");
     }
 
     @Override
-    String getScopeText(int v) {
-        return Locale.LS("resistor") + ", " + getUnitText(resistance, Locale.ohmString);
-    }
-
     public EditInfo getEditInfo(int n) {
         // ohmString doesn't work here on linux
         if (n == 0)
@@ -142,10 +124,12 @@ class RegulatorElm extends CircuitElm {
         return null;
     }
 
+    @Override
     public void setEditValue(int n, EditInfo ei) {
         resistance = (ei.value <= 0) ? 1e-9 : ei.value;
     }
 
+    @Override
     int getShortcut() {
         return 'r';
     }

@@ -1,173 +1,127 @@
 package lahde.tccbuilder.client;
 
 import java.lang.Math;
-import java.util.Iterator;
 import java.util.Vector;
+import java.util.Collections;
 
 public class TCC {
-    //public CirSim parent_sim;
     public String name;
-    public Vector<TCE> TCEs;
-    public int num_el;
-    public int num_cvs;
+    public Vector<ThermalControlElement> TCEs;
     public Vector<ControlVolume> cvs;
-    public TCC left_neighbour;
-    public TCC right_neighbour;
     public double[] underdiag;
     public double[] diag;
     public double[] upperdiag;
     public double[] rhs;
-    public int left_boundary;
-    public int right_boundary;
+    public int westBoundary;
+    public int eastBoundary;
     //public int[) other_ht_types;
-    public double q_in, q_out;
-    public double temp_left, temp_right;
-    public double h_left, h_right;
+    public double qWest, qEast;
+    public double temperatureWest, temperatureEast;
+    public double hWest, hEast;
 
     public Vector<Double> fluxes;
 
-    public TCC(String name, Vector<TCE> TCEs) {
-        //this.parent_sim = null;
+    public TCC(String name, Vector<ThermalControlElement> TCEs) {
+        //parent_sim = null;
         this.name = name;
         this.TCEs = TCEs;
-        this.num_el = TCEs.size();
-        this.num_cvs = 0;
-        for (TCE tce : TCEs) {
-            this.num_cvs += tce.num_cvs;
+        int numCvs = 0;
+        for (ThermalControlElement tce : TCEs) {
+            numCvs += tce.cvs.size();
         }
-        this.cvs = new Vector<ControlVolume>();
-        this.left_neighbour = null;
-        this.right_neighbour = null;
-        this.underdiag = new double[this.num_cvs];
-        this.diag = new double[this.num_cvs];
-        this.upperdiag = new double[this.num_cvs];
-        this.rhs = new double[this.num_cvs];
-        this.left_boundary = 51;
-        this.right_boundary = 52;
-        //this.other_ht_types = [);
-        this.q_in = 0.0;
-        this.q_out = 0.0;
-        this.temp_left = 0.0;
-        this.temp_right = 0.0;
-        this.h_left = 500.0;
-        this.h_right = 500.0;
+        cvs = new Vector<ControlVolume>();
+        underdiag = new double[numCvs];
+        diag = new double[numCvs];
+        upperdiag = new double[numCvs];
+        rhs = new double[numCvs];
+        westBoundary = 51;
+        eastBoundary = 52;
+        //other_ht_types = [);
+        qWest = 0.0;
+        qEast = 0.0;
+        temperatureWest = 0.0;
+        temperatureEast = 0.0;
+        hWest = 500.0;
+        hEast = 500.0;
 
-        this.fluxes = new Vector<Double>();
+        fluxes = new Vector<Double>();
     }
 
-    public void cv_neighbours() {
-        //for (int i = 0; i < this.num_cvs; i++) {
-        for (ControlVolume cv : cvs) {
-            int i = cv.global_index;
-            if (i != 0 && i != this.num_cvs - 1) {
-                cv.left_neighbour = this.cvs.get(i - 1);
-                cv.right_neighbour = this.cvs.get(i + 1);
+    public void setNeighbours() {
+        cvs.get(0).westNeighbour = cvs.get(0);
+        cvs.get(cvs.size() - 1).eastNeighbour = cvs.get(cvs.size() - 1);
+        if (cvs.size() > 1) {
+            for (int i = 0; i < cvs.size(); i++) {
+                ControlVolume cv = cvs.get(i);
+                if (i != 0 && i != cvs.size() - 1) {
+                    cv.westNeighbour = cvs.get(i - 1);
+                    cv.eastNeighbour = cvs.get(i + 1);
+                }
+                if (i == 0) {
+                    cv.eastNeighbour = cvs.get(1);
+                }
+                if (i == cvs.size() - 1) {
+                    cv.westNeighbour = cvs.get(cvs.size() - 2);
+                }
             }
-            if (i == 0) {
-                cv.right_neighbour = this.cvs.get(1);
-            }
-            if (i == this.num_cvs - 1) {
-                cv.left_neighbour = this.cvs.get(this.num_cvs - 2);
-            }
-            //Window.alert(String.valueOf(cv.left_neighbour.global_index) + "\t" + String.valueOf(cv.right_neighbour.global_index));
         }
-        //}
     }
 
     //TODO: add condition to check if TCC has <3 control volumes 
-    public void build_TCC() {  // DOPOLNITI!
-        //Arrays.sort(this.TCEs);
-
-        int n1 = this.num_el;
-        int m2 = 0;
-        this.TCEs.get(0).left_neighbour = null;
-        this.TCEs.get(n1 - 1).right_neighbour = null;
-        if (this.TCEs.size() == 1) {
-            this.TCEs.get(0).right_neighbour = null;
-            this.TCEs.get(n1 - 1).left_neighbour = null;
-        } else {
-            int m1 = TCEs.get(n1 - 1).num_components;
-            this.TCEs.get(0).right_neighbour = this.TCEs.get(1);
-            this.TCEs.get(n1 - 1).left_neighbour = this.TCEs.get(n1 - 2);
-            this.TCEs.get(0).components.get(0).left_neighbour = null;
-            this.TCEs.get(n1 - 1).components.get(m1 - 1).right_neighbour = null;
+    public void buildTCC() {  // DOPOLNITI!
+        Collections.sort(TCEs);
+        // TCEs.get(0).westBoundary = westBoundary;
+        // TCEs.get(TCEs.size() - 1).eastBoundary = eastBoundary;
+        for (int i = 0; i < TCEs.size() - 1; i++) {
+            TCEs.get(i).eastBoundary = 52;
+            TCEs.get(i).eastNeighbour = TCEs.get(i + 1);
+            TCEs.get(i + 1).westNeighbour = TCEs.get(i);
         }
-        for (int i = 1; i < this.num_el - 1; i++) {
-            this.TCEs.get(i).right_neighbour = this.TCEs.get(i + 1);
-            this.TCEs.get(i).left_neighbour = this.TCEs.get(i - 1);
-            m2 = TCEs.get(i).num_components;
-            this.TCEs.get(i).components.get(m2 - 1).right_neighbour = this.TCEs.get(i + 1).components.get(0);
-            this.TCEs.get(i + 1).left_neighbour = this.TCEs.get(i);
-            this.TCEs.get(i + 1).components.get(0).left_neighbour = this.TCEs.get(i).components.get(TCEs.get(i).num_components - 1);
+        for (int i = 1; i < TCEs.size(); i++) {
+            TCEs.get(i).westBoundary = 51;
+            int l = TCEs.get(i - 1).cvs.size();
+            TCEs.get(i - 1).cvs.get(l - 1).eastNeighbour = TCEs.get(i).cvs.get(0);
+            TCEs.get(i).cvs.get(0).westNeighbour = TCEs.get(i - 1).cvs.get(l - 1);
         }
-
-        for (int i = 0; i < this.num_el; i++) {
-            this.TCEs.get(i).build_TCE();
-        }
-        this.cvs.clear();
-        int global_index = 0;
-        for (int i = 0; i < num_el; i++) {
-            this.TCEs.get(i).parent = this;
-            for (int j = 0; j < this.TCEs.get(i).num_cvs; j++) {
-                this.TCEs.get(i).cvs.get(j).global_index = global_index;
-                this.cvs.add(this.TCEs.get(i).cvs.get(j));
-                global_index++;
+        cvs.clear();
+        int globalIndex = 0;
+        for (int i = 0; i < TCEs.size(); i++) {
+            TCEs.get(i).cvs.get(0).westResistance = TCEs.get(i).westResistance;
+            TCEs.get(i).cvs.get(TCEs.get(i).cvs.size() - 1).eastResistance = TCEs.get(i).eastResistance;
+            for (int j = 0; j < TCEs.get(i).cvs.size(); j++) {
+                TCEs.get(i).cvs.get(j).globalIndex = globalIndex;
+                cvs.add(TCEs.get(i).cvs.get(j));
+                globalIndex++;
             }
         }
-        this.cv_neighbours();
+        setNeighbours();
     }
 
-    public void calc_conduct_lr() {
+    public void calculateConductivities() {
         for (ControlVolume cv : cvs) {
-            cv.calc_conduct_lr();
+            cv.calculateConductivities();
         }
     }
 
     public void setTemperatures(double[] temps) {
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.cvs.get(i).temperature = temps[i];
-            this.cvs.get(i).temperature_old = temps[i];
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).temperature = temps[i];
+            cvs.get(i).temperatureOld = temps[i];
         }
     }
 
-    public void replace_old_new() {
-        Iterator it = cvs.iterator();
-        while (it.hasNext()) {
-            ControlVolume cv = (ControlVolume) it.next();
-            cv.temperature_old = cv.temperature;
-        }
+    public void replaceTemperatures() {
+        for (ControlVolume cv : cvs)
+            cv.temperatureOld = cv.temperature;
     }
 
-    public double getQ_in() {
-        return this.q_in;
-    }
-
-    public double getQ_out() {
-        return this.q_out;
-    }
-
-    public double getTemp_left() {
-        return this.temp_left;
-    }
-
-    public double getTemp_right() {
-        return this.temp_right;
-    }
-
-    public double getH_left() {
-        return this.h_left;
-    }
-
-    public double getH_right() {
-        return this.h_right;
-    }
 
     public void initializeMatrix() {
-        for (int i = 0; i < this.num_cvs; i++) {
-            this.underdiag[i] = 0.0;
-            this.diag[i] = 0.0;
-            this.upperdiag[i] = 0.0;
-            this.rhs[i] = 0.0;
+        for (int i = 0; i < cvs.size(); i++) {
+            underdiag[i] = 0.0;
+            diag[i] = 0.0;
+            upperdiag[i] = 0.0;
+            rhs[i] = 0.0;
         }
     }
 
@@ -175,26 +129,26 @@ public class TCC {
         EquationSystem.conductionTridag(this, dt);
     }
 
-    public String print_attributes() {
+    public String printAttributes() {
         String txt = "";
-        String bcleft = ModelMethods.return_bc_name(this.left_boundary);
-        String bcright = ModelMethods.return_bc_name(this.right_boundary);
-        txt += "\nBoundary condition on the left: " + bcleft;
-        txt += "\nBoundary condition on the right: " + bcright;
-        if (this.left_boundary == 31 || this.left_boundary == 41)
-            txt += "\nTemperature on the left: " + String.valueOf(this.temp_left) + " K";
-        if (this.left_boundary == 41)
-            txt += "\nConvection coefficient on the left: " + String.valueOf(this.h_left) + " W/(m^2K)";
-        if (this.left_boundary == 21)
-            txt += "\nHeat flow on the left: " + String.valueOf(this.q_in) + " W/(m^2K)";
-        if (this.right_boundary == 32 || this.right_boundary == 42)
-            txt += "\nTemperature on the right: " + String.valueOf(this.temp_right) + " K";
-        if (this.right_boundary == 42)
-            txt += "\nConvection coefficient on the right: " + String.valueOf(this.h_right) + " W/(m^2K)";
-        if (this.right_boundary == 22)
-            txt += "\nHeat flow on the right: " + String.valueOf(this.q_out) + " W/(m^2K)";
+        String bcWest = ModelMethods.return_bc_name(westBoundary);
+        String bcEast = ModelMethods.return_bc_name(eastBoundary);
+        txt += "\nBoundary condition on the left: " + bcWest;
+        txt += "\nBoundary condition on the right: " + bcEast;
+        if (westBoundary == 31 || westBoundary == 41)
+            txt += "\nTemperature on the left: " + String.valueOf(temperatureWest) + " K";
+        if (westBoundary == 41)
+            txt += "\nConvection coefficient on the left: " + String.valueOf(hWest) + " W/(m^2K)";
+        if (westBoundary == 21)
+            txt += "\nHeat flow on the left: " + String.valueOf(qWest) + " W/(m^2K)";
+        if (eastBoundary == 32 || eastBoundary == 42)
+            txt += "\nTemperature on the right: " + String.valueOf(temperatureEast) + " K";
+        if (eastBoundary == 42)
+            txt += "\nConvection coefficient on the right: " + String.valueOf(hEast) + " W/(m^2K)";
+        if (eastBoundary == 22)
+            txt += "\nHeat flow on the right: " + String.valueOf(qEast) + " W/(m^2K)";
         txt += "\n\nThermal control elements:";
-        // for el in this.TCEs:
+        // for el in TCEs:
         // txt += "\n\nTCE: " + String.valueOf(el.name);
         // el.print_attributes(f);
         return txt;
@@ -209,10 +163,10 @@ public class TCC {
         ControlVolume cv2l = cvs.get(cvs.size() - 2);
         double Tw = cv1.temperature + 2 * ((cv1.temperature - cv1r.temperature) / (cv1.dx + cv1r.dx)) * (0.5 * cv1.dx);
         double Te = cv2.temperature - 2 * ((cv2l.temperature - cv2.temperature) / (cv2.dx + cv2l.dx)) * (0.5 * cv2.dx);
-        for (int i = 0; i < this.num_cvs - 1; i++) {
-            ControlVolume cv = this.cvs.get(i);
-            ControlVolume cvR = this.cvs.get(i).right_neighbour;
-            fluxes.add((double) Math.round(2 * cv.k_hr * (cv.temperature - cvR.temperature) / (cv.dx + cvR.dx)));
+        for (int i = 0; i < cvs.size() - 1; i++) {
+            ControlVolume cv = cvs.get(i);
+            ControlVolume cvR = cvs.get(i).eastNeighbour;
+            fluxes.add((double) Math.round(2 * cv.kEastFace * (cv.temperature - cvR.temperature) / (cv.dx + cvR.dx)));
         }
     }
 }
