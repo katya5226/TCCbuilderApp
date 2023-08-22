@@ -40,8 +40,8 @@ class SwitchElm extends ThermalControlElement {
 
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
-        super(xa, ya, xb, yb, f,st);
-        position =  Integer.parseInt(st.nextToken());
+        super(xa, ya, xb, yb, f, st);
+        position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
         posCount = 2;
     }
@@ -59,7 +59,7 @@ class SwitchElm extends ThermalControlElement {
 
     @Override
     String dump() {
-        return super.dump()+ position + " " + momentary;
+        return super.dump() + position + " " + momentary;
     }
 
     Point ps, ps2;
@@ -74,14 +74,19 @@ class SwitchElm extends ThermalControlElement {
 
     final int openhs = 16;
 
+    Rectangle getSwitchRect() {
+        interpPoint(lead1, lead2, ps, 0, openhs);
+        return new Rectangle(lead1).union(new Rectangle(lead2)).union(new Rectangle(ps));
+    }
+
     @Override
     void draw(Graphics g) {
         int hs1 = (position == 1) ? 0 : 2;
         int hs2 = (position == 1) ? openhs : 2;
+        g.setColor(color);
         setBbox(point1, point2, openhs);
 
         draw2Leads(g);
-
 
 
         interpPoint(lead1, lead2, ps, 0, hs1);
@@ -91,14 +96,11 @@ class SwitchElm extends ThermalControlElement {
     }
 
 
-
-
     void toggle() {
         position++;
         if (position >= posCount)
             position = 0;
     }
-
 
 
 }

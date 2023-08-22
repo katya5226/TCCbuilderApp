@@ -175,7 +175,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CircuitElm dragElm, menuElm, stopElm;
 
     private CircuitElm mouseElm = null;
-    boolean didSwitch = false;
     int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
@@ -2887,17 +2886,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     boolean doSwitch(int x, int y) {
-        return false;
-        /*if (mouseElm == null || !(mouseElm instanceof SwitchElm))
+        if (mouseElm == null || !(mouseElm instanceof SwitchElm))
             return false;
         SwitchElm se = (SwitchElm) mouseElm;
         if (!se.getSwitchRect().contains(x, y))
             return false;
         se.toggle();
-        if (se.momentary)
-            heldSwitchElm = se;
 
-        return true;*/
+
+        return true;
     }
 
     int locateElm(CircuitElm elm) {
@@ -3438,7 +3435,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mouseSelect(e);
 
         mouseDragging = true;
-        didSwitch = false;
 
         if (mouseWasOverSplitter) {
             tempMouseMode = MODE_DRAG_SPLITTER;
@@ -3459,11 +3455,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         int gx = inverseTransformX(e.getX());
         int gy = inverseTransformY(e.getY());
-        if (doSwitch(gx, gy)) {
             // do this BEFORE we change the mouse mode to MODE_DRAG_POST! Or else logic
             // inputs
             // will add dots to the whole circuit when we click on them!
-            didSwitch = true;
+        if (doSwitch(gx, gy)) {
             return;
         }
 

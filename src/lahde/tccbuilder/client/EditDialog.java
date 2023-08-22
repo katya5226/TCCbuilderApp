@@ -51,7 +51,7 @@ class EditDialog extends Dialog {
         super(); // Do we need this?
 //      TODO: change vp to flow panel
         rangesHTML = new ListBox[2];
-        setText(Locale.LS("Edit Component"));
+        setText(Locale.LS("Edit "+(ce.getClass().getSimpleName())));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());

@@ -262,7 +262,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-
+        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -271,10 +271,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 index = (int) ei.value;
                 break;
             case 2:
-                Material m = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-                if (!m.isLoaded())
-                    m.readFiles();
-                setMaterial(m);
+                m = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
+
                 break;
             case 3:
                 numCvs = (int) ei.value;
@@ -311,7 +309,12 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             buildThermalControlElement();
             isDisabled = false;
         }
-
+        if (m != null) {
+            if (!m.isLoaded()) {
+                m.readFiles();
+            }
+            setMaterial(m);
+        }
     }
 
 
