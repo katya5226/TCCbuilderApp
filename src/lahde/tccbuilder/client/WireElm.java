@@ -19,6 +19,8 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.core.client.GWT;
+
 class WireElm extends ThermalControlElement {
     public WireElm(int xx, int yy) {
         super(xx, yy);
@@ -26,7 +28,7 @@ class WireElm extends ThermalControlElement {
 
     public WireElm(int xa, int ya, int xb, int yb, int f,
                    StringTokenizer st) {
-        super(xa, ya, xb, yb, f,st);
+        super(xa, ya, xb, yb, f, st);
     }
 
     @Override
@@ -35,6 +37,42 @@ class WireElm extends ThermalControlElement {
         drawThickLine(g, point1, point2);
 
     }
+
+    @Override
+    public EditInfo getEditInfo(int n) {
+        EditInfo out = super.getEditInfo(n);
+        switch (n) {
+            case 8:
+                out = EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
+                break;
+            case 9:
+                out = EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
+                break;
+            case 10:
+                out = EditInfo.createCheckboxWithField("Constant Thermal Conductivity", !(constK == -1), constK);
+                break;
+        }
+        return out;
+    }
+
+    @Override
+    public void setEditValue(int n, EditInfo ei) {
+        super.setEditValue(n, ei);
+        GWT.log(ei.name);
+        GWT.log(ei.value + "");
+        switch (n) {
+            case 8:
+                constRho = ei.value;
+                break;
+            case 9:
+                constCp = ei.value;
+                break;
+            case 10:
+                constK = ei.value;
+                break;
+        }
+    }
+
     @Override
     int getDumpType() {
         return 'w';

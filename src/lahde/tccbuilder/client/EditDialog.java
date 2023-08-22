@@ -20,6 +20,7 @@
 package lahde.tccbuilder.client;
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import lahde.tccbuilder.client.util.Locale;
@@ -51,7 +52,7 @@ class EditDialog extends Dialog {
         super(); // Do we need this?
 //      TODO: change vp to flow panel
         rangesHTML = new ListBox[2];
-        setText(Locale.LS("Edit "+(ce.getClass().getSimpleName())));
+        setText(Locale.LS("Edit " + (ce.getClass().getSimpleName()).replace("Elm","")));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());
@@ -158,10 +159,23 @@ class EditDialog extends Dialog {
 
                 }
             } else if (ei.checkbox != null) {
-                vp.insert(ei.checkbox, idx);
-                ei.checkbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+                Checkbox checkbox = ei.checkbox;
+                TextBox textBox = new TextBox();
+                if (ei.checkboxWithField) {
+                    ei.checkbox = null;
+                    vp.insert(ei.textf = textBox, idx);
+                    boolean isEnabled = checkbox.getState();
+                    textBox.setVisible(isEnabled);
+                    ei.value = isEnabled ? ei.value : -1;
+                    textBox.setText(String.valueOf(ei.value));
+                }
+                vp.insert(checkbox, idx);
+                checkbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                     public void onValueChange(ValueChangeEvent<Boolean> e) {
                         itemStateChanged(e);
+                        textBox.setVisible(checkbox.getState());
+                        textBox.setText(checkbox.getState()?String.valueOf(ei.value):"-1");
+
                     }
                 });
             } else if (ei.button != null) {

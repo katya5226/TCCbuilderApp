@@ -387,6 +387,7 @@ public class Material {
                 }
             });
         } catch (RequestException e) {
+
             GWT.log("failed file reading", e);
         }
 

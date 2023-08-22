@@ -299,6 +299,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         //TODO: Implement this with better functionality
 
+        updateElement(m);
+    }
+
+    private void updateElement(Material m) {
         if (length / numCvs < 1e-6) {
             String input = String.valueOf(numCvs);
             if (!isDisabled)
