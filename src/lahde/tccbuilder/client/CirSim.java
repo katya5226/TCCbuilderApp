@@ -3103,14 +3103,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void doSplit(CircuitElm ce) {
         int x = snapGrid(inverseTransformX(menuX));
         int y = snapGrid(inverseTransformY(menuY));
-        if (ce == null || !(ce instanceof WireElm)) return;
+        if (ce == null || !(ce instanceof ConduitElm)) return;
         if (ce.x == ce.x2) x = ce.x;
         else y = ce.y;
 
         // don't create zero-length wire
         if (x == ce.x && y == ce.y || x == ce.x2 && y == ce.y2) return;
 
-        WireElm newWire = new WireElm(x, y);
+        ConduitElm newWire = new ConduitElm(x, y);
         newWire.drag(ce.x2, ce.y2);
         ce.drag(x, y);
         elmList.addElement(newWire);
@@ -3349,8 +3349,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     boolean canSplit(CircuitElm ce) {
-        if (!(ce instanceof WireElm)) return false;
-        WireElm we = (WireElm) ce;
+        if (!(ce instanceof ConduitElm)) return false;
+        ConduitElm we = (ConduitElm) ce;
         if (we.x == we.x2 || we.y == we.y2) return true;
         return false;
     }
@@ -4098,7 +4098,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case 's':
                 return new SwitchElm(x1, y1, x2, y2, f, st);
             case 'w':
-                return new WireElm(x1, y1, x2, y2, f, st);
+                return new ConduitElm(x1, y1, x2, y2, f, st);
             //2D
             case 521:
                 return new TwoDimComponent(x1, y1, x2, y2, f, st);
@@ -4126,7 +4126,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case "SwitchElm":
                 return new SwitchElm(x1, y1);
             case "WireElm":
-                return new WireElm(x1, y1);
+                return new ConduitElm(x1, y1);
             //2D
             case "2DComponent":
                 return new TwoDimComponent(x1, y1);

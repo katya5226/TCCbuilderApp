@@ -21,13 +21,13 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 
-class WireElm extends ThermalControlElement {
-    public WireElm(int xx, int yy) {
+class ConduitElm extends ThermalControlElement {
+    public ConduitElm(int xx, int yy) {
         super(xx, yy);
     }
 
-    public WireElm(int xa, int ya, int xb, int yb, int f,
-                   StringTokenizer st) {
+    public ConduitElm(int xa, int ya, int xb, int yb, int f,
+                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
 

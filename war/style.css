@@ -110,7 +110,9 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
 .gwt-MenuItemSeparator {
     background-color: var(--deep-blue);
 }
-
+.gwt-CheckBox{
+    margin-bottom: 0.5rem;
+}
 .gwt-ListBox {
     border: none;
     cursor: pointer;
