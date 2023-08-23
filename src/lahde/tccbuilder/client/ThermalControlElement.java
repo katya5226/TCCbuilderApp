@@ -1,7 +1,6 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
-import lahde.tccbuilder.client.util.Locale;
 
 import java.lang.Math;
 import java.util.*;
@@ -71,7 +70,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void initializeThermalControlElement() {
-        color = Color.green;
+        color = Color.gray;
         calculateLength();
         name = "name";//FIXME: MUST NOT CONTAIN SPACES
         numCvs = 3;
@@ -191,11 +190,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double tmpDx = length / numCvs;
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TCE can't have a dx < 1µ, current is " + tmpDx);
-            drawThickerLine(g, point1, point2, Color.red.getHexValue());
+            drawThickestLine(g, point1, point2, Color.red.getHexValue());
             set_dx(tmpDx);
             isDisabled = true;
         } else {
-            drawThickerLine(g, point1, point2, color.getHexValue());
+            drawThickestLine(g, point1, point2, color.getHexValue());
             set_dx(tmpDx);
             isDisabled = false;
         }

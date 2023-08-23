@@ -1302,7 +1302,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), ""));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
         }
 
 
@@ -3455,9 +3455,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         int gx = inverseTransformX(e.getX());
         int gy = inverseTransformY(e.getY());
-            // do this BEFORE we change the mouse mode to MODE_DRAG_POST! Or else logic
-            // inputs
-            // will add dots to the whole circuit when we click on them!
+        // do this BEFORE we change the mouse mode to MODE_DRAG_POST! Or else logic
+        // inputs
+        // will add dots to the whole circuit when we click on them!
         if (doSwitch(gx, gy)) {
             return;
         }
@@ -4089,6 +4089,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new CapacitorElm(x1, y1, x2, y2, f, st);
             case 'd':
                 return new DiodeElm(x1, y1, x2, y2, f, st);
+            case 'h':
+                return new HeatSourceSinkElm(x1, y1, x2, y2, f, st);
             case 'e':
                 return new RegulatorElm(x1, y1, x2, y2, f, st);
             case 'g':
@@ -4117,6 +4119,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new CapacitorElm(x1, y1);
             case "DiodeElm":
                 return new DiodeElm(x1, y1);
+            case "HeatSourceSinkElm":
+                return new HeatSourceSinkElm(x1, y1);
             case "RegulatorElm":
                 return new RegulatorElm(x1, y1);
             case "GroundElm":

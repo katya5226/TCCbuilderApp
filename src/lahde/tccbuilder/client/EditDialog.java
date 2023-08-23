@@ -67,7 +67,7 @@ class EditDialog extends Dialog {
         outer.add(panel2);
         outer.addStyleName("dialogContainerOuter");
         panel1.addStyleName("dialogContainer");
-        panel1.getElement().getStyle().setProperty("flex","1");
+        panel1.getElement().getStyle().setProperty("flex", "1");
 
         panel2.addStyleName("dialogContainer");
 
@@ -129,13 +129,13 @@ class EditDialog extends Dialog {
 
         Label l = null;
         for (i = 0; ; i++) {
-            if (i > wrapNumber) {
-                currentPanel = panel2;
-                panel2.getElement().getStyle().setProperty("flex","1");
-            }
             einfos[i] = elm.getEditInfo(i);
             if (einfos[i] == null)
                 break;
+            if (i > wrapNumber) {
+                currentPanel = panel2;
+                panel2.getElement().getStyle().setProperty("flex", "1");
+            }
             final EditInfo ei = einfos[i];
             idx = currentPanel.getWidgetIndex(hp);
             idx = idx == -1 ? currentPanel.getWidgetCount() : idx;

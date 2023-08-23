@@ -23,7 +23,6 @@ import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.storage.client.Storage;
 import lahde.tccbuilder.client.util.Locale;
 
 // circuit element class
@@ -202,8 +201,8 @@ public abstract class CircuitElm implements Editable {
     void interpPoint2(Point a, Point b, Point c, Point d, double f, double g) {
         // int xpd = b.x-a.x;
         // int ypd = b.y-a.y;
-        int gx = b.y - a.y;
-        int gy = a.x - b.x;
+        double gx = b.y - a.y;
+        double gy = a.x - b.x;
         g /= Math.sqrt(gx * gx + gy * gy);
         c.x = (int) Math.floor(a.x * (1 - f) + b.x * f + g * gx + .48);
         c.y = (int) Math.floor(a.y * (1 - f) + b.y * f + g * gy + .48);
@@ -426,8 +425,17 @@ public abstract class CircuitElm implements Editable {
         g.drawLine(pa.x, pa.y, pb.x, pb.y);
         g.setLineWidth(1.0);
     }
+    static void drawThickerLine(Graphics g, Point pa, Point pb) {
+        g.context.setLineWidth(12);
+        g.context.setLineCap(LineCap.BUTT);
+        g.context.beginPath();
+        g.context.moveTo(pa.x, pa.y);
+        g.context.lineTo(pb.x, pb.y);
+        g.context.stroke();
+        g.context.setLineWidth(1.0);
+    }
 
-    static void drawThickerLine(Graphics g, Point pa, Point pb, String color) {
+    static void drawThickestLine(Graphics g, Point pa, Point pb, String color) {
         g.setLineWidth(25.0);
         g.context.setStrokeStyle(color);
         g.context.setLineCap(LineCap.BUTT);
