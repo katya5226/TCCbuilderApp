@@ -132,7 +132,11 @@ class EditDialog extends Dialog {
             einfos[i] = elm.getEditInfo(i);
             if (einfos[i] == null)
                 break;
-            if (i > wrapNumber) {
+            einfocount = i;
+        }
+        int breakPoint = einfocount > wrapNumber ? einfocount / 2 : einfocount;
+        for (i = 0; i < einfocount; i++) {
+            if (i > breakPoint) {
                 currentPanel = panel2;
                 panel2.getElement().getStyle().setProperty("flex", "1");
             }
@@ -144,8 +148,8 @@ class EditDialog extends Dialog {
                 currentPanel.insert(l = new HTML(name), idx);
             else
                 currentPanel.insert(l = new Label(name), idx);
-            if (i != 0 && i != wrapNumber + 1 && l != null)
-                l.setStyleName("topSpace");
+            l.setStyleName("topSpace");
+
             idx = currentPanel.getWidgetIndex(hp);
             idx = idx == -1 ? currentPanel.getWidgetCount() : idx;
 
@@ -158,10 +162,8 @@ class EditDialog extends Dialog {
                     }
                 });
 
-
                 if (elm instanceof Component || elm instanceof TwoDimComponent) {
-
-
+                    //FIXME: needs a cleaner implementation
                     if (ei.name.equals("Material") || ei.name.equals("Material 1")) {
                         ei.choice.addMouseOverHandler(new MouseOverHandler() {
                             @Override
