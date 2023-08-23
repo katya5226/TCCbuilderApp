@@ -21,6 +21,7 @@ package lahde.tccbuilder.client;
 
 class GroundElm extends ThermalControlElement {
     int symbolType;
+    double temperature;
 
     public GroundElm(int xx, int yy) {
         super(xx, yy);
@@ -94,4 +95,51 @@ class GroundElm extends ThermalControlElement {
     }
 
 
+    @Override
+    public EditInfo getEditInfo(int n) {
+        switch (n) {
+            case 0:
+                return new EditInfo("Name", String.valueOf(name));
+            case 1:
+                return new EditInfo("Index", index);
+            case 2:
+                EditInfo ei2 = new EditInfo("Color", 0);
+                ei2.choice = new Choice();
+                for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
+                    ei2.choice.add(sim.colorChoices.get(ch));
+                }
+
+                ei2.choice.select(Color.colorToIndex(color));
+                return ei2;
+            case 3:
+                return new EditInfo("Temperature", temperature);
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void setEditValue(int n, EditInfo ei) {
+        Material m = null;
+        switch (n) {
+            case 0:
+                name = ei.textf.getText();
+                break;
+            case 1:
+                index = (int) ei.value;
+                break;
+            case 2:
+                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
+                break;
+            case 3:
+                temperature = (int) ei.value;
+                break;
+
+        }
+
+        //TODO: Implement this with better functionality
+
+        updateElement(m);
+    }
 }

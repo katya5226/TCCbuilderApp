@@ -20,7 +20,6 @@
 package lahde.tccbuilder.client;
 
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import lahde.tccbuilder.client.util.Locale;
@@ -43,22 +42,38 @@ class EditDialog extends Dialog {
     EditInfo einfos[];
     int einfocount;
     final int barmax = 1000;
-    VerticalPanel vp;
+    FlowPanel outer;
+    FlowPanel panel1;
+    FlowPanel panel2;
+    //the number of EditInfo items to display before wrapping the Dialog
+    int wrapNumber;
+
     HorizontalPanel hp;
     static NumberFormat noCommaFormat = NumberFormat.getFormat("####.##########");
 
     EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
-//      TODO: change vp to flow panel
         rangesHTML = new ListBox[2];
-        setText(Locale.LS("Edit " + (ce.getClass().getSimpleName()).replace("Elm","")));
+        setText(Locale.LS("Edit " + (ce.getClass().getSimpleName()).replace("Elm", "")));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());
-        vp = new VerticalPanel();
-        setWidget(vp);
+        outer = new FlowPanel();
+
+        panel1 = new FlowPanel();
+        panel2 = new FlowPanel();
+        outer.add(panel1);
+        outer.add(panel2);
+        outer.addStyleName("dialogContainerOuter");
+        panel1.addStyleName("dialogContainer");
+        panel1.getElement().getStyle().setProperty("flex","1");
+
+        panel2.addStyleName("dialogContainer");
+
+        setWidget(outer);
         einfos = new EditInfo[20];
+
 //		noCommaFormat = DecimalFormat.getInstance();
 //		noCommaFormat.setMaximumFractionDigits(10);
 //		noCommaFormat.setGroupingUsed(false);
@@ -66,7 +81,7 @@ class EditDialog extends Dialog {
         hp.setWidth("100%");
         hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         hp.addStyleName("dialogButtonPanel");
-        vp.add(hp);
+        panel1.add(hp);
 
         applyButton = new Button(Locale.LS("Apply"));
         constantParametersButton = new Button(Locale.LS("Set Constant Parameter"));
@@ -74,6 +89,7 @@ class EditDialog extends Dialog {
         constantParametersButton.addStyleName("topSpace");
 
         hp.add(applyButton);
+        wrapNumber = 10;
 
         applyButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -109,25 +125,32 @@ class EditDialog extends Dialog {
     void buildDialog() {
         int i;
         int idx;
+        FlowPanel currentPanel = panel1;
 
         Label l = null;
         for (i = 0; ; i++) {
+            if (i > wrapNumber) {
+                currentPanel = panel2;
+                panel2.getElement().getStyle().setProperty("flex","1");
+            }
             einfos[i] = elm.getEditInfo(i);
             if (einfos[i] == null)
                 break;
             final EditInfo ei = einfos[i];
-            idx = vp.getWidgetIndex(hp);
+            idx = currentPanel.getWidgetIndex(hp);
+            idx = idx == -1 ? currentPanel.getWidgetCount() : idx;
             String name = Locale.LS(ei.name);
             if (ei.name.startsWith("<"))
-                vp.insert(l = new HTML(name), idx);
+                currentPanel.insert(l = new HTML(name), idx);
             else
-                vp.insert(l = new Label(name), idx);
-            if (i != 0 && l != null)
+                currentPanel.insert(l = new Label(name), idx);
+            if (i != 0 && i != wrapNumber + 1 && l != null)
                 l.setStyleName("topSpace");
-            idx = vp.getWidgetIndex(hp);
+            idx = currentPanel.getWidgetIndex(hp);
+            idx = idx == -1 ? currentPanel.getWidgetCount() : idx;
 
             if (ei.choice != null) {
-                vp.insert(ei.choice, idx);
+                currentPanel.insert(ei.choice, idx);
                 ei.choice.addChangeHandler(new ChangeHandler() {
                     public void onChange(ChangeEvent e) {
                         itemStateChanged(e);
@@ -146,7 +169,7 @@ class EditDialog extends Dialog {
                                 cframe.materialHashMap.get(rangesHTML[0].getSelectedItemText()).showTemperatureRanges(0);
                             }
                         });
-                        vp.insert(rangesHTML[0] = ei.choice, vp.getWidgetCount() - 1);
+                        currentPanel.insert(rangesHTML[0] = ei.choice, currentPanel.getWidgetCount() - 1);
                     } else if (ei.name.equals("Material 2")) {
                         ei.choice.addMouseOverHandler(new MouseOverHandler() {
                             @Override
@@ -154,7 +177,7 @@ class EditDialog extends Dialog {
                                 cframe.materialHashMap.get(rangesHTML[1].getSelectedItemText()).showTemperatureRanges(1);
                             }
                         });
-                        vp.insert(rangesHTML[1] = ei.choice, vp.getWidgetCount() - 1);
+                        currentPanel.insert(rangesHTML[1] = ei.choice, currentPanel.getWidgetCount() - 1);
                     }
 
                 }
@@ -163,26 +186,26 @@ class EditDialog extends Dialog {
                 TextBox textBox = new TextBox();
                 if (ei.checkboxWithField) {
                     ei.checkbox = null;
-                    vp.insert(ei.textf = textBox, idx);
+                    currentPanel.insert(ei.textf = textBox, idx);
                     boolean isEnabled = checkbox.getState();
                     textBox.setVisible(isEnabled);
                     ei.value = isEnabled ? ei.value : -1;
                     textBox.setText(String.valueOf(ei.value));
                 }
-                vp.insert(checkbox, idx);
+                currentPanel.insert(checkbox, idx);
                 checkbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                     public void onValueChange(ValueChangeEvent<Boolean> e) {
                         itemStateChanged(e);
                         textBox.setVisible(checkbox.getState());
-                        textBox.setText(checkbox.getState()?String.valueOf(ei.value):"-1");
+                        textBox.setText(checkbox.getState() ? String.valueOf(ei.value) : "-1");
 
                     }
                 });
             } else if (ei.button != null) {
-                vp.insert(ei.button, idx);
+                currentPanel.insert(ei.button, idx);
                 if (ei.loadFile != null) {
                     //Open file dialog
-                    vp.add(ei.loadFile);
+                    currentPanel.add(ei.loadFile);
                     ei.button.addClickHandler(new ClickHandler() {
                         public void onClick(ClickEvent event) {
                             ei.loadFile.open();
@@ -197,12 +220,12 @@ class EditDialog extends Dialog {
                     });
                 }
             } else if (ei.textArea != null) {
-                vp.insert(ei.textArea, idx);
+                currentPanel.insert(ei.textArea, idx);
                 closeOnEnter = false;
             } else if (ei.widget != null) {
-                vp.insert(ei.widget, idx);
+                currentPanel.insert(ei.widget, idx);
             } else {
-                vp.insert(ei.textf = new TextBox(), idx);
+                currentPanel.insert(ei.textf = new TextBox(), idx);
                 if (ei.text != null) {
                     ei.textf.setText(ei.text);
                     ei.textf.setVisibleLength(50);
@@ -215,21 +238,21 @@ class EditDialog extends Dialog {
 
 
         if (elm instanceof Component || elm instanceof TwoDimComponent) {
-            vp.insert(constantParametersButton, vp.getWidgetCount() - 1);
+            currentPanel.insert(constantParametersButton, currentPanel.getWidgetCount() - 1);
 
             double constRho = elm instanceof Component ? ((Component) elm).cvs.get(0).constRho : ((TwoDimComponent) elm).cvs.get(0).constRho;
             double constCp = elm instanceof Component ? ((Component) elm).cvs.get(0).constCp : ((TwoDimComponent) elm).cvs.get(0).constCp;
             double constK = elm instanceof Component ? ((Component) elm).cvs.get(0).constK : ((TwoDimComponent) elm).cvs.get(0).constK;
             if (constRho != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), vp.getWidgetCount() - 1);
+                currentPanel.insert(l = new Label(Locale.LS("Constant Density: ") + constRho), currentPanel.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
             if (constCp != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + constCp), vp.getWidgetCount() - 1);
+                currentPanel.insert(l = new Label(Locale.LS("Constant Specific Heat Capacity: ") + constCp), currentPanel.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
             if (constK != -1) {
-                vp.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + constK), vp.getWidgetCount() - 1);
+                currentPanel.insert(l = new Label(Locale.LS("Constant Thermal Conductivity: ") + constK), currentPanel.getWidgetCount() - 1);
                 l.setStyleName("topSpace");
             }
         }
@@ -387,8 +410,8 @@ class EditDialog extends Dialog {
     }
 
     public void clearDialog() {
-        while (vp.getWidget(0) != hp)
-            vp.remove(0);
+        while (outer.getWidget(0) != hp)
+            outer.remove(0);
     }
 
     public void closeDialog() {

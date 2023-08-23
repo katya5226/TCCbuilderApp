@@ -252,9 +252,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 5:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 6:
-                return new EditInfo("Left contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (mK/W)", westResistance);
             case 7:
-                return new EditInfo("Right contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (mK/W)", eastResistance);
             default:
                 return null;
         }
@@ -302,7 +302,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         updateElement(m);
     }
 
-    private void updateElement(Material m) {
+    void updateElement(Material m) {
         if (length / numCvs < 1e-6) {
             String input = String.valueOf(numCvs);
             if (!isDisabled)

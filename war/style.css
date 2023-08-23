@@ -36,7 +36,7 @@ input {
 }
 
 .topSpace {
-    margin-top: 12px;
+    margin-top: 0.5rem;
 }
 
 .aroundSpace {
@@ -59,26 +59,25 @@ div.gwt-DialogBox {
     border: 0.125rem solid var(--deep-blue);
 }
 
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > * {
+.dialogContainerOuter {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.dialogContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.dialogContainer > * {
     width: 100%;
     font-size: 0.75rem;
-}
+    margin-bottom: 0.25rem;
 
-
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > input[type="text"] {
-    margin-bottom: 0.5rem;
-}
-
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > select {
-    margin-bottom: 0.5rem;
-}
-
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > .gwt-Label {
-    margin-bottom: 0.5rem;
-}
-
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > span {
-    display: inline-block;
 }
 
 .Caption {
@@ -107,12 +106,15 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
     width: 90%;
 }
 
+
 .gwt-MenuItemSeparator {
     background-color: var(--deep-blue);
 }
-.gwt-CheckBox{
+
+.gwt-CheckBox {
     margin-bottom: 0.5rem;
 }
+
 .gwt-ListBox {
     border: none;
     cursor: pointer;

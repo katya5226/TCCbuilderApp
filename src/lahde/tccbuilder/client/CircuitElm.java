@@ -360,7 +360,8 @@ public abstract class CircuitElm implements Editable {
 
     void drawPosts(Graphics g) {
         drawPost(g, point1);
-        drawPost(g, point2);
+        if (getNumHandles() > 1)
+            drawPost(g, point2);
     }
 
     // set/adjust bounding box used for selecting elements. getCircuitBounds() does
