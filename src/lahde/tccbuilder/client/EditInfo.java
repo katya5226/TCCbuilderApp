@@ -19,9 +19,11 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.*;
+import lahde.tccbuilder.client.math3.stat.inference.OneWayAnova;
 import lahde.tccbuilder.client.util.Locale;
 
 class EditInfo {
@@ -50,6 +52,7 @@ class EditInfo {
         ei.checkbox = new Checkbox(name, flag);
         return ei;
     }
+
     static EditInfo createCheckboxWithField(String name, boolean flag, Double value) {
         EditInfo ei = new EditInfo("", 0, -1, -1);
         ei.value = value;
@@ -60,6 +63,12 @@ class EditInfo {
         return ei;
     }
 
+    static EditInfo createChoiceWithHover(String name, Choice choice, MouseOverHandler mouseOverHandler) {
+        EditInfo ei = new EditInfo(name, 0, -1, -1);
+        ei.choice = choice;
+        choice.addMouseOverHandler(mouseOverHandler);
+        return ei;
+    }
 
 
     EditInfo setDimensionless() {

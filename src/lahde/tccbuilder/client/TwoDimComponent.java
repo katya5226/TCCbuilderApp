@@ -1,6 +1,8 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 
 import java.lang.Math;
@@ -378,6 +380,14 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 for (String m : sim.materialNames) {
                     ei.choice.add(m);
                 }
+                ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                    @Override
+                    public void onMouseOver(MouseOverEvent e) {
+                        Material m = sim.materialHashMap.get(ei.choice.getSelectedItemText());
+                        if (m != null)
+                            m.showTemperatureRanges(ei.choice);
+                    }
+                });
                 ei.choice.select(sim.materialNames.indexOf(material.materialName));
                 return ei;
             case 5:
@@ -425,7 +435,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             case 4:
                 material = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
                 if (!material.isLoaded()) material.readFiles();
-
                 break;
             case 5:
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());

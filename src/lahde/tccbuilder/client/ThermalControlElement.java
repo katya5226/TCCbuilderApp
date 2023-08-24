@@ -5,6 +5,8 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 
 public class ThermalControlElement extends CircuitElm implements Comparable<ThermalControlElement> {
@@ -234,8 +236,17 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 for (String m : sim.materialNames) {
                     ei.choice.add(m);
                 }
-                // ei.choice.select(sim.materialNames.indexOf(this.material.materialName));  // TODO
+                ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                    @Override
+                    public void onMouseOver(MouseOverEvent e) {
+                        Material m = sim.materialHashMap.get(ei.choice.getSelectedItemText());
+                        if (m != null)
+                            m.showTemperatureRanges(ei.choice);
+                    }
+                });
                 ei.choice.select(sim.materialNames.indexOf("100001-Inox"));
+
+                // ei.choice.select(sim.materialNames.indexOf(this.material.materialName));  // TODO
                 return ei;
             case 3:
                 return new EditInfo("Number of control volumes", (double) numCvs);
@@ -254,6 +265,12 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 return new EditInfo("West contact resistance (mK/W)", westResistance);
             case 7:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
+            case 8:
+                return EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
+            case 9:
+                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
+            case 10:
+                return EditInfo.createCheckboxWithField("Constant Thermal Conductivity", !(constK == -1), constK);
             default:
                 return null;
         }
@@ -271,7 +288,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 break;
             case 2:
                 m = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
-
                 break;
             case 3:
                 numCvs = (int) ei.value;
@@ -294,6 +310,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 7:
                 eastResistance = ei.value;
                 break;
+            case 8:
+                constRho = ei.value;
+                break;
+            case 9:
+                constCp = ei.value;
+                break;
+            case 10:
+                constK = ei.value;
+                break;
+
         }
 
         //TODO: Implement this with better functionality

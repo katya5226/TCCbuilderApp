@@ -3,6 +3,8 @@ package lahde.tccbuilder.client;
 import java.lang.Math;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 
 public class ZigZagInterface extends TwoDimComponent {
@@ -166,6 +168,14 @@ public class ZigZagInterface extends TwoDimComponent {
                 for (String m : sim.materialNames) {
                     ei.choice.add(m);
                 }
+                ei.choice.addMouseOverHandler(new MouseOverHandler() {
+                    @Override
+                    public void onMouseOver(MouseOverEvent e) {
+                        Material m = sim.materialHashMap.get(ei.choice.getSelectedItemText());
+                        if (m != null)
+                            m.showTemperatureRanges(ei.choice);
+                    }
+                });
                 ei.choice.select(sim.materialNames.indexOf(material.materialName));
                 return ei;
             case 5:
@@ -174,6 +184,14 @@ public class ZigZagInterface extends TwoDimComponent {
                 for (String m : sim.materialNames) {
                     ei1.choice.add(m);
                 }
+                ei1.choice.addMouseOverHandler(new MouseOverHandler() {
+                    @Override
+                    public void onMouseOver(MouseOverEvent e) {
+                        Material m = sim.materialHashMap.get(ei1.choice.getSelectedItemText());
+                        if (m != null)
+                            m.showTemperatureRanges(ei1.choice);
+                    }
+                });
                 ei1.choice.select(sim.materialNames.indexOf(material2.materialName));
                 return ei1;
             case 6:

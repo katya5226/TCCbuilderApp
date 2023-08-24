@@ -81,7 +81,7 @@ class CapacitorElm extends ThermalControlElement {
 
 
     }
-    @Override
+/*    @Override
     public EditInfo getEditInfo(int n) {
         EditInfo out = super.getEditInfo(n);
         switch (n) {
@@ -114,7 +114,7 @@ class CapacitorElm extends ThermalControlElement {
                 constK = ei.value;
                 break;
         }
-    }
+    }*/
 
     @Override
     int getShortcut() {

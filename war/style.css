@@ -113,6 +113,12 @@ div.gwt-DialogBox {
 
 .gwt-CheckBox {
     margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.gwt-CheckBox > label{
+    line-height: 100%;
 }
 
 .gwt-ListBox {

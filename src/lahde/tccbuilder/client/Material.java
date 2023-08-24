@@ -273,15 +273,14 @@ public class Material {
     }
 
 
-    public void showTemperatureRanges(int i) {
+    public void showTemperatureRanges(Choice choice) {
         String message = "Temperature ranges: \n" +
                 "Density: " + (tRhoMin == -1 || tRhoMax == -1 ? "undefined" : (tRhoMin + " - " + tRhoMax + " K")) + "\n"
                 + "Specific Heat Capacity: " + (tCpMin == -1 || tCpMax == -1 ? "undefined" : (tCpMin + " - " + tCpMax + " K")) + "\n"
                 + "Thermal Conductivity: " + (tKMin == -1 || tKMax == -1 ? "undefined" : (tKMin + " - " + tKMax + " K")) + "\n"
                 + "Emissivity: " + (tEmissMin == -1 || tEmissMax == -1 ? "undefined" : (tEmissMin + " - " + tEmissMax + " K")) + "\n";
 
-        if (CirSim.editDialog != null && ((EditDialog) sim.editDialog).rangesHTML != null)
-            ((EditDialog) sim.editDialog).rangesHTML[i].setTitle(message);
+        choice.setTitle(message);
     }
 
     void readInfoFromURL(String url, final Callback callback) {
