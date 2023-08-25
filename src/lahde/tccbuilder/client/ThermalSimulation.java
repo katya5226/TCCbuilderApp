@@ -9,41 +9,41 @@ import java.util.Collections;
 import java.util.Vector;
 
 public class ThermalSimulation {
-    private Vector<ThermalControlElement> simTCEs;
-    private int left_boundary;
-    private int right_boundary;
-    private double h_left;
-    private double h_right;
-    private double temp_left;
-    private double temp_right;
-    private double qIn;
-    private double qOut;
-    private double startTemp;
-    private double ambient_temperature;
-    private ArrayList<Double> times;
-    private ArrayList<Double[]> temperatures;
-    private int multipl;
-    private int tt;
-    private double cpart_t;
-    private double dt;
-    private double total_time;
-    private boolean reach_steady;
-    private boolean cyclic;
-    private double time;
-    private int cycle;
-    private int printing_interval;
-    private Vector<CyclePart> cycleParts;
-    private double cyclePartTime;
+    Vector<ThermalControlElement> simTCEs;
+    BorderCondition left_boundary;
+    BorderCondition right_boundary;
+    double h_left;
+    double h_right;
+    double temp_left;
+    double temp_right;
+    double qIn;
+    double qOut;
+    double startTemp;
+    double ambient_temperature;
+    ArrayList<Double> times;
+    ArrayList<Double[]> temperatures;
+    int multipl;
+    int tt;
+    double cpart_t;
+    double dt;
+    double total_time;
+    boolean reach_steady;
+    boolean cyclic;
+    double time;
+    int cycle;
+    int printing_interval;
+    Vector<CyclePart> cycleParts;
+    double cyclePartTime;
     public CyclePart cyclePart;
-    private int cyclePartIndex;
+    int cyclePartIndex;
     public int numCycleParts;
 
     public int ud;
     Vector<Double> x_prev;
     Vector<Double> x_mod;
     double minTemp, maxTemp;
-    private TCC heatCircuit;
-    private double[] start_temperatures;
+    TCC heatCircuit;
+    double[] start_temperatures;
 
     public enum BorderCondition {
         ADIABATIC,
@@ -54,8 +54,8 @@ public class ThermalSimulation {
 
     public ThermalSimulation() {
         simTCEs = new Vector<ThermalControlElement>();
-        left_boundary = 41;
-        right_boundary = 42;
+        left_boundary = BorderCondition.CONVECTIVE;
+        right_boundary = BorderCondition.CONVECTIVE;
         h_left = 100000.0;
         h_right = 100000.0;
         temp_left = 291.0;
@@ -85,6 +85,7 @@ public class ThermalSimulation {
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
 
+
     }
 
     void setHeatSim() {
@@ -92,8 +93,6 @@ public class ThermalSimulation {
         // diag = new double[heatCircuit.cvs.size()];
         // upperdiag = new double[heatCircuit.cvs.size()];
         // rhs = new double[heatCircuit.cvs.size()];
-        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
-        right_boundary = heatCircuit.eastBoundary;
         start_temperatures = new double[heatCircuit.cvs.size()];
         numCycleParts = this.cycleParts.size();
         if (!cycleParts.isEmpty()) cyclePart = this.cycleParts.get(0);
@@ -170,8 +169,8 @@ public class ThermalSimulation {
         // simTCEs.clear();
         // simTCEs.add(new TCE("TCE1", 0, simComponents));
         heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.westBoundary = left_boundary;
-        heatCircuit.eastBoundary = right_boundary;
+        heatCircuit.westBoundary = 41;
+        heatCircuit.eastBoundary = 42;//TODO: change
         heatCircuit.hWest = h_left;
         heatCircuit.hEast = h_right;
         heatCircuit.temperatureWest = temp_left;
@@ -186,6 +185,15 @@ public class ThermalSimulation {
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
 
+        setTemperatureRange();
+
+        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
+        for (ControlVolume cv : heatCircuit.cvs) {
+            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
+        }
+    }
+
+    void setTemperatureRange() {
         double maxValue = 0;
         for (ThermalControlElement c : simTCEs) {
             if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
@@ -204,11 +212,6 @@ public class ThermalSimulation {
         } else {
             minTemp = startTemp - maxValue;
             maxTemp = startTemp + maxValue;
-        }
-
-        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
-        for (ControlVolume cv : heatCircuit.cvs) {
-            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
         }
     }
 

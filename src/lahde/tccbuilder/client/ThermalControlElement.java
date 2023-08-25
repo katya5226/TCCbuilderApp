@@ -89,7 +89,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double tmpDx = length / numCvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             set_dx(tmpDx);
-            sim.simTCEs.add(this);
+            sim.thermalSimulation.simTCEs.add(this);
             Collections.sort(sim.trackedTemperatures);
             sim.trackedTemperatures.add(this);
         }

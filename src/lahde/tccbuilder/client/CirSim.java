@@ -179,7 +179,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int draggingPost;
     boolean simRunning;
     ArrayList<ThermalControlElement> trackedTemperatures;
-    boolean showResistanceInVoltageSources;
     boolean hideInfoBox;
     static Dialog editDialog, customLogicEditDialog, diodeModelEditDialog;
     static ScrollValuePopup scrollValuePopup;
@@ -231,14 +230,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public HashMap<String, Material> materialHashMap;
     public Vector<String> colorChoices;
     public ThermalSimulation thermalSimulation;
+
     public TCC heatCircuit;
-    // public Vector<Component> simComponents;
     public Vector<ThermalControlElement> simTCEs;
-    // public int num_cvs;
-    // public double[] underdiag;
-    // public double[] diag;
-    // public double[] upperdiag;
-    // public double[] rhs;
     public int left_boundary;
     public int right_boundary;
     public double h_left;
@@ -289,7 +283,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
     TwoDimBC twoDimBC;
-    ThermalSimulation thermalSimulation;
 
     public enum LengthUnit {
         MICROMETER(1e6, "µm"), MILLIMETER(1e3, "mm"), CENTIMETER(1e2, "cm"), METER(1, "m"), KILOMETER(1e-3, "km");
@@ -308,9 +301,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     String printTCEs() {
         String tces = "";
-        for (ThermalControlElement tce : simTCEs) {
-            tces += tce.index + (tce == simTCEs.get(simTCEs.size() - 1) ? "" : ", ");
-        }
+//        for (ThermalControlElement tce : simTCEs) {
+//            tces += tce.index + (tce == simTCEs.get(simTCEs.size() - 1) ? "" : ", ");
+//        }
         return tces;
     }
 
@@ -662,7 +655,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         });
         testButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                setupForTest();
+//                setupForTest();
             }
         });
 
@@ -844,10 +837,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
         setupJSInterface();
-        initHeatSimulation();
+//        initHeatSimulation();
 
 
         thermalSimulation = new ThermalSimulation();
+
         materialNames = new Vector<String>();
         materialHashMap = new HashMap<String, Material>();
         colorChoices = new Vector<String>();
@@ -877,49 +871,49 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     // ***********************************Katni**********************************************
-    void initHeatSimulation() {
-
-        // simComponents = new Vector<Component>();
-        this.simTCEs = new Vector<ThermalControlElement>();
-        // this.num_cvs = 0;// this.circuit.num_cvs;
-        // this.special_boundaries = []
-        this.left_boundary = 41;
-        this.right_boundary = 42;
-        this.h_left = 100000.0;
-        this.h_right = 100000.0;
-        this.temp_left = 291.0;
-        this.temp_right = 290.0;
-        this.qIn = 0.0;
-        this.qOut = 0.0;
-        this.startTemp = 290.0;
-        this.ambient_temperature = 293.0;
-        // this.start_temperatures = new double[this.num_cvs];
-        this.times = new ArrayList<Double>();
-        this.temperatures = new ArrayList<Double[]>();
-        this.multipl = 1000;
-        this.tt = 0;
-        this.cpart_t = 0.0;
-        this.dt = maxTimeStep * 1e3;
-        this.total_time = timeStep;
-        this.reach_steady = false;
-        this.cyclic = false;
-        this.time = 0.0;
-        this.cycle = 0;
-        this.printing_interval = 1;
-        this.cycleParts = new Vector<CyclePart>();
-        this.cyclePartTime = 0.0;
-        this.cyclePartIndex = 0;
-
-        // 2D
-        simTwoDimComponents = new Vector<TwoDimComponent>();
-        HeatSimProps.BC bc = HeatSimProps.BC.CONVECTIVE;  // No way I am passing this to a constructor 4x.
-        twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
-
-        this.ud = 0;
-        x_prev = new Vector<Double>();
-        x_mod = new Vector<Double>();
-
-    }
+//    void initHeatSimulation() {
+//
+//        // simComponents = new Vector<Component>();
+//        this.simTCEs = new Vector<ThermalControlElement>();
+//        // this.num_cvs = 0;// this.circuit.num_cvs;
+//        // this.special_boundaries = []
+//        this.left_boundary = 41;
+//        this.right_boundary = 42;
+//        this.h_left = 100000.0;
+//        this.h_right = 100000.0;
+//        this.temp_left = 291.0;
+//        this.temp_right = 290.0;
+//        this.qIn = 0.0;
+//        this.qOut = 0.0;
+//        this.startTemp = 290.0;
+//        this.ambient_temperature = 293.0;
+//        // this.start_temperatures = new double[this.num_cvs];
+//        this.times = new ArrayList<Double>();
+//        this.temperatures = new ArrayList<Double[]>();
+//        this.multipl = 1000;
+//        this.tt = 0;
+//        this.cpart_t = 0.0;
+//        this.dt = maxTimeStep * 1e3;
+//        this.total_time = timeStep;
+//        this.reach_steady = false;
+//        this.cyclic = false;
+//        this.time = 0.0;
+//        this.cycle = 0;
+//        this.printing_interval = 1;
+//        this.cycleParts = new Vector<CyclePart>();
+//        this.cyclePartTime = 0.0;
+//        this.cyclePartIndex = 0;
+//
+//        // 2D
+//        simTwoDimComponents = new Vector<TwoDimComponent>();
+//        HeatSimProps.BC bc = HeatSimProps.BC.CONVECTIVE;  // No way I am passing this to a constructor 4x.
+//        twoDimBC = new TwoDimBC(new HeatSimProps.BC[]{bc, bc, bc, bc});
+//
+//        this.ud = 0;
+//        x_prev = new Vector<Double>();
+//        x_mod = new Vector<Double>();
+//
+//    }
 
     private void readMaterialFlags(String url) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
@@ -953,51 +947,51 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    void makeTCC() {
-        // simTCEs.clear();
-        // simTCEs.add(new TCE("TCE1", 0, simComponents));
-        heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.westBoundary = left_boundary;
-        heatCircuit.eastBoundary = right_boundary;
-        heatCircuit.hWest = h_left;
-        heatCircuit.hEast = h_right;
-        heatCircuit.temperatureWest = temp_left;
-        heatCircuit.temperatureEast = temp_right;
-        heatCircuit.qWest = qIn;
-        heatCircuit.qEast = qOut;
-
-        heatCircuit.buildTCC();
-        heatCircuit.initializeMatrix();
-        int n = heatCircuit.cvs.size();
-        double[] temps = new double[n];
-        Arrays.fill(temps, startTemp);
-        heatCircuit.setTemperatures(temps);
-
-        double maxValue = 0;
-        for (ThermalControlElement c : simTCEs) {
-            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
-                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
-                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
-                }
-
-                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
-                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
-                }
-            }
-        }
-        if (maxValue == 0) {
-            minTemp = Math.min(startTemp, Math.min(temp_left, temp_right));
-            maxTemp = Math.max(startTemp, Math.max(temp_left, temp_right));
-        } else {
-            minTemp = startTemp - maxValue;
-            maxTemp = startTemp + maxValue;
-        }
-
-        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
-        for (ControlVolume cv : heatCircuit.cvs) {
-            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
-        }
-    }
+//    void makeTCC() {
+//        // simTCEs.clear();
+//        // simTCEs.add(new TCE("TCE1", 0, simComponents));
+//        heatCircuit = new TCC("Heat circuit", simTCEs);
+//        heatCircuit.westBoundary = left_boundary;
+//        heatCircuit.eastBoundary = right_boundary;
+//        heatCircuit.hWest = h_left;
+//        heatCircuit.hEast = h_right;
+//        heatCircuit.temperatureWest = temp_left;
+//        heatCircuit.temperatureEast = temp_right;
+//        heatCircuit.qWest = qIn;
+//        heatCircuit.qEast = qOut;
+//
+//        heatCircuit.buildTCC();
+//        heatCircuit.initializeMatrix();
+//        int n = heatCircuit.cvs.size();
+//        double[] temps = new double[n];
+//        Arrays.fill(temps, startTemp);
+//        heatCircuit.setTemperatures(temps);
+//
+//        double maxValue = 0;
+//        for (ThermalControlElement c : simTCEs) {
+//            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
+//                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
+//                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
+//                }
+//
+//                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
+//                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
+//                }
+//            }
+//        }
+//        if (maxValue == 0) {
+//            minTemp = Math.min(startTemp, Math.min(temp_left, temp_right));
+//            maxTemp = Math.max(startTemp, Math.max(temp_left, temp_right));
+//        } else {
+//            minTemp = startTemp - maxValue;
+//            maxTemp = startTemp + maxValue;
+//        }
+//
+//        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
+//        for (ControlVolume cv : heatCircuit.cvs) {
+//            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
+//        }
+//    }
 
     void makeTwoDimTCE() {
         GWT.log("MAKING TCE");
@@ -1015,84 +1009,84 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         //TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
     }
 
-    void setHeatSim() {
-        // underdiag = new double[heatCircuit.cvs.size()];
-        // diag = new double[heatCircuit.cvs.size()];
-        // upperdiag = new double[heatCircuit.cvs.size()];
-        // rhs = new double[heatCircuit.cvs.size()];
-        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
-        right_boundary = heatCircuit.eastBoundary;
-        start_temperatures = new double[heatCircuit.cvs.size()];
-        numCycleParts = this.cycleParts.size();
-        if (!cycleParts.isEmpty()) cyclePart = this.cycleParts.get(0);
-        cyclePartTime = 0.0;
-        printing_interval = 1;
-        total_time = 1.0;
-        reach_steady = false;
-    }
-
-    void resetHeatSim() {
-        times.clear();
-        temperatures.clear();
-        numCycleParts = 0;
-        cyclic = false;
-        time = 0.0;
-        cycleParts.clear();
-    }
-
-    public void append_new_temps() {
-        Double[] ttemps = new Double[heatCircuit.cvs.size()];
-        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-            ttemps[i] = heatCircuit.cvs.get(i).temperature;
-        }
-        this.temperatures.add(ttemps);
-        this.times.add(this.time);
-    }
-
-    public void heat_transfer_step() {
-        x_mod.clear();
-        x_prev.clear();
-
-        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-            x_prev.add(heatCircuit.cvs.get(i).temperatureOld);
-            x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
-        }
-        //while (true) {
-        for (int k = 0; k < 3; k++) {
-            // heatCircuit.neighbours()
-            heatCircuit.calculateConductivities();
-
-            heatCircuit.makeMatrix(dt);
-            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-                x_mod.set(i, heatCircuit.cvs.get(i).temperature);
-            }
-            // flag = hf.compare(x_mod, x_prev, pa.tolerance)
-            boolean flag = true;
-            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-                x_prev.set(i, x_mod.get(i));
-            }
-            for (int i = 0; i < simTCEs.size(); i++) {
-                if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
-                    simTCEs.get(i).updateModes();
-            }
-            // if (flag) {
-            //     break;
-            // }
-        }
-
-        heatCircuit.calculateConductivities();
-        heatCircuit.makeMatrix(this.dt);
-        ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-        // if len(this.PCMs) > 0:
-        // for i in range(0, len(this.PCMs)):
-        // this.PCMs[i].update_temperatures()
-        // this.PCMs[i].raise_latent_heat(pa.dt)
-        heatCircuit.replaceTemperatures();
-        this.append_new_temps();
-        // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
-        // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
-    }
+//    void setHeatSim() {
+//        // underdiag = new double[heatCircuit.cvs.size()];
+//        // diag = new double[heatCircuit.cvs.size()];
+//        // upperdiag = new double[heatCircuit.cvs.size()];
+//        // rhs = new double[heatCircuit.cvs.size()];
+//        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
+//        right_boundary = heatCircuit.eastBoundary;
+//        start_temperatures = new double[heatCircuit.cvs.size()];
+//        numCycleParts = this.cycleParts.size();
+//        if (!cycleParts.isEmpty()) cyclePart = this.cycleParts.get(0);
+//        cyclePartTime = 0.0;
+//        printing_interval = 1;
+//        total_time = 1.0;
+//        reach_steady = false;
+//    }
+//
+//    void resetHeatSim() {
+//        times.clear();
+//        temperatures.clear();
+//        numCycleParts = 0;
+//        cyclic = false;
+//        time = 0.0;
+//        cycleParts.clear();
+//    }
+//
+//    public void append_new_temps() {
+//        Double[] ttemps = new Double[heatCircuit.cvs.size()];
+//        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+//            ttemps[i] = heatCircuit.cvs.get(i).temperature;
+//        }
+//        this.temperatures.add(ttemps);
+//        this.times.add(this.time);
+//    }
+//
+//    public void heat_transfer_step() {
+//        x_mod.clear();
+//        x_prev.clear();
+//
+//        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+//            x_prev.add(heatCircuit.cvs.get(i).temperatureOld);
+//            x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
+//        }
+//        //while (true) {
+//        for (int k = 0; k < 3; k++) {
+//            // heatCircuit.neighbours()
+//            heatCircuit.calculateConductivities();
+//
+//            heatCircuit.makeMatrix(dt);
+//            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
+//            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+//                x_mod.set(i, heatCircuit.cvs.get(i).temperature);
+//            }
+//            // flag = hf.compare(x_mod, x_prev, pa.tolerance)
+//            boolean flag = true;
+//            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
+//                x_prev.set(i, x_mod.get(i));
+//            }
+//            for (int i = 0; i < simTCEs.size(); i++) {
+//                if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
+//                    simTCEs.get(i).updateModes();
+//            }
+//            // if (flag) {
+//            //     break;
+//            // }
+//        }
+//
+//        heatCircuit.calculateConductivities();
+//        heatCircuit.makeMatrix(this.dt);
+//        ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
+//        // if len(this.PCMs) > 0:
+//        // for i in range(0, len(this.PCMs)):
+//        // this.PCMs[i].update_temperatures()
+//        // this.PCMs[i].raise_latent_heat(pa.dt)
+//        heatCircuit.replaceTemperatures();
+//        this.append_new_temps();
+//        // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
+//        // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
+//    }
 
     // **************************************************************************************
 
@@ -1111,7 +1105,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // set new temperatures
         // replace old with new
         TwoDimTCCmanager.replaceOldNew(twoDimTCE.cvs);
-        this.append_new_temps();
+        //this.append_new_temps();
 
     }
 
@@ -1436,7 +1430,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void setSimRunning(boolean s) {
 
-        if (awaitedResponses.size() == 0) if (s) {
+        if (awaitedResponses.isEmpty()) if (s) {
             if (stopMessage != null) return;
             simRunning = true;
             runStopButton.setHTML(Locale.LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
@@ -1606,7 +1600,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         // draw the temperature display
-        if (!simTCEs.isEmpty()) if (viewTempsInGraph) drawTemperatureGraphs(g);
+        if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
         perfmon.startContext("drawBottomArea()");
@@ -1691,7 +1685,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double maxElementHeight = 30.0;
         int h = (int) (trackedTemperatures.size() * maxElementHeight < 200 ? trackedTemperatures.size() * maxElementHeight : 200);
         h = 250;
-        if (heatCircuit == null) return;
+        if (thermalSimulation.heatCircuit == null) return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
         double elementHeight = h * .9;
@@ -1708,13 +1702,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         ctx.setStrokeStyle(Color.lightGray.getHexValue());
         ctx.setLineWidth(0.5);
 
-        double tempDiff = Math.abs(maxTemp - minTemp);
+        double tempDiff = Math.abs(thermalSimulation.maxTemp - thermalSimulation.minTemp);
 
         int numberOfLines = 10;
         for (int i = 0; i < numberOfLines + 1; i++) {
             ctx.beginPath();
             double y = YOffset + ((elementHeight / numberOfLines) * i);
-            String text = NumberFormat.getFormat("#.00").format((maxTemp - (tempDiff / (numberOfLines)) * i));
+            String text = NumberFormat.getFormat("#.00").format((thermalSimulation.maxTemp - (tempDiff / (numberOfLines)) * i));
 
             ctx.moveTo(XOffSet * .75, y);
             ctx.lineTo(circuitArea.width - XOffSet * .25, YOffset + ((elementHeight / numberOfLines) * i));
@@ -1731,7 +1725,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             ctx.fillText(text, textX, textY);
         }
 
-        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((heatCircuit.cvs.size()) - 1));
+        double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((thermalSimulation.heatCircuit.cvs.size()) - 1));
         double innerX = XOffSet;
         Color prevColor = Color.NONE;
         for (ThermalControlElement tce : trackedTemperatures) {
@@ -1752,12 +1746,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
                     double[] tmp;
                     if (i == 0) {
-                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, minTemp, maxTemp, prevColor.getHexValue());
+                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, thermalSimulation.minTemp, thermalSimulation.maxTemp, prevColor.getHexValue());
                     } else {
-                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, minTemp, maxTemp, tce.color.getHexValue());
+                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, thermalSimulation.minTemp, thermalSimulation.maxTemp, tce.color.getHexValue());
                     }
 
-                    tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, minTemp, maxTemp, tce.color.getHexValue());
+                    tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, thermalSimulation.minTemp, thermalSimulation.maxTemp, tce.color.getHexValue());
 
                     prevX = tmp[0];
                     prevY = tmp[1];
@@ -1931,22 +1925,23 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (iter = 1; ; iter++) {
             // *************************** Katni *******************************
             if (simDimensionality == 1) {
-                if (!this.cyclic) {
-                    heat_transfer_step();
+                if (!thermalSimulation.cyclic) {
+                    thermalSimulation.heat_transfer_step();
                     time += dt;
                 } else {
-                    if (this.cycleParts.isEmpty()) Window.alert("Sim set to cyclic but cycle parts undefined");
+                    if (thermalSimulation.cycleParts.isEmpty())
+                        Window.alert("Sim set to cyclic but cycle parts undefined");
 
-                    this.cyclePart.execute();
+                    thermalSimulation.cyclePart.execute();
 
-                    if (this.cyclePart.duration > 0.0) {
+                    if (thermalSimulation.cyclePart.duration > 0.0) {
                         time += dt;
                     }
-                    this.cyclePartTime += dt;
-                    if (this.cyclePartTime >= this.cyclePart.duration) {
-                        this.cyclePartTime = 0.0;
-                        this.cyclePartIndex = (this.cyclePartIndex + 1) % this.numCycleParts;
-                        this.cyclePart = this.cycleParts.get(this.cyclePartIndex);
+                    thermalSimulation.cyclePartTime += dt;
+                    if (thermalSimulation.cyclePartTime >= thermalSimulation.cyclePart.duration) {
+                        thermalSimulation.cyclePartTime = 0.0;
+                        thermalSimulation.cyclePartIndex = (thermalSimulation.cyclePartIndex + 1) % thermalSimulation.numCycleParts;
+                        thermalSimulation.cyclePart = thermalSimulation.cycleParts.get(thermalSimulation.cyclePartIndex);
                     }
                 }
             }
@@ -1996,8 +1991,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             getElm(i).reset();
         repaint();
         if (simDimensionality == 1) {
-            makeTCC();
-            setHeatSim();
+            thermalSimulation.makeTCC();
+            thermalSimulation.setHeatSim();
         } else if (simDimensionality == 2) {
             makeTwoDimTCE();
             setTwoDimSim();
@@ -2478,112 +2473,112 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     }
 
-    public void setupForTest() {
-        cyclic = true;
-        temp_left = 291;
-        h_left = 100000.0;
-        h_right = 100000.0;
-        temp_right = 290;
-        qIn = 0;
-        qOut = 0;
-        dt = 0.005;
-        startTemp = 290;
-        left_boundary = 41;
-        right_boundary = 42;
-
-
-        CyclePart cyclePartHeatTransfer = new CyclePart(cycleParts.size(), this);
-        cyclePartHeatTransfer.partType = CyclePart.PartType.HEAT_TRANSFER;
-        cyclePartHeatTransfer.duration = 1.0;
-        cycleParts.add(cyclePartHeatTransfer);
-
-        CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
-        cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
-        cyclePartMagneticFieldChange.TCEs.add(simTCEs.get(2));
-        simTCEs.get(2).fieldIndex = 2;
-        cycleParts.add(cyclePartMagneticFieldChange);
-
-        // CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
-        // cyclePartPropertiesChange.partType = CyclePart.PartType.PROPERTIES_CHANGE;
-        // cyclePartPropertiesChange.components.add(simComponents.get(1));
-        // cyclePartPropertiesChange.components.add(simComponents.get(3));
-
-//        tukaj neki smrdi :{ ( ne dela )
-/*        cyclePartPropertiesChange.newProperties.add(new Vector<Double>());
-        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
-        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
-        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
-        */
-//        cycleParts.add(cyclePartPropertiesChange);
-
-        for (CyclePart cp : cycleParts) {
-            CyclicDialog cd = new CyclicDialog(this);
-            cd.printCyclePart(cp, cyclicOperationLabel);
-            cd.closeDialog();
-        }
-    }
-
-    void runTestSuite() {
-        if (testTimer == null) {
-            testCounter = 0;
-            setSimRunning(true);
-            //materials to use
-            for (Material m : materialHashMap.values()) {
-                if (!m.isLoaded()) m.readFiles();
-            }
-            //FIXME: An error can occur if the timer starts before the files have been read!
-            testTimer = new Timer() {
-                public void run() {
-                    switch (testCounter) {
-                        //both sides same
-                        case 0:
-                            temp_left = 290;
-                            temp_right = 290;
-                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
-                            testCounter++;
-                            break;
-
-                        //left side higher
-                        case 1:
-                            temp_left = 291;
-                            temp_right = 290;
-                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
-                            testCounter++;
-                            break;
-
-                        //right side higher
-                        case 2:
-                            temp_left = 290;
-                            temp_right = 295.124;
-                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
-                            testCounter++;
-                            break;
-                        case 3:
-                            temp_left = 350;
-                            temp_right = 290;
-                            loadRandomComponents("100001-Inox", "500001-Si", "100001-Inox");
-                            testCounter++;
-                            break;
-                        case 4:
-                            temp_left = 291;
-                            temp_right = 290;
-                            loadRandomComponents("500001-Si", "100001-Inox", "500001-Si");
-                            testCounter++;
-                            break;
-                        default:
-                            testTimer.cancel();
-                            testTimer = null;
-                            testCounter = 0;
-                            setSimRunning(false);
-                            break;
-                    }
-                }
-
-
-            };
-            testTimer.scheduleRepeating(1000); // 5000 milliseconds = 5 seconds
-        }
-    }
+//    public void setupForTest() {
+//        cyclic = true;
+//        temp_left = 291;
+//        h_left = 100000.0;
+//        h_right = 100000.0;
+//        temp_right = 290;
+//        qIn = 0;
+//        qOut = 0;
+//        dt = 0.005;
+//        startTemp = 290;
+//        left_boundary = 41;
+//        right_boundary = 42;
+//
+//
+//        CyclePart cyclePartHeatTransfer = new CyclePart(cycleParts.size(), this);
+//        cyclePartHeatTransfer.partType = CyclePart.PartType.HEAT_TRANSFER;
+//        cyclePartHeatTransfer.duration = 1.0;
+//        cycleParts.add(cyclePartHeatTransfer);
+//
+//        CyclePart cyclePartMagneticFieldChange = new CyclePart(cycleParts.size(), this);
+//        cyclePartMagneticFieldChange.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
+//        cyclePartMagneticFieldChange.TCEs.add(simTCEs.get(2));
+//        simTCEs.get(2).fieldIndex = 2;
+//        cycleParts.add(cyclePartMagneticFieldChange);
+//
+//        // CyclePart cyclePartPropertiesChange = new CyclePart(cycleParts.size(), this);
+//        // cyclePartPropertiesChange.partType = CyclePart.PartType.PROPERTIES_CHANGE;
+//        // cyclePartPropertiesChange.components.add(simComponents.get(1));
+//        // cyclePartPropertiesChange.components.add(simComponents.get(3));
+//
+////        tukaj neki smrdi :{ ( ne dela )
+///*        cyclePartPropertiesChange.newProperties.add(new Vector<Double>());
+//        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+//        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+//        cyclePartPropertiesChange.newProperties.lastElement().add(-1.0);
+//        */
+////        cycleParts.add(cyclePartPropertiesChange);
+//
+//        for (CyclePart cp : cycleParts) {
+//            CyclicDialog cd = new CyclicDialog(this);
+//            cd.printCyclePart(cp, cyclicOperationLabel);
+//            cd.closeDialog();
+//        }
+//    }
+//
+//    void runTestSuite() {
+//        if (testTimer == null) {
+//            testCounter = 0;
+//            setSimRunning(true);
+//            //materials to use
+//            for (Material m : materialHashMap.values()) {
+//                if (!m.isLoaded()) m.readFiles();
+//            }
+//            //FIXME: An error can occur if the timer starts before the files have been read!
+//            testTimer = new Timer() {
+//                public void run() {
+//                    switch (testCounter) {
+//                        //both sides same
+//                        case 0:
+//                            temp_left = 290;
+//                            temp_right = 290;
+//                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
+//                            testCounter++;
+//                            break;
+//
+//                        //left side higher
+//                        case 1:
+//                            temp_left = 291;
+//                            temp_right = 290;
+//                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
+//                            testCounter++;
+//                            break;
+//
+//                        //right side higher
+//                        case 2:
+//                            temp_left = 290;
+//                            temp_right = 295.124;
+//                            loadRandomComponents("100001-Inox", "100001-Inox", "100001-Inox");
+//                            testCounter++;
+//                            break;
+//                        case 3:
+//                            temp_left = 350;
+//                            temp_right = 290;
+//                            loadRandomComponents("100001-Inox", "500001-Si", "100001-Inox");
+//                            testCounter++;
+//                            break;
+//                        case 4:
+//                            temp_left = 291;
+//                            temp_right = 290;
+//                            loadRandomComponents("500001-Si", "100001-Inox", "500001-Si");
+//                            testCounter++;
+//                            break;
+//                        default:
+//                            testTimer.cancel();
+//                            testTimer = null;
+//                            testCounter = 0;
+//                            setSimRunning(false);
+//                            break;
+//                    }
+//                }
+//
+//
+//            };
+//            testTimer.scheduleRepeating(1000); // 5000 milliseconds = 5 seconds
+//        }
+//    }
 
     void loadRandomComponents(String material0, String material1, String material2) {
         ArrayList<Integer> points = new ArrayList<>();
@@ -3741,7 +3736,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 // Katni *******************************************************************
                 if (ce instanceof ThermalControlElement) {
                     simTCEs.remove((ThermalControlElement) ce);
-                    resetHeatSim();
+                    thermalSimulation.resetHeatSim();
                     trackedTemperatures.remove(ce);
                     Collections.sort(trackedTemperatures);
                 }
