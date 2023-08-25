@@ -33,9 +33,10 @@ class ConduitElm extends ThermalControlElement {
 
     @Override
     void draw(Graphics g) {
-        g.setColor(Color.gray);
+        int hs = 12;
+        setBbox(point1, point2, hs);
+        g.setColor(color);
         drawThickLine(g, point1, point2);
-
     }
 
     @Override
@@ -43,7 +44,7 @@ class ConduitElm extends ThermalControlElement {
         EditInfo out = super.getEditInfo(n);
         switch (n) {
             case 8:
-                out = EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
+                out = EditInfo.createCheckboxWithField("Costant Density", !(constRho == -1), constRho);
                 break;
             case 9:
                 out = EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);

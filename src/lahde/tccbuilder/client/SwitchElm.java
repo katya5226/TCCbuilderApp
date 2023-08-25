@@ -88,11 +88,11 @@ class SwitchElm extends ThermalControlElement {
     void draw(Graphics g) {
         int hs1 = (position == 1) ? 0 : 2;
         int hs2 = (position == 1) ? openhs : 2;
-        g.setColor(color);
         setBbox(point1, point2, openhs);
+        g.setColor(color);
 
-        draw2Leads(g);
-
+        drawThickLine(g, point1, lead1);
+        drawThickLine(g, lead2, point2);
 
         interpPoint(lead1, lead2, ps, 0, hs1);
         interpPoint(lead1, lead2, ps2, 1, hs2);

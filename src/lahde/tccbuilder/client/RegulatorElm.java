@@ -60,13 +60,15 @@ class RegulatorElm extends ThermalControlElement {
     void draw(Graphics g) {
         int i;
         int hs = 6;
+        g.context.setStrokeStyle(color.getHexValue());
         setBbox(point1, point2, hs);
-        draw2Leads(g);
+        drawThickLine(g, point1, lead1);
+        drawThickLine(g, lead2, point2);
 
         double len = distance(lead1, lead2);
-        g.setColor(Color.gray);
         g.context.save();
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
+        g.context.setStrokeStyle(color.getHexValue());
         g.context.setLineWidth(2);
 
         if (dn < 30) hs = 2;

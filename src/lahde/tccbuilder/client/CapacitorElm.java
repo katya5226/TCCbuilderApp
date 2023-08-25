@@ -66,7 +66,7 @@ class CapacitorElm extends ThermalControlElement {
         setBbox(point1, point2, hs);
 
         // draw first lead and plate
-        g.setColor(Color.gray);
+        g.setColor(color);
         drawThickLine(g, point1, lead1);
         drawThickLine(g, plate1[0], plate1[1]);
         drawThickLine(g, point2, lead2);

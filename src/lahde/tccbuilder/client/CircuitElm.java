@@ -354,7 +354,7 @@ public abstract class CircuitElm implements Editable {
 
     void drawPost(Graphics g, Point pt) {
         g.setColor(!needsHighlight() ? Color.white : Color.cyan);
-        g.fillOval(pt.x - 3, pt.y - 3, 7, 7);
+        g.fillOval(pt.x - 3, pt.y - 3, 6, 6);
     }
 
     void drawPosts(Graphics g) {
@@ -425,6 +425,7 @@ public abstract class CircuitElm implements Editable {
         g.drawLine(pa.x, pa.y, pb.x, pb.y);
         g.setLineWidth(1.0);
     }
+
     static void drawThickerLine(Graphics g, Point pa, Point pb) {
         g.context.setLineWidth(12);
         g.context.setLineCap(LineCap.BUTT);

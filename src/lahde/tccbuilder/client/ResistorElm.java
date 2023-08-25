@@ -32,7 +32,7 @@ class ResistorElm extends ThermalControlElement {
 
     public ResistorElm(int xa, int ya, int xb, int yb, int f,
                        StringTokenizer st) {
-        super(xa, ya, xb, yb, f,st);
+        super(xa, ya, xb, yb, f, st);
     }
 
     @Override
@@ -51,7 +51,7 @@ class ResistorElm extends ThermalControlElement {
     @Override
     void setPoints() {
         super.setPoints();
-        calcLeads(64);
+        calcLeads(32);
         ps3 = new Point();
         ps4 = new Point();
     }
@@ -61,10 +61,12 @@ class ResistorElm extends ThermalControlElement {
         int i;
         int hs = 6;
         setBbox(point1, point2, hs);
-        draw2Leads(g);
+        g.setColor(color);
+
+        drawThickLine(g, point1, lead1);
+        drawThickLine(g, lead2, point2);
 
         //   double segf = 1./segments;
-        g.setColor(Color.gray);
         double len = distance(lead1, lead2);
         g.context.save();
         g.context.setLineWidth(3.0);
@@ -85,6 +87,7 @@ class ResistorElm extends ThermalControlElement {
 
         g.context.restore();
     }
+
     @Override
     public EditInfo getEditInfo(int n) {
         EditInfo out = super.getEditInfo(n);
@@ -105,8 +108,6 @@ class ResistorElm extends ThermalControlElement {
     @Override
     public void setEditValue(int n, EditInfo ei) {
         super.setEditValue(n, ei);
-        GWT.log(ei.name);
-        GWT.log(ei.value + "");
         switch (n) {
             case 8:
                 constRho = ei.value;

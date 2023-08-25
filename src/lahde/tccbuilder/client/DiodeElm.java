@@ -64,9 +64,9 @@ class DiodeElm extends ThermalControlElement {
     void draw(Graphics g) {
         setBbox(point1, point2, hs);
 
-        draw2Leads(g);
-
-        g.setColor(Color.gray);
+        g.setColor(color);
+        drawThickLine(g, point1, lead1);
+        drawThickLine(g, lead2, point2);
         // draw arrow thingy
         g.fillPolygon(poly);
 

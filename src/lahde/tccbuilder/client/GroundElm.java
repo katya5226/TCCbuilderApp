@@ -61,7 +61,7 @@ class GroundElm extends ThermalControlElement {
 
     @Override
     void draw(Graphics g) {
-        g.setColor(Color.gray);
+        g.setColor(color);
         drawThickLine(g, point1, point2);
         if (symbolType == 0) {
             int i;
@@ -91,7 +91,8 @@ class GroundElm extends ThermalControlElement {
             drawThickLine(g, ps1, ps2);
         }
         interpPoint(point1, point2, ps2, 1 + 11. / dn);
-        setBbox(point1, ps2, 11);
+        int hs = 12;
+        setBbox(point1, point2, hs);
     }
 
 

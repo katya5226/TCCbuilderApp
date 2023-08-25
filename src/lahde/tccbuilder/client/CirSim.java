@@ -1126,8 +1126,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
 
-        if (selectColor != null) CircuitElm.selectColor = new Color(URL.decodeQueryString(selectColor));
-        else CircuitElm.selectColor = Color.cyan;
+        CircuitElm.selectColor = Color.cyan;
 
 
     }
@@ -1304,6 +1303,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
         }
+        MenuBar sampleElements = new MenuBar(true);
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM1"), "SwitchElm_FM1"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM2"), "SwitchElm_FM2"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM3"), "SwitchElm_FM3"));
+
+
+        mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
 
 
         MenuBar otherMenuBar = new MenuBar(true);
@@ -1369,6 +1377,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mi.setScheduledCommand(new MyCommand("main", t));
         mainMenuItems.add(mi);
         mainMenuItemNames.add(t);
+
         return mi;
     }
 
@@ -1529,23 +1538,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // Draw each element
         perfmon.startContext("elm.draw()");
-        for (int i = 0; i != elmList.size(); i++) {
-            if (powerCheckItem.getState()) g.setColor(Color.gray);
-
-            getElm(i).draw(g);
+        for (CircuitElm elm : elmList) {
+            elm.draw(g);
         }
         perfmon.stopContext();
-
         // Draw posts normally
-        if (mouseMode != CirSim.MODE_DRAG_ROW && mouseMode != CirSim.MODE_DRAG_COLUMN) {
-            for (CircuitElm elm : elmList) {
-                if (elm.needsHighlight()) elm.drawPosts(g);
-            }
-            for (CircuitElm elm : elmList) {
-                if (!elm.needsHighlight()) elm.drawPosts(g);
-            }
 
+        for (CircuitElm elm : elmList) {
+            if (!elm.needsHighlight()) elm.drawPosts(g);
         }
+        for (CircuitElm elm : elmList) {
+            if (elm.needsHighlight()) elm.drawPosts(g);
+        }
+
 
         // for some mouse modes, what matters is not the posts but the endpoints (which
         // are only the same for 2-terminal elements). We draw those now if needed
@@ -1556,7 +1561,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 // ce.drawPost(g, ce.x , ce.y );
                 // ce.drawPost(g, ce.x2, ce.y2);
                 if (ce != mouseElm || tempMouseMode != MODE_DRAG_POST) {
-                    g.setColor(Color.gray);
+                    g.setColor(Color.lightGray);
                     g.fillOval(ce.x - 3, ce.y - 3, 7, 7);
                     g.fillOval(ce.x2 - 3, ce.y2 - 3, 7, 7);
                 } else {
@@ -2744,8 +2749,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     int x2 = Integer.parseInt(st.nextToken());
                     int y2 = Integer.parseInt(st.nextToken());
                     int f = Integer.parseInt(st.nextToken());
-                    CircuitElm newce = createCe(tint, x1, y1, x2, y2, f, st);
 
+                    CircuitElm newce = createCe(tint, x1, y1, x2, y2, f, st);
                     if (newce == null) {
                         GWT.log("unrecognized dump type: " + type);
                         break;
@@ -4083,6 +4088,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public static CircuitElm createCe(int tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
         switch (tint) {
 
+            //TODO: add cases for samples based on their I
+
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
             case 'c':
@@ -4131,6 +4138,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1);
             case "WireElm":
                 return new ConduitElm(x1, y1);
+            //Samples
+            case "DiodeElm_LSCOLCO":
+                return new DiodeElm_LSCOLCO(x1, y1);
+            case "DiodeElm_NiTiGraphite":
+                return new DiodeElm_NiTiGraphite(x1, y1);
+            case "SwitchElm_FM1":
+                return new SwitchElm_FM1(x1, y1);
+            case "SwitchElm_FM2":
+                return new SwitchElm_FM2(x1, y1);
+            case "SwitchElm_FM3":
+                return new SwitchElm_FM3(x1, y1);
+
             //2D
             case "2DComponent":
                 return new TwoDimComponent(x1, y1);
