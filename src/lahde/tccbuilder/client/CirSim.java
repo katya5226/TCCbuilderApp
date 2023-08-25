@@ -208,7 +208,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     LoadFile loadFileInput;
     Frame iFrame;
 
-    Canvas cv;
+    Canvas canvas;
     Context2d cvcontext;
 
     // canvas width/height in px (before device pixel ratio scaling)
@@ -230,6 +230,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public Vector<String> materialNames;
     public HashMap<String, Material> materialHashMap;
     public Vector<String> colorChoices;
+    public ThermalSimulation thermalSimulation;
     public TCC heatCircuit;
     // public Vector<Component> simComponents;
     public Vector<ThermalControlElement> simTCEs;
@@ -272,10 +273,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public int ud;
     Vector<Double> x_prev;
     Vector<Double> x_mod;
+    double minTemp, maxTemp;
+
 
     boolean viewTempsInGraph = true;
     boolean viewTempsOverlay = true;
-    double minTemp, maxTemp;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
     int testCounter = 0;
@@ -287,6 +289,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
     TwoDimBC twoDimBC;
+    ThermalSimulation thermalSimulation;
 
     public enum LengthUnit {
         MICROMETER(1e6, "µm"), MILLIMETER(1e3, "mm"), CENTIMETER(1e2, "cm"), METER(1, "m"), KILOMETER(1e-3, "km");
@@ -318,7 +321,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }-*/;
 
     void checkCanvasSize() {
-        if (cv.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio())) setCanvasSize();
+        if (canvas.getCoordinateSpaceWidth() != (int) (canvasWidth * devicePixelRatio())) setCanvasSize();
     }
 
     public void setCanvasSize() {
@@ -329,14 +332,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         width = width - VERTICALPANELWIDTH;
         width = Math.max(width, 0); // avoid exception when setting negative width
         height = Math.max(height, 0);
-        if (cv != null) {
-            cv.setWidth(width + "PX");
-            cv.setHeight(height + "PX");
+        if (canvas != null) {
+            canvas.setWidth(width + "PX");
+            canvas.setHeight(height + "PX");
             canvasWidth = width;
             canvasHeight = height;
             float scale = devicePixelRatio();
-            cv.setCoordinateSpaceWidth((int) (width * scale));
-            cv.setCoordinateSpaceHeight((int) (height * scale));
+            canvas.setCoordinateSpaceWidth((int) (width * scale));
+            canvas.setCoordinateSpaceHeight((int) (height * scale));
         }
 
         setCircuitArea();
@@ -621,8 +624,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         else layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH + 32);
         RootLayoutPanel.get().add(layoutPanel);
 
-        cv = Canvas.createIfSupported();
-        if (cv == null) {
+        canvas = Canvas.createIfSupported();
+        if (canvas == null) {
             RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
             return;
         }
@@ -633,9 +636,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
 
-        cvcontext = cv.getContext2d();
+        cvcontext = canvas.getContext2d();
         setCanvasSize();
-        layoutPanel.add(cv);
+        layoutPanel.add(canvas);
         verticalPanel.add(buttonPanel);
         //buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
         resetButton = new Button(Locale.LS("Build TCC"));
@@ -671,12 +674,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
 
-        /*
-         * dumpMatrixButton = new Button("Dump Matrix");
-         * dumpMatrixButton.addClickHandler(new ClickHandler() { public void
-         * onClick(ClickEvent event) { dumpMatrix = true; }});
-         * verticalPanel.add(dumpMatrixButton);// IES for debugging
-         */
 
         if (LoadFile.isSupported()) verticalPanel.add(loadFileInput = new LoadFile(this));
 
@@ -820,14 +817,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         enableUndoRedo();
         enablePaste();
         setiFrameHeight();
-        cv.addMouseDownHandler(this);
-        cv.addMouseMoveHandler(this);
-        cv.addMouseOutHandler(this);
-        cv.addMouseUpHandler(this);
-        cv.addClickHandler(this);
-        cv.addDoubleClickHandler(this);
-        doTouchHandlers(this, cv.getCanvasElement());
-        cv.addDomHandler(this, ContextMenuEvent.getType());
+        canvas.addMouseDownHandler(this);
+        canvas.addMouseMoveHandler(this);
+        canvas.addMouseOutHandler(this);
+        canvas.addMouseUpHandler(this);
+        canvas.addClickHandler(this);
+        canvas.addDoubleClickHandler(this);
+        doTouchHandlers(this, canvas.getCanvasElement());
+        canvas.addDomHandler(this, ContextMenuEvent.getType());
 
 
         menuBar.addDomHandler(new ClickHandler() {
@@ -836,7 +833,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }, ClickEvent.getType());
         Event.addNativePreviewHandler(this);
-        cv.addMouseWheelHandler(this);
+        canvas.addMouseWheelHandler(this);
 
         Window.addWindowClosingHandler(new Window.ClosingHandler() {
             public void onWindowClosing(ClosingEvent event) {
@@ -847,19 +844,41 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
         setupJSInterface();
-        // ***************************** Katni **************************************
         initHeatSimulation();
-        // ***************************************************************************
 
+
+        thermalSimulation = new ThermalSimulation();
+        materialNames = new Vector<String>();
+        materialHashMap = new HashMap<String, Material>();
+        colorChoices = new Vector<String>();
         setSimRunning(running);
+        colorChoices.add("white");  // I will fix this later.
+        colorChoices.add("lightGray");
+        colorChoices.add("gray");
+        colorChoices.add("darkGray");
+        colorChoices.add("red");
+        colorChoices.add("pink");
+        colorChoices.add("orange");
+        colorChoices.add("yellow");
+        colorChoices.add("green");
+        colorChoices.add("magenta");
+        colorChoices.add("blue");
+
+
+        String CORSproxy = "https://corsproxy.io/?";
+        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+/*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
+        baseURL = "http://127.0.0.1:8888/";*/
+        //TODO: Add a callback to setSimRunning()
+        readMaterialFlags(baseURL + "materials_flags.csv");
+
+        thermalSimulation = new ThermalSimulation();
 
     }
 
     // ***********************************Katni**********************************************
     void initHeatSimulation() {
-        materialNames = new Vector<String>();
-        materialHashMap = new HashMap<String, Material>();
-        colorChoices = new Vector<String>();
+
         // simComponents = new Vector<Component>();
         this.simTCEs = new Vector<ThermalControlElement>();
         // this.num_cvs = 0;// this.circuit.num_cvs;
@@ -899,25 +918,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         this.ud = 0;
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
-        colorChoices.add("white");  // I will fix this later.
-        colorChoices.add("lightGray");
-        colorChoices.add("gray");
-        colorChoices.add("darkGray");
-        colorChoices.add("red");
-        colorChoices.add("pink");
-        colorChoices.add("orange");
-        colorChoices.add("yellow");
-        colorChoices.add("green");
-        colorChoices.add("magenta");
-        colorChoices.add("blue");
 
-
-        String CORSproxy = "https://corsproxy.io/?";
-        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-/*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        baseURL = "http://127.0.0.1:8888/";*/
-        //TODO: Add a callback to setSimRunning()
-        readMaterialFlags(baseURL + "materials_flags.csv");
     }
 
     private void readMaterialFlags(String url) {
@@ -1487,7 +1488,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         g.setColor(Color.black);
-        cv.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
+        canvas.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
 
 
         // Clear the frame
@@ -1605,8 +1606,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         // draw the temperature display
-
-        if (simTCEs.size() > 0) if (viewTempsInGraph) drawTemperatureGraphs(g);
+        if (!simTCEs.isEmpty()) if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
         perfmon.startContext("drawBottomArea()");
@@ -3422,7 +3422,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // make sure canvas has focus, not stop button or something else, so all
         // shortcuts work
-        cv.setFocus(true);
+        canvas.setFocus(true);
 
         stopElm = null; // if stopped, allow user to select other elements to fix circuit
         menuX = menuClientX = e.getX();
@@ -3665,8 +3665,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void setCursorStyle(String s) {
-        if (lastCursorStyle != null) cv.removeStyleName(lastCursorStyle);
-        cv.addStyleName(s);
+        if (lastCursorStyle != null) canvas.removeStyleName(lastCursorStyle);
+        canvas.addStyleName(s);
         lastCursorStyle = s;
     }
 
