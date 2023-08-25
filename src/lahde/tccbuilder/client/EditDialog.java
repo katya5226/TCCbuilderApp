@@ -55,7 +55,7 @@ class EditDialog extends Dialog {
     EditDialog(Editable ce, CirSim f) {
 //		super(f, "Edit Component", false);
         super(); // Do we need this?
-        setText(Locale.LS("Edit " + (ce.getClass().getSimpleName()).replace("Elm", "")));
+        setText(Locale.LS("Edit " + (ce.getClass().getSimpleName()).replace("Elm", "").replace("_", "")));
         cframe = f;
         elm = ce;
 //		setLayout(new EditDialogLayout());

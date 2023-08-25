@@ -74,9 +74,14 @@ div.gwt-DialogBox {
 }
 
 .dialogContainer > * {
-    width: 100%;
+    width: 25vw;
     font-size: 0.75rem;
     margin-bottom: 0.25rem;
+
+}
+
+
+.helpContainer {
 
 }
 
@@ -117,7 +122,8 @@ div.gwt-DialogBox {
     align-items: center;
     justify-content: flex-start;
 }
-.gwt-CheckBox > label{
+
+.gwt-CheckBox > label {
     line-height: 100%;
 }
 
@@ -249,6 +255,26 @@ div.gwt-DialogBox {
     background-color: var(--red);
 }
 
+.helpButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    height: 1rem;
+    line-height: 100%;
+    width: fit-content;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.helpButton:hover {
+    color: var(--yellow);
+}
 
 .mainVertical {
     box-sizing: border-box;

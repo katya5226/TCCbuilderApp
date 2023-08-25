@@ -19,21 +19,54 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.core.client.GWT;
+
 class DiodeElm extends ThermalControlElement {
 
     double kForward, kBackward;
     double cp;
     double rho;
     double responseTime;
+    Direction direction;
+
+    public enum Direction {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
+
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
+
     }
 
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
 
+    }
+
+    @Override
+    void drag(int xx, int yy) {
+        xx = sim.snapGrid(xx);
+        yy = sim.snapGrid(yy);
+        if (noDiagonal) {
+            if (Math.abs(x - xx) < Math.abs(y - yy)) {
+                xx = x;
+            } else {
+                yy = y;
+            }
+        }
+        x2 = xx;
+        y2 = yy;
+        setPoints();
+
+        if (y == y2)
+            direction = x2 < x ? Direction.LEFT : Direction.RIGHT;
+        else if (x == x2)
+            direction = y2 < y ? Direction.UP : Direction.DOWN;
     }
 
     @Override

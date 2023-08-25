@@ -56,7 +56,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.user.client.Command;
@@ -1306,9 +1305,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         MenuBar sampleElements = new MenuBar(true);
         sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
         sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM1"), "SwitchElm_FM1"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM2"), "SwitchElm_FM2"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add SwitchElm_FM3"), "SwitchElm_FM3"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM2"), "SwitchElm_FM2"));
+        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM3"), "SwitchElm_FM3"));
 
 
         mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
@@ -4140,9 +4139,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new ConduitElm(x1, y1);
             //Samples
             case "DiodeElm_LSCOLCO":
-                return new DiodeElm_LSCOLCO(x1, y1);
+                return new DiodeElm_LSCO_LCO(x1, y1);
             case "DiodeElm_NiTiGraphite":
-                return new DiodeElm_NiTiGraphite(x1, y1);
+                return new DiodeElm_NiTi_Graphite(x1, y1);
             case "SwitchElm_FM1":
                 return new SwitchElm_FM1(x1, y1);
             case "SwitchElm_FM2":

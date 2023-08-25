@@ -20,34 +20,58 @@
 package lahde.tccbuilder.client;
 
 
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 
-class Dialog extends DialogBox  {
+class Dialog extends DialogBox {
+    AlertBox alertBox = null;
 
-	boolean closeOnEnter;
+    boolean closeOnEnter;
 
-	Dialog() {
-		setGlassEnabled(true);
-		setGlassStyleName("glassBackdrop");
-		closeOnEnter = true;
-	}
+    Dialog() {
+        setGlassEnabled(true);
+        setGlassStyleName("glassBackdrop");
+        closeOnEnter = true;
 
-	public void closeDialog()
-	{
-		hide();
-		if (CirSim.dialogShowing == this)
-		    CirSim.dialogShowing = null;
-	}
-	
-	
-	public void enterPressed() {
-	    if (closeOnEnter) {
-		apply();
-		closeDialog();
-	    }
-	}
+    }
 
-	void apply() {
-	}
+    public void closeDialog() {
+        hide();
+        if (CirSim.dialogShowing == this)
+            CirSim.dialogShowing = null;
+    }
+
+
+    public void enterPressed() {
+        if (closeOnEnter) {
+            apply();
+            closeDialog();
+        }
+    }
+
+    void apply() {
+    }
+
+    Button getHelpButton(HTML helpText) {
+        Button helpButton = new Button("?");
+
+        helpButton.addMouseOverHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                alertBox = AlertBox.showHelpTemporaryMessage("Help", helpText);
+            }
+        });
+        helpButton.addMouseOutHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                if (alertBox != null) alertBox.hide();
+            }
+        });
+        helpButton.setStyleName("helpButton");
+        return helpButton;
+    }
 }
 

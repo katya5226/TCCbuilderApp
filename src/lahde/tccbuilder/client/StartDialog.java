@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class StartDialog extends Dialog {
     CirSim sim;
-    VerticalPanel vp;
+    FlowPanel flowPanel;
     HorizontalPanel buttonPanel;
     FlowPanel cyclicContainer;
     Button cancelButton;
@@ -52,8 +52,16 @@ public class StartDialog extends Dialog {
         closeOnEnter = true;
         this.sim = sim;
 
-        vp = new VerticalPanel();
-        setWidget(vp);
+        flowPanel = new FlowPanel();
+        flowPanel.addStyleName("dialogContainer");
+        setWidget(flowPanel);
+        HTML test = new HTML("<ul>\n" +
+                "\t<li>1. step</li>\n" +
+                "\t<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur nisi voluptatem iure commodi pariatur? Corporis laudantium ipsum repudiandae necessitatibus recusandae alias corrupti dolor odio molestias provident, blanditiis numquam repellendus id nam sed, error voluptatum? Repellat, vel. Velit natus, culpa omnis, in maiores minima asperiores eius quae repellendus nihil, aspernatur odio.</p>\n" +
+                "\t<li>1. step</li>\n" +
+                "\t<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur nisi voluptatem iure commodi pariatur? Corporis laudantium ipsum repudiandae necessitatibus recusandae alias corrupti dolor odio molestias provident, blanditiis numquam repellendus id nam sed, error voluptatum? Repellat, vel. Velit natus, culpa omnis, in maiores minima asperiores eius quae repellendus nihil, aspernatur odio.</p>\n" +
+                "</ul>\n");
+        flowPanel.add(getHelpButton(test));
 
         leftBoundary = new ListBox();
         leftBoundary.addItem("Adiabatic");
@@ -118,35 +126,34 @@ public class StartDialog extends Dialog {
         rightToggleables.add(rightConvectionCoefficient);
         rightToggleables.add(rightConvectionCoefficientLabel);
         Label l;
-        vp.add(new Label(Locale.LS("Enter Time Step (ms): ")));
-        vp.add(timeStep);
-        vp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
-        vp.add(startTemperature);
-        vp.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
+        flowPanel.add(new Label(Locale.LS("Enter Time Step (ms): ")));
+        flowPanel.add(timeStep);
+        flowPanel.add(new Label(Locale.LS("Enter starting temperature (K): ")));
+        flowPanel.add(startTemperature);
+        flowPanel.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
         l.addStyleName("dialogHeading");
-        vp.add(leftBoundary);
-        vp.add(inletHeatFluxLabel);
-        vp.add(inletHeatFlux);
-        vp.add(leftTemperatureLabel);
-        vp.add(leftTemperature);
-        vp.add(leftConvectionCoefficientLabel);
-        vp.add(leftConvectionCoefficient);
+        flowPanel.add(leftBoundary);
+        flowPanel.add(inletHeatFluxLabel);
+        flowPanel.add(inletHeatFlux);
+        flowPanel.add(leftTemperatureLabel);
+        flowPanel.add(leftTemperature);
+        flowPanel.add(leftConvectionCoefficientLabel);
+        flowPanel.add(leftConvectionCoefficient);
 
-        vp.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
+        flowPanel.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
         l.addStyleName("dialogHeading");
 
-        vp.add(rightBoundary);
-        vp.add(outletHeatFluxLabel);
-        vp.add(outletHeatFlux);
-        vp.add(rightTemperatureLabel);
-        vp.add(rightTemperature);
-        vp.add(rightConvectionCoefficientLabel);
-        vp.add(rightConvectionCoefficient);
-        vp.add(cyclicContainer);
+        flowPanel.add(rightBoundary);
+        flowPanel.add(outletHeatFluxLabel);
+        flowPanel.add(outletHeatFlux);
+        flowPanel.add(rightTemperatureLabel);
+        flowPanel.add(rightTemperature);
+        flowPanel.add(rightConvectionCoefficientLabel);
+        flowPanel.add(rightConvectionCoefficient);
+        flowPanel.add(cyclicContainer);
 
         //vp.add(includingRadiaton);
 
-        vp.setSpacing(1);
 
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
@@ -344,7 +351,7 @@ public class StartDialog extends Dialog {
         buttonPanel.add(cancelButton);
         buttonPanel.add(applyButton);
         buttonPanel.addStyleName("dialogButtonPanel");
-        vp.add(buttonPanel);
+        flowPanel.add(buttonPanel);
         this.center();
     }
 

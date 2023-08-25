@@ -74,7 +74,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public void initializeThermalControlElement() {
         color = Color.gray;
         calculateLength();
-        name = "name";//FIXME: MUST NOT CONTAIN SPACES
+        name = this.getClass().getSimpleName().replace("Elm", "");
         numCvs = 3;
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.

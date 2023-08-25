@@ -4,36 +4,54 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
 
-public class AlertBox extends Dialog{
-    private AlertBox(String title, Widget message) {
+public class AlertBox extends Dialog {
+
+
+    private AlertBox(String title, HTML message, boolean close) {
         setText(title);
         setModal(true);
         setGlassEnabled(true);
 
-        VerticalPanel vp = new VerticalPanel();
-        vp.setWidth("25vw");
-        setWidget(vp);
+        FlowPanel flowPanel = new FlowPanel();
+        flowPanel.setWidth("25vw");
+        flowPanel.addStyleName("dialogContainer");
+        setWidget(flowPanel);
 
-        vp.add(message);
+        flowPanel.add(message);
+        if (close) {
+            Button closeButton = new Button("Close");
+            closeButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    closeDialog();
+                }
+            });
+            flowPanel.add(closeButton);
+        }
 
-        Button closeButton = new Button("Close");
-        closeButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                closeDialog();
-            }
-        });
 
-        HorizontalPanel buttonPanel = new HorizontalPanel();
-        buttonPanel.addStyleName("buttonPanel");
-        buttonPanel.add(closeButton);
-
-        vp.add(buttonPanel);
     }
 
-    public static void showAlert(String title, Widget message) {
-        AlertBox alertBox = new AlertBox(title, message);
+    public static void showAlert(String title, HTML message) {
+        AlertBox alertBox = new AlertBox(title, message, true);
         alertBox.center();
         alertBox.show();
     }
+
+    public static AlertBox showHelpTemporaryMessage(String title, HTML message) {
+        AlertBox alertBox = showTemporaryMessage(title, message);
+        alertBox.setWidth("25vw");
+        alertBox.setPopupPosition(0,0);
+        return alertBox;
+    }
+
+    public static AlertBox showTemporaryMessage(String title, HTML message) {
+        AlertBox alertBox = new AlertBox(title, message, false);
+        alertBox.setModal(false);
+        alertBox.setGlassEnabled(false);
+        alertBox.center();
+        alertBox.show();
+        return alertBox;
+    }
+
 }
