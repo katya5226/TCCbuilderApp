@@ -13,7 +13,6 @@ public class AlertBox extends Dialog {
         setGlassEnabled(true);
 
         FlowPanel flowPanel = new FlowPanel();
-        flowPanel.setWidth("25vw");
         flowPanel.addStyleName("dialogContainer");
         setWidget(flowPanel);
 
@@ -40,8 +39,9 @@ public class AlertBox extends Dialog {
 
     public static AlertBox showHelpTemporaryMessage(String title, HTML message) {
         AlertBox alertBox = showTemporaryMessage(title, message);
-        alertBox.setWidth("25vw");
-        alertBox.setPopupPosition(0,0);
+        alertBox.setHeight("75%");
+        alertBox.center();
+        alertBox.setPopupPosition(0,alertBox.getPopupTop());
         return alertBox;
     }
 

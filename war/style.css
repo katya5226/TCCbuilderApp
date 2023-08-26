@@ -13,7 +13,7 @@
     --light-gray: #5d6e83;
 }
 
-.example::-webkit-scrollbar {
+*::-webkit-scrollbar {
     display: none;
 }
 
@@ -74,12 +74,16 @@ div.gwt-DialogBox {
 }
 
 .dialogContainer > * {
-    width: 25vw;
+    width: 100%;
     font-size: 0.75rem;
     margin-bottom: 0.25rem;
 
 }
 
+iframe {
+    width: 100%;
+    height: 66vh;
+}
 
 .helpContainer {
 

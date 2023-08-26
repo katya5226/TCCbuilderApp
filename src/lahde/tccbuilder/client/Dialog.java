@@ -67,7 +67,7 @@ class Dialog extends DialogBox {
         helpButton.addMouseOutHandler(new MouseOutHandler() {
             @Override
             public void onMouseOut(MouseOutEvent event) {
-                if (alertBox != null) alertBox.hide();
+//                if (alertBox != null) alertBox.hide();
             }
         });
         helpButton.setStyleName("helpButton");

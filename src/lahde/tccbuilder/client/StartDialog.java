@@ -55,12 +55,16 @@ public class StartDialog extends Dialog {
         flowPanel = new FlowPanel();
         flowPanel.addStyleName("dialogContainer");
         setWidget(flowPanel);
-        HTML test = new HTML("<ul>\n" +
+                /*new HTML("<ul>\n" +
                 "\t<li>1. step</li>\n" +
                 "\t<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur nisi voluptatem iure commodi pariatur? Corporis laudantium ipsum repudiandae necessitatibus recusandae alias corrupti dolor odio molestias provident, blanditiis numquam repellendus id nam sed, error voluptatum? Repellat, vel. Velit natus, culpa omnis, in maiores minima asperiores eius quae repellendus nihil, aspernatur odio.</p>\n" +
                 "\t<li>1. step</li>\n" +
                 "\t<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur nisi voluptatem iure commodi pariatur? Corporis laudantium ipsum repudiandae necessitatibus recusandae alias corrupti dolor odio molestias provident, blanditiis numquam repellendus id nam sed, error voluptatum? Repellat, vel. Velit natus, culpa omnis, in maiores minima asperiores eius quae repellendus nihil, aspernatur odio.</p>\n" +
-                "</ul>\n");
+                "</ul>\n");*/
+        HTML test = new HTML(
+                "<iframe src=\"start-help.html\" frameborder=\"0\">" +
+                "</iframe>");
+
         flowPanel.add(getHelpButton(test));
 
         leftBoundary = new ListBox();
