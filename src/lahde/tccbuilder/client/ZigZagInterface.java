@@ -241,7 +241,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 break;
             case 3:
                 this.m = (int) ei.value;
-                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+                for (TwoDimComponent twoDimComponent : sim.simulation2D.simTwoDimComponents) {
                     if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y ||
                             twoDimComponent.x == point2.x && twoDimComponent.y == point2.y) {
                         if (twoDimComponent.m != m)

@@ -32,7 +32,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         super(xx, yy);
         initializeComponent();
         index = -1;
-        for (TwoDimComponent c : sim.simTwoDimComponents) {
+        for (TwoDimComponent c : sim.simulation2D.simTwoDimComponents) {
             if (c.index > index) index = c.index;
         }
         index++;
@@ -43,7 +43,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         isDisabled = false;
         field = false;
         fieldIndex = 1;
-        for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+        for (TwoDimComponent twoDimComponent : sim.simulation2D.simTwoDimComponents) {
             if (twoDimComponent.x2 == xx && twoDimComponent.y2 == yy) {
                 this.m = twoDimComponent.m;
                 this.n = twoDimComponent.n;
@@ -53,7 +53,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
         double tmpDx = this.length / this.n;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
-            sim.simTwoDimComponents.add(this);
+            sim.simulation2D.simTwoDimComponents.add(this);
         }
     }
 
@@ -90,7 +90,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         field = false;
         fieldIndex = 1;
         buildComponent();
-        sim.simTwoDimComponents.add(this);
+        sim.simulation2D.simTwoDimComponents.add(this);
     }
 
     void initializeComponent() {
@@ -208,7 +208,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         int oldX = xx > x ? sim.snapGrid(xx) : x;
         int oldY = yy > y ? sim.snapGrid(yy) : y;
 
-        if (point1 != null) for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents) {
+        if (point1 != null) for (TwoDimComponent twoDimComponent : sim.simulation2D.simTwoDimComponents) {
             if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y) {
                 oldY = twoDimComponent.point4.y;
             }
@@ -319,8 +319,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             double cvX = x + cv.xIndex * cvWidth;
             double cvY = y + cv.yIndex * cvHeight;
 
-            double temperatureRange = sim.maxTemp - sim.minTemp;
-            double temperatureRatio = (cv.temperature - sim.minTemp) / temperatureRange;
+            double temperatureRange = sim.simulation2D.maxTemp - sim.simulation2D.minTemp;
+            double temperatureRatio = (cv.temperature - sim.simulation2D.minTemp) / temperatureRange;
 
             // Just for testing of color mixing, comment out when not needed
             // temperatureRatio = ((double) i % n) / n;
@@ -426,7 +426,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
                 break;
             case 3:
                 this.m = (int) ei.value;
-                for (TwoDimComponent twoDimComponent : sim.simTwoDimComponents)
+                for (TwoDimComponent twoDimComponent : sim.simulation2D.simTwoDimComponents)
                     if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y || twoDimComponent.x == point2.x && twoDimComponent.y == point2.y)
                         if (twoDimComponent.m != m) Window.alert("Y-discretization numbers should not differ!");
 

@@ -75,7 +75,7 @@ public class StartDialog extends Dialog {
         rightBoundary.addItem("Convective");
 
         cyclic = new Checkbox("Cyclic");
-        cyclic.setState(sim.thermalSimulation.cyclic);
+        cyclic.setState(sim.simulation1D.cyclic);
         cyclicButton = new Button("Add Cyclic Part");
         cyclicButton.setEnabled(cyclic.getState());
         cyclicContainer = new FlowPanel();
@@ -87,30 +87,30 @@ public class StartDialog extends Dialog {
 
 
         timeStep = new DoubleBox();
-        timeStep.setValue(sim.thermalSimulation.dt * 1e3);
+        timeStep.setValue(sim.simulation1D.dt * 1e3);
 
         startTemperature = new DoubleBox();
-        startTemperature.setValue(sim.thermalSimulation.startTemp);
+        startTemperature.setValue(sim.simulation1D.startTemp);
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));
         leftConvectionCoefficientLabel = new Label(Locale.LS("Left Convection Coefficient ( W/(m²K) )"));
         inletHeatFlux = new DoubleBox();
-        inletHeatFlux.setValue(sim.thermalSimulation.qIn);
+        inletHeatFlux.setValue(sim.simulation1D.qWest);
         leftTemperature = new DoubleBox();
-        leftTemperature.setValue(sim.thermalSimulation.temp_left);
+        leftTemperature.setValue(sim.simulation1D.tempWest);
         leftConvectionCoefficient = new DoubleBox();
-        leftConvectionCoefficient.setValue(sim.thermalSimulation.h_left);
+        leftConvectionCoefficient.setValue(sim.simulation1D.hWest);
 
         outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m² )"));
         rightTemperatureLabel = new Label(Locale.LS("Right Temperature ( K )"));
         rightConvectionCoefficientLabel = new Label(Locale.LS("Right Convection Coefficient ( W/(m²K) )"));
         outletHeatFlux = new DoubleBox();
-        inletHeatFlux.setValue(sim.thermalSimulation.qOut);
+        inletHeatFlux.setValue(sim.simulation1D.qEast);
         rightTemperature = new DoubleBox();
-        rightTemperature.setValue(sim.thermalSimulation.temp_right);
+        rightTemperature.setValue(sim.simulation1D.tempEast);
         rightConvectionCoefficient = new DoubleBox();
-        rightConvectionCoefficient.setValue(sim.thermalSimulation.h_right);
+        rightConvectionCoefficient.setValue(sim.simulation1D.hEast);
 
         leftToggleables.add(inletHeatFluxLabel);
         leftToggleables.add(inletHeatFlux);
@@ -183,7 +183,7 @@ public class StartDialog extends Dialog {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.thermalSimulation.temp_left = leftTempValue;
+                    sim.simulation1D.tempWest = leftTempValue;
 
                 }
                 if (rightTemperature.isVisible()) {
@@ -192,7 +192,7 @@ public class StartDialog extends Dialog {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.thermalSimulation.temp_right = rightTempValue;
+                    sim.simulation1D.tempEast = rightTempValue;
 
                 }
                 if (leftConvectionCoefficient.isVisible()) {
@@ -201,7 +201,7 @@ public class StartDialog extends Dialog {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.thermalSimulation.h_left = leftConvCoeffValue;
+                    sim.simulation1D.hWest = leftConvCoeffValue;
 
                 }
                 if (rightConvectionCoefficient.isVisible()) {
@@ -210,7 +210,7 @@ public class StartDialog extends Dialog {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.thermalSimulation.h_right = rightConvCoeffValue;
+                    sim.simulation1D.hEast = rightConvCoeffValue;
 
                 }
                 if (inletHeatFlux.isVisible()) {
@@ -219,7 +219,7 @@ public class StartDialog extends Dialog {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
-                    sim.thermalSimulation.qIn = qInValue;
+                    sim.simulation1D.qWest = qInValue;
                 }
                 if (outletHeatFlux.isVisible()) {
                     double qOutValue = outletHeatFlux.getValue();
@@ -227,12 +227,12 @@ public class StartDialog extends Dialog {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
-                    sim.thermalSimulation.qOut = qOutValue;
+                    sim.simulation1D.qEast = qOutValue;
                 }
-                sim.thermalSimulation.dt = dtValue / 1e3;
-                sim.thermalSimulation.startTemp = startTempValue;
-                sim.thermalSimulation.right_boundary = ThermalSimulation.BorderCondition.values()[rightBoundary.getSelectedIndex()];
-                sim.thermalSimulation.left_boundary = ThermalSimulation.BorderCondition.values()[leftBoundary.getSelectedIndex()];
+                sim.simulation1D.dt = dtValue / 1e3;
+                sim.simulation1D.startTemp = startTempValue;
+                sim.simulation1D.eastBoundary = Simulation1D.BorderCondition.values()[rightBoundary.getSelectedIndex()];
+                sim.simulation1D.westBoundary = Simulation1D.BorderCondition.values()[leftBoundary.getSelectedIndex()];
 
                 // GWT.log("Left Boundary: " + String.valueOf(sim.thermalSimulation.left_boundary));
                 // GWT.log("Left Temperature: " + String.valueOf(sim.thermalSimulation.temp_left));
@@ -242,10 +242,10 @@ public class StartDialog extends Dialog {
                 // GWT.log("Right Temperature: " + String.valueOf(sim.thermalSimulation.temp_right));
                 // GWT.log("Right Convection coeff: " + String.valueOf(sim.thermalSimulation.h_right));
                 // GWT.log("Outlet heat flux: " + String.valueOf(sim.thermalSimulation.qOut));
-                if (sim.thermalSimulation.cyclic) {
+                if (sim.simulation1D.cyclic) {
                     GWT.log("Cycle parts: ");
-                    for (int cpi = 0; cpi < sim.thermalSimulation.cycleParts.size(); cpi++) {
-                        GWT.log(String.valueOf(sim.thermalSimulation.cycleParts.get(cpi).partType));
+                    for (int cpi = 0; cpi < sim.simulation1D.cycleParts.size(); cpi++) {
+                        GWT.log(String.valueOf(sim.simulation1D.cycleParts.get(cpi).partType));
                     }
                     GWT.log("------");
                 }
@@ -266,20 +266,20 @@ public class StartDialog extends Dialog {
                     case "Constant Heat Flux":
                         inletHeatFluxLabel.setVisible(true);
                         inletHeatFlux.setVisible(true);
-                        inletHeatFlux.setValue(sim.thermalSimulation.qIn);
+                        inletHeatFlux.setValue(sim.simulation1D.qWest);
                         break;
                     case "Constant Temperature":
                         leftTemperatureLabel.setVisible(true);
                         leftTemperature.setVisible(true);
-                        leftTemperature.setValue(sim.thermalSimulation.temp_left);
+                        leftTemperature.setValue(sim.simulation1D.tempWest);
                         break;
                     case "Convective":
                         leftTemperatureLabel.setVisible(true);
                         leftTemperature.setVisible(true);
-                        leftTemperature.setValue(sim.thermalSimulation.temp_left);
+                        leftTemperature.setValue(sim.simulation1D.tempWest);
                         leftConvectionCoefficientLabel.setVisible(true);
                         leftConvectionCoefficient.setVisible(true);
-                        leftConvectionCoefficient.setValue(sim.thermalSimulation.h_left);
+                        leftConvectionCoefficient.setValue(sim.simulation1D.hWest);
                         break;
                     default:
 
@@ -302,20 +302,20 @@ public class StartDialog extends Dialog {
                     case "Constant Heat Flux":
                         outletHeatFluxLabel.setVisible(true);
                         outletHeatFlux.setVisible(true);
-                        outletHeatFlux.setValue(sim.thermalSimulation.qOut);
+                        outletHeatFlux.setValue(sim.simulation1D.qEast);
                         break;
                     case "Constant Temperature":
                         rightTemperatureLabel.setVisible(true);
                         rightTemperature.setVisible(true);
-                        rightTemperature.setValue(sim.thermalSimulation.temp_right);
+                        rightTemperature.setValue(sim.simulation1D.tempEast);
                         break;
                     case "Convective":
                         rightTemperatureLabel.setVisible(true);
                         rightTemperature.setVisible(true);
-                        rightTemperature.setValue(sim.thermalSimulation.temp_right);
+                        rightTemperature.setValue(sim.simulation1D.tempEast);
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
-                        rightConvectionCoefficient.setValue(sim.thermalSimulation.h_right);
+                        rightConvectionCoefficient.setValue(sim.simulation1D.hEast);
                         break;
                     default:
                         break;
@@ -326,7 +326,7 @@ public class StartDialog extends Dialog {
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                sim.thermalSimulation.cyclic = cyclic.getState();
+                sim.simulation1D.cyclic = cyclic.getState();
                 cyclicButton.setEnabled(cyclic.getState());
             }
 
@@ -365,7 +365,7 @@ public class StartDialog extends Dialog {
 
     @Override
     void apply() {
-        if (!sim.thermalSimulation.simTCEs.isEmpty()) {
+        if (!sim.simulation1D.simTCEs.isEmpty()) {
             sim.resetAction();
             closeDialog();
         }

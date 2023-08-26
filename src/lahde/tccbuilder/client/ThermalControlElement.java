@@ -36,7 +36,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         initializeThermalControlElement();
 
         index = -1;
-        for (ThermalControlElement c : sim.simTCEs) {
+        for (ThermalControlElement c : sim.simulation1D.simTCEs) {
             if (c.index > index)
                 index = c.index;
         }
@@ -89,7 +89,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double tmpDx = length / numCvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             set_dx(tmpDx);
-            sim.thermalSimulation.simTCEs.add(this);
+            sim.simulation1D.simTCEs.add(this);
             Collections.sort(sim.trackedTemperatures);
             sim.trackedTemperatures.add(this);
         }
