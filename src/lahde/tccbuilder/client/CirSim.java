@@ -733,7 +733,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         setColors(positiveColor, negativeColor, neutralColor, selectColor, currentColor);
 
         simulation1D = new Simulation1D();
-        //thermalSimulation2D = new ThermalSimulation2D();        
+        //simulation2D = new Simulation2D();
 
 
         if (startCircuitText != null) {
@@ -2150,7 +2150,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsText() {
         // String dump = dumpCircuit();
-        String dump = dumpThermalCircuit(); // Katni
+        String dump = dumpSimulation(); // Katni
         dialogShowing = new ExportAsTextDialog(this, dump);
         dialogShowing.show();
     }
@@ -2166,7 +2166,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsLocalFile() {
         // String dump = dumpCircuit();
-        String dump = dumpThermalCircuit(); // Katni
+        String dump = dumpSimulation(); // Katni
         dialogShowing = new ExportAsLocalFileDialog(dump);
         dialogShowing.show();
     }
@@ -2211,71 +2211,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         return dump;
     }
 
-    String dumpThermalCircuit() {
-        String dump = "";
-
-        if (simDimensionality == 1) {
-            dump = "Data directory: " + "/materials\n" + "Time step dt: " + simulation1D.dt + "\n" + "Dimensionality: 1D\n" + "Boundary condition on the left: " + ModelMethods.return_bc_name(simulation1D.heatCircuit.westBoundary) + "\n" + "Boundary condition on the right: " + ModelMethods.return_bc_name(simulation1D.heatCircuit.eastBoundary) + "\n" + "Temperature on the left: " + simulation1D.heatCircuit.temperatureWest + " K\n" + "Convection coefficient on the left: " + simulation1D.heatCircuit.hWest + " W/(m²K)\n" + "Temperature on the right: " + simulation1D.heatCircuit.temperatureEast + " K\n" + "Convection coefficient on the right: " + simulation1D.heatCircuit.hEast + " W/(m²K)\n";
-
-            dump += "\nThermal control elements: \n";
-            for (ThermalControlElement tce : simulation1D.simTCEs) {
-                dump += "TCE name: " + tce.name + "\n" + "TCE index: " + tce.index + "\n" +
-                        //"Material: " + component.material.materialName + "\n" +
-                        "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "Left contact resistance: " + tce.westResistance + " mK/W\n" + "Right contact resistance: " + tce.eastResistance + " mK/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
-            }
-            dump += "\nTemperatures:\n";
-            dump += "Time\t";
-            for (int i = 0; i < simulation1D.heatCircuit.cvs.size(); i++) {
-                dump += "CV# " + i + "\t";
-            }
-            dump += "\n";
-            for (int i = 0; i < simulation1D.temperatures.size(); i++) {
-                Double[] temp = simulation1D.temperatures.get(i);
-                Double time = simulation1D.times.get(i);
-                dump += NumberFormat.getFormat("0.000").format(time) + "\t";
-                for (double CVTemp : temp) {
-                    dump += NumberFormat.getFormat("0.00").format(CVTemp) + "\t";
-                }
-                dump += "\n";
-            }
-            dump += "\nFluxes:\n";
-            simulation1D.heatCircuit.calculateHeatFluxes();
-            for (Double f : simulation1D.heatCircuit.fluxes)
-                dump += f + "\t";
-
-        } else if (simDimensionality == 2) {
-            dump = "Data directory: " + "/materials\n" + "Time step dt: " + simulation2D.dt + "\n" + "Dimensionality: 2D\n" + "Boundary condition on the left: " + simulation2D.westBoundary + "\n" + "Boundary condition on the right: " + simulation2D.eastBoundary + "\n" + "Temperature on the left: " + " K\n" + "Convection coefficient on the left: " + " W/(m²K)\n" + "Temperature on the right: " + " K\n" + "Convection coefficient on the right: " + " W/(m²K)\n";
-
-            dump += "\nThermal control elements: \n";
-            dump += "\nTCE: " + simulation2D.twoDimTCE.name + "\n";
-            dump += "Components: \n";
-            for (TwoDimComponent component : simulation2D.twoDimTCE.components) {
-                dump += "Component name: " + component.name + "\n" + "Component index: " + component.index + "\n" + "Material: " + component.material.materialName + "\n" + "X-discretizaton number:  " + component.n + "\n" + "Y-discretizaton number:  " + component.m + "\n" + "Control volume length: " + formatLength(component.cvs.get(0).dx) + "\n" + "Control volume height: " + formatLength(component.cvs.get(0).dy) + "\n" + "Constant density: " + (component.cvs.get(0).constRho == -1 ? "not set" : component.cvs.get(0).constRho) + "kg/m³\n" + "Constant specific heat: " + (component.cvs.get(0).constCp == -1 ? "not set" : component.cvs.get(0).constCp) + "J/(kgK)\n" + "Constant thermal conductivity: " + (component.cvs.get(0).constK == -1 ? "not set" : component.cvs.get(0).constK) + " W/(mK)\n" + "Left contact resistance: " + component.resistances[0] + "mK/W\n" + "Right contact resistance: " + component.resistances[1] + "mK/W\n" + "Bottom contact resistance: " + component.resistances[2] + "mK/W\n" + "Top contact resistance: " + component.resistances[3] + "mK/W\n" + "Generated heat: " + 0.0 + "W/m²\n\n";
-            }
-            dump += "\nTemperatures at " + NumberFormat.getFormat("0.00").format(simulation2D.time) + "s\n";
-            Vector<TwoDimCV> cvs = simulation2D.twoDimTCE.cvs;
-            for (int i = 0; i < cvs.size(); i++) {
-                TwoDimCV cv = cvs.get(i);
-                if (i % simulation2D.twoDimTCE.n == 0) dump += "\n";
-                dump += NumberFormat.getFormat("0.00").format(cv.temperature) + "\t";
-            }
-            dump += "\nfw";
-            for (int i = 0; i < simulation2D.twoDimTCE.n - 1; i++) {
-                double flow = 0.0;
-                for (int j = 0; j < simulation2D.twoDimTCE.m; j++) {
-                    TwoDimCV cv = cvs.get(j * simulation2D.twoDimTCE.n + i);
-                    TwoDimCV cve = cvs.get(j * simulation2D.twoDimTCE.n + i + 1);
-                    flow += (cv.kd[1] * (cv.temperature - cve.temperature) / cv.dx) / simulation2D.twoDimTCE.m;
-                }
-                dump += "\nflow(" + i + ")=" + NumberFormat.getFormat("0.0000").format(flow);
-
-            }
-            dump += "\nfe\n";
-        }
-
+    String dumpSimulation() {
+        String dump;
+        if (simDimensionality == 1)
+            dump = simulation1D.dump();
+        else
+            dump = simulation2D.dump();
         return dump;
     }
-    // *************************************************************************************************
 
     void getSetupList(final boolean openDefault) {
 

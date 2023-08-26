@@ -31,4 +31,5 @@ public abstract class Simulation {
     abstract void heatTransferStep();
     abstract  void resetHeatSim();
     abstract  void setTemperatureRange();
+    abstract String dump();
 }
