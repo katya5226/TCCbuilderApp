@@ -192,11 +192,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double tmpDx = length / numCvs;
         if (tmpDx < 1e-6 && tmpDx != 0) {
             //Window.alert("TCE can't have a dx < 1µ, current is " + tmpDx);
-            drawThickestLine(g, point1, point2, Color.red.getHexValue());
+            drawLine(g, point1, point2, lineThickness, Color.red);
             set_dx(tmpDx);
             isDisabled = true;
         } else {
-            drawThickestLine(g, point1, point2, color.getHexValue());
+            drawLine(g, point1, point2, lineThickness, color);
             set_dx(tmpDx);
             isDisabled = false;
         }
@@ -216,7 +216,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     void getInfo(String[] arr) {
         arr[0] = name;
         arr[1] = "TCE index = " + index;
-        arr[2] = "Material = "; // + this.material.materialName;  // To do: list materials of CVs
+        arr[2] = "Material = "; // + this.material.materialName;  // TODO: list materials of CVs
         arr[3] = "Length = " + CirSim.formatLength(length);
         arr[4] = "#CVs = " + numCvs;
         arr[5] = "CV dx = " + CirSim.formatLength(cvs.get(0).dx);

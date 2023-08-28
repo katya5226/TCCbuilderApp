@@ -1831,8 +1831,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int timeStepCountAtFrameStart = timeStepCount;
 
         //stampCircuit();
-        int iter;
-        for (iter = 1; ; iter++) {
+        int iter = 1;
+        while (true) {
             // *************************** Katni *******************************
             if (simDimensionality == 1) {
                 if (!simulation1D.cyclic) {
@@ -1880,7 +1880,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         lastIterTime = lit;
         //calcWireCurrents();
 
-
+        iter++;
     }
 
 

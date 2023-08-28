@@ -20,6 +20,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 
 class HeatSourceSinkElm extends ThermalControlElement {
     double temperature;
@@ -31,6 +32,15 @@ class HeatSourceSinkElm extends ThermalControlElement {
     public HeatSourceSinkElm(int xa, int ya, int xb, int yb, int f,
                              StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+
+    }
+
+    @Override
+    void setPoints() {
+        super.setPoints();
+        Point tmp = point1;
+        point1 = point2;
+        point2 = tmp;
     }
 
 
@@ -51,36 +61,30 @@ class HeatSourceSinkElm extends ThermalControlElement {
 
     @Override
     void draw(Graphics g) {
+        setBbox(point1, point2, 12);
         g.setColor(color);
 
-        drawThickLine(g, point1, point2);
+        Point lead = new Point(point2.x, point2.y);
+/*        lead.x += (int) (lineThickness * 3);
+        interpPoint(point1, point2, lead, 0, lineThickness * 3);*/
+        //interpPoint(point1, point2, lead, 3 * lineThickness / dn, lineThickness * 3);
 
-        int height = 20;
-        ps1 = new Point();
-        ps1.x = point2.x + 10;
-        ps1.y = point2.y - (height / 2);
-        ps2 = new Point();
-        ps2.x = point2.x + 10;
-        ps2.y = point2.y + (height / 2);
-        g.context.setLineCap(Context2d.LineCap.BUTT);
-        g.context.setLineWidth(6);
+        interpPoint(point1, point2, lead, 1 -(3 * lineThickness / dn), 0);
 
-        g.context.beginPath();
-        g.context.moveTo(ps1.x, ps1.y);
-        g.context.lineTo(ps2.x, ps2.y);
-        g.context.stroke();
+        drawLine(g, lead, point1, lineThickness, color);
 
-        ps1.x = point2.x;
-        ps2.x = point2.x;
+        //normal line
+        interpPoint(lead, point2, ps2, 0, lineThickness * 3);
+        drawLine(g, lead, ps2, lineThickness, color);
+        interpPoint(lead, point2, ps2, 0, -lineThickness * 3);
+        drawLine(g, lead, ps2, lineThickness, color);
 
-        g.context.setLineWidth(3);
-        g.context.beginPath();
-        g.context.moveTo(ps1.x, ps1.y);
-        g.context.lineTo(ps2.x, ps2.y);
-        g.context.stroke();
+        //thick line
+        interpPoint(point1, point2, ps2, 1, lineThickness * 3);
+        drawLine(g, point2, ps2, lineThickness * 2, color);
+        interpPoint(point1, point2, ps2, 1, -lineThickness * 3);
+        drawLine(g, point2, ps2, lineThickness * 2, color);
 
-        interpPoint(point1, point2, ps2, 1 + 11. / dn);
-        setBbox(point1, ps2, 11);
     }
 
 

@@ -19,6 +19,8 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.canvas.dom.client.Context2d;
+
 class RegulatorElm extends ThermalControlElement {
 
     double k1, k2;
@@ -51,56 +53,63 @@ class RegulatorElm extends ThermalControlElement {
     @Override
     void setPoints() {
         super.setPoints();
-        calcLeads(32);
+        calcLeads(128);
         ps3 = new Point();
         ps4 = new Point();
     }
 
     @Override
     void draw(Graphics g) {
-        int i;
-        int hs = 6;
+        int hs = (int) lineThickness * 2;
         g.context.setStrokeStyle(color.getHexValue());
         setBbox(point1, point2, hs);
-        drawThickLine(g, point1, lead1);
-        drawThickLine(g, lead2, point2);
+        drawLine(g, point1, lead1, lineThickness, color);
+        drawLine(g, lead2, point2, lineThickness, color);
 
         double len = distance(lead1, lead2);
         g.context.save();
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
         g.context.setStrokeStyle(color.getHexValue());
-        g.context.setLineWidth(2);
+        g.context.setLineWidth(lineThickness);
 
         if (dn < 30) hs = 2;
 
+        g.context.setLineCap(Context2d.LineCap.ROUND);
         g.context.beginPath();
         g.context.moveTo(0, 0);
-        for (i = 0; i < 4; i++) {
-            g.context.lineTo((1 + 4 * i) * len / 16, hs);
-            g.context.lineTo((3 + 4 * i) * len / 16, -hs);
+        for (int i = 0; i < 4; i++) {
+            g.context.lineTo(((1 + (4 * i)) * len) / 16, hs);
+            g.context.lineTo(((3 + (4 * i)) * len) / 16, -hs);
         }
         g.context.lineTo(len, 0);
         g.context.stroke();
-        g.context.beginPath();
+        g.context.setLineCap(Context2d.LineCap.BUTT);
 
         double arrowStartX = ((5) * len / 16);
         double arrowEndX = ((8) * len / 16) * 1.375;
         double arrowStartY = hs * 3;
         double arrowEndY = -hs * 3;
 
-        g.context.beginPath();
-        g.context.moveTo(arrowStartX, arrowStartY);
-        g.context.lineTo(arrowEndX, arrowEndY);
-        g.context.stroke();
 
-        double arrowAngle = Math.atan2(arrowEndY - arrowStartY, arrowEndX - arrowStartX);
-        double triangleSize = 4;
+        drawLine(g, arrowStartX, arrowStartY, arrowEndX, arrowEndY, lineThickness);
+        double lineAngle = Math.atan2(arrowEndY - arrowStartY, arrowEndX - arrowStartX);
+        double arrowAngle = Math.PI / 6;
+        double triangleSize = lineThickness * 1.5;
 
         g.context.beginPath();
-        g.context.moveTo(arrowEndX - triangleSize * Math.cos(arrowAngle - Math.PI / 6), arrowEndY - triangleSize * Math.sin(arrowAngle - Math.PI / 6));
+        g.context.setLineWidth(lineThickness);
+        g.context.setFillStyle(color.getHexValue());
+        double x1 = arrowEndX - triangleSize * Math.cos(lineAngle - arrowAngle);
+        double y1 = arrowEndY - triangleSize * Math.sin(lineAngle - arrowAngle);
+        double x2 = arrowEndX - triangleSize * Math.cos(lineAngle + arrowAngle);
+        double y2 = arrowEndY - triangleSize * Math.sin(lineAngle + arrowAngle);
+        g.context.moveTo(x1, y1);
         g.context.lineTo(arrowEndX, arrowEndY);
-        g.context.lineTo(arrowEndX - triangleSize * Math.cos(arrowAngle + Math.PI / 6), arrowEndY - triangleSize * Math.sin(arrowAngle + Math.PI / 6));
+        g.context.lineTo(x2, y2);
+        g.context.lineTo(x1, y1);
+        g.context.closePath();
         g.context.stroke();
+        g.context.fill();
         g.context.restore();
 
 

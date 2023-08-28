@@ -61,34 +61,33 @@ class GroundElm extends ThermalControlElement {
 
     @Override
     void draw(Graphics g) {
-        g.setColor(color);
-        drawThickLine(g, point1, point2);
+        drawLine(g, point1, point2, lineThickness, color);
         if (symbolType == 0) {
             int i;
             for (i = 0; i != 3; i++) {
-                int a = 10 - i * 4;
-                int b = i * 5; // -10;
+                int a = (int) ((lineThickness * 4) - (i * lineThickness ));
+                int b = (int) (i * lineThickness * 2); // -10;
                 interpPoint2(point1, point2, ps1, ps2, 1 + b / dn, a);
-                drawThickLine(g, ps1, ps2);
+                drawLine(g, ps1, ps2, lineThickness, color);
             }
         } else if (symbolType == 1) {
             interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawThickLine(g, ps1, ps2);
+            drawLine(g, ps1, ps2, lineThickness, color);
             int i;
             for (i = 0; i <= 2; i++) {
                 Point p = interpPoint(ps1, ps2, i / 2.);
-                drawThickLine(g, p.x, p.y, (int) (p.x - 5 * dpx1 + 8 * dx / dn), (int) (p.y + 8 * dy / dn - 5 * dpy1));
+                drawLine(g, p.x, p.y, (int) (p.x - 5 * dpx1 + 8 * dx / dn), (int) (p.y + 8 * dy / dn - 5 * dpy1), lineThickness, color);
             }
         } else if (symbolType == 2) {
             interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawThickLine(g, ps1, ps2);
+            drawLine(g, ps1, ps2, lineThickness, color);
             int ps3x = (int) (point2.x + 10 * dx / dn);
             int ps3y = (int) (point2.y + 10 * dy / dn);
-            drawThickLine(g, ps1.x, ps1.y, ps3x, ps3y);
-            drawThickLine(g, ps2.x, ps2.y, ps3x, ps3y);
+            drawLine(g, ps2.x, ps2.y, ps3x, ps3y, lineThickness, color);
+            drawLine(g, ps1.x, ps1.y, ps3x, ps3y, lineThickness, color);
         } else {
             interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawThickLine(g, ps1, ps2);
+            drawLine(g, ps1, ps2, lineThickness, color);
         }
         interpPoint(point1, point2, ps2, 1 + 11. / dn);
         int hs = 12;

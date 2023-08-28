@@ -36,7 +36,7 @@ class ConduitElm extends ThermalControlElement {
         int hs = 12;
         setBbox(point1, point2, hs);
         g.setColor(color);
-        drawThickLine(g, point1, point2);
+        drawLine(g, point1, point2,lineThickness,color);
     }
 
     @Override

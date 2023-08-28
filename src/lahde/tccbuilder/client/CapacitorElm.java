@@ -49,15 +49,15 @@ class CapacitorElm extends ThermalControlElement {
     @Override
     void setPoints() {
         super.setPoints();
-        double f = (dn / 2 - 4) / dn;
+        double f = (dn / 2 - lineThickness) / dn;
         // calc leads
         lead1 = interpPoint(point1, point2, f);
         lead2 = interpPoint(point1, point2, 1 - f);
         // calc plates
         plate1 = newPointArray(2);
         plate2 = newPointArray(2);
-        interpPoint2(point1, point2, plate1[0], plate1[1], f, 12);
-        interpPoint2(point1, point2, plate2[0], plate2[1], 1 - f, 12);
+        interpPoint2(point1, point2, plate1[0], plate1[1], f, lineThickness*3);
+        interpPoint2(point1, point2, plate2[0], plate2[1], 1 - f, lineThickness*3);
     }
 
     @Override
@@ -67,16 +67,16 @@ class CapacitorElm extends ThermalControlElement {
 
         // draw first lead and plate
         g.setColor(color);
-        drawThickLine(g, point1, lead1);
-        drawThickLine(g, plate1[0], plate1[1]);
-        drawThickLine(g, point2, lead2);
+        drawLine(g, point1, lead1, lineThickness, color);
+        drawLine(g, plate1[0], plate1[1], lineThickness, color);
+        drawLine(g, point2, lead2, lineThickness, color);
 
         if (platePoints == null)
-            drawThickLine(g, plate2[0], plate2[1]);
+            drawLine(g, plate2[0], plate2[1], lineThickness, color);
         else {
             int i;
             for (i = 0; i != platePoints.length - 1; i++)
-                drawThickLine(g, platePoints[i], platePoints[i + 1]);
+                drawLine(g, platePoints[i], platePoints[i + 1], lineThickness, color);
         }
 
 

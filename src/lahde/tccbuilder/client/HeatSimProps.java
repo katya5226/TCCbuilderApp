@@ -1,5 +1,5 @@
 package lahde.tccbuilder.client;
-
+@Deprecated
 public class HeatSimProps {
 
     public enum Property {  // TODO: implement in code

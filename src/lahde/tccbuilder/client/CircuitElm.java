@@ -36,6 +36,8 @@ public abstract class CircuitElm implements Editable {
     static NumberFormat showFormat;
     static CircuitElm mouseElmRef = null;
 
+    double lineThickness = 6;
+    double postSize = 5;
 
     // initial point where user created element. For simple two-terminal elements,
     // this is the first node/post.
@@ -91,6 +93,7 @@ public abstract class CircuitElm implements Editable {
         x = x2 = xx;
         y = y2 = yy;
         flags = 0;
+
         initBoundingBox();
     }
 
@@ -101,6 +104,7 @@ public abstract class CircuitElm implements Editable {
         x2 = xb;
         y2 = yb;
         flags = f;
+
         initBoundingBox();
     }
 
@@ -124,8 +128,7 @@ public abstract class CircuitElm implements Editable {
 
 
     void delete() {
-        if (mouseElmRef == this)
-            mouseElmRef = null;
+        if (mouseElmRef == this) mouseElmRef = null;
         sim.deleteSliders(this);
     }
 
@@ -210,16 +213,9 @@ public abstract class CircuitElm implements Editable {
         d.y = (int) Math.floor(a.y * (1 - f) + b.y * f - g * gy + .48);
     }
 
-    void draw2Leads(Graphics g) {
-        g.setColor(Color.gray);
-        drawThickLine(g, point1, lead1);
-        drawThickLine(g, lead2, point2);
-    }
-
     Point[] newPointArray(int n) {
         Point a[] = new Point[n];
-        while (n > 0)
-            a[--n] = new Point();
+        while (n > 0) a[--n] = new Point();
         return a;
     }
 
@@ -272,10 +268,8 @@ public abstract class CircuitElm implements Editable {
         int i;
         for (i = 0; i != sim.elmList.size(); i++) {
             CircuitElm ce = sim.getElm(i);
-            if (ce.x == nx && ce.y == ny && ce.x2 == nx2 && ce.y2 == ny2)
-                return false;
-            if (ce.x == nx2 && ce.y == ny2 && ce.x2 == nx && ce.y2 == ny)
-                return false;
+            if (ce.x == nx && ce.y == ny && ce.x2 == nx2 && ce.y2 == ny2) return false;
+            if (ce.x == nx2 && ce.y == ny2 && ce.x2 == nx && ce.y2 == ny) return false;
         }
         return true;
     }
@@ -289,10 +283,8 @@ public abstract class CircuitElm implements Editable {
         int oldx2 = x2;
         int oldy2 = y2;
         if (noDiagonal) {
-            if (x == x2)
-                dx = 0;
-            else
-                dy = 0;
+            if (x == x2) dx = 0;
+            else dy = 0;
         }
         if (n == 0) {
             x += dx;
@@ -316,25 +308,18 @@ public abstract class CircuitElm implements Editable {
 
     void drawHandles(Graphics g, Color c) {
         g.setColor(c);
-        if (lastHandleGrabbed == -1)
-            g.fillRect(x - 3, y - 3, 7, 7);
-        else if (lastHandleGrabbed == 0)
-            g.fillRect(x - 4, y - 4, 9, 9);
+        g.fillRect((int) (x - postSize), (int) (y - postSize), (int) (postSize * 2), (int) (postSize * 2));
         if (getNumHandles() > 1) {
-            if (lastHandleGrabbed == -1)
-                g.fillRect(x2 - 3, y2 - 3, 7, 7);
-            else if (lastHandleGrabbed == 1)
-                g.fillRect(x2 - 4, y2 - 4, 9, 9);
+            g.fillRect((int) (x2 - postSize), (int) (y2 - postSize), (int) (postSize * 2), (int) (postSize * 2));
+
         }
     }
 
     int getHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
         lastHandleGrabbed = -1;
         if (Graphics.distanceSq(x, y, x2, y2) >= minSize) {
-            if (Graphics.distanceSq(x, y, xtest, ytest) <= deltaSq)
-                lastHandleGrabbed = 0;
-            else if (getNumHandles() > 1 && Graphics.distanceSq(x2, y2, xtest, ytest) <= deltaSq)
-                lastHandleGrabbed = 1;
+            if (Graphics.distanceSq(x, y, xtest, ytest) <= deltaSq) lastHandleGrabbed = 0;
+            else if (getNumHandles() > 1 && Graphics.distanceSq(x2, y2, xtest, ytest) <= deltaSq) lastHandleGrabbed = 1;
         }
         return lastHandleGrabbed;
     }
@@ -354,13 +339,12 @@ public abstract class CircuitElm implements Editable {
 
     void drawPost(Graphics g, Point pt) {
         g.setColor(!needsHighlight() ? Color.white : Color.cyan);
-        g.fillOval(pt.x - 3, pt.y - 3, 6, 6);
+        g.fillOval((int) (pt.x - postSize), (int) (pt.y - postSize), (int) (postSize * 2), (int) (postSize * 2));
     }
 
     void drawPosts(Graphics g) {
         drawPost(g, point1);
-        if (getNumHandles() > 1)
-            drawPost(g, point2);
+        if (getNumHandles() > 1) drawPost(g, point2);
     }
 
     // set/adjust bounding box used for selecting elements. getCircuitBounds() does
@@ -412,51 +396,29 @@ public abstract class CircuitElm implements Editable {
         return false;
     }
 
-
-    static void drawThickLine(Graphics g, int x, int y, int x2, int y2) {
-        g.setLineWidth(3.0);
-        g.drawLine(x, y, x2, y2);
+    static void drawLine(Graphics g, double x1, double y1, double x2, double y2, double thickness, Color color) {
+        g.setLineWidth(thickness);
+        g.setColor(color);
+        g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
         g.setLineWidth(1.0);
     }
 
-    static void drawThickLine(Graphics g, Point pa, Point pb) {
-        g.setLineWidth(3.0);
-        g.context.setLineCap(LineCap.BUTT);
-        g.drawLine(pa.x, pa.y, pb.x, pb.y);
-        g.setLineWidth(1.0);
+    static void drawLine(Graphics g, double x1, double y1, double x2, double y2, double thickness) {
+        drawLine(g, x1, y1, x2, y2, thickness, Color.gray);
     }
 
-    static void drawThickerLine(Graphics g, Point pa, Point pb) {
-        g.context.setLineWidth(12);
-        g.context.setLineCap(LineCap.BUTT);
-        g.context.beginPath();
-        g.context.moveTo(pa.x, pa.y);
-        g.context.lineTo(pb.x, pb.y);
-        g.context.stroke();
-        g.context.setLineWidth(1.0);
+    static void drawLine(Graphics g, Point pa, Point pb, double thickness, Color color) {
+        drawLine(g, pa.x, pa.y, pb.x, pb.y, thickness, color);
     }
 
-    static void drawThickestLine(Graphics g, Point pa, Point pb, String color) {
-        g.setLineWidth(25.0);
-        g.context.setStrokeStyle(color);
-        g.context.setLineCap(LineCap.BUTT);
-        g.context.beginPath();
-        g.context.moveTo(pa.x, pa.y);
-        g.context.lineTo(pb.x, pb.y);
-        g.context.stroke();
-        g.context.setLineWidth(3.0);
-        g.setLineWidth(3.0);
+    static void drawLine(Graphics g, Point pa, Point pb, double thickness) {
+        drawLine(g, pa.x, pa.y, pb.x, pb.y, thickness);
     }
 
-
-    static void drawThickCircle(Graphics g, int cx, int cy, int ri) {
-        g.setLineWidth(3.0);
-
-        g.context.beginPath();
-        g.context.arc(cx, cy, ri * .98, 0, 2 * Math.PI);
-        g.context.stroke();
-        g.setLineWidth(1.0);
+    static void drawLine(Graphics g, Point pa, Point pb) {
+        drawLine(g, pa.x, pa.y, pb.x, pb.y, 3.0);
     }
+
 
     static String format(double v, boolean sf) {
         return NumberFormat.getFormat("####.").format(v);
@@ -472,22 +434,14 @@ public abstract class CircuitElm implements Editable {
         if (va < 1e-14)
             // this used to return null, but then wires would display "null" with 0V
             return "0" + sp + u;
-        if (va < 1e-9)
-            return format(v * 1e12, sf) + sp + "p" + u;
-        if (va < 1e-6)
-            return format(v * 1e9, sf) + sp + "n" + u;
-        if (va < 1e-3)
-            return format(v * 1e6, sf) + sp + Locale.muString + u;
-        if (va < 1)
-            return format(v * 1e3, sf) + sp + "m" + u;
-        if (va < 1e3)
-            return format(v, sf) + sp + u;
-        if (va < 1e6)
-            return format(v * 1e-3, sf) + sp + "k" + u;
-        if (va < 1e9)
-            return format(v * 1e-6, sf) + sp + "M" + u;
-        if (va < 1e12)
-            return format(v * 1e-9, sf) + sp + "G" + u;
+        if (va < 1e-9) return format(v * 1e12, sf) + sp + "p" + u;
+        if (va < 1e-6) return format(v * 1e9, sf) + sp + "n" + u;
+        if (va < 1e-3) return format(v * 1e6, sf) + sp + Locale.muString + u;
+        if (va < 1) return format(v * 1e3, sf) + sp + "m" + u;
+        if (va < 1e3) return format(v, sf) + sp + u;
+        if (va < 1e6) return format(v * 1e-3, sf) + sp + "k" + u;
+        if (va < 1e9) return format(v * 1e-6, sf) + sp + "M" + u;
+        if (va < 1e12) return format(v * 1e-9, sf) + sp + "G" + u;
         return NumberFormat.getFormat("#.##E000").format(v) + sp + u;
     }
 
@@ -518,10 +472,8 @@ public abstract class CircuitElm implements Editable {
     }
 
     void selectRect(Rectangle r, boolean add) {
-        if (r.intersects(boundingBox))
-            selected = true;
-        else if (!add)
-            selected = false;
+        if (r.intersects(boundingBox)) selected = true;
+        else if (!add) selected = false;
     }
 
     static int abs(int x) {
@@ -559,10 +511,8 @@ public abstract class CircuitElm implements Editable {
     }
 
     void setMouseElm(boolean v) {
-        if (v)
-            mouseElmRef = this;
-        else if (mouseElmRef == this)
-            mouseElmRef = null;
+        if (v) mouseElmRef = this;
+        else if (mouseElmRef == this) mouseElmRef = null;
     }
 
     void draggingDone() {

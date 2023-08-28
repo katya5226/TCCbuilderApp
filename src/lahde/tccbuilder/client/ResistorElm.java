@@ -21,6 +21,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import lahde.tccbuilder.client.util.Locale;
 
@@ -51,36 +52,36 @@ class ResistorElm extends ThermalControlElement {
     @Override
     void setPoints() {
         super.setPoints();
-        calcLeads(32);
+        calcLeads(128);
         ps3 = new Point();
         ps4 = new Point();
     }
 
     @Override
     void draw(Graphics g) {
-        int i;
-        int hs = 6;
+        int hs = (int) lineThickness * 2;
         setBbox(point1, point2, hs);
         g.setColor(color);
 
-        drawThickLine(g, point1, lead1);
-        drawThickLine(g, lead2, point2);
+        drawLine(g, point1, lead1,lineThickness,color);
+        drawLine(g, lead2, point2,lineThickness,color);
 
         //   double segf = 1./segments;
         double len = distance(lead1, lead2);
         g.context.save();
-        g.context.setLineWidth(3.0);
+        g.context.setLineWidth(lineThickness);
         g.context.transform(((double) (lead2.x - lead1.x)) / len, ((double) (lead2.y - lead1.y)) / len, -((double) (lead2.y - lead1.y)) / len, ((double) (lead2.x - lead1.x)) / len, lead1.x, lead1.y);
 
 
         if (dn < 30)
             hs = 2;
 
+        g.context.setLineCap(Context2d.LineCap.ROUND);
         g.context.beginPath();
         g.context.moveTo(0, 0);
-        for (i = 0; i < 4; i++) {
-            g.context.lineTo((1 + 4 * i) * len / 16, hs);
-            g.context.lineTo((3 + 4 * i) * len / 16, -hs);
+        for (int i = 0; i < 4; i++) {
+            g.context.lineTo(((1 + (4 * i)) * len) / 16, hs);
+            g.context.lineTo(((3 + (4 * i)) * len) / 16, -hs);
         }
         g.context.lineTo(len, 0);
         g.context.stroke();

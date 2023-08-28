@@ -99,7 +99,7 @@ public class Graphics {
 	}
 
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		context.setLineCap("square"); // Katni
+		context.setLineCap(Context2d.LineCap.BUTT);
 		context.beginPath();
 		context.moveTo(x1, y1);
 		context.lineTo(x2, y2);

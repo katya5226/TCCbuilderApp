@@ -78,7 +78,7 @@ class DiodeElm extends ThermalControlElement {
         return 'd';
     }
 
-    final int hs = 8;
+    final int hs = (int) (lineThickness*2);
     Polygon poly;
     Point cathode[];
 
@@ -98,13 +98,13 @@ class DiodeElm extends ThermalControlElement {
         setBbox(point1, point2, hs);
 
         g.setColor(color);
-        drawThickLine(g, point1, lead1);
-        drawThickLine(g, lead2, point2);
+        drawLine(g, point1, lead1, lineThickness, color);
+        drawLine(g, lead2, point2, lineThickness, color);
         // draw arrow thingy
         g.fillPolygon(poly);
 
         // draw thing arrow is pointing to
-        drawThickLine(g, cathode[0], cathode[1]);
+        drawLine(g, cathode[0], cathode[1], lineThickness, color);
     }
 
     @Override
