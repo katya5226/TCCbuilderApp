@@ -19,6 +19,8 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.user.client.Window;
+
 class GroundElm extends ThermalControlElement {
     int symbolType;
     double temperature;
@@ -65,7 +67,7 @@ class GroundElm extends ThermalControlElement {
         if (symbolType == 0) {
             int i;
             for (i = 0; i != 3; i++) {
-                int a = (int) ((lineThickness * 4) - (i * lineThickness ));
+                int a = (int) ((lineThickness * 4) - (i * lineThickness));
                 int b = (int) (i * lineThickness * 2); // -10;
                 interpPoint2(point1, point2, ps1, ps2, 1 + b / dn, a);
                 drawLine(g, ps1, ps2, lineThickness, color);
@@ -121,7 +123,6 @@ class GroundElm extends ThermalControlElement {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -139,7 +140,6 @@ class GroundElm extends ThermalControlElement {
         }
 
         //TODO: Implement this with better functionality
-
-        updateElement(m);
+        updateElement();
     }
 }

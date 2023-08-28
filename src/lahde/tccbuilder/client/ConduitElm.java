@@ -59,8 +59,6 @@ class ConduitElm extends ThermalControlElement {
     @Override
     public void setEditValue(int n, EditInfo ei) {
         super.setEditValue(n, ei);
-        GWT.log(ei.name);
-        GWT.log(ei.value + "");
         switch (n) {
             case 8:
                 constRho = ei.value;
@@ -72,6 +70,7 @@ class ConduitElm extends ThermalControlElement {
                 constK = ei.value;
                 break;
         }
+        updateElement();
     }
 
     @Override

@@ -165,7 +165,6 @@ class RegulatorElm extends ThermalControlElement {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -224,7 +223,8 @@ class RegulatorElm extends ThermalControlElement {
 
         //TODO: Implement this with better functionality
 
-        updateElement(m);
+        updateElement();
+
     }
 
 }

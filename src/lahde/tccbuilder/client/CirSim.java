@@ -1445,6 +1445,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         perfmon.startContext("elm.draw()");
         for (CircuitElm elm : elmList) {
             elm.draw(g);
+            if (elm instanceof ThermalControlElement)
+                GWT.log(((ThermalControlElement) elm).dump());
         }
         perfmon.stopContext();
         // Draw posts normally
@@ -1902,8 +1904,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         repaint();
         if (simDimensionality == 1) {
             simulation1D.makeTCC();
+            simulation1D.resetHeatSim();
         } else if (simDimensionality == 2) {
             simulation2D.makeTCC();
+            simulation2D.resetHeatSim();
         }
     }
 

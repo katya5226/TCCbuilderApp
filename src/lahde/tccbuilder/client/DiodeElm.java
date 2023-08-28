@@ -20,6 +20,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 class DiodeElm extends ThermalControlElement {
 
@@ -78,7 +79,7 @@ class DiodeElm extends ThermalControlElement {
         return 'd';
     }
 
-    final int hs = (int) (lineThickness*2);
+    final int hs = (int) (lineThickness * 2);
     Polygon poly;
     Point cathode[];
 
@@ -148,7 +149,6 @@ class DiodeElm extends ThermalControlElement {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -196,7 +196,7 @@ class DiodeElm extends ThermalControlElement {
 
         //TODO: Implement this with better functionality
 
-        updateElement(m);
+        updateElement();
     }
 
 }

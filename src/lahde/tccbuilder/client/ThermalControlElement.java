@@ -15,6 +15,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public String name;
     public int index;
     public int numCvs;
+    public Material material;
     public double westResistance;
     public double eastResistance;
     public ThermalControlElement westNeighbour;
@@ -37,11 +38,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         index = -1;
         for (ThermalControlElement c : sim.simulation1D.simTCEs) {
-            if (c.index > index)
-                index = c.index;
+            if (c.index > index) index = c.index;
         }
         index++;
-
+        material = sim.materialHashMap.get("100001-Inox");
 
         isDisabled = false;
         field = false;
@@ -54,6 +54,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         super(xa, ya, xb, yb, f);
         initializeThermalControlElement();
         index = Integer.parseInt(st.nextToken());
+        material = sim.materialHashMap.get("100001-Inox");
         length = Double.parseDouble(st.nextToken());
         name = st.nextToken();
         numCvs = Integer.parseInt(st.nextToken());
@@ -63,11 +64,15 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         field = false;
         fieldIndex = 1;
         buildThermalControlElement();
-
-        for (int i = 0; i < numCvs; i++) {
-            int j = Integer.parseInt(st.nextToken());
-            cvs.get(i).material = sim.materialHashMap.get(sim.materialNames.get(j));
-
+        int counter = 0;
+        while (st.hasMoreTokens()) {
+            int materialIndex = Integer.parseInt(st.nextToken(" "));
+            Material m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
+            int number = Integer.parseInt(st.nextToken(" "));
+            counter += number;
+            for (int i = 0; i < number; i++)
+                cvs.get(i).material = m;
+            if (counter == numCvs) break;
         }
     }
 
@@ -75,7 +80,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
-        numCvs = 3;
+        numCvs = 6;
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.
         eastResistance = 0.0;
@@ -106,6 +111,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         for (int i = 0; i < numCvs; i++) {
             cvs.add(new ControlVolume(i));
             cvs.get(i).parent = this;
+            cvs.get(i).material = material;
 
             if (constRho != -1) {
                 cvs.get(i).constRho = constRho;
@@ -117,7 +123,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 cvs.get(i).constK = constK;
             }
         }
-
+        cvs.get(3).material = sim.materialHashMap.get("100002-Gd");
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
     }
@@ -130,8 +136,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void setMaterial(Material m) {
-        for (ControlVolume controlVolume : cvs)
+        for (ControlVolume controlVolume : cvs) {
             controlVolume.material = m;
+        }
     }
 
     public void updateModes() {
@@ -166,14 +173,24 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
 
-
+        int counter = 0;
+        int currentIndex = sim.materialNames.indexOf(cvs.get(0).material.materialName);
+        sb.append(currentIndex).append(' ');
         for (ControlVolume cv : cvs) {
             int i = sim.materialNames.indexOf(cv.material.materialName);
-            sb.append(i).append(" ");
+            if (i != currentIndex) {
+                sb.append(counter).append(' ');
+                sb.append(i).append(' ');
+                currentIndex = i;
+                counter = 0;
+            }
+            counter++;
         }
-        // sb.append(material.materialName).append(' ');  // TODO
+        sb.append(counter).append(' ');
 
-
+        // explanation for material indexes:
+        // Inox Inox Inox Gd Inox Inox == 0 3 1 1 0 2
+        // reads like this: 3 cv of material 0, 1 cv of material 1, 2 cv of material 0
         return sb.toString();
     }
 
@@ -240,11 +257,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                     @Override
                     public void onMouseOver(MouseOverEvent e) {
                         Material m = sim.materialHashMap.get(ei.choice.getSelectedItemText());
-                        if (m != null)
-                            m.showTemperatureRanges(ei.choice);
+                        if (m != null) m.showTemperatureRanges(ei.choice);
                     }
                 });
-                ei.choice.select(sim.materialNames.indexOf("100001-Inox"));
+                ei.choice.select(sim.materialNames.indexOf(material.materialName));
 
                 // ei.choice.select(sim.materialNames.indexOf(this.material.materialName));  // TODO
                 return ei;
@@ -278,7 +294,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -287,7 +302,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 index = (int) ei.value;
                 break;
             case 2:
-                m = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
+                Material m = sim.materialHashMap.get(sim.materialNames.get(ei.choice.getSelectedIndex()));
+                if (m != null) {
+                    material = m;
+                    setMaterial(m);
+                }
                 break;
             case 3:
                 numCvs = (int) ei.value;
@@ -324,10 +343,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         //TODO: Implement this with better functionality
 
-        updateElement(m);
+        updateElement();
+
     }
 
-    void updateElement(Material m) {
+    void updateElement() {
         if (length / numCvs < 1e-6) {
             String input = String.valueOf(numCvs);
             if (!isDisabled)
@@ -337,12 +357,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             set_dx(length / numCvs);
             buildThermalControlElement();
             isDisabled = false;
-        }
-        if (m != null) {
-            if (!m.isLoaded()) {
-                m.readFiles();
-            }
-            setMaterial(m);
         }
     }
 

@@ -120,6 +120,7 @@ class ResistorElm extends ThermalControlElement {
                 constK = ei.value;
                 break;
         }
+        updateElement();
     }
 
 }

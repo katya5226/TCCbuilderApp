@@ -140,11 +140,11 @@ public class Simulation1D extends Simulation {
         heatCircuit.initializeMatrix();
         int n = heatCircuit.cvs.size();
         double[] temps = new double[n];
+
         Arrays.fill(temps, startTemp);
         heatCircuit.setTemperatures(temps);
 
         setTemperatureRange();
-
 
         start_temperatures = new double[heatCircuit.cvs.size()];
         numCycleParts = this.cycleParts.size();
@@ -152,7 +152,6 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         printing_interval = 1;
         totalTime = 1.0;
-
         GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
         for (ControlVolume cv : heatCircuit.cvs) {
             GWT.log("cvInd: " + String.valueOf(cv.globalIndex));

@@ -69,7 +69,7 @@ class HeatSourceSinkElm extends ThermalControlElement {
         interpPoint(point1, point2, lead, 0, lineThickness * 3);*/
         //interpPoint(point1, point2, lead, 3 * lineThickness / dn, lineThickness * 3);
 
-        interpPoint(point1, point2, lead, 1 -(3 * lineThickness / dn), 0);
+        interpPoint(point1, point2, lead, 1 - (3 * lineThickness / dn), 0);
 
         drawLine(g, lead, point1, lineThickness, color);
 
@@ -114,7 +114,6 @@ class HeatSourceSinkElm extends ThermalControlElement {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -131,8 +130,6 @@ class HeatSourceSinkElm extends ThermalControlElement {
 
         }
 
-        //TODO: Implement this with better functionality
-
-        updateElement(m);
+        updateElement();
     }
 }

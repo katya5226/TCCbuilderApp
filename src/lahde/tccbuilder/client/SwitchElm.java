@@ -189,7 +189,7 @@ class SwitchElm extends ThermalControlElement {
 
         //TODO: Implement this with better functionality
 
-        updateElement(m);
+        updateElement();
     }
 
     void toggle() {
