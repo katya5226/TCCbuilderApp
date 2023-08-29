@@ -693,10 +693,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cyclicOperationLabel = new HTML();
         verticalPanel.add(cyclicOperationLabel);
 
-
-        // l.setFont(f);
         titleLabel = new Label("Label");
-        // titleLabel.setFont(f);
 
         verticalPanel.add(iFrame = new Frame("iframe.html"));
         iFrame.setWidth(VERTICALPANELWIDTH + "px");
@@ -1193,6 +1190,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // this is called twice, once for the Draw menu, once for the right mouse popup
     // menu
     public void composeMainMenu(MenuBar mainMenuBar, int num) {
+        MenuItem menuItem;
         if (simDimensionality == 2) {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
@@ -1209,12 +1207,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
         }
         MenuBar sampleElements = new MenuBar(true);
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM2"), "SwitchElm_FM2"));
-        sampleElements.addItem(getClassCheckItem(Locale.LS("Add Switch-FM3"), "SwitchElm_FM3"));
 
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+        menuItem.setTitle("Ideal operating range = 40-99 K");
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+        menuItem.setTitle("Ideal operating range = 290-450 K");
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
+        menuItem.setTitle("Operating range = 254-353 K");
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM2"), "SwitchElm_FM2"));
+        menuItem.setTitle("Operating range = 254-353 K");
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM3"), "SwitchElm_FM3"));
+        menuItem.setTitle("Operating range = 254-353 K");
 
         mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
 
@@ -1260,28 +1263,31 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         try {
             elm = constructElement(t, 0, 0);
         } catch (Exception e) {
+            //FIXME: elements fail constructing, likely because materials aren't loaded
         }
         CheckboxMenuItem mi;
+        if (shortcut == "")
+            mi = new CheckboxMenuItem(s);
+        else
+            mi = new CheckboxMenuItem(s, shortcut);
+
+        mi.setScheduledCommand(new MyCommand("main", t));
         // register(c, elm);
         if (elm != null) {
+
             if (elm.needsShortcut()) {
                 shortcut += (char) elm.getShortcut();
                 if (shortcuts[elm.getShortcut()] != null && !shortcuts[elm.getShortcut()].equals(t))
                     console("already have shortcut for " + (char) elm.getShortcut() + " " + elm);
                 shortcuts[elm.getShortcut()] = t;
             }
+            mi.setTitle(mi.getTitle() + " " + ((ThermalControlElement) elm).hasOperatingRange);
             elm.delete();
         }
-        // else
-        // GWT.log("Coudn't create class: "+t);
-        // } catch (Exception ee) {
-        // ee.printStackTrace();
-        // }
-        if (shortcut == "") mi = new CheckboxMenuItem(s);
-        else mi = new CheckboxMenuItem(s, shortcut);
-        mi.setScheduledCommand(new MyCommand("main", t));
+
         mainMenuItems.add(mi);
         mainMenuItemNames.add(t);
+
 
         return mi;
     }
@@ -1445,8 +1451,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         perfmon.startContext("elm.draw()");
         for (CircuitElm elm : elmList) {
             elm.draw(g);
-            if (elm instanceof ThermalControlElement)
-                GWT.log(((ThermalControlElement) elm).dump());
         }
         perfmon.stopContext();
         // Draw posts normally

@@ -34,17 +34,20 @@ class EditInfo {
         dimensionless = false;
         minVal = mn;
         maxVal = mx;
+        editable = true;
     }
 
     EditInfo(String n, double val) {
         name = n;
         value = val;
         dimensionless = false;
+        editable = true;
     }
 
     EditInfo(String n, String txt) {
         name = n;
         text = txt;
+        editable = true;
     }
 
     static EditInfo createCheckbox(String name, boolean flag) {
@@ -88,6 +91,7 @@ class EditInfo {
     }
 
     String name, text;
+    boolean editable;
     double value;
     TextBox textf;
     Choice choice;

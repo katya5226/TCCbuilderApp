@@ -25,7 +25,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double constRho;
     public double constCp;
     public double constK;
-
+    public double operatingMax;
+    public double operatingMin;
+    public boolean hasOperatingRange;
     public Vector<ControlVolume> cvs;
 
     public boolean isDisabled;
@@ -80,7 +82,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
-        numCvs = 6;
+        numCvs = 3;
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.
         eastResistance = 0.0;
@@ -123,7 +125,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 cvs.get(i).constK = constK;
             }
         }
-        cvs.get(3).material = sim.materialHashMap.get("100002-Gd");
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
     }
@@ -360,6 +361,12 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
     }
 
+    String getOperatingRangeString() {
+        if (hasOperatingRange)
+            return "Ideal operating range: " + operatingMin + "-" + operatingMax + "K";
+        else
+            return null;
+    }
 
     public void set_constant_parameters(String[] parameters, double[] values) {
         for (int i = 0; i < parameters.length; i++) {

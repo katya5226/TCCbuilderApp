@@ -215,6 +215,7 @@ class EditDialog extends Dialog {
                 if (ei.text == null) {
                     ei.textf.setText(ei.value + "");
                 }
+                ei.textf.setEnabled(ei.editable);
             }
         }
 

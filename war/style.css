@@ -80,6 +80,12 @@ div.gwt-DialogBox {
 
 }
 
+.dialogContainer > .gwt-TextBox:disabled {
+    background-color: var(--blue);
+    border: none;
+    color: var(--white);
+}
+
 iframe {
     width: 100%;
     height: 66vh;
@@ -228,6 +234,7 @@ iframe {
 .gwt-TextBox.scalebox {
     width: 100px;
 }
+
 
 .gwt-Button {
     font-family: 'Roboto', sans-serif;
