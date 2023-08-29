@@ -117,6 +117,10 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
         cvs.clear();
         Material NiTi = sim.materialHashMap.get("100004-NiTi");
         Material Graphite = sim.materialHashMap.get("500006-Graphite");
+        if (!NiTi.isLoaded())
+            NiTi.readFiles();
+        if (!Graphite.isLoaded())
+            Graphite.readFiles();
         int ratioIndex = (int) (0.5 * numCvs);
         for (int i = 0; i < numCvs; i++) {
             cvs.add(new ControlVolume(i));

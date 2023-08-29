@@ -125,6 +125,10 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
         cvs.clear();
         Material LSCO = sim.materialHashMap.get("200002-LaSrCoO");
         Material LCO = sim.materialHashMap.get("200001-LaCoO");
+        if (!LSCO.isLoaded())
+            LSCO.readFiles();
+        if (!LCO.isLoaded())
+            LCO.readFiles();
         int ratioIndex = (int) ((6.1 / 12.4) * numCvs);
         for (int i = 0; i < numCvs; i++) {
             cvs.add(new ControlVolume(i));

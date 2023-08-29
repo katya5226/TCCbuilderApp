@@ -228,6 +228,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     boolean viewTempsOverlay = true;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
+    final Timer responseTimer = new Timer() {
+        public void run() {
+            if (awaitedResponses.isEmpty()) {
+                if (stopMessage != null) return;
+                simRunning = true;
+                runStopButton.setHTML(Locale.LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
+                runStopButton.removeStyleName("topButton-red");
+                timer.scheduleRepeating(FASTTIMER);
+                responseTimer.cancel();
+            }
+        }
+    };
     int testCounter = 0;
     Timer testTimer;
 
@@ -818,8 +830,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             for (TwoDimComponent c : simulation2D.simTwoDimComponents)
                 c.calculateLengthHeight();
 
-            if(set.size()>1)
-                Window.alert("asdsaasdasd");
+        if (set.size() > 1)
+            Window.alert("asdsaasdasd");
         setSimRunning(false);
     }
 
@@ -1354,17 +1366,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void setSimRunning(boolean s) {
 
-        if (awaitedResponses.isEmpty()) if (s) {
-            if (stopMessage != null) return;
-            simRunning = true;
-            runStopButton.setHTML(Locale.LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
-            runStopButton.removeStyleName("topButton-red");
-            timer.scheduleRepeating(FASTTIMER);
+        if (s) {
+            responseTimer.scheduleRepeating(FASTTIMER);
         } else {
             simRunning = false;
             runStopButton.setHTML(Locale.LSHTML("Run&nbsp;/&nbsp;<strong>STOP</strong>"));
             runStopButton.addStyleName("topButton-red");
             timer.cancel();
+            responseTimer.cancel();
             repaint();
         }
     }
