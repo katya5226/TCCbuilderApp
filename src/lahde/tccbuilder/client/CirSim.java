@@ -26,12 +26,7 @@ package lahde.tccbuilder.client;
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 // or https://github.com/sharpie7/circuitjs1/blob/master/INTERNALS.md
 
-import java.util.Vector;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 // import java.security.InvalidParameterException;
 // import java.util.InputMismatchException;
 import java.lang.Math;
@@ -647,9 +642,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 switch (dimensionality.getSelectedItemText()) {
                     case "1D":
                         simDimensionality = 1;
+                        simulation1D.simTCEs = new Vector<ThermalControlElement>();
+
                         break;
                     case "2D":
                         simDimensionality = 2;
+                        simulation2D.simTwoDimComponents = new Vector<TwoDimComponent>();
                         break;
                 }
 
@@ -659,8 +657,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 mainMenuBar.clearItems();
                 composeMainMenu(mainMenuBar, 1);
                 loadShortcuts();
-                simulation2D.simTwoDimComponents = new Vector<TwoDimComponent>();
-                simulation1D.simTCEs = new Vector<ThermalControlElement>();
             }
         });
 
@@ -681,13 +677,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         selectedLengthUnit = CirSim.LengthUnit.METER;
                         break;
                 }
-                for (ThermalControlElement c : simulation1D.simTCEs)
-                    c.calculateLength();
-
-                for (TwoDimComponent c : simulation2D.simTwoDimComponents)
-                    c.calculateLengthHeight();
-
-                if (simRunning) resetAction();
+                calculateElementsLengths();
             }
         });
         cyclicOperationLabel = new HTML();
@@ -814,6 +804,23 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         readMaterialFlags(baseURL + "materials_flags.csv");
 
 
+    }
+
+    void calculateElementsLengths() {
+        HashSet<LengthUnit> set = new HashSet<LengthUnit>();
+        if (simDimensionality == 1)
+            for (ThermalControlElement c : simulation1D.simTCEs) {
+                c.calculateLength();
+                if (c.DEFINED_LENGTH_UNIT != null)
+                    set.add(c.DEFINED_LENGTH_UNIT);
+            }
+        else
+            for (TwoDimComponent c : simulation2D.simTwoDimComponents)
+                c.calculateLengthHeight();
+
+            if(set.size()>1)
+                Window.alert("asdsaasdasd");
+        setSimRunning(false);
     }
 
     // ***********************************Katni**********************************************
@@ -1451,6 +1458,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         perfmon.startContext("elm.draw()");
         for (CircuitElm elm : elmList) {
             elm.draw(g);
+            GWT.log(elm.dump());
         }
         perfmon.stopContext();
         // Draw posts normally
@@ -2775,7 +2783,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int gy = inverseTransformY(e.getY());
         if (!circuitArea.contains(e.getX(), e.getY())) return;
         boolean changed = false;
-        if (dragElm != null) dragElm.drag(gx, gy);
+        if (dragElm != null && dragElm.resizable) {
+            dragElm.drag(gx, gy);
+        }
         boolean success = true;
         switch (tempMouseMode) {
             case MODE_DRAG_ALL:
@@ -2790,7 +2800,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 changed = true;
                 break;
             case MODE_DRAG_POST:
-                if (mouseElm != null) {
+                if (mouseElm != null && mouseElm.resizable) {
                     dragPost(snapGrid(gx), snapGrid(gy), e.isShiftKeyDown());
                     if (mouseElm instanceof TwoDimComponent) ((TwoDimComponent) mouseElm).calculateLengthHeight();
                     else if (mouseElm instanceof ThermalControlElement)
@@ -3960,11 +3970,25 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new ConduitElm(x1, y1, x2, y2, f, st);
+            //Samples
+            case 600:
+                return new DiodeElm_LSCO_LCO(x1, y1);
+            case 601:
+                return new DiodeElm_NiTi_Graphite(x1, y1);
+            case 610:
+                return new SwitchElm_FM1(x1, y1);
+            case 611:
+                return new SwitchElm_FM2(x1, y1);
+            case 612:
+                return new SwitchElm_FM3(x1, y1);
+
             //2D
             case 521:
                 return new TwoDimComponent(x1, y1, x2, y2, f, st);
             case 522:
                 return new ZigZagInterface(x1, y1, x2, y2, f, st);
+
+
         }
         return null;
     }

@@ -31,8 +31,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public Vector<ControlVolume> cvs;
 
     public boolean isDisabled;
+
     public boolean field;
     public int fieldIndex;
+
+    CirSim.LengthUnit DEFINED_LENGTH_UNIT;
 
     public ThermalControlElement(int xx, int yy) {
         super(xx, yy);
@@ -67,15 +70,17 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         fieldIndex = 1;
         buildThermalControlElement();
         int counter = 0;
+        Material m = null;
         while (st.hasMoreTokens()) {
             int materialIndex = Integer.parseInt(st.nextToken(" "));
-            Material m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
+            m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
             int number = Integer.parseInt(st.nextToken(" "));
             counter += number;
             for (int i = 0; i < number; i++)
                 cvs.get(i).material = m;
             if (counter == numCvs) break;
         }
+        material = m;
     }
 
     public void initializeThermalControlElement() {
@@ -418,7 +423,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void set_dx(double dx) {
-
         for (ControlVolume cv : cvs) {
             cv.dx = dx;
         }

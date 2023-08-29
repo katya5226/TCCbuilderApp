@@ -71,6 +71,7 @@ public abstract class CircuitElm implements Editable {
     boolean noDiagonal = true;
 
     public boolean selected;
+    public boolean resizable = true;
 
     int getDumpType() {
 

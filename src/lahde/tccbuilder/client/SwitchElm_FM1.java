@@ -12,4 +12,8 @@ public class SwitchElm_FM1 extends SwitchElm{
     public SwitchElm_FM1(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
+    @Override
+    int getDumpType() {
+        return 610;
+    }
 }
