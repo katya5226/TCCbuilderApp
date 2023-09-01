@@ -1233,9 +1233,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         menuItem.setTitle("Ideal operating range = 290-450 K");
         sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
         menuItem.setTitle("Operating range = 254-353 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM2"), "SwitchElm_FM2"));
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
         menuItem.setTitle("Operating range = 254-353 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM3"), "SwitchElm_FM3"));
+        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
         menuItem.setTitle("Operating range = 254-353 K");
 
         mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
@@ -1467,7 +1467,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         perfmon.startContext("elm.draw()");
         for (CircuitElm elm : elmList) {
             elm.draw(g);
-            GWT.log(elm.dump());
+            if (elm instanceof ThermalControlElement) {
+                for (ControlVolume cv : ((ThermalControlElement) elm).cvs)
+                    GWT.log(cv.constCp + " " + cv.constK + " " + cv.constRho);
+            }
+
         }
         perfmon.stopContext();
         // Draw posts normally
@@ -3987,9 +3991,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case 610:
                 return new SwitchElm_FM1(x1, y1);
             case 611:
-                return new SwitchElm_FM2(x1, y1);
+                return new SwitchElm_MM1(x1, y1);
             case 612:
-                return new SwitchElm_FM3(x1, y1);
+                return new SwitchElm_MM2(x1, y1);
 
             //2D
             case 521:
@@ -4030,10 +4034,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new DiodeElm_NiTi_Graphite(x1, y1);
             case "SwitchElm_FM1":
                 return new SwitchElm_FM1(x1, y1);
-            case "SwitchElm_FM2":
-                return new SwitchElm_FM2(x1, y1);
-            case "SwitchElm_FM3":
-                return new SwitchElm_FM3(x1, y1);
+            case "SwitchElm_MM1":
+                return new SwitchElm_MM1(x1, y1);
+            case "SwitchElm_MM2":
+                return new SwitchElm_MM2(x1, y1);
 
             //2D
             case "2DComponent":

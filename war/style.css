@@ -80,8 +80,15 @@ div.gwt-DialogBox {
 
 }
 
+.dialogContainer > .gwt-TextBox, .gwt-ListBox {
+    background-color: var(--white);
+    border: none;
+    color: var(--black);
+    padding: 0.125rem;
+}
+
 .dialogContainer > .gwt-TextBox:disabled {
-    background-color: var(--blue);
+    background: none;
     border: none;
     color: var(--white);
 }

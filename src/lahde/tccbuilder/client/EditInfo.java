@@ -44,6 +44,13 @@ class EditInfo {
         editable = true;
     }
 
+    EditInfo(String n, double val, boolean editable) {
+        name = n;
+        value = val;
+        dimensionless = false;
+        this.editable = editable;
+    }
+
     EditInfo(String n, String txt) {
         name = n;
         text = txt;

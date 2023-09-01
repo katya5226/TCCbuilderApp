@@ -24,7 +24,9 @@ class SwitchElm extends ThermalControlElement {
     // position 0 == closed, position 1 == open
     int position, posCount;
 
-    double k1, k2;
+    double kOn, kOff;
+    double cpOn, cpOff;
+    double rhoOn, rhoOff;
     double cp;
     double rho;
     double responseTime;
@@ -125,9 +127,9 @@ class SwitchElm extends ThermalControlElement {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity 1", k1);
+                return new EditInfo("Thermal Conductivity (On)", kOn);
             case 8:
-                return new EditInfo("Thermal Conductivity 2", k2);
+                return new EditInfo("Thermal Conductivity (Off)", kOff);
             case 9:
                 return new EditInfo("Specific Heat Capacity", cp);
             case 10:
@@ -171,10 +173,10 @@ class SwitchElm extends ThermalControlElement {
                 eastResistance = ei.value;
                 break;
             case 7:
-                k1 = ei.value;
+                kOn = ei.value;
                 break;
             case 8:
-                k2 = ei.value;
+                kOff = ei.value;
                 break;
             case 9:
                 cp = ei.value;

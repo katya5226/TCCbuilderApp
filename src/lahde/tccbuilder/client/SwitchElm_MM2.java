@@ -1,9 +1,9 @@
 package lahde.tccbuilder.client;
 
-public class SwitchElm_FM1 extends SwitchElm {
-    final double DEFINED_LENGTH = 0.05;
+public class SwitchElm_MM2 extends SwitchElm {
+    final double DEFINED_LENGTH = 0.0023;
 
-    public SwitchElm_FM1(int xx, int yy) {
+    public SwitchElm_MM2(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
@@ -15,11 +15,11 @@ public class SwitchElm_FM1 extends SwitchElm {
         drag(newX, yy);
     }
 
-    SwitchElm_FM1(int xx, int yy, boolean mm) {
+    SwitchElm_MM2(int xx, int yy, boolean mm) {
         super(xx, yy, mm);
     }
 
-    public SwitchElm_FM1(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
+    public SwitchElm_MM2(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
 
@@ -31,13 +31,13 @@ public class SwitchElm_FM1 extends SwitchElm {
         operatingMax = 353;
         resizable = false;
         length = DEFINED_LENGTH;
-        kOff = 0.126;
-        kOn = 10.52;
-        rhoOff = 1000;
-        rhoOn = 6440;
-        cpOff = 4184;
-        cpOn = 296;
-        responseTime = 0.1;
+        kOff = 1.217;
+        kOn = 32.6;
+        rhoOff = 1500;
+        rhoOn = 1500;
+        cpOff = 450;
+        cpOn = 450;
+        responseTime = -1;
         constCp = cpOff;
         constK = kOff;
         constRho = rhoOff;
@@ -135,7 +135,7 @@ public class SwitchElm_FM1 extends SwitchElm {
 
     @Override
     int getDumpType() {
-        return 610;
+        return 612;
     }
 
     @Override
