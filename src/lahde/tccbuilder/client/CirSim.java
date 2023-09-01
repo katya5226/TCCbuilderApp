@@ -225,7 +225,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
     boolean viewTempsInGraph = true;
-    boolean viewTempsOverlay = true;
+    boolean viewTempsOverlay = false;
     public String materialFlagText;
     ArrayList<String> awaitedResponses;
     final Timer responseTimer = new Timer() {
@@ -482,12 +482,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         showTemperaturesCheckItem.setState(true);
-/*        m.addItem(showOverlayCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperature Overlay (2D)"), new Command() {
+        m.addItem(showOverlayCheckItem = new CheckboxMenuItem(Locale.LS("Show Temperature Overlay"), new Command() {
             public void execute() {
                 viewTempsOverlay = !viewTempsOverlay;
             }
         }));
-        showOverlayCheckItem.setState(true);*/
+        showOverlayCheckItem.setState(false);
         dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current"));
         dotsCheckItem.setState(true);
         voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"), new Command() {
@@ -1466,11 +1466,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // Draw each element
         perfmon.startContext("elm.draw()");
         for (CircuitElm elm : elmList) {
-            elm.draw(g);
             if (elm instanceof ThermalControlElement) {
-                for (ControlVolume cv : ((ThermalControlElement) elm).cvs)
-                    GWT.log(cv.constCp + " " + cv.constK + " " + cv.constRho);
-            }
+                if (viewTempsOverlay)
+                    ((ThermalControlElement) elm).drawCVTemperatures(g, elm.point1, elm.point2);
+                else
+                    ((ThermalControlElement) elm).draw(g);
+            } else
+                elm.draw(g);
+
 
         }
         perfmon.stopContext();
@@ -2146,7 +2149,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             else Graphics.exitFullScreen();
             centreCircuit();
         }
-
+        if (item == "toggleOverlay") {
+            viewTempsOverlay = !viewTempsOverlay;
+            showOverlayCheckItem.setState(viewTempsOverlay);
+        }
         repaint();
     }
 
@@ -3865,7 +3871,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 tempMouseMode = mouseMode;
                 e.cancel();
             }
-
+            if (code == KEY_T) {
+                menuPerformed("key", "toggleOverlay");
+                e.cancel();
+            }
             if (e.getNativeEvent().getCtrlKey() || e.getNativeEvent().getMetaKey()) {
                 if (code == KEY_C) {
                     menuPerformed("key", "copy");
@@ -3913,6 +3922,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     menuPerformed("key", "importfromlocalfile");
                     e.cancel();
                 }
+
             }
         }
         if ((t & Event.ONKEYPRESS) != 0) {
@@ -3931,6 +3941,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 e.cancel();
             }
         }
+
     }
 
 

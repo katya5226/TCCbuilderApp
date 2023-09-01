@@ -1,5 +1,6 @@
 package lahde.tccbuilder.client;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 
 import java.lang.Math;
@@ -224,8 +225,47 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             isDisabled = false;
         }
 
+    }
+
+    void drawCVTemperatures(Graphics g, Point pa, Point pb) {
+        Context2d ctx = g.context;
+        double x = Math.min(pa.x, pb.x);
+        double y = Math.min(pa.y, pb.y);
+        double width = Math.abs(pa.x - pb.x);
+        double cvWidth = width / numCvs;
+        double height = lineThickness;
+        double cvHeight = height;
+        ctx.setStrokeStyle(Color.deepBlue.getHexValue());
+        ctx.setLineWidth(0.5);
+        ctx.strokeRect(x, y, width, height);
+        for (int i = 0; i < cvs.size(); i++) {
+            ControlVolume cv = cvs.get(i);
+            double cvX = x + i * cvWidth;
+            double cvY = y-(height / 2);
+
+            double temperatureRange = sim.simulation1D.maxTemp - sim.simulation1D.minTemp;
+            double temperatureRatio = (cv.temperature - sim.simulation1D.minTemp) / temperatureRange;
+
+            Color color1 = Color.blue;
+            Color color2 = Color.white;
+            Color color3 = Color.red;
+
+            int red = (int) (color1.getRed() * (1 - temperatureRatio) + color2.getRed() * temperatureRatio);
+            int green = (int) (color1.getGreen() * (1 - temperatureRatio) + color2.getGreen() * temperatureRatio);
+            int blue = (int) (color1.getBlue() * (1 - temperatureRatio) + color2.getBlue() * temperatureRatio);
+
+            red = (int) (red * (1 - temperatureRatio) + color3.getRed() * temperatureRatio);
+            green = (int) (green * (1 - temperatureRatio) + color3.getGreen() * temperatureRatio);
+            blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
+
+            String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
+            ctx.setFillStyle(cvColor.equals("#000") ? color.getHexValue() : cvColor);
+            ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
+            ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
+        }
 
     }
+
 
     double[] listTemps() {
         double[] temps = new double[numCvs];
