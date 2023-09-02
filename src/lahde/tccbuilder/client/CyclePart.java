@@ -41,7 +41,7 @@ public class CyclePart {
     public void execute() {
         switch (this.partType) {
             case HEAT_TRANSFER:
-                sim.heat_transfer_step();
+                sim.simulation1D.heatTransferStep();
                 break;
             case HEAT_INPUT:
                 heatInput();

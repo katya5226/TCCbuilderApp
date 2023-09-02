@@ -13,7 +13,7 @@
     --light-gray: #5d6e83;
 }
 
-.example::-webkit-scrollbar {
+*::-webkit-scrollbar {
     display: none;
 }
 
@@ -36,7 +36,7 @@ input {
 }
 
 .topSpace {
-    margin-top: 12px;
+    margin-top: 0.5rem;
 }
 
 .aroundSpace {
@@ -59,26 +59,47 @@ div.gwt-DialogBox {
     border: 0.125rem solid var(--deep-blue);
 }
 
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > * {
+.dialogContainerOuter {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.dialogContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.dialogContainer > * {
     width: 100%;
     font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+
 }
 
-
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > input[type="text"] {
-    margin-bottom: 0.5rem;
+.dialogContainer > .gwt-TextBox, .gwt-ListBox {
+    background-color: var(--white);
+    border: none;
+    color: var(--black);
+    padding: 0.125rem;
 }
 
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > select {
-    margin-bottom: 0.5rem;
+.dialogContainer > .gwt-TextBox:disabled {
+    background: none;
+    border: none;
+    color: var(--white);
 }
 
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > .gwt-Label {
-    margin-bottom: 0.5rem;
+iframe {
+    width: 100%;
+    height: 66vh;
 }
 
-div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCenter > div > table > tbody > tr > td > span {
-    display: inline-block;
+.helpContainer {
+
 }
 
 .Caption {
@@ -107,8 +128,20 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
     width: 90%;
 }
 
+
 .gwt-MenuItemSeparator {
     background-color: var(--deep-blue);
+}
+
+.gwt-CheckBox {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.gwt-CheckBox > label {
+    line-height: 100%;
 }
 
 .gwt-ListBox {
@@ -209,6 +242,7 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
     width: 100px;
 }
 
+
 .gwt-Button {
     font-family: 'Roboto', sans-serif;
     border: none;
@@ -239,6 +273,26 @@ div.gwt-DialogBox > div > table > tbody > tr.dialogMiddle > td.dialogMiddleCente
     background-color: var(--red);
 }
 
+.helpButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    height: 1rem;
+    line-height: 100%;
+    width: fit-content;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.helpButton:hover {
+    color: var(--yellow);
+}
 
 .mainVertical {
     box-sizing: border-box;

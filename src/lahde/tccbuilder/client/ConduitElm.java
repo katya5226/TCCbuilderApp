@@ -21,72 +21,30 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 
-class CapacitorElm extends ThermalControlElement {
-    Point plate1[], plate2[];
-
-    public CapacitorElm(int xx, int yy) {
+class ConduitElm extends ThermalControlElement {
+    public ConduitElm(int xx, int yy) {
         super(xx, yy);
     }
 
-    public CapacitorElm(int xa, int ya, int xb, int yb, int f,
-                        StringTokenizer st) {
+    public ConduitElm(int xa, int ya, int xb, int yb, int f,
+                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-    }
-
-    @Override
-    void reset() {
-        super.reset();
-    }
-
-    @Override
-    int getDumpType() {
-        return 'c';
-    }
-
-    // used for PolarCapacitorElm
-    Point platePoints[];
-
-    @Override
-    void setPoints() {
-        super.setPoints();
-        double f = (dn / 2 - lineThickness) / dn;
-        // calc leads
-        lead1 = interpPoint(point1, point2, f);
-        lead2 = interpPoint(point1, point2, 1 - f);
-        // calc plates
-        plate1 = newPointArray(2);
-        plate2 = newPointArray(2);
-        interpPoint2(point1, point2, plate1[0], plate1[1], f, lineThickness*3);
-        interpPoint2(point1, point2, plate2[0], plate2[1], 1 - f, lineThickness*3);
     }
 
     @Override
     void draw(Graphics g) {
         int hs = 12;
         setBbox(point1, point2, hs);
-
-        // draw first lead and plate
         g.setColor(color);
-        drawLine(g, point1, lead1, lineThickness, color);
-        drawLine(g, plate1[0], plate1[1], lineThickness, color);
-        drawLine(g, point2, lead2, lineThickness, color);
-
-        if (platePoints == null)
-            drawLine(g, plate2[0], plate2[1], lineThickness, color);
-        else {
-            int i;
-            for (i = 0; i != platePoints.length - 1; i++)
-                drawLine(g, platePoints[i], platePoints[i + 1], lineThickness, color);
-        }
-
-
+        drawLine(g, point1, point2,lineThickness,color);
     }
-/*    @Override
+
+    @Override
     public EditInfo getEditInfo(int n) {
         EditInfo out = super.getEditInfo(n);
         switch (n) {
             case 8:
-                out = EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
+                out = EditInfo.createCheckboxWithField("Costant Density", !(constRho == -1), constRho);
                 break;
             case 9:
                 out = EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
@@ -101,8 +59,6 @@ class CapacitorElm extends ThermalControlElement {
     @Override
     public void setEditValue(int n, EditInfo ei) {
         super.setEditValue(n, ei);
-        GWT.log(ei.name);
-        GWT.log(ei.value + "");
         switch (n) {
             case 8:
                 constRho = ei.value;
@@ -114,11 +70,16 @@ class CapacitorElm extends ThermalControlElement {
                 constK = ei.value;
                 break;
         }
-    }*/
+        updateElement();
+    }
+
+    @Override
+    int getDumpType() {
+        return 'w';
+    }
 
     @Override
     int getShortcut() {
-        return 'c';
+        return 'w';
     }
-
 }

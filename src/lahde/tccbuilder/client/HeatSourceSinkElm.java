@@ -19,41 +19,39 @@
 
 package lahde.tccbuilder.client;
 
-import com.google.gwt.user.client.Window;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 
-class GroundElm extends ThermalControlElement {
-    int symbolType;
+class HeatSourceSinkElm extends ThermalControlElement {
     double temperature;
 
-    public GroundElm(int xx, int yy) {
+    public HeatSourceSinkElm(int xx, int yy) {
         super(xx, yy);
-        symbolType = 0;
     }
 
-    public GroundElm(int xa, int ya, int xb, int yb, int f,
-                     StringTokenizer st) {
+    public HeatSourceSinkElm(int xa, int ya, int xb, int yb, int f,
+                             StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        if (st.hasMoreTokens()) {
-            try {
-                symbolType = Integer.parseInt(st.nextToken());
-            } catch (Exception e) {
-            }
-        }
+
     }
 
     @Override
-    String dump() {
-        return super.dump() + " " + symbolType;
+    void setPoints() {
+        super.setPoints();
+        Point tmp = point1;
+        point1 = point2;
+        point2 = tmp;
     }
+
 
     @Override
     int getDumpType() {
-        return 'g';
+        return 'h';
     }
 
     @Override
     int getShortcut() {
-        return 'g';
+        return 'h';
     }
 
     @Override
@@ -63,37 +61,30 @@ class GroundElm extends ThermalControlElement {
 
     @Override
     void draw(Graphics g) {
-        drawLine(g, point1, point2, lineThickness, color);
-        if (symbolType == 0) {
-            int i;
-            for (i = 0; i != 3; i++) {
-                int a = (int) ((lineThickness * 4) - (i * lineThickness));
-                int b = (int) (i * lineThickness * 2); // -10;
-                interpPoint2(point1, point2, ps1, ps2, 1 + b / dn, a);
-                drawLine(g, ps1, ps2, lineThickness, color);
-            }
-        } else if (symbolType == 1) {
-            interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawLine(g, ps1, ps2, lineThickness, color);
-            int i;
-            for (i = 0; i <= 2; i++) {
-                Point p = interpPoint(ps1, ps2, i / 2.);
-                drawLine(g, p.x, p.y, (int) (p.x - 5 * dpx1 + 8 * dx / dn), (int) (p.y + 8 * dy / dn - 5 * dpy1), lineThickness, color);
-            }
-        } else if (symbolType == 2) {
-            interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawLine(g, ps1, ps2, lineThickness, color);
-            int ps3x = (int) (point2.x + 10 * dx / dn);
-            int ps3y = (int) (point2.y + 10 * dy / dn);
-            drawLine(g, ps2.x, ps2.y, ps3x, ps3y, lineThickness, color);
-            drawLine(g, ps1.x, ps1.y, ps3x, ps3y, lineThickness, color);
-        } else {
-            interpPoint2(point1, point2, ps1, ps2, 1, 10);
-            drawLine(g, ps1, ps2, lineThickness, color);
-        }
-        interpPoint(point1, point2, ps2, 1 + 11. / dn);
-        int hs = 12;
-        setBbox(point1, point2, hs);
+        setBbox(point1, point2, 12);
+        g.setColor(color);
+
+        Point lead = new Point(point2.x, point2.y);
+/*        lead.x += (int) (lineThickness * 3);
+        interpPoint(point1, point2, lead, 0, lineThickness * 3);*/
+        //interpPoint(point1, point2, lead, 3 * lineThickness / dn, lineThickness * 3);
+
+        interpPoint(point1, point2, lead, 1 - (3 * lineThickness / dn), 0);
+
+        drawLine(g, lead, point1, lineThickness, color);
+
+        //normal line
+        interpPoint(lead, point2, ps2, 0, lineThickness * 3);
+        drawLine(g, lead, ps2, lineThickness, color);
+        interpPoint(lead, point2, ps2, 0, -lineThickness * 3);
+        drawLine(g, lead, ps2, lineThickness, color);
+
+        //thick line
+        interpPoint(point1, point2, ps2, 1, lineThickness * 3);
+        drawLine(g, point2, ps2, lineThickness * 2, color);
+        interpPoint(point1, point2, ps2, 1, -lineThickness * 3);
+        drawLine(g, point2, ps2, lineThickness * 2, color);
+
     }
 
 
@@ -139,7 +130,6 @@ class GroundElm extends ThermalControlElement {
 
         }
 
-        //TODO: Implement this with better functionality
         updateElement();
     }
 }

@@ -4,7 +4,6 @@ package lahde.tccbuilder.client;
 // import com.google.gwt.user.client.Window;
 
 // import java.util.*;
-
 public class TwoDimBC {
     HeatSimProps.BC[] bcType;
     double[] T;

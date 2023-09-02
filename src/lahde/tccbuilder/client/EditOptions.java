@@ -85,8 +85,6 @@ class EditOptions implements Editable {
         if (n == 12 && sim.adjustTimeStep)
             return new EditInfo("Minimum time step size (s)", sim.minTimeStep, 0, 0);
 
-        if (n == 13)
-            return new EditInfo("Left temperature", sim.heatCircuit.temperatureWest);
 
         return null;
     }
@@ -182,8 +180,6 @@ class EditOptions implements Editable {
         }
         if (n == 12 && ei.value > 0)
             sim.minTimeStep = ei.value;
-        if (n == 13)
-            sim.temp_left = (double) ei.value;
     }
 
     Color setColor(String name, EditInfo ei, Color def) {

@@ -7,6 +7,8 @@ import lahde.tccbuilder.client.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
 
+
+@Deprecated
 public class ComponentConstantsDialog extends Dialog {
 
     private CircuitElm circuitElm;

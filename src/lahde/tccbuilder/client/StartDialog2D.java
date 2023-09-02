@@ -64,30 +64,30 @@ public class StartDialog2D extends Dialog {
 
 
         timeStep = new DoubleBox();
-        timeStep.setValue(sim.dt * 1e3);
+        timeStep.setValue(sim.simulation2D.dt * 1e3);
 
         startTemperature = new DoubleBox();
-        startTemperature.setValue(sim.startTemp);
+        startTemperature.setValue(sim.simulation2D.startTemp);
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));
         leftConvectionCoefficientLabel = new Label(Locale.LS("Left Convection Coefficient ( W/(m²K) )"));
         inletHeatFlux = new DoubleBox();
-        inletHeatFlux.setValue(sim.qIn);
+        inletHeatFlux.setValue(sim.simulation2D.qWest);
         leftTemperature = new DoubleBox();
-        leftTemperature.setValue(sim.twoDimBC.T[0]);
+        leftTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
         leftConvectionCoefficient = new DoubleBox();
-        leftConvectionCoefficient.setValue(sim.h_left);
+        leftConvectionCoefficient.setValue(sim.simulation2D.hWest);
 
         outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m² )"));
         rightTemperatureLabel = new Label(Locale.LS("Right Temperature ( K )"));
         rightConvectionCoefficientLabel = new Label(Locale.LS("Right Convection Coefficient ( W/(m²K) )"));
         outletHeatFlux = new DoubleBox();
-        inletHeatFlux.setValue(sim.qOut);
+        inletHeatFlux.setValue(sim.simulation2D.qEast);
         rightTemperature = new DoubleBox();
-        rightTemperature.setValue(sim.twoDimBC.T[1]);
+        rightTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
         rightConvectionCoefficient = new DoubleBox();
-        rightConvectionCoefficient.setValue(sim.h_right);
+        rightConvectionCoefficient.setValue(sim.simulation2D.hEast);
 
         leftToggleables.add(inletHeatFluxLabel);
         leftToggleables.add(inletHeatFlux);
@@ -167,7 +167,7 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.twoDimBC.T[0] = leftTempValue;
+                    sim.simulation2D.twoDimBC.T[0] = leftTempValue;
                 }
                 if (rightTemperature.isVisible()) {
                     double rightTempValue = rightTemperature.getValue();
@@ -175,7 +175,7 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.twoDimBC.T[1] = rightTempValue;
+                    sim.simulation2D.twoDimBC.T[1] = rightTempValue;
                 }
                 if (leftConvectionCoefficient.isVisible()) {
                     double leftConvCoeffValue = leftConvectionCoefficient.getValue();
@@ -183,7 +183,7 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.twoDimBC.h[0] = leftConvCoeffValue;
+                    sim.simulation2D.twoDimBC.h[0] = leftConvCoeffValue;
                 }
                 if (rightConvectionCoefficient.isVisible()) {
                     double rightConvCoeffValue = rightConvectionCoefficient.getValue();
@@ -191,7 +191,7 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.twoDimBC.h[1] = rightConvCoeffValue;
+                    sim.simulation2D.twoDimBC.h[1] = rightConvCoeffValue;
                 }
                 if (inletHeatFlux.isVisible()) {
                     double qInValue = inletHeatFlux.getValue();
@@ -199,7 +199,7 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
-                    sim.qIn = qInValue;
+                    sim.simulation2D.qWest = qInValue;
                 }
                 if (outletHeatFlux.isVisible()) {
                     double qOutValue = outletHeatFlux.getValue();
@@ -207,12 +207,12 @@ public class StartDialog2D extends Dialog {
                         Window.alert("Heat flux value must be positive!");
                         return;
                     }
-                    sim.qOut = qOutValue;
+                    sim.simulation2D.qEast = qOutValue;
                 }
-                sim.dt = dtValue / 1e3;
-                sim.startTemp = startTempValue;
-                sim.left_boundary = (int) (10 * (leftBoundary.getSelectedIndex() + 1) + 1);//what is this (o_O)
-                sim.right_boundary = (int) (10 * (rightBoundary.getSelectedIndex() + 1) + 2);//what is this (o_O)
+                sim.simulation2D.dt = dtValue / 1e3;
+                sim.simulation2D.startTemp = startTempValue;
+                sim.simulation2D.eastBoundary = Simulation1D.BorderCondition.values()[rightBoundary.getSelectedIndex()];
+                sim.simulation2D.westBoundary = Simulation1D.BorderCondition.values()[leftBoundary.getSelectedIndex()];
 
 
 
@@ -243,8 +243,8 @@ public class StartDialog2D extends Dialog {
                         leftTemperature.setVisible(true);
                         leftConvectionCoefficientLabel.setVisible(true);
                         leftConvectionCoefficient.setVisible(true);
-                        leftTemperature.setValue(sim.twoDimBC.T[0]);
-                        leftConvectionCoefficient.setValue(sim.twoDimBC.h[0]);
+                        leftTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
+                        leftConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[0]);
 
                         break;
                     default:
@@ -278,8 +278,8 @@ public class StartDialog2D extends Dialog {
                         rightTemperature.setVisible(true);
                         rightConvectionCoefficientLabel.setVisible(true);
                         rightConvectionCoefficient.setVisible(true);
-                        rightTemperature.setValue(sim.twoDimBC.T[1]);
-                        rightConvectionCoefficient.setValue(sim.twoDimBC.h[1]);
+                        rightTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
+                        rightConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[1]);
                         break;
                     default:
                         break;
@@ -310,7 +310,7 @@ public class StartDialog2D extends Dialog {
     @Override
     void apply() {
 
-        if (!sim.simTwoDimComponents.isEmpty())
+        if (!sim.simulation2D.simTwoDimComponents.isEmpty())
             sim.resetAction();
         closeDialog();
     }

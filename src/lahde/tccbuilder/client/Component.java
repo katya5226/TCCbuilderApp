@@ -12,10 +12,12 @@ public class Component extends ThermalControlElement {
 
     public Component(int xx, int yy) {
         super(xx, yy);
+        lineThickness = 25;
     }
 
     public Component(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        lineThickness = 25;
     }
     @Override
     int getDumpType() {
