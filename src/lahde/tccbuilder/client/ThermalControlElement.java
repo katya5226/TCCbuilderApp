@@ -6,6 +6,8 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -241,7 +243,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         for (int i = 0; i < cvs.size(); i++) {
             ControlVolume cv = cvs.get(i);
             double cvX = x + i * cvWidth;
-            double cvY = y-(height / 2);
+            double cvY = y - (height / 2);
 
             double temperatureRange = sim.simulation1D.maxTemp - sim.simulation1D.minTemp;
             double temperatureRatio = (cv.temperature - sim.simulation1D.minTemp) / temperatureRange;
@@ -306,6 +308,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                         if (m != null) m.showTemperatureRanges(ei.choice);
                     }
                 });
+
                 ei.choice.select(sim.materialNames.indexOf(material.materialName));
 
                 // ei.choice.select(sim.materialNames.indexOf(this.material.materialName));  // TODO
@@ -352,6 +355,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 if (m != null) {
                     material = m;
                     setMaterial(m);
+                    if (!m.isLoaded()) m.readFiles();
                 }
                 break;
             case 3:
