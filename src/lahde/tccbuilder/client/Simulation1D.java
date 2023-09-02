@@ -31,8 +31,8 @@ public class Simulation1D extends Simulation {
         simTCEs = new Vector<ThermalControlElement>();
         westBoundary = BorderCondition.CONVECTIVE;
         eastBoundary = BorderCondition.CONVECTIVE;
-        hWest = 100000.0;
-        hEast = 100000.0;
+        hWest = 10000.0;
+        hEast = 10000.0;
         tempWest = 291.0;
         tempEast = 290.0;
         qWest = 0.0;

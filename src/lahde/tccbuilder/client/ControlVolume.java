@@ -67,7 +67,8 @@ public class ControlVolume {
         if (constRho != -1)
             rho = constRho;
         else {
-            rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
+            // rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
+            rho = material.rho.get((int)Math.round(temperature * 10));
         }
         return rho;
     }
@@ -84,11 +85,14 @@ public class ControlVolume {
             }
             if (material.cpThysteresis) {
                 if (mode == 1)
-                    cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpHeating.get(fI));
+                    // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpHeating.get(fI));
+                    cp = material.cpHeating.get(fI).get((int)Math.round(temperature * 10));
                 else if (mode == -1)
-                    cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpCooling.get(fI));
+                    // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpCooling.get(fI));
+                    cp = material.cpCooling.get(fI).get((int)Math.round(temperature * 10));
             } else {
-                cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
+                // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
+                cp = material.cp.get(fI).get((int)Math.round(temperature * 10));
             }
         }
         return cp;
@@ -101,7 +105,8 @@ public class ControlVolume {
         if (constK != -1)
             k = constK;
         else {
-            k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
+            // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
+            k = material.k.get(0).get((int)Math.round(temperature * 10));
         }
         return k;
     }
@@ -142,7 +147,8 @@ public class ControlVolume {
         ThermalControlElement tce = (ThermalControlElement) parent;
         if (!tce.field) {
             dTheatcool = material.dTheating.get(tce.fieldIndex - 1);
-            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature + dT;
             temperature = T;
             temperatureOld = T;
@@ -151,7 +157,8 @@ public class ControlVolume {
         }
         if (tce.field) {
             dTheatcool = material.dTcooling.get(tce.fieldIndex - 1);
-            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature - dT;
             GWT.log("Field = " + String.valueOf(tce.field));
             GWT.log("dT = -" + String.valueOf(dT));

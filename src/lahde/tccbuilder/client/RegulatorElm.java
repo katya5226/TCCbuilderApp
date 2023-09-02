@@ -20,6 +20,12 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.core.client.GWT;
+import java.util.Vector;
+import java.lang.Math;
+import java.math.*;
+
 
 class RegulatorElm extends ThermalControlElement {
 
@@ -28,13 +34,35 @@ class RegulatorElm extends ThermalControlElement {
     double rho1, rho2;
     double responseTime;
     double temperature1, temperature2;
+    double latentHeat;
+    Vector<Double> cpCurve;
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
+        cpCurve = new Vector<Double>();
     }
 
     public RegulatorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        cpCurve = new Vector<Double>();
+    }
+
+    public void setCpCurve() {
+        // Tm = transition temperature; lh = latent heat; w = transition width in K; cp1,cp2 specific heat capacities in each phase
+        cpCurve.clear();
+        double w = Math.abs(temperature2 - temperature1);
+        double Tm = 0.5 * (temperature2 + temperature1);
+        double a = 5.0 / w;
+        for (int i = 0; i < 20000; i++) {
+            try {
+                cpCurve.add(cp1 + (cp2 - cp1) / (1 + Math.exp(a * (Tm - 0.1 * i))) + a * latentHeat / (2 * (1 + Math.cosh(a * (0.1 * i - Tm)))));
+            } catch (Exception e) {
+                Window.alert("Error setting cp curve.");
+            }
+        }
+        for (int i = 0; i < 20000; i+=200) {
+            GWT.log(String.valueOf(cpCurve.get(i)));
+        }
     }
 
     @Override
@@ -157,6 +185,8 @@ class RegulatorElm extends ThermalControlElement {
             case 14:
                 return new EditInfo("Temperature 2", temperature2);
             case 15:
+                return new EditInfo("Latent heat", latentHeat);
+            case 16:
                 return new EditInfo("Response time", responseTime);
             default:
                 return null;
@@ -217,12 +247,15 @@ class RegulatorElm extends ThermalControlElement {
                 temperature2 = ei.value;
                 break;
             case 15:
+                latentHeat = ei.value;
+                break;
+            case 16:
                 responseTime = ei.value;
                 break;
         }
 
         //TODO: Implement this with better functionality
-
+        setCpCurve();
         updateElement();
 
     }
