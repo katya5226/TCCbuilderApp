@@ -205,13 +205,7 @@ class RegulatorElm extends ThermalControlElement {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-                double prevLength = length;
-                length = (ei.value / sim.selectedLengthUnit.conversionFactor);
-
-                double ratio = length / prevLength;
-                int deltaX = (int) ((point2.x - point1.x) * ratio);
-                point2.x = (point1.x + deltaX);
-                point2.x = sim.snapGrid(point2.x);
+setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;

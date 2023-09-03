@@ -64,7 +64,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         index = Integer.parseInt(st.nextToken());
         material = sim.materialHashMap.get("100001-Inox");
         length = Double.parseDouble(st.nextToken());
-        name = st.nextToken().replaceAll("#"," ");
+        name = st.nextToken().replaceAll("#", " ");
         resizable = Boolean.parseBoolean(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
@@ -179,7 +179,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(index).append(' ');
 
         sb.append(length).append(' ');
-        sb.append(name.replaceAll(" ","#")).append(' ');
+        sb.append(name.replaceAll(" ", "#")).append(' ');
         sb.append(resizable).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
@@ -368,19 +368,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 5:
-                double calculatedLength = (ei.value / sim.selectedLengthUnit.conversionFactor);
-                if (!resizable && calculatedLength != length) {
-                    Window.alert("Warning, element not resizeable!");
-                    return;
-                }
-                double prevLength = length;
-                length = calculatedLength;
-
-
-                double ratio = length / prevLength;
-                int deltaX = (int) ((point2.x - point1.x) * ratio);
-                point2.x = (point1.x + deltaX);
-                point2.x = sim.snapGrid(point2.x);
+                setNewLength(ei.value);
                 break;
             case 6:
                 westResistance = ei.value;
@@ -404,6 +392,22 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         updateElement();
 
+    }
+
+    public void setNewLength(Double value) {
+        double calculatedLength = (value / sim.selectedLengthUnit.conversionFactor);
+        if (!resizable && calculatedLength != length) {
+            Window.alert("Warning, element not resizeable!");
+            return;
+        }
+        double prevLength = length;
+        length = calculatedLength;
+
+
+        double ratio = length / prevLength;
+        int deltaX = (int) ((point2.x - point1.x) * ratio);
+        point2.x = (point1.x + deltaX);
+        point2.x = sim.snapGrid(point2.x);
     }
 
     void updateElement() {
