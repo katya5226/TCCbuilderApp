@@ -64,7 +64,7 @@ public class ExportAsLocalFileDialog extends Dialog implements ValueChangeHandle
 	public static void setLastFileName(String s) {
 	    // remember filename for use when saving a new file.
 	    // if s is null or automatically generated then just clear out old filename.
-	    if (s == null || (s.startsWith("circuit-") && s.contains(".circuitjs")))
+	    if (s == null || (s.startsWith("circuit-")))
 		lastFileName = null;
 	    else
 		lastFileName = s;
@@ -88,7 +88,7 @@ public class ExportAsLocalFileDialog extends Dialog implements ValueChangeHandle
 		    fname = lastFileName;
 		else {
 		    DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-		    fname = "circuit-"+ dtf.format(date) + ".circuitjs.txt";
+		    fname = "circuit-"+ dtf.format(date) + ".txt";
 		}
 		textBox.setText(fname);
 		
