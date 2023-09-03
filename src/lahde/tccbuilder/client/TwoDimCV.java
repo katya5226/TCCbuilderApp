@@ -59,14 +59,14 @@ public class TwoDimCV {
         if (constRho != -1)
             rho = constRho;
         else if (constRho == -1) {
-            rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
+            // rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
+            rho = material.rho.get((int)Math.round(temperature * 10));
         }
         return rho;
     }
 
     double cp() {
         double cp = 0.0;
-        Material m = material;
         int fI = 0;
         if (constCp != -1) {
             cp = constCp;
@@ -74,12 +74,15 @@ public class TwoDimCV {
             if (parent.field == true) {
                 fI = parent.fieldIndex;
             }
-            if (m.cpThysteresis == false) {
-                cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cp.get(fI));
-            } else if (m.cpThysteresis == true && mode == 1) {
-                cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cpHeating.get(fI));
-            } else if (m.cpThysteresis == true && mode == -1) {
-                cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cpCooling.get(fI));
+            if (material.cpThysteresis == false) {
+                // cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cp.get(fI));
+                cp = material.cp.get(fI).get((int)Math.round(temperature * 10));
+            } else if (material.cpThysteresis == true && mode == 1) {
+                // cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cpHeating.get(fI));
+                cp = material.cpHeating.get(fI).get((int)Math.round(temperature * 10));
+            } else if (material.cpThysteresis == true && mode == -1) {
+                // cp = ModelMethods.linInterp(temperature, m.interpTemps, m.cpCooling.get(fI));
+                cp = material.cpCooling.get(fI).get((int)Math.round(temperature * 10));
             }
         }
         return cp;
@@ -91,7 +94,8 @@ public class TwoDimCV {
         if (constK != -1)
             k = constK;
         else if (constK == -1) {
-            k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
+            // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
+            k = material.k.get(0).get((int)Math.round(temperature * 10));
         }
         return k;
     }
@@ -140,14 +144,16 @@ public class TwoDimCV {
         TwoDimComponent p = (TwoDimComponent) parent;
         if (!p.field) {
             dTheatcool = material.dTheating.get(p.fieldIndex - 1);
-            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature + dT;
             temperature = T;
             temperatureOld = T;
         }
         if (p.field) {
             dTheatcool = material.dTcooling.get(p.fieldIndex - 1);
-            dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+            dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature - dT;
             temperature = T;
             temperatureOld = T;

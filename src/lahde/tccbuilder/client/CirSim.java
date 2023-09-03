@@ -643,7 +643,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         l.addStyleName("topSpace");
         dimensionality = new ListBox();
         dimensionality.addItem("1D");
-        //dimensionality.addItem("2D");
+        dimensionality.addItem("2D");
         dimensionality.addStyleName("topSpace");
         verticalPanel.add(dimensionality);
 
