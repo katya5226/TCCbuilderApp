@@ -202,7 +202,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         // explanation for material indexes:
         // Inox Inox Inox Gd Inox Inox == 0 3 1 1 0 2
         // reads like this: 3 cv of material 0, 1 cv of material 1, 2 cv of material 0
-        GWT.log(sb.toString());
         return sb.toString();
     }
 
