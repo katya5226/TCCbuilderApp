@@ -21,13 +21,13 @@ public abstract class Simulation {
     double minTemp;
     double maxTemp;
 
-    public enum BorderCondition {
+    public static enum BorderCondition {
         ADIABATIC,
         CONSTANT_HEAT_FLUX,
         CONSTANT_TEMPERATURE,
         CONVECTIVE
     }
-    public enum Property {
+    public static enum Property {
         DENSITY,
         SPECIFIC_HEAT_CAPACITY,
         THERMAL_CONDUCTIVITY,

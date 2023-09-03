@@ -95,6 +95,9 @@ public class ControlVolume {
                 cp = material.cp.get(fI).get((int)Math.round(temperature * 10));
             }
         }
+        if (parent instanceof RegulatorElm) {
+            // cp = parent.cpCurve.get(math.round(temperature * 10));
+        }
         return cp;
     }
 
@@ -109,6 +112,33 @@ public class ControlVolume {
             k = material.k.get(0).get((int)Math.round(temperature * 10));
         }
         return k;
+    }
+
+    public double getProperty(Simulation.Property property) {
+        switch(property) {
+            case DENSITY:
+                return rho();
+            case SPECIFIC_HEAT_CAPACITY:
+                return cp();
+            case THERMAL_CONDUCTIVITY:
+                return k();
+            default:
+                return 0.0;
+        }
+    }
+
+    public void setProperty(Simulation.Property property, double value) {
+        switch(property) {
+            case DENSITY:
+                constRho = value;
+                break;
+            case SPECIFIC_HEAT_CAPACITY:
+                constCp = value;
+                break;
+            case THERMAL_CONDUCTIVITY:
+                constK = value;
+                break;
+        }
     }
 
     void calculateKWestFace() {

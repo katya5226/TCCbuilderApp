@@ -126,6 +126,14 @@ public class Simulation1D extends Simulation {
     void makeTCC() {
         // simTCEs.clear();
         // simTCEs.add(new TCE("TCE1", 0, simComponents));
+
+        for (ThermalControlElement tce : simTCEs) {
+            if (tce instanceof RegulatorElm) {
+                RegulatorElm reg = (RegulatorElm) tce;
+                reg.setCpCurve();
+            }
+        }
+
         heatCircuit = new TCC("Heat circuit", simTCEs);
         heatCircuit.westBoundary = 41;
         heatCircuit.eastBoundary = 42;//TODO: change

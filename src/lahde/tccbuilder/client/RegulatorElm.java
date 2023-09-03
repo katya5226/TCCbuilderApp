@@ -53,6 +53,8 @@ class RegulatorElm extends ThermalControlElement {
         double w = Math.abs(temperature2 - temperature1);
         double Tm = 0.5 * (temperature2 + temperature1);
         double a = 5.0 / w;
+        GWT.log("Tm: " + String.valueOf(Tm));
+        GWT.log("a: " + String.valueOf(a));
         for (int i = 0; i < 20000; i++) {
             try {
                 cpCurve.add(cp1 + (cp2 - cp1) / (1 + Math.exp(a * (Tm - 0.1 * i))) + a * latentHeat / (2 * (1 + Math.cosh(a * (0.1 * i - Tm)))));
@@ -61,7 +63,7 @@ class RegulatorElm extends ThermalControlElement {
             }
         }
         for (int i = 0; i < 20000; i+=200) {
-            GWT.log(String.valueOf(cpCurve.get(i)));
+            GWT.log("CP: " + String.valueOf(cpCurve.get(i)));
         }
     }
 
@@ -251,7 +253,6 @@ class RegulatorElm extends ThermalControlElement {
         }
 
         //TODO: Implement this with better functionality
-        setCpCurve();
         updateElement();
 
     }
