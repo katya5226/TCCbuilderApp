@@ -27,6 +27,12 @@ public abstract class Simulation {
         CONSTANT_TEMPERATURE,
         CONVECTIVE
     }
+    public enum Property {
+        DENSITY,
+        SPECIFIC_HEAT_CAPACITY,
+        THERMAL_CONDUCTIVITY,
+        EMISSIVITY
+    }
     abstract void makeTCC();
     abstract void heatTransferStep();
     abstract  void resetHeatSim();

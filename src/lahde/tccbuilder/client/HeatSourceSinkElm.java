@@ -49,10 +49,6 @@ class HeatSourceSinkElm extends ThermalControlElement {
         return 'h';
     }
 
-    @Override
-    int getShortcut() {
-        return 'h';
-    }
 
     @Override
     int getPostCount() {

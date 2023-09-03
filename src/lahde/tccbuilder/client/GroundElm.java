@@ -51,10 +51,6 @@ class GroundElm extends ThermalControlElement {
         return 'g';
     }
 
-    @Override
-    int getShortcut() {
-        return 'g';
-    }
 
     @Override
     int getPostCount() {

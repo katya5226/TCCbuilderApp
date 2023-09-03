@@ -3,6 +3,7 @@ package lahde.tccbuilder.client;
 import java.lang.Math;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -14,9 +15,9 @@ public class ZigZagInterface extends TwoDimComponent {
     public ZigZagInterface(int xx, int yy) {
         super(xx, yy);
         //CirSim.debugger();
-        material2 = sim.materialHashMap.get("000000-Custom");
+        material2 = sim.materialHashMap.get("100002-Gd");
         if (!material2.isLoaded()) material2.readFiles();
-
+        buildComponent();
     }
 
     public ZigZagInterface(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {

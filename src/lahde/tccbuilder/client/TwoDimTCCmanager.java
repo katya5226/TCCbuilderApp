@@ -9,19 +9,19 @@ public class TwoDimTCCmanager {
 
 
 
-    static void setConstProp(Vector<TwoDimCV> cvs, HeatSimProps.Property prop, double value) {
+    static void setConstProp(Vector<TwoDimCV> cvs, Simulation.Property prop, double value) {
         switch (prop) {
             case DENSITY:
                 for (TwoDimCV cv : cvs) {
                     cv.constRho = value;
                 }
                 break;
-            case HEATCAPACITY:
+            case SPECIFIC_HEAT_CAPACITY:
                 for (TwoDimCV cv : cvs) {
                     cv.constCp = value;
                 }
                 break;
-            case THCONDUCTIVITY:
+            case THERMAL_CONDUCTIVITY:
                 for (TwoDimCV cv : cvs) {
                     cv.constK = value;
                 }

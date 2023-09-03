@@ -75,9 +75,7 @@ class DiodeElm extends ThermalControlElement {
         return 'd';
     }
 
-    int getShortcut() {
-        return 'd';
-    }
+
 
     final int hs = (int) (lineThickness * 2);
     Polygon poly;

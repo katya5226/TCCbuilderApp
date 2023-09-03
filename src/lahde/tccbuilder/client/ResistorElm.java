@@ -41,10 +41,7 @@ class ResistorElm extends ThermalControlElement {
         return 'r';
     }
 
-    @Override
-    int getShortcut() {
-        return 'r';
-    }
+
 
 
     Point ps3, ps4;

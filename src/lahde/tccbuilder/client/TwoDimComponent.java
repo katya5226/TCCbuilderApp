@@ -53,7 +53,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         buildComponent();
         double tmpDx = this.length / this.n;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
-            sim.simulation2D.simTwoDimComponents.add(this);
+            //sim.simulation2D.simTwoDimComponents.add(this);
         }
     }
 
@@ -90,7 +90,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         field = false;
         fieldIndex = 1;
         buildComponent();
-        sim.simulation2D.simTwoDimComponents.add(this);
+        //sim.simulation2D.simTwoDimComponents.add(this);
     }
 
     void initializeComponent() {

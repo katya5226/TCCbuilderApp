@@ -17,6 +17,8 @@ public class Simulation2D extends Simulation {
 
 
     public Simulation2D() {
+        simTwoDimComponents = new Vector<TwoDimComponent>();
+        twoDimBC = new TwoDimBC(BorderCondition.CONVECTIVE);
         westBoundary = BorderCondition.CONVECTIVE;
         eastBoundary = BorderCondition.CONVECTIVE;
         hWest = 100000.0;

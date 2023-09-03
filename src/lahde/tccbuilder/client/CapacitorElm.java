@@ -116,9 +116,6 @@ class CapacitorElm extends ThermalControlElement {
         }
     }*/
 
-    @Override
-    int getShortcut() {
-        return 'c';
-    }
+
 
 }

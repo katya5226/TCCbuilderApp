@@ -86,7 +86,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         material = m;
     }
 
-    public void initializeThermalControlElement() {
+    public void  initializeThermalControlElement() {
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
@@ -104,7 +104,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double tmpDx = length / numCvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             set_dx(tmpDx);
-            sim.simulation1D.simTCEs.add(this);
+//            sim.simulation1D.simTCEs.add(this);
             Collections.sort(sim.trackedTemperatures);
             sim.trackedTemperatures.add(this);
         }

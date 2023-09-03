@@ -111,7 +111,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem elmFlipMenuItem;
     MenuItem elmSplitMenuItem;
     MenuItem elmSliderMenuItem;
-    MenuBar mainMenuBar;
+    MenuBar mainMenuBar, drawMenuBar;
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -468,7 +468,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         m.addItem(menuItemWithShortcut("zoom-out", "Zoom Out", "-", new MyCommand("zoom", "zoomout")));
         menuBar.addItem(Locale.LS("Edit"), m);
 
-        MenuBar drawMenuBar = new MenuBar(true);
+        drawMenuBar = new MenuBar(true);
         drawMenuBar.setAutoOpen(true);
 
         menuBar.addItem(Locale.LS("Draw"), drawMenuBar);
@@ -560,9 +560,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         mainMenuBar = new MenuBar(true);
         mainMenuBar.setAutoOpen(true);
-        composeMainMenu(mainMenuBar, 0);
-        composeMainMenu(drawMenuBar, 1);
-        loadShortcuts();
+
+        updateDrawMenus();
 
         if (!hideMenu) layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
 
@@ -646,7 +645,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dimensionality.addItem("2D");
         dimensionality.addStyleName("topSpace");
         verticalPanel.add(dimensionality);
-
         dimensionality.setSelectedIndex(0);
         dimensionality.addChangeHandler(new ChangeHandler() {
             @Override
@@ -654,21 +652,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 switch (dimensionality.getSelectedItemText()) {
                     case "1D":
                         simDimensionality = 1;
-                        simulation1D.simTCEs = new Vector<ThermalControlElement>();
-
                         break;
                     case "2D":
                         simDimensionality = 2;
-                        simulation2D.simTwoDimComponents = new Vector<TwoDimComponent>();
                         break;
                 }
+                updateDrawMenus();
+                readSetupFile("blank.txt", "Blank Circuit");
 
-
-                drawMenuBar.clearItems();
-                composeMainMenu(drawMenuBar, 1);
-                mainMenuBar.clearItems();
-                composeMainMenu(mainMenuBar, 1);
-                loadShortcuts();
             }
         });
 
@@ -732,7 +723,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         setColors(positiveColor, negativeColor, neutralColor, selectColor, currentColor);
 
         simulation1D = new Simulation1D();
-        //simulation2D = new Simulation2D();
+        simulation2D = new Simulation2D();
 
 
         if (startCircuitText != null) {
@@ -816,6 +807,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         readMaterialFlags(baseURL + "materials_flags.csv");
 
 
+    }
+
+    private void updateDrawMenus() {
+        drawMenuBar.clearItems();
+        composeMainMenu(drawMenuBar);
+        mainMenuBar.clearItems();
+        composeMainMenu(mainMenuBar);
+        loadShortcuts();
     }
 
     void calculateElementsLengths() {
@@ -1204,11 +1203,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     }-*/;
 
-    boolean shown = false;
-
     // this is called twice, once for the Draw menu, once for the right mouse popup
     // menu
-    public void composeMainMenu(MenuBar mainMenuBar, int num) {
+    public void composeMainMenu(MenuBar mainMenuBar) {
         MenuItem menuItem;
         if (simDimensionality == 2) {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
@@ -1224,21 +1221,22 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
+
+            MenuBar sampleElements = new MenuBar(true);
+
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+            menuItem.setTitle("Ideal operating range = 40-99 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+            menuItem.setTitle("Ideal operating range = 290-450 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
+            menuItem.setTitle("Operating range = 254-353 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
+            menuItem.setTitle("Operating range = 254-353 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
+            menuItem.setTitle("Operating range = 254-353 K");
+
+            mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
         }
-        MenuBar sampleElements = new MenuBar(true);
-
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
-        menuItem.setTitle("Ideal operating range = 40-99 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
-        menuItem.setTitle("Ideal operating range = 290-450 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
-        menuItem.setTitle("Operating range = 254-353 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
-        menuItem.setTitle("Operating range = 254-353 K");
-        sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
-        menuItem.setTitle("Operating range = 254-353 K");
-
-        mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
 
 
         MenuBar otherMenuBar = new MenuBar(true);
@@ -1282,6 +1280,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         try {
             elm = constructElement(t, 0, 0);
         } catch (Exception e) {
+
             //FIXME: elements fail constructing, likely because materials aren't loaded
         }
         CheckboxMenuItem mi;
@@ -1300,7 +1299,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     console("already have shortcut for " + (char) elm.getShortcut() + " " + elm);
                 shortcuts[elm.getShortcut()] = t;
             }
-            mi.setTitle(mi.getTitle() + " " + ((ThermalControlElement) elm).hasOperatingRange);
+            if (elm instanceof ThermalControlElement)
+                mi.setTitle(mi.getTitle() + " " + ((ThermalControlElement) elm).hasOperatingRange);
+
             elm.delete();
         }
 
@@ -2642,6 +2643,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                      */
                     newce.setPoints();
                     elmList.addElement(newce);
+                    if (newce instanceof ThermalControlElement)
+                        simulation1D.simTCEs.add((ThermalControlElement) newce);
+                    if (newce instanceof TwoDimComponent)
+                        simulation2D.simTwoDimComponents.add((TwoDimComponent) newce);
 
                 } catch (Exception ee) {
                     ee.printStackTrace();
@@ -3417,6 +3422,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 if (mouseMode == MODE_SELECT || mouseMode == MODE_DRAG_SELECTED) clearSelection();
             } else {
                 elmList.addElement(dragElm);
+                if (dragElm instanceof ThermalControlElement)
+                    simulation1D.simTCEs.add((ThermalControlElement) dragElm);
+                if (dragElm instanceof TwoDimComponent)
+                    simulation2D.simTwoDimComponents.add((TwoDimComponent) dragElm);
+
                 dragElm.draggingDone();
                 circuitChanged = true;
                 writeRecoveryToStorage();

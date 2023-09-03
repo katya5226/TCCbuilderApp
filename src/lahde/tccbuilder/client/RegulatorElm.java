@@ -70,10 +70,6 @@ class RegulatorElm extends ThermalControlElement {
         return 'e';
     }
 
-    @Override
-    int getShortcut() {
-        return 'e';
-    }
 
 
     Point ps3, ps4;

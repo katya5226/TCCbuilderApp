@@ -78,8 +78,5 @@ class ConduitElm extends ThermalControlElement {
         return 'w';
     }
 
-    @Override
-    int getShortcut() {
-        return 'w';
-    }
+
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class StartDialog2D extends Dialog {
     CirSim sim;
-    VerticalPanel vp;
+    FlowPanel fp;
     HorizontalPanel buttonPanel;
     Button cancelButton;
     Button applyButton;
@@ -40,13 +40,12 @@ public class StartDialog2D extends Dialog {
 
     public StartDialog2D(CirSim sim) {
         super();
-
         setText(Locale.LS("Start TCC"));
         closeOnEnter = true;
         this.sim = sim;
-        vp = new VerticalPanel();
-        setWidget(vp);
-
+        fp = new FlowPanel();
+        setWidget(fp);
+        fp.addStyleName("dialogContainer");
         leftBoundary = new ListBox();
         /*
         leftBoundary.addItem("Adiabatic");
@@ -103,32 +102,31 @@ public class StartDialog2D extends Dialog {
         rightToggleables.add(rightConvectionCoefficient);
         rightToggleables.add(rightConvectionCoefficientLabel);
         Label l;
-        vp.add(new Label(Locale.LS("Enter Time Step (ms): ")));
-        vp.add(timeStep);
-        vp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
-        vp.add(startTemperature);
-        vp.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
+        fp.add(new Label(Locale.LS("Enter Time Step (ms): ")));
+        fp.add(timeStep);
+        fp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
+        fp.add(startTemperature);
+        fp.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
         l.addStyleName("dialogHeading");
-        vp.add(leftBoundary);
-        vp.add(inletHeatFluxLabel);
-        vp.add(inletHeatFlux);
-        vp.add(leftTemperatureLabel);
-        vp.add(leftTemperature);
-        vp.add(leftConvectionCoefficientLabel);
-        vp.add(leftConvectionCoefficient);
+        fp.add(leftBoundary);
+        fp.add(inletHeatFluxLabel);
+        fp.add(inletHeatFlux);
+        fp.add(leftTemperatureLabel);
+        fp.add(leftTemperature);
+        fp.add(leftConvectionCoefficientLabel);
+        fp.add(leftConvectionCoefficient);
 
-        vp.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
+        fp.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
         l.addStyleName("dialogHeading");
 
-        vp.add(rightBoundary);
-        vp.add(outletHeatFluxLabel);
-        vp.add(outletHeatFlux);
-        vp.add(rightTemperatureLabel);
-        vp.add(rightTemperature);
-        vp.add(rightConvectionCoefficientLabel);
-        vp.add(rightConvectionCoefficient);
+        fp.add(rightBoundary);
+        fp.add(outletHeatFluxLabel);
+        fp.add(outletHeatFlux);
+        fp.add(rightTemperatureLabel);
+        fp.add(rightTemperature);
+        fp.add(rightConvectionCoefficientLabel);
+        fp.add(rightConvectionCoefficient);
 
-        vp.setSpacing(1);
 
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
@@ -294,7 +292,7 @@ public class StartDialog2D extends Dialog {
         buttonPanel.add(cancelButton);
         buttonPanel.add(applyButton);
         buttonPanel.addStyleName("dialogButtonPanel");
-        vp.add(buttonPanel);
+        fp.add(buttonPanel);
         this.center();
     }
 

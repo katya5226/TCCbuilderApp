@@ -59,10 +59,6 @@ class SwitchElm extends ThermalControlElement {
     }
 
 
-    @Override
-    int getShortcut() {
-        return 's';
-    }
 
     @Override
     String dump() {
