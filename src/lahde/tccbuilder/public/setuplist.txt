@@ -1,2 +1,3 @@
 ### setuplist.txt first line must be a comments
 KlinarDiode.txt MCWithFluidicSwitch
+thermal_switch_capacitor.txt ThermalSwitchCapacitor

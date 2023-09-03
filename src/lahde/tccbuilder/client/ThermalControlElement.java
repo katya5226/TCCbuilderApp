@@ -64,10 +64,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         index = Integer.parseInt(st.nextToken());
         material = sim.materialHashMap.get("100001-Inox");
         length = Double.parseDouble(st.nextToken());
-        name = st.nextToken();
+        name = st.nextToken().replaceAll("#"," ");
+        resizable = Boolean.parseBoolean(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
-
         isDisabled = false;
         field = false;
         fieldIndex = 1;
@@ -76,6 +76,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         Material m = null;
         while (st.hasMoreTokens()) {
             int materialIndex = Integer.parseInt(st.nextToken(" "));
+            GWT.log(materialIndex + "");
             m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
             int number = Integer.parseInt(st.nextToken(" "));
             counter += number;
@@ -86,7 +87,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         material = m;
     }
 
-    public void  initializeThermalControlElement() {
+    public void initializeThermalControlElement() {
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
@@ -178,7 +179,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(index).append(' ');
 
         sb.append(length).append(' ');
-        sb.append(name).append(' ');
+        sb.append(name.replaceAll(" ","#")).append(' ');
+        sb.append(resizable).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
 
@@ -200,6 +202,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         // explanation for material indexes:
         // Inox Inox Inox Gd Inox Inox == 0 3 1 1 0 2
         // reads like this: 3 cv of material 0, 1 cv of material 1, 2 cv of material 0
+        GWT.log(sb.toString());
         return sb.toString();
     }
 
@@ -281,7 +284,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     void getInfo(String[] arr) {
         arr[0] = name;
         arr[1] = "TCE index = " + index;
-        arr[2] = "Material = "; // + this.material.materialName;  // TODO: list materials of CVs
+        arr[2] = "Material = " + material.materialName;  // TODO: list materials of CVs
         arr[3] = "Length = " + CirSim.formatLength(length);
         arr[4] = "#CVs = " + numCvs;
         arr[5] = "CV dx = " + CirSim.formatLength(cvs.get(0).dx);
@@ -365,8 +368,14 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 5:
+                double calculatedLength = (ei.value / sim.selectedLengthUnit.conversionFactor);
+                if (!resizable && calculatedLength != length) {
+                    Window.alert("Warning, element not resizeable!");
+                    return;
+                }
                 double prevLength = length;
-                length = (ei.value / sim.selectedLengthUnit.conversionFactor);
+                length = calculatedLength;
+
 
                 double ratio = length / prevLength;
                 int deltaX = (int) ((point2.x - point1.x) * ratio);
