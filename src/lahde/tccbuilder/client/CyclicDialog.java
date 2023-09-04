@@ -208,6 +208,7 @@ public class CyclicDialog extends Dialog {
                     case MECHANIC_DISPLACEMENT:
                         break;
                     case MAGNETIC_FIELD_CHANGE:
+                        cyclePart.duration = magneticFieldDuration.getValue();
                         break;
                     case ELECTRIC_FIELD_CHANGE:
                         break;

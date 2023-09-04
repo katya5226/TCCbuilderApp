@@ -164,6 +164,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Vector<CircuitElm> elmList;
     Vector<Adjustable> adjustables;
     CircuitElm dragElm, menuElm, stopElm;
+    Graphics g;
+
 
     private CircuitElm mouseElm = null;
     int mousePost = -1;
@@ -1412,7 +1414,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (stopElm != null && stopElm != mouseElm) stopElm.setMouseElm(true);
 
 
-        Graphics g = new Graphics(cvcontext);
+        g = new Graphics(cvcontext);
 
 
         g.setColor(Color.black);
@@ -1786,9 +1788,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else if (mouseElm != null) {
             mouseElm.getInfo(info);
         } else {
-            info[0] = Locale.LS("t = ") + (double) Math.round(simulation1D.time * 100) / 100 + " s";
-            info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
-            info[2] = Locale.LS("components = " + simulation1D.printTCEs());
+            if (simDimensionality == 1) {
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
+                info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
+                info[2] = Locale.LS("components = " + simulation1D.printTCEs());
+            } else {
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation2D.time) + " s";
+                info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
+                info[2] = Locale.LS("components = ");
+
+
+            }
         }
         for (int i = 0; info[i] != null; i++)
             g.drawString(info[i], 8, 8 + 16 * (i + 1));
@@ -1844,7 +1854,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     }
 
-    boolean converged;
 
     void runCircuit() {
 
@@ -1858,12 +1867,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         // Check if we don't need to run simulation (for very slow simulation speeds).
         // If the circuit changed, do at least one iteration to make sure everything is consistent.
-        if (1000 >= steprate * (tm - lastIterTime)) return;
+        if (steprate * (tm - lastIterTime) <= 1000) return;
         int timeStepCountAtFrameStart = timeStepCount;
 
-        //stampCircuit();
-        int iter = 1;
-        while (true) {
+        int iter = 0;
+        while (iter < speedBar.getValue() && simRunning) {
             // *************************** Katni *******************************
             if (simDimensionality == 1) {
                 if (!simulation1D.cyclic) {
@@ -1888,7 +1896,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
             if (simDimensionality == 2) {
                 simulation2D.heatTransferStep();
-                simulation1D.time += simulation1D.dt;
+//                simulation2D.time += simulation2D.dt;
             }
 
             // *****************************************************************
@@ -1899,19 +1907,22 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 timeStepCount++;
             }
 
+            // Check whether enough time has elapsed to perform an *additional* iteration after those we have already completed.
+            // But limit total computation time to 33.34ms (30fps)
+
             tm = System.currentTimeMillis();
             lit = tm;
-            // Check whether enough time has elapsed to perform an *additional* iteration after
-            // those we have already completed. But limit total computation time to 50ms (20fps)
-            if ((timeStepCount - timeStepCountAtFrameStart) * 1000 >= steprate * (tm - lastIterTime) || (tm - lastFrameTime > 50))
+
+            if ((steprate * (tm - lastIterTime)) <= ((timeStepCount - timeStepCountAtFrameStart) * 1000L)) {
                 break;
-            if (!simRunning) break;
+            }
+            if (tm - lastFrameTime > 16.67) {
+                break;
+            }
+            iter++;
         }
-
         lastIterTime = lit;
-        //calcWireCurrents();
 
-        iter++;
     }
 
 
@@ -2574,7 +2585,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             voltsCheckItem.setState(true);
             showValuesCheckItem.setState(true);
             setGrid();
-            speedBar.setValue(57); // 57
+            speedBar.setValue(100); // 57
             lastIterTime = 0;
 
 
