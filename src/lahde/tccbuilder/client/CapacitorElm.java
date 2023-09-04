@@ -50,9 +50,11 @@ class CapacitorElm extends ThermalControlElement {
     void setPoints() {
         super.setPoints();
         double f = (dn / 2 - lineThickness) / dn;
+
         // calc leads
         lead1 = interpPoint(point1, point2, f);
         lead2 = interpPoint(point1, point2, 1 - f);
+
         // calc plates
         plate1 = newPointArray(2);
         plate2 = newPointArray(2);
@@ -81,6 +83,7 @@ class CapacitorElm extends ThermalControlElement {
 
 
     }
+
 /*    @Override
     public EditInfo getEditInfo(int n) {
         EditInfo out = super.getEditInfo(n);

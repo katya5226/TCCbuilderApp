@@ -405,8 +405,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         double ratio = length / prevLength;
         int deltaX = (int) ((point2.x - point1.x) * ratio);
-        point2.x = (point1.x + deltaX);
-        point2.x = sim.snapGrid(point2.x);
+        drag(sim.snapGrid(point1.x + deltaX), y);
     }
 
     void updateElement() {
