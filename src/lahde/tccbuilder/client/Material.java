@@ -10,6 +10,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.Window;
 
 import java.util.Vector;
 
@@ -133,7 +134,7 @@ public class Material {
 
                     if (!sim.awaitedResponses.contains(url_rho)) {
                         sim.awaitedResponses.add(url_rho);
-                        fillVectorFromURL(url_rho, rho);
+                        fillVectorFromURL(url_rho, rho,1000);
                     }
 
                     if (invariant) {
@@ -141,7 +142,7 @@ public class Material {
                         if (!sim.awaitedResponses.contains(url_cp)) {
                             sim.awaitedResponses.add(url_cp);
                             Vector<Double> vector = new Vector<Double>();
-                            fillVectorFromURL(url_cp, vector);
+                            fillVectorFromURL(url_cp, vector,200);
                             cp.add(vector);
                         }
                     } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {
@@ -155,21 +156,21 @@ public class Material {
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector);
+                                fillVectorFromURL(url_cp, vector, 200);
                                 cpCooling.add(vector);
 
                                 url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_heating.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector);
+                                fillVectorFromURL(url_cp, vector, 200);
                                 cpHeating.add(vector);
                             } else {
                                 url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector);
+                                fillVectorFromURL(url_cp, vector, 200);
                                 cp.add(vector);
                             }
                             if (field != 0) {
@@ -178,21 +179,21 @@ public class Material {
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector);
+                                    fillVectorFromURL(url_dT, vector, 0);
                                     dTcooling.add(vector);
 
                                     url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T_heating.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector);
+                                    fillVectorFromURL(url_dT, vector, 0);
                                     dTheating.add(vector);
                                 } else {
                                     url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector);
+                                    fillVectorFromURL(url_dT, vector, 0);
                                     dT.add(vector);
                                 }
                             }
@@ -206,21 +207,21 @@ public class Material {
                         url_k = baseURL + materialName + "/appInfo/k_cooling.txt";
 
                         sim.awaitedResponses.add(url_k);
-                        fillVectorFromURL(url_k, vector);
+                        fillVectorFromURL(url_k, vector, 1);
                         kCooling.add(vector);
 
                         url_k = baseURL + materialName + "/appInfo/k_heating.txt";
                         vector = new Vector<Double>();
 
                         sim.awaitedResponses.add(url_k);
-                        fillVectorFromURL(url_k, vector);
+                        fillVectorFromURL(url_k, vector, 1);
                         kHeating.add(vector);
                     } else {
                         url_k = baseURL + materialName + "/appInfo/k.txt";
                         vector = new Vector<Double>();
 
                         sim.awaitedResponses.add(url_k);
-                        fillVectorFromURL(url_k, vector);
+                        fillVectorFromURL(url_k, vector, 1);
                         k.add(vector);
                     }
 
@@ -358,7 +359,7 @@ public class Material {
     }
 
 
-    void fillVectorFromURL(String url, Vector<Double> vector) {
+    void fillVectorFromURL(String url, Vector<Double> vector, double defaultValue) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
@@ -379,6 +380,9 @@ public class Material {
 
                     } else if (response.getStatusCode() == Response.SC_NOT_FOUND) {
                         GWT.log("File \"" + url + "\" not found");
+                        Window.alert(url + " not found, loading default value: " + defaultValue);
+                        for (int i = 1; i < 20000; i++)
+                            vector.add(defaultValue);
                         sim.awaitedResponses.remove(url);
                     } else {
                         GWT.log("Bad file server response: " + response.getStatusText());

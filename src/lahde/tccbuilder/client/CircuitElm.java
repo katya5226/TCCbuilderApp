@@ -37,7 +37,7 @@ public abstract class CircuitElm implements Editable {
     static CircuitElm mouseElmRef = null;
 
     double lineThickness = 6;
-    double postSize = 5;
+    double postSize = 3;
 
     // initial point where user created element. For simple two-terminal elements,
     // this is the first node/post.

@@ -22,6 +22,7 @@ package lahde.tccbuilder.client;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.core.client.GWT;
+
 import java.util.Vector;
 import java.lang.Math;
 import java.math.*;
@@ -62,7 +63,7 @@ class RegulatorElm extends ThermalControlElement {
                 Window.alert("Error setting cp curve.");
             }
         }
-        for (int i = 0; i < 20000; i+=200) {
+        for (int i = 0; i < 20000; i += 200) {
             GWT.log("CP: " + String.valueOf(cpCurve.get(i)));
         }
     }
@@ -71,7 +72,6 @@ class RegulatorElm extends ThermalControlElement {
     int getDumpType() {
         return 'e';
     }
-
 
 
     Point ps3, ps4;
@@ -207,13 +207,7 @@ class RegulatorElm extends ThermalControlElement {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-                double prevLength = length;
-                length = (ei.value / sim.selectedLengthUnit.conversionFactor);
-
-                double ratio = length / prevLength;
-                int deltaX = (int) ((point2.x - point1.x) * ratio);
-                point2.x = (point1.x + deltaX);
-                point2.x = sim.snapGrid(point2.x);
+                setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;
