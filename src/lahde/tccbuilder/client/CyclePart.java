@@ -30,6 +30,7 @@ public class CyclePart {
     PartType partType;
     Vector<Double> newTemperatures;
     Vector<Double> newIndexes;
+    Vector<Double> heatInputs;
 
     Vector<ThermalControlElement> TCEs;
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
@@ -44,6 +45,8 @@ public class CyclePart {
         TCEs = new Vector<ThermalControlElement>();
         newProperties = new Vector<Vector<Double>>();
         newTemperatures = new Vector<Double>();
+        heatInputs = new Vector<Double>();
+        newIndexes = new Vector<Double>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         this.sim = sim;
         duration = 0;

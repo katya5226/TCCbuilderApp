@@ -23,15 +23,15 @@ public class CyclicDialog extends Dialog {
     DoubleBox newRho;
     DoubleBox newCp;
     DoubleBox newK;
-    DoubleBox heatFlux;
-    DoubleBox newComponentIndexes;
+    DoubleBox heatInput;
+    DoubleBox newIndex;
     DoubleBox electricFieldStrength;
     DoubleBox pressureFieldStrength;
     DoubleBox shearStressFieldStrength;
     DoubleBox newTemperature;
-    Label heatFluxLabel;
+    Label heatInputLabel;
     Label durationLabel;
-    Label newComponentIndexesLabel;
+    Label newIndexLabel;
     Label magneticFieldStrengthLabel;
     Label electricFieldStrengthLabel;
     Label pressureFieldStrengthLabel;
@@ -70,7 +70,7 @@ public class CyclicDialog extends Dialog {
 
         cyclePartListBox.addItem("< Choose Cycle Part >");
         cyclePartListBox.addItem("Heat Transfer");
-        //addBox.addItem("Heat Input");
+        cyclePartListBox.addItem("Heat Input");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
         //addBox.addItem("Electric Field Change");
@@ -82,41 +82,16 @@ public class CyclicDialog extends Dialog {
 
         inputWidgets = new ArrayList<>();
 
-        heatFluxLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Flux (W/m²): "));
-        heatFlux = new DoubleBox();
-        inputWidgets.add(heatFluxLabel);
-        inputWidgets.add(heatFlux);
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
         componentsListBox = new ListBox();
-        inputWidgets.add(componentsLabel);
         inputWidgets.add(componentsListBox);
+        inputWidgets.add(componentsLabel);
 
-//        for (int i = 0; i < sim.simulation1D.simTCEs.size(); i++) {
-//            GWT.log(sim.simulation1D.simTCEs.get(i).cvs.get(0).material.materialName);
-//            if (sim.simulation1D.simTCEs.get(i).cvs.get(0).material.magnetocaloric) {
-//                // TODO: This has to be modified, the flag will depend on the chosen cycle part type.
-//                availableTCEs.add(i);
-//                componentsListBox.addItem(String.valueOf(sim.simulation1D.simTCEs.get(i).index) + " " + sim.simulation1D.simTCEs.get(i).name);
-//            }
-//        }
-
-//        availableComponents = new ListBox();
-//        availableComponents.addItem("< Choose Component >");
-//        for (int i = 0; i < sim.simulation1D.simTCEs.size(); i++) {
-//            availableComponents.addItem(String.valueOf(sim.simulation1D.simTCEs.get(i).index) + " " + sim.simulation1D.simTCEs.get(i).name);
-//        }
-//        inputWidgets.add(availableComponents);
-
-/*        heatTransferDurationLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Duration (s): "));
-        heatTransferDuration = new DoubleBox();
-        inputWidgets.add(heatTransferDurationLabel);
-        inputWidgets.add(heatTransferDuration);
-
-        propsChangeDurationLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Duration (s): "));
-        propsChangeDuration = new DoubleBox();
-        inputWidgets.add(propsChangeDurationLabel);
-        inputWidgets.add(propsChangeDuration);*/
+        heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Flux (W/m²): "));
+        heatInput = new DoubleBox();
+        inputWidgets.add(heatInputLabel);
+        inputWidgets.add(heatInput);
 
         rhoLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Input new density (kg/m^3): "));
         newRho = new DoubleBox();
@@ -142,10 +117,10 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(heatFluxDuration);
 */
 
-        newComponentIndexesLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("New Component Indexes: "));
-        newComponentIndexes = new DoubleBox();
-        inputWidgets.add(newComponentIndexesLabel);
-        inputWidgets.add(newComponentIndexes);
+        newIndexLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("New Component Indexes: "));
+        newIndex = new DoubleBox();
+        inputWidgets.add(newIndexLabel);
+        inputWidgets.add(newIndex);
 
         magneticFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (T): "));
         magneticFieldListBox = new ListBox();
@@ -231,19 +206,22 @@ public class CyclicDialog extends Dialog {
         addComponentButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                //TODO: maybe add ability to change value when component is already added?
                 if (!cyclePart.TCEs.contains(chosenComponent))
                     switch (cyclePart.partType) {
                         case HEAT_TRANSFER:
                             break;
                         case HEAT_INPUT:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.heatInputs.add(heatInput.getValue());
                             break;
                         case MECHANIC_DISPLACEMENT:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.newIndexes.add(newIndex.getValue());
                             break;
                         case MAGNETIC_FIELD_CHANGE:
-                            if (magneticFieldListBox.isVisible()) {
-                                cyclePart.TCEs.add(chosenComponent);
-                                chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
-                            }
+                            cyclePart.TCEs.add(chosenComponent);
+                            chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;
@@ -266,17 +244,15 @@ public class CyclicDialog extends Dialog {
 
                             break;
                         case TEMPERATURE_CHANGE:
-                            if(!cyclePart.TCEs.contains(chosenComponent)) {
-                                cyclePart.TCEs.add(chosenComponent);
-                                cyclePart.newTemperatures.add(newTemperature.getValue());
-                            }
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.newTemperatures.add(newTemperature.getValue());
                             break;
                         case VALUE_CHANGE:
                             break;
                     }
 
+                //just for cycle part display, will be overridden when clicking apply
                 if (duration.isVisible()) {
-                    //will be overridden when clicking apply
                     cyclePart.duration = duration.getValue();
                     cyclePartLabel.setHTML("");
                 }
@@ -307,9 +283,21 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.HEAT_TRANSFER;
                         break;
+                    case "Heat Input":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        durationLabel.setVisible(true);
+                        duration.setVisible(true);
+                        addComponentButton.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.HEAT_INPUT;
+                        break;
                     case "Mechanic Displacement":
-                        newComponentIndexesLabel.setVisible(true);
-                        newComponentIndexes.setVisible(true);
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        durationLabel.setVisible(true);
+                        duration.setVisible(true);
+                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.MECHANIC_DISPLACEMENT;
                         break;
@@ -360,6 +348,7 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TEMPERATURE_CHANGE;
                         break;
+
                 }
                 fillComponentListBox();
                 center();
@@ -373,6 +362,10 @@ public class CyclicDialog extends Dialog {
 
                 int chosen = componentsListBox.getSelectedIndex() - 1;
                 if (chosen < 0) {
+                    heatInput.setVisible(false);
+                    heatInputLabel.setVisible(false);
+                    newIndex.setVisible(false);
+                    newIndexLabel.setVisible(false);
                     magneticFieldStrengthLabel.setVisible(false);
                     magneticFieldListBox.setVisible(false);
                     rhoLabel.setVisible(false);
@@ -391,8 +384,12 @@ public class CyclicDialog extends Dialog {
                     case HEAT_TRANSFER:
                         break;
                     case HEAT_INPUT:
+                        heatInput.setVisible(true);
+                        heatInputLabel.setVisible(true);
                         break;
                     case MECHANIC_DISPLACEMENT:
+                        newIndex.setVisible(true);
+                        newIndexLabel.setVisible(true);
                         break;
                     case MAGNETIC_FIELD_CHANGE:
                         magneticFieldListBox.clear();
@@ -409,7 +406,6 @@ public class CyclicDialog extends Dialog {
                     case SHEAR_STRESS_CHANGE:
                         break;
                     case PROPERTIES_CHANGE:
-
                         newRho.setValue(chosenComponent.constRho);
                         newCp.setValue(chosenComponent.constCp);
                         newK.setValue(chosenComponent.constK);
@@ -442,39 +438,12 @@ public class CyclicDialog extends Dialog {
             }
         });
 
-//        availableComponents.addChangeHandler(new ChangeHandler() {
-//            @Override
-//            public void onChange(ChangeEvent event) {
-//                int chosen = availableComponents.getSelectedIndex() - 1;
-//                if (chosen < 0) {
-//                    return;
-//                }
-//
-//                chosenComponent = sim.simulation1D.simTCEs.get(chosen);
-//                newRho.setValue(chosenComponent.cvs.get(0).constRho);
-//                newCp.setValue(chosenComponent.cvs.get(0).constCp);
-//                newK.setValue(chosenComponent.cvs.get(0).constK);
-//                rhoLabel.setVisible(true);
-//                newRho.setVisible(true);
-//                cpLabel.setVisible(true);
-//                newCp.setVisible(true);
-//                kLabel.setVisible(true);
-//                newK.setVisible(true);
-//                GWT.log("Chosen: " + String.valueOf(chosen));
-//                for (int i = 0; i < sim.simulation1D.simTCEs.size(); i++)
-//                    GWT.log(String.valueOf(sim.simulation1D.simTCEs.get(i).index) + " " + sim.simulation1D.simTCEs.get(i).name);
-//                GWT.log("Chosen component: " + chosenComponent.name);
-//                center();
-//
-//            }
-//        });
 
     }
 
     private void fillComponentListBox() {
         componentsListBox.clear();
         componentsListBox.addItem("< Choose Component >");
-//        componentIndices.clear();
         for (ThermalControlElement tce : sim.simulation1D.simTCEs) {
             boolean add = true;
             switch (cyclePart.partType) {
