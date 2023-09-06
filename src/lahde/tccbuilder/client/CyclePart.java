@@ -17,6 +17,7 @@ public class CyclePart {
         PRESSURE_CHANGE,
         SHEAR_STRESS_CHANGE,
         PROPERTIES_CHANGE,
+        TEMPERATURE_CHANGE,
         VALUE_CHANGE;
 
         @Override
@@ -27,6 +28,9 @@ public class CyclePart {
 
     int partIndex;
     PartType partType;
+    Vector<Double> newTemperatures;
+    Vector<Double> newIndexes;
+
     Vector<ThermalControlElement> TCEs;
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
     // rho, cp and k. In Cyclic dialog, the value of const_x (x = rho, cp or k) is set to -1 if a constant value needs not be set.
@@ -39,6 +43,7 @@ public class CyclePart {
         partType = PartType.HEAT_TRANSFER;
         TCEs = new Vector<ThermalControlElement>();
         newProperties = new Vector<Vector<Double>>();
+        newTemperatures = new Vector<Double>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         this.sim = sim;
         duration = 0;
