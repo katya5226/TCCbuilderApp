@@ -1,12 +1,14 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.Vector;
-import java.util.Map;
 import java.util.HashMap;
 import java.lang.Math;
 
+@SuppressWarnings("ReassignedVariable")
 public class CyclePart {
     public enum PartType {
         HEAT_TRANSFER,
@@ -24,12 +26,27 @@ public class CyclePart {
         public String toString() {
             return this.name().toLowerCase().replace("_", " ");
         }
+
+        public String toSpacedCamelCase() {
+            String[] words = this.name().toLowerCase().split("_");
+            StringBuilder camelCase = new StringBuilder();
+
+            for (String word : words) {
+                camelCase.append(Character.toUpperCase(word.charAt(0)));
+                if (word.length() > 1) {
+                    camelCase.append(word.substring(1)).append(" ");
+                }
+            }
+
+            return camelCase.toString();
+        }
     }
 
     int partIndex;
     PartType partType;
     Vector<Double> newTemperatures;
-    Vector<Double> newIndexes;
+    Vector<Integer> newIndexes;
+    Vector<Integer> fieldIndexes;
     Vector<Double> heatInputs;
 
     Vector<ThermalControlElement> TCEs;
@@ -46,11 +63,67 @@ public class CyclePart {
         newProperties = new Vector<Vector<Double>>();
         newTemperatures = new Vector<Double>();
         heatInputs = new Vector<Double>();
-        newIndexes = new Vector<Double>();
+        newIndexes = new Vector<Integer>();
+        fieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         this.sim = sim;
         duration = 0;
     }
+
+    public HTML toHTML() {
+        FlexTable flexTable = new FlexTable();
+        flexTable.setStyleName("cycle-part");
+        Element tableElement = flexTable.getElement();
+        tableElement.setAttribute("rules", "all");
+        int row = 0;
+        int column = 0;
+
+        if (!TCEs.isEmpty()) {
+            for (ThermalControlElement tce : TCEs)
+                flexTable.setText(row, column++, tce.index + " " + tce.name);
+            row++;
+            column = 0;
+        } else
+            flexTable.setText(row++, column, "all");
+
+        if (!fieldIndexes.isEmpty()) {
+            for (Integer index : fieldIndexes)
+                flexTable.setText(row, column++, index.toString() + "T");
+        } else if (!newTemperatures.isEmpty()) {
+            for (Double temperature : newTemperatures)
+                flexTable.setText(row, column++, temperature.toString());
+        } else if (!newIndexes.isEmpty()) {
+            for (Integer i : newIndexes)
+                flexTable.setText(row, column++, i.toString());
+        } else if (!heatInputs.isEmpty()) {
+            for (Double heatInput : heatInputs)
+                flexTable.setText(row, column++, heatInput.toString());
+        } else if (!newProperties.isEmpty()) {
+            int startingRow;
+            for (Vector<Double> properties : newProperties) {
+                startingRow = row;
+                for (Double p : properties) {
+                    flexTable.setText(startingRow++, column, p.toString());
+                }
+                column++;
+            }
+            startingRow = row;
+            for (String s : new String[]{"rho", "cp", "k"})
+                flexTable.setText(startingRow++, column, s);
+
+            flexTable.setText(0, column, "property");
+        }
+        row++;
+        column = 0;
+
+        HTML html = new HTML();
+        html.setHTML("<div>" + partIndex + ".\t" + partType.toSpacedCamelCase() + "</br>" + duration + "s </div>");
+        html.setHTML(html.getHTML() + flexTable);
+
+        html.setStyleName("cycle-part-outer");
+        return html;
+    }
+
 
     public void execute() {
         switch (partType) {
@@ -107,8 +180,7 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).magnetize();
             }
-        }
-        else if (duration > 0.0) {
+        } else if (duration > 0.0) {
             int steps = (int) (duration / sim.simulation1D.dt);
             for (ThermalControlElement tce : TCEs) {
                 Vector<Double> dTheatcool = new Vector<Double>();
@@ -140,7 +212,7 @@ public class CyclePart {
     void propertiesChange() {
         for (int i = 0; i < TCEs.size(); i++) {
             ThermalControlElement tce = TCEs.get(i);
-            GWT.log(newProperties.size()+"");
+            GWT.log(newProperties.size() + "");
             Vector<Double> newProps = newProperties.get(i);
             tce.setConstProperties(newProps);
         }

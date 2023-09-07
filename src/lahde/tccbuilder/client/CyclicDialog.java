@@ -199,7 +199,8 @@ public class CyclicDialog extends Dialog {
                         break;
                 }
                 sim.simulation1D.cycleParts.add(cyclePart);
-                printCyclePart(cyclePart, sim.cyclicOperationLabel);
+                sim.cyclicPanel.add(cyclePart.toHTML());
+//                printCyclePart(cyclePart, sim.cyclicOperationLabel);
                 closeDialog();
             }
         });
@@ -217,11 +218,12 @@ public class CyclicDialog extends Dialog {
                             break;
                         case MECHANIC_DISPLACEMENT:
                             cyclePart.TCEs.add(chosenComponent);
-                            cyclePart.newIndexes.add(newIndex.getValue());
+                            cyclePart.newIndexes.add(newIndex.getValue().intValue());
                             break;
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
                             chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
+                            cyclePart.fieldIndexes.add(chosenComponent.fieldIndex);//just for cyclic display, is not connected to other logic
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;

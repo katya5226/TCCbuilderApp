@@ -334,6 +334,8 @@ public class StartDialog extends Dialog {
                 cyclicButton.setEnabled(cyclic.getState());
                 sim.drawLayoutPanel(false, false);
                 sim.setCanvasSize();
+                sim.centreCircuit();
+
             }
 
 

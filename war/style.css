@@ -328,14 +328,22 @@ iframe {
 .cyclicPanel {
     box-sizing: border-box;
     padding: 1rem;
-    border: 0.25rem solid var(--red);
     background-color: var(--blue);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    overflow: scroll;
+    gap: 0.5rem;
 }
 
+.cyclicPanel > * > * {
+    width: 100%;
+}
+
+.cyclicPanel > * {
+    width: 100%;
+}
 
 .buttonPanel {
     width: 100%;
@@ -357,10 +365,35 @@ iframe {
     justify-content: space-between;
 }
 
+
 .radioPanel label {
     margin-right: 15px;
 }
 
 .glassBackdrop {
     background-color: rgba(24, 28, 36, 0.33);
+}
+
+.cycle-part {
+    width: 100%;
+    background-color: var(--deep-blue);
+    border: 1px solid var(--white);
+
+}
+
+.cycle-part td {
+    padding: 0.25rem;
+    background-color: var(--deep-blue);
+}
+
+.cyclicPanel > .gwt-HTML > .heading {
+    padding: 0.25rem;
+}
+
+
+.cycle-part-outer > div {
+    background-color: var(--white);
+    color: var(--black);
+    padding: 0.25rem;
+
 }
