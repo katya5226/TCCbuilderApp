@@ -190,8 +190,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     DockLayoutPanel layoutPanel;
     MenuBar menuBar;
     MenuBar fileMenuBar;
-    VerticalPanel verticalPanel;
-    CellPanel buttonPanel;
+    FlowPanel verticalPanel;
+    FlowPanel simulationConsolePanel;
+    FlowPanel cyclicPanel;
+    FlowPanel buttonPanel;
     private boolean mouseDragging;
     double scopeHeightFraction = 0.2;
 
@@ -208,7 +210,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int canvasWidth, canvasHeight;
 
     static final int MENUBARHEIGHT = 30;
-    static int VERTICALPANELWIDTH = 240; // default
+    static int VERTICALPANELWIDTH = 300; // default
     static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
     final Timer timer = new Timer() {
@@ -278,6 +280,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         height = (int) RootLayoutPanel.get().getOffsetHeight();
         height = height - MENUBARHEIGHT;
         width = width - VERTICALPANELWIDTH;
+        if (simulation1D != null && simulation1D.cyclic) width -= VERTICALPANELWIDTH;
+
         width = Math.max(width, 0); // avoid exception when setting negative width
         height = Math.max(height, 0);
         if (canvas != null) {
@@ -392,7 +396,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         shortcuts = new String[127];
 
-        layoutPanel = new DockLayoutPanel(Unit.PX);
+//        layoutPanel = new DockLayoutPanel(Unit.PX);
 
         fileMenuBar = new MenuBar(true);
 
@@ -444,10 +448,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         menuBar = new MenuBar();
         menuBar.addItem(Locale.LS("File"), fileMenuBar);
 
-        verticalPanel = new VerticalPanel();
+        verticalPanel = new FlowPanel();
         verticalPanel.addStyleName("mainVertical");
-        // make buttons side by side if there's room
-        buttonPanel = (VERTICALPANELWIDTH >= 166) ? new HorizontalPanel() : new VerticalPanel();
+
+        simulationConsolePanel = new FlowPanel();
+        simulationConsolePanel.addStyleName("simulationConsole");
+
+        cyclicPanel = new FlowPanel();
+        cyclicPanel.addStyleName("cyclicPanel");
+
+        verticalPanel.add(cyclicPanel);
+        verticalPanel.add(simulationConsolePanel);
+
+        buttonPanel = new FlowPanel();
         buttonPanel.addStyleName("buttonPanel");
         m = new MenuBar(true);
         m.addItem(undoItem = menuItemWithShortcut("ccw", "Undo", Locale.LS(ctrlMetaKey + "Z"), new MyCommand("edit", "undo")));
@@ -563,13 +576,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mainMenuBar = new MenuBar(true);
         mainMenuBar.setAutoOpen(true);
 
-        updateDrawMenus();
 
-        if (!hideMenu) layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
 
-        if (hideSidebar) VERTICALPANELWIDTH = 0;
-        else layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH + 32);
-        RootLayoutPanel.get().add(layoutPanel);
 
         canvas = Canvas.createIfSupported();
         if (canvas == null) {
@@ -577,6 +585,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         }
 
+        updateDrawMenus();
+        drawLayoutPanel(hideSidebar, hideMenu);
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
                 repaint();
@@ -585,8 +595,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         cvcontext = canvas.getContext2d();
         setCanvasSize();
-        layoutPanel.add(canvas);
-        verticalPanel.add(buttonPanel);
+//        layoutPanel.add(canvas);
+        simulationConsolePanel.add(buttonPanel);
         //buttonPanel.add(resetButton = new Button(Locale.LS("Reset")));
         resetButton = new Button(Locale.LS("Build TCC"));
         quickResetButton = new Button(Locale.LS("Reset TCC"));
@@ -625,12 +635,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (LoadFile.isSupported()) verticalPanel.add(loadFileInput = new LoadFile(this));
 
         Label l;
-        verticalPanel.add(l = new Label(Locale.LS("Simulation Speed")));
+        simulationConsolePanel.add(l = new Label(Locale.LS("Simulation Speed")));
         l.addStyleName("topSpace");
 
-        verticalPanel.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
+        simulationConsolePanel.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
         speedBar.addStyleName("topSpace");
-        verticalPanel.add(l = new Label(Locale.LS("Scale")));
+        simulationConsolePanel.add(l = new Label(Locale.LS("Scale")));
         l.addStyleName("topSpace");
         scale = new ListBox();
         scale.addItem("micrometer");
@@ -639,14 +649,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         scale.addItem("meter");
         scale.addStyleName("topSpace");
         scale.setSelectedIndex(1);
-        verticalPanel.add(scale);
-        verticalPanel.add(l = new Label(Locale.LS("Dimensionality")));
+        simulationConsolePanel.add(scale);
+        simulationConsolePanel.add(l = new Label(Locale.LS("Dimensionality")));
         l.addStyleName("topSpace");
         dimensionality = new ListBox();
         dimensionality.addItem("1D");
         dimensionality.addItem("2D");
         dimensionality.addStyleName("topSpace");
-        verticalPanel.add(dimensionality);
+        simulationConsolePanel.add(dimensionality);
         dimensionality.setSelectedIndex(0);
         dimensionality.addChangeHandler(new ChangeHandler() {
             @Override
@@ -686,11 +696,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
         cyclicOperationLabel = new HTML();
-        verticalPanel.add(cyclicOperationLabel);
+        simulationConsolePanel.add(cyclicOperationLabel);
 
         titleLabel = new Label("Label");
 
-        verticalPanel.add(iFrame = new Frame("iframe.html"));
+//        verticalPanel.add(iFrame = new Frame("iframe.html"));
+        iFrame = new Frame("iframe.html");
         iFrame.setWidth(VERTICALPANELWIDTH + "px");
         iFrame.setHeight("100 px");
         iFrame.getElement().setAttribute("scrolling", "no");
@@ -810,6 +821,29 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
     }
+
+    public void drawLayoutPanel(boolean hideSidebar, boolean hideMenu) {
+        RootLayoutPanel.get().clear();
+        layoutPanel = new DockLayoutPanel(Unit.PX);
+        if (!hideMenu) layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
+
+        if (verticalPanel.isAttached()) {
+            layoutPanel.remove(verticalPanel);
+        }
+
+        if (hideSidebar) {
+            VERTICALPANELWIDTH = 0;
+        } else {
+            layoutPanel.addEast(verticalPanel, (simulation1D != null && simulation1D.cyclic) ? VERTICALPANELWIDTH * 2 : VERTICALPANELWIDTH);
+        }
+
+        cyclicPanel.setVisible(simulation1D != null && simulation1D.cyclic);
+        layoutPanel.add(canvas);
+
+        RootLayoutPanel.get().add(layoutPanel);
+
+    }
+
 
     private void updateDrawMenus() {
         drawMenuBar.clearItems();
@@ -1875,11 +1909,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             // *************************** Katni *******************************
             if (simDimensionality == 1) {
                 if (!simulation1D.cyclic) {
+
                     simulation1D.heatTransferStep();
                     simulation1D.time += simulation1D.dt;
                 } else {
                     if (simulation1D.cycleParts.isEmpty())
                         Window.alert("Sim set to cyclic but cycle parts undefined");
+
 
                     simulation1D.cyclePart.execute();
 

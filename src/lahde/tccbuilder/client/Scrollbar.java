@@ -21,6 +21,7 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -62,7 +63,7 @@ public class Scrollbar extends Composite implements
     static int BARMARGIN = 3;
 
     Canvas can;
-    VerticalPanel pan;
+    FlowPanel pan;
     Context2d g;
     int min;
     int max;
@@ -76,7 +77,7 @@ public class Scrollbar extends Composite implements
         min = minimum;
         max = maximum - 1;
         val = value;
-        pan = new VerticalPanel();
+        pan = new FlowPanel();
         can = Canvas.createIfSupported();
         can.getCanvasElement().getStyle().setBackgroundColor(Color.darkGray.getHexValue());
         can.setWidth((CirSim.VERTICALPANELWIDTH) + " px");

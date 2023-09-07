@@ -6,7 +6,7 @@
     --deep-blue: #384354;
     --white: #F2F2F2;
     --red: #D93B3B;
-    --deep-red: #8d2424;
+    --deep-red: #992929;
     --yellow: #e7a217;
     --deep-yellow: #e7a117;
     --gray: #404B59;
@@ -296,12 +296,57 @@ iframe {
 
 .mainVertical {
     box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.mainVertical > * {
+    height: 100%;
+    width: 100%;
+}
+
+.simulationConsole {
+    box-sizing: border-box;
     padding: 1rem;
     background-color: var(--deep-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
+
+.simulationConsole > * > * {
+    width: 100%;
+}
+
+.simulationConsole > * {
+    width: 100%;
+}
+
+.cyclicPanel {
+    box-sizing: border-box;
+    padding: 1rem;
+    border: 0.25rem solid var(--red);
+    background-color: var(--blue);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
 
 .buttonPanel {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.buttonPanel > .gwt-Button {
+    width: 31%;
+    padding: 0.25rem;
 }
 
 

@@ -332,6 +332,8 @@ public class StartDialog extends Dialog {
             public void onClick(ClickEvent event) {
                 sim.simulation1D.cyclic = cyclic.getState();
                 cyclicButton.setEnabled(cyclic.getState());
+                sim.drawLayoutPanel(false, false);
+                sim.setCanvasSize();
             }
 
 
