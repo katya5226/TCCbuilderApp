@@ -233,7 +233,7 @@ public class CyclePart {
             }
         }
 
-        // for (ThermalControlElement tce : TCEs) {
+        // for (ThermalControlEleme222nt tce : TCEs) {
         //     for (HashMap props : changedProperties) {
         //         for (Map.Entry prop : changedProperties.entrySet()) {
         //             for (ControlVolume cv : tce.cvs) {
