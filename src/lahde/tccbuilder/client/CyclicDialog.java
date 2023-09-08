@@ -64,6 +64,7 @@ public class CyclicDialog extends Dialog {
         setWidget(vp);
 
         cyclePartLabel = new HTML();
+        cyclePartLabel.addStyleName("cycle-part-outer");
         cyclePartListBox = new ListBox();
         vp.add(cyclePartLabel);
         vp.add(cyclePartListBox);
@@ -85,8 +86,8 @@ public class CyclicDialog extends Dialog {
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
         componentsListBox = new ListBox();
-        inputWidgets.add(componentsListBox);
         inputWidgets.add(componentsLabel);
+        inputWidgets.add(componentsListBox);
 
         heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Flux (W/m²): "));
         heatInput = new DoubleBox();
@@ -117,7 +118,7 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(heatFluxDuration);
 */
 
-        newIndexLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("New Component Indexes: "));
+        newIndexLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("New Index: "));
         newIndex = new DoubleBox();
         inputWidgets.add(newIndexLabel);
         inputWidgets.add(newIndex);
@@ -150,13 +151,13 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(newTemperatureLabel);
         inputWidgets.add(newTemperature);
 
+        addComponentButton = new Button(Locale.LS("Add Component"));
+        inputWidgets.add(addComponentButton);
+
         durationLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Duration (s): "));
         duration = new DoubleBox();
         inputWidgets.add(durationLabel);
         inputWidgets.add(duration);
-
-        addComponentButton = new Button(Locale.LS("Add Component"));
-        inputWidgets.add(addComponentButton);
 
 
         for (Widget widget : inputWidgets) {
@@ -223,7 +224,8 @@ public class CyclicDialog extends Dialog {
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
                             chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
-                            cyclePart.fieldIndexes.add(chosenComponent.fieldIndex);//just for cyclic display, is not connected to other logic
+                            cyclePart.fieldIndexes.add(chosenComponent.fieldIndex);
+                            //just for cyclic display, is not connected to other logic
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;
@@ -260,7 +262,7 @@ public class CyclicDialog extends Dialog {
                 }
 
 
-                printCyclePart(cyclePart, cyclePartLabel);
+                cyclePartLabel.setHTML(cyclePart.toHTML().getHTML());
                 center();
             }
         });
@@ -290,7 +292,7 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
-                        addComponentButton.setVisible(true);
+//                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.HEAT_INPUT;
                         break;
@@ -299,7 +301,7 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
-                        addComponentButton.setVisible(true);
+//                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.MECHANIC_DISPLACEMENT;
                         break;
@@ -308,7 +310,7 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
-                        addComponentButton.setVisible(true);
+//                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
                         break;
@@ -337,7 +339,7 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
-                        addComponentButton.setVisible(true);
+//                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.PROPERTIES_CHANGE;
                         break;
@@ -346,7 +348,7 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
-                        addComponentButton.setVisible(true);
+//                        addComponentButton.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TEMPERATURE_CHANGE;
                         break;
@@ -378,6 +380,7 @@ public class CyclicDialog extends Dialog {
                     newK.setVisible(false);
                     newTemperatureLabel.setVisible(false);
                     newTemperature.setVisible(false);
+                    addComponentButton.setVisible(false);
                     return;
                 }
                 chosenComponent = availableTCEs.get(chosen);
@@ -388,10 +391,14 @@ public class CyclicDialog extends Dialog {
                     case HEAT_INPUT:
                         heatInput.setVisible(true);
                         heatInputLabel.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                     case MECHANIC_DISPLACEMENT:
                         newIndex.setVisible(true);
                         newIndexLabel.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                     case MAGNETIC_FIELD_CHANGE:
                         magneticFieldListBox.clear();
@@ -400,6 +407,8 @@ public class CyclicDialog extends Dialog {
                         }
                         magneticFieldStrengthLabel.setVisible(true);
                         magneticFieldListBox.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                     case ELECTRIC_FIELD_CHANGE:
                         break;
@@ -417,10 +426,14 @@ public class CyclicDialog extends Dialog {
                         newCp.setVisible(true);
                         kLabel.setVisible(true);
                         newK.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                     case TEMPERATURE_CHANGE:
                         newTemperatureLabel.setVisible(true);
                         newTemperature.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                     case VALUE_CHANGE:
                         break;
@@ -479,6 +492,7 @@ public class CyclicDialog extends Dialog {
         }
     }
 
+    @Deprecated
     public void printCyclePart(CyclePart cp, HTML label) {
         if (sim.simulation1D.cycleParts.size() == 1) {
             if (label.getHTML().equals("")) {
