@@ -139,6 +139,8 @@ public class CyclePart {
                 break;
             case MAGNETIC_FIELD_CHANGE:
                 magneticFieldChange();
+                if (duration > sim.simulation1D.dt)
+                    sim.simulation1D.heatTransferStep();
                 break;
             case ELECTRIC_FIELD_CHANGE:
                 electricFieldChange();
@@ -156,6 +158,11 @@ public class CyclePart {
                 valueChange();
                 if (duration > sim.simulation1D.dt)
                     sim.simulation1D.heatTransferStep();
+            case TEMPERATURE_CHANGE:
+                temperatureChange();
+                if (duration > sim.simulation1D.dt)
+                    sim.simulation1D.heatTransferStep();
+                break;
             default:
                 break;
         }
@@ -165,6 +172,12 @@ public class CyclePart {
     }
 
     void mechanicDisplacement() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                TCEs.get(i).index = newIndexes.get(i);
+            }
+            sim.simulation1D.heatCircuit.buildTCC();
+        }
     }
 
     /* void magneticFieldChange() {
@@ -177,11 +190,11 @@ public class CyclePart {
 
     void magneticFieldChange() {
         if (duration == 0.0) {
-            for (int i = 0; i < TCEs.size(); i++) {
-                TCEs.get(i).magnetize();
+            for (ThermalControlElement tce : TCEs) {
+                tce.magnetize();
             }
-        } else if (duration > 0.0) {
-            int steps = (int) (duration / sim.simulation1D.dt);
+        } else if (duration > 0.0) {  // TO BE CORRECTED
+            int steps = (int) (duration / sim.simulation1D.dt); // one execution will have length dt at most
             for (ThermalControlElement tce : TCEs) {
                 Vector<Double> dTheatcool = new Vector<Double>();
                 dTheatcool = tce.field ? tce.material.dTcooling.get(tce.fieldIndex - 1) : tce.material.dTheating.get(tce.fieldIndex - 1);
@@ -189,11 +202,10 @@ public class CyclePart {
                     // Check if given cv's material's magnetocaloric flag is TRUE;
                     // if not, abort and inform the user.
                     int pos = (int) Math.round(cv.temperature * 10);
-                    double dT = dTheatcool.get(pos);  // Here we would have to take the temperature at the begining of cycle pat,
-                    // but I think the error is small if we do this.
-                    double changeInStep = dT / steps;
+                    double dT = dTheatcool.get(pos);
+                    double changeInStep = dT / steps;  // This is not correct.
                     cv.temperature = tce.field ? cv.temperature - changeInStep : cv.temperature + changeInStep;
-                    cv.temperature = tce.field ? cv.temperatureOld - changeInStep : cv.temperatureOld + changeInStep;
+                    cv.temperatureOld = cv.temperature;
                 }
             }
         }
@@ -232,19 +244,27 @@ public class CyclePart {
                 }
             }
         }
+    }
 
-        // for (ThermalControlEleme222nt tce : TCEs) {
-        //     for (HashMap props : changedProperties) {
-        //         for (Map.Entry prop : changedProperties.entrySet()) {
-        //             for (ControlVolume cv : tce.cvs) {
-        //                 double currentValue = cv.getProperty(prop.getKey());
-        //                 double finalValue = prop.getValue();
-        //                 double changeInStep = (finalValue - currentValue) / steps;
-        //                 cv.setProperty(prop.getKey(), changeInStep);
-        //             }
-        //         }
-        //     }   
-        // }
+    void temperatureChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                for (ControlVolume cv : TCEs.get(i).cvs) {
+                    cv.temperature = newTemperatures.get(i);
+                    cv.temperatureOld = newTemperatures.get(i);
+                }
+            }
+        }
+        else if (duration > 0.0) {
+            int steps = (int) (duration / sim.simulation1D.dt);
+            for (int i = 0; i < TCEs.size(); i++) {
+                for (ControlVolume cv : TCEs.get(i).cvs) {
+                    double changeInStep = (newTemperatures.get(i) - cv.temperature) / steps;
+                    cv.temperature += changeInStep;
+                    cv.temperatureOld += changeInStep;
+                }
+            }
+        }
     }
 
 }

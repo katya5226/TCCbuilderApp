@@ -63,9 +63,9 @@ class RegulatorElm extends ThermalControlElement {
                 Window.alert("Error setting cp curve.");
             }
         }
-        for (int i = 0; i < 20000; i += 200) {
+        /*for (int i = 0; i < 20000; i += 200) {
             GWT.log("CP: " + String.valueOf(cpCurve.get(i)));
-        }
+        }*/
     }
 
     @Override
