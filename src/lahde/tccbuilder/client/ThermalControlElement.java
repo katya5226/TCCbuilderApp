@@ -6,8 +6,6 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -421,7 +419,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             buildThermalControlElement();
             isDisabled = false;
         }
-        sim.updateOrderOfElements();
+        sim.reorderByIndex();
     }
 
     String getOperatingRangeString() {
