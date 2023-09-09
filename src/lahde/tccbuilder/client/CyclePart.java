@@ -133,6 +133,9 @@ public class CyclePart {
                 break;
             case HEAT_INPUT:
                 heatInput();
+                if (duration > sim.simulation1D.dt)
+                    sim.simulation1D.heatTransferStep();
+                removeHeat();
                 break;
             case MECHANIC_DISPLACEMENT:
                 mechanicDisplacement();
@@ -169,6 +172,19 @@ public class CyclePart {
     }
 
     void heatInput() {
+        for (int i = 0; i < TCEs.size(); i++) {
+	        for (ControlVolume cv : TCEs.get(i).cvs) {
+	            cv.qGenerated = heatInputs.get(i);
+	        }
+	    }
+    }
+
+    void removeHeat() {
+        for (int i = 0; i < TCEs.size(); i++) {
+	        for (ControlVolume cv : TCEs.get(i).cvs) {
+	            cv.qGenerated = 0.0;
+	        }
+	    }
     }
 
     void mechanicDisplacement() {
@@ -233,14 +249,24 @@ public class CyclePart {
     }
 
     void valueChange() {
-        int steps = (int) (duration / sim.simulation1D.dt);
-        for (int i = 0; i < changedProperties.size(); i++) {
-            for (HashMap.Entry prop : changedProperties.get(i).entrySet()) {
-                for (ControlVolume cv : TCEs.get(i).cvs) {
-                    double currentValue = cv.getProperty((Simulation.Property) prop.getKey());
-                    double finalValue = (double) prop.getValue();
-                    double changeInStep = (finalValue - currentValue) / steps;
-                    cv.setProperty((Simulation.Property) prop.getKey(), changeInStep);
+        if (duration == 0.0) {
+            for (int i = 0; i < changedProperties.size(); i++) {
+                for (HashMap.Entry prop : changedProperties.get(i).entrySet()) {
+                    for (ControlVolume cv : TCEs.get(i).cvs) {
+                        cv.setProperty((Simulation.Property) prop.getKey(), (double) prop.getValue());
+                    }
+                }
+            }
+        } else {
+            int steps = (int) (duration / sim.simulation1D.dt);
+            for (int i = 0; i < changedProperties.size(); i++) {
+                for (HashMap.Entry prop : changedProperties.get(i).entrySet()) {
+                    for (ControlVolume cv : TCEs.get(i).cvs) {
+                        double currentValue = cv.getProperty((Simulation.Property) prop.getKey());
+                        double finalValue = (double) prop.getValue();
+                        double changeInStep = (finalValue - currentValue) / steps;
+                        cv.setProperty((Simulation.Property) prop.getKey(), changeInStep);
+                    }
                 }
             }
         }
