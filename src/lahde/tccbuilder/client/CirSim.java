@@ -577,8 +577,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         mainMenuBar.setAutoOpen(true);
 
 
-
-
         canvas = Canvas.createIfSupported();
         if (canvas == null) {
             RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
@@ -1457,13 +1455,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         g.setColor(Color.black);
         canvas.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
 
-
-        // Clear the frame
-        g.fillRect(0, 0, canvasWidth, canvasHeight);
-
-        // Run circuit
+//        noEditCheckItem.setState(simRunning);
         if (simRunning) {
 
+            //reorder elements on the canvas
+            if (simDimensionality == 1) {
+                updateOrderOfElements();
+            }
+
+            // Run circuit
             perfmon.startContext("runCircuit()");
             try {
                 if (awaitedResponses.isEmpty()) runCircuit();
@@ -1496,8 +1496,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         if (noEditCheckItem.getState()) g.drawLock(20, 30);
+        // Clear the frame
+        g.fillRect(0, 0, canvasWidth, canvasHeight);
 
         g.setColor(Color.white);
+
 
         // Set the graphics transform to deal with zoom and offset
         double scale = devicePixelRatio();
@@ -1627,6 +1630,43 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // thing called by updateCircuit();
         callUpdateHook();
     }
+
+    public void updateOrderOfElements() {
+        Collections.sort(simulation1D.simTCEs);
+        Collections.sort(trackedTemperatures);
+        redrawElements(simulation1D.simTCEs);
+        centreCircuit();
+    }
+
+    void redrawElements(Vector<ThermalControlElement> simTCEs) {
+        ArrayList<Integer> lengths = new ArrayList<>();
+        for (ThermalControlElement tce : simTCEs) {
+            if (tce.x == tce.x2)
+                lengths.add(Math.abs(tce.y - tce.y2));
+            if (tce.y == tce.y2)
+                lengths.add(Math.abs(tce.x - tce.x2));
+        }
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < simTCEs.size(); i++) {
+            ThermalControlElement tce = simTCEs.get(i);
+            if (tce.y == tce.y2) {
+                tce.x = x;
+                x += lengths.get(i);
+                tce.x2 = x;
+                tce.y = tce.y2 = canvasHeight / 2;
+                tce.setPoints();
+            }
+            if (tce.x == tce.x2) {
+                tce.y = y;
+                y += lengths.get(i);
+                tce.y2 = y;
+                tce.x = tce.x2 = canvasWidth / 2;
+                tce.setPoints();
+            }
+        }
+    }
+
 
     void drawTemperatureDisplays(Graphics g) {
         Context2d ctx = g.context;

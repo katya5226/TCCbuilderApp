@@ -368,7 +368,6 @@ public class CyclicDialog extends Dialog {
                     case "Toggle Thermal Control Element":
                         componentsLabel.setVisible(true);
                         componentsListBox.setVisible(true);
-
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TOGGLE_THERMAL_CONTROL_ELEMENT;
                         break;

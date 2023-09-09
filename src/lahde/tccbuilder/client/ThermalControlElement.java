@@ -421,6 +421,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             buildThermalControlElement();
             isDisabled = false;
         }
+        sim.updateOrderOfElements();
     }
 
     String getOperatingRangeString() {
