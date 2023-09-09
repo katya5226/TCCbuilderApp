@@ -20,6 +20,7 @@ public class CyclePart {
         SHEAR_STRESS_CHANGE,
         PROPERTIES_CHANGE,
         TEMPERATURE_CHANGE,
+        TOGGLE_THERMAL_CONTROL_ELEMENT,
         VALUE_CHANGE;
 
         @Override
@@ -48,6 +49,7 @@ public class CyclePart {
     Vector<Integer> newIndexes;
     Vector<Integer> fieldIndexes;
     Vector<Double> heatInputs;
+    boolean toggleTCE;
 
     Vector<ThermalControlElement> TCEs;
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
@@ -63,6 +65,7 @@ public class CyclePart {
         newProperties = new Vector<Vector<Double>>();
         newTemperatures = new Vector<Double>();
         heatInputs = new Vector<Double>();
+        newIndexes = new Vector<Integer>();
         newIndexes = new Vector<Integer>();
         fieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
@@ -85,8 +88,9 @@ public class CyclePart {
             column = 0;
         } else
             flexTable.setText(row++, column, "all");
-
-        if (!fieldIndexes.isEmpty()) {
+        if (toggleTCE) {
+            //ignore
+        } else if (!fieldIndexes.isEmpty()) {
             for (Integer index : fieldIndexes)
                 flexTable.setText(row, column++, index.toString() + "T");
         } else if (!newTemperatures.isEmpty()) {
@@ -153,6 +157,9 @@ public class CyclePart {
                 break;
             case PROPERTIES_CHANGE:
                 propertiesChange();
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                toggleThermalControlElement();
                 break;
             case VALUE_CHANGE:
                 valueChange();
@@ -254,8 +261,7 @@ public class CyclePart {
                     cv.temperatureOld = newTemperatures.get(i);
                 }
             }
-        }
-        else if (duration > 0.0) {
+        } else if (duration > 0.0) {
             int steps = (int) (duration / sim.simulation1D.dt);
             for (int i = 0; i < TCEs.size(); i++) {
                 for (ControlVolume cv : TCEs.get(i).cvs) {
@@ -264,6 +270,14 @@ public class CyclePart {
                     cv.temperatureOld += changeInStep;
                 }
             }
+        }
+    }
+
+    void toggleThermalControlElement() {
+        for (int i = 0; i < TCEs.size(); i++) {
+            ThermalControlElement thermalControlElement = TCEs.get(i);
+            SwitchElm switchElm = (SwitchElm) thermalControlElement;
+            switchElm.toggle();
         }
     }
 
