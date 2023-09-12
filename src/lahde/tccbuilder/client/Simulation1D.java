@@ -57,7 +57,6 @@ public class Simulation1D extends Simulation {
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
 
-
     }
 
     void resetHeatSim() {
@@ -228,4 +227,45 @@ public class Simulation1D extends Simulation {
         }
         return tces;
     }
+
+    public String dumpSimulation() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(hWest).append(' ')
+                .append(hEast).append(' ')
+                .append(westBoundary.ordinal()).append(' ')
+                .append(eastBoundary.ordinal()).append(' ')
+                .append(tempWest).append(' ')
+                .append(tempEast).append(' ')
+                .append(qWest).append(' ')
+                .append(qEast).append(' ')
+                .append(startTemp).append(' ')
+                .append(ambientTemperature).append(' ')
+                .append(dt).append(' ')
+                .append(cyclic).append(' ');
+
+        for(CyclePart cp  : cycleParts)
+            sb.append(cp.dump()).append(' ');
+
+
+        return sb.toString();
+    }
+
+
+    public void loadSimulation(StringTokenizer tokenizer) {
+        hWest = Double.parseDouble(tokenizer.nextToken());
+        hEast = Double.parseDouble(tokenizer.nextToken());
+        westBoundary = BorderCondition.values()[Integer.parseInt(tokenizer.nextToken())];
+        eastBoundary = BorderCondition.values()[Integer.parseInt(tokenizer.nextToken())];
+        tempWest = Double.parseDouble(tokenizer.nextToken());
+        tempEast = Double.parseDouble(tokenizer.nextToken());
+        qWest = Double.parseDouble(tokenizer.nextToken());
+        qEast = Double.parseDouble(tokenizer.nextToken());
+        startTemp = Double.parseDouble(tokenizer.nextToken());
+        ambientTemperature = Double.parseDouble(tokenizer.nextToken());
+        dt = Double.parseDouble(tokenizer.nextToken());
+        cyclic = Boolean.parseBoolean(tokenizer.nextToken());
+    }
 }
+
+

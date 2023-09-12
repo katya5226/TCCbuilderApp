@@ -10,6 +10,8 @@ import java.lang.Math;
 
 @SuppressWarnings("ReassignedVariable")
 public class CyclePart {
+
+
     public enum PartType {
         HEAT_TRANSFER,
         HEAT_INPUT,
@@ -47,7 +49,7 @@ public class CyclePart {
     PartType partType;
     Vector<Double> newTemperatures;
     Vector<Integer> newIndexes;
-    Vector<Integer> fieldIndexes;
+    Vector<Integer> newFieldIndexes;
     Vector<Double> heatInputs;
     boolean toggleTCE;
 
@@ -67,7 +69,7 @@ public class CyclePart {
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
         newIndexes = new Vector<Integer>();
-        fieldIndexes = new Vector<Integer>();
+        newFieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         this.sim = sim;
         duration = 0;
@@ -90,9 +92,11 @@ public class CyclePart {
             flexTable.setText(row++, column, "all");
         if (toggleTCE) {
             //ignore
-        } else if (!fieldIndexes.isEmpty()) {
-            for (Integer index : fieldIndexes)
-                flexTable.setText(row, column++, index.toString() + "T");
+        } else if (!newFieldIndexes.isEmpty()) {
+            for (int i = 0; i < newFieldIndexes.size(); i++) {
+                int index = newFieldIndexes.get(i);
+                flexTable.setText(row, column++, TCEs.get(i).material.dTcooling.get(index) + "T");
+            }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)
                 flexTable.setText(row, column++, temperature.toString());
@@ -180,18 +184,18 @@ public class CyclePart {
 
     void heatInput() {
         for (int i = 0; i < TCEs.size(); i++) {
-	        for (ControlVolume cv : TCEs.get(i).cvs) {
-	            cv.qGenerated = heatInputs.get(i);
-	        }
-	    }
+            for (ControlVolume cv : TCEs.get(i).cvs) {
+                cv.qGenerated = heatInputs.get(i);
+            }
+        }
     }
 
     void removeHeat() {
         for (int i = 0; i < TCEs.size(); i++) {
-	        for (ControlVolume cv : TCEs.get(i).cvs) {
-	            cv.qGenerated = 0.0;
-	        }
-	    }
+            for (ControlVolume cv : TCEs.get(i).cvs) {
+                cv.qGenerated = 0.0;
+            }
+        }
     }
 
     void mechanicDisplacement() {
@@ -307,4 +311,46 @@ public class CyclePart {
         }
     }
 
+    public String dump() {
+        String dump = partIndex + " " + partType + " " + duration + " " + TCEs.size() + " ";
+        if (!TCEs.isEmpty())
+            for (ThermalControlElement tce : TCEs) {
+                dump += sim.simulation1D.simTCEs.indexOf(tce);
+            }
+
+        switch (partType) {
+            case HEAT_TRANSFER:
+                break;
+            case HEAT_INPUT:
+                dump += heatInputs.size() + " ";
+                for (Double d : heatInputs)
+                    dump += d + " ";
+                break;
+            case MECHANIC_DISPLACEMENT:
+                dump += newIndexes.size() + " ";
+                for (Integer i : newIndexes)
+                    dump += i + " ";
+                break;
+            case MAGNETIC_FIELD_CHANGE:
+                dump += newFieldIndexes.size() + " ";
+                for (Integer i : newFieldIndexes)
+                    dump += i + " ";
+                break;
+            case ELECTRIC_FIELD_CHANGE:
+                break;
+            case PRESSURE_CHANGE:
+                break;
+            case SHEAR_STRESS_CHANGE:
+                break;
+            case PROPERTIES_CHANGE:
+                break;
+            case TEMPERATURE_CHANGE:
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case VALUE_CHANGE:
+                break;
+        }
+        return dump;
+    }
 }

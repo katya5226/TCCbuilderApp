@@ -1632,7 +1632,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
             @Override
             public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-                return tce1.y == tce1.y2 ? tce1.x - tce2.x: tce1.y - tce2.y;
+                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
 
             }
         };
@@ -2371,8 +2371,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     String dumpSimulation() {
         String dump;
-        if (simDimensionality == 1) dump = simulation1D.dump();
-        else dump = simulation2D.dump();
+        if (simDimensionality == 1)
+            dump = /*simulation1D.dump() +*/  simulation1D.dumpSimulation();
+        else
+            dump = simulation2D.dump();
+
+
         return dump;
     }
 
@@ -2728,10 +2732,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     }
 
-                    if (tint == '%' || tint == '?' || tint == 'B') {
-                        // ignore afilter-specific stuff
+                    if (tint == '!') {
+                        simulation1D.loadSimulation(st);
                         break;
                     }
+                    if (tint == '@') {
+                        simulation1D.loadSimulation(st);
+                        break;
+                    }
+
+
                     // do not add new symbols here without testing export as link
 
                     // if first character is a digit then parse the type as a number

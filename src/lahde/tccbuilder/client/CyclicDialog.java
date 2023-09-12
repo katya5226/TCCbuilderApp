@@ -1,6 +1,5 @@
 package lahde.tccbuilder.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.*;
@@ -234,7 +233,7 @@ public class CyclicDialog extends Dialog {
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
                             chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
-                            cyclePart.fieldIndexes.add(chosenComponent.fieldIndex);
+                            cyclePart.newFieldIndexes.add(chosenComponent.fieldIndex);
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;
