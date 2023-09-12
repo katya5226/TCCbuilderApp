@@ -25,10 +25,6 @@ public class CyclePart {
         TOGGLE_THERMAL_CONTROL_ELEMENT,
         VALUE_CHANGE;
 
-        @Override
-        public String toString() {
-            return this.name().toLowerCase().replace("_", " ");
-        }
 
         public String toSpacedCamelCase() {
             String[] words = this.name().toLowerCase().split("_");
@@ -95,7 +91,7 @@ public class CyclePart {
         } else if (!newFieldIndexes.isEmpty()) {
             for (int i = 0; i < newFieldIndexes.size(); i++) {
                 int index = newFieldIndexes.get(i);
-                flexTable.setText(row, column++, TCEs.get(i).material.dTcooling.get(index) + "T");
+                flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
             }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)

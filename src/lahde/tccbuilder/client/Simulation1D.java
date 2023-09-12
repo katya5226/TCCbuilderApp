@@ -245,7 +245,7 @@ public class Simulation1D extends Simulation {
                 .append(cyclic).append(' ');
 
         for(CyclePart cp  : cycleParts)
-            sb.append(cp.dump()).append(' ');
+            sb.append(cp.dump());
 
 
         return sb.toString();
