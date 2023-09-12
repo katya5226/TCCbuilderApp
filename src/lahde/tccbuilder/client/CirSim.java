@@ -1632,7 +1632,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
             @Override
             public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-                return tce1.x - tce2.x;
+
+                return tce1.y == tce2.y ? tce1.x - tce2.x : tce1.y - tce2.y;
 
             }
         };
@@ -1652,11 +1653,30 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int y = Integer.MAX_VALUE;
         ArrayList<Integer> lengths = new ArrayList<>();
         for (ThermalControlElement tce : simTCEs) {
-            if (tce.x == tce.x2) lengths.add(Math.abs(tce.y - tce.y2));
-            if (tce.y == tce.y2) lengths.add(Math.abs(tce.x - tce.x2));
+            if (tce.x == tce.x2)
+                lengths.add(Math.abs(tce.y - tce.y2));
+            if (tce.y == tce.y2)
+                lengths.add(Math.abs(tce.x - tce.x2));
+
+            if (tce == mouseElm) {
+                continue;
+            }
             x = Math.min(x, tce.x);
-            y = Math.min(y, tce.x);
+            y = Math.min(y, tce.y);
+
         }
+
+        if (mouseElm != null && mouseElm == simTCEs.get(0)) {
+            if (mouseElm.y == mouseElm.y2) {
+                x -= lengths.get(simTCEs.indexOf(mouseElm));
+            }
+            if (mouseElm.x == mouseElm.x2) {
+                y -= lengths.get(simTCEs.indexOf(mouseElm));
+            }
+
+
+        }
+
 
         for (int i = 0; i < simTCEs.size(); i++) {
             ThermalControlElement tce = simTCEs.get(i);
@@ -1664,14 +1684,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 tce.x = x;
                 x += lengths.get(i);
                 tce.x2 = x;
-                tce.y = tce.y2 = canvasWidth / 2;
+                tce.y = tce.y2 = y;
                 tce.setPoints();
             }
             if (tce.x == tce.x2) {
                 tce.y = y;
                 y += lengths.get(i);
                 tce.y2 = y;
-                tce.x = tce.x2 = canvasHeight / 2;
+                tce.x = tce.x2 = x;
                 tce.setPoints();
             }
         }
@@ -2908,7 +2928,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             dragElm.drag(gx, gy);
         }
         boolean success = true;
-        GWT.log(tempMouseMode+"");
+        GWT.log(tempMouseMode + "");
         switch (tempMouseMode) {
             case MODE_DRAG_ALL:
                 dragAll(e.getX(), e.getY());
