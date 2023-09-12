@@ -1632,8 +1632,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
             @Override
             public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-
-                return tce1.y == tce2.y ? tce1.x - tce2.x : tce1.y - tce2.y;
+                return tce1.y == tce1.y2 ? tce1.x - tce2.x: tce1.y - tce2.y;
 
             }
         };
