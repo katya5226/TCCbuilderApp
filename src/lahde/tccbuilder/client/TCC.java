@@ -1,5 +1,6 @@
 package lahde.tccbuilder.client;
 
+import java.beans.Transient;
 import java.lang.Math;
 import java.util.Vector;
 import java.util.Collections;

@@ -70,7 +70,9 @@ public class CyclicDialog extends Dialog {
         vp.add(cyclePartListBox);
 
         cyclePartListBox.addItem("< Choose Cycle Part >");
-        cyclePartListBox.addItem("Heat Transfer");
+        for (CyclePart.PartType pt : CyclePart.PartType.values())
+            cyclePartListBox.addItem(pt.toSpacedCamelCase());
+/*        cyclePartListBox.addItem("Heat Transfer");
         cyclePartListBox.addItem("Heat Input");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
@@ -78,7 +80,7 @@ public class CyclicDialog extends Dialog {
         //addBox.addItem("Shear Stress Change");
         //addBox.addItem("Pressure change");
         cyclePartListBox.addItem("Properties Change");
-        cyclePartListBox.addItem("Temperature Change");
+        cyclePartListBox.addItem("Temperature Change");*/
 
 
         inputWidgets = new ArrayList<>();
@@ -201,6 +203,7 @@ public class CyclicDialog extends Dialog {
                     case SHEAR_STRESS_CHANGE:
                         cyclePart.duration = duration.getValue();
                         break;
+                    case TOGGLE_THERMAL_CONTROL_ELEMENT:
                     case MAGNETIC_FIELD_CHANGE:
                     case MECHANIC_DISPLACEMENT:
                         cyclePart.duration = 0.0;
@@ -256,6 +259,9 @@ public class CyclicDialog extends Dialog {
                         case TEMPERATURE_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
                             cyclePart.newTemperatures.add(newTemperature.getValue());
+                            break;
+                        case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                            cyclePart.TCEs.add(chosenComponent);
                             break;
                         case VALUE_CHANGE:
                             break;
@@ -359,7 +365,15 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TEMPERATURE_CHANGE;
                         break;
-
+                    case "Toggle Thermal Control Element":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.TOGGLE_THERMAL_CONTROL_ELEMENT;
+                        break;
+                    default:
+                        Window.alert("Please select a cycle part");
+                        return;
                 }
                 fillComponentListBox();
                 center();
@@ -442,6 +456,9 @@ public class CyclicDialog extends Dialog {
                         addComponentButton.setVisible(true);
 
                         break;
+                    case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                        addComponentButton.setVisible(true);
+                        break;
                     case VALUE_CHANGE:
                         break;
                 }
@@ -487,6 +504,9 @@ public class CyclicDialog extends Dialog {
                 case PROPERTIES_CHANGE:
                     break;
                 case TEMPERATURE_CHANGE:
+                    break;
+                case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                    add = tce instanceof SwitchElm;
                     break;
                 case VALUE_CHANGE:
                     break;
