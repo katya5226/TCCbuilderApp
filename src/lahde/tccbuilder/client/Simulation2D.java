@@ -48,6 +48,8 @@ public class Simulation2D extends Simulation {
         setTemperatureRange();
 
         GWT.log(minTemp + " - " + maxTemp);
+        time = 0;
+
     }
 
     @Override
@@ -112,6 +114,7 @@ public class Simulation2D extends Simulation {
         for (int i = 0; i < twoDimTCE.cvs.size(); i++) {
             twoDimTCE.cvs.get(i).temperature = solutionVector.getEntry(i);
         }
+        time+=dt;
         // TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
         // update modes
         // calculate again

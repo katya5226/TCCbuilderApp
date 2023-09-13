@@ -659,10 +659,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dimensionality.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                simDimensionality= Integer.parseInt(String.valueOf(dimensionality.getSelectedItemText().charAt(0)));
+                simDimensionality = Integer.parseInt(String.valueOf(dimensionality.getSelectedItemText().charAt(0)));
                 updateDrawMenus();
                 readSetupFile("blank.txt", "Blank Circuit");
-
+                if (simDimensionality == 2) {
+                    viewTempsOverlay = true;
+                    showOverlayCheckItem.setState(true);
+                }
             }
         });
 
@@ -1616,27 +1619,30 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByIndex() {
-        Collections.sort(simulation1D.simTCEs);
-        Collections.sort(trackedTemperatures);
-        redrawElements(simulation1D.simTCEs);
+        if (simDimensionality == 1) {
+            Collections.sort(simulation1D.simTCEs);
+            Collections.sort(trackedTemperatures);
+            redrawElements(simulation1D.simTCEs);
+        }
     }
 
     public void reorderByPosition() {
-        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
-            @Override
-            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-                return tce1.y == tce1.y2 ? tce1.x - tce2.x: tce1.y - tce2.y;
+        if (simDimensionality == 1) {
+            Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
+                @Override
+                public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
+                    return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
 
-            }
-        };
-        simulation1D.simTCEs.sort(comparator);
-        trackedTemperatures.sort(comparator);
-        int i = 0;
-        for (ThermalControlElement tce : simulation1D.simTCEs)
-            tce.index = i++;
+                }
+            };
+            simulation1D.simTCEs.sort(comparator);
+            trackedTemperatures.sort(comparator);
+            int i = 0;
+            for (ThermalControlElement tce : simulation1D.simTCEs)
+                tce.index = i++;
 
-        redrawElements(simulation1D.simTCEs);
-
+            redrawElements(simulation1D.simTCEs);
+        }
 //        centreCircuit();
     }
 
@@ -1887,7 +1893,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else if (mouseElm != null) {
             mouseElm.getInfo(info);
         } else {
-            GWT.log(simDimensionality+"");
+            GWT.log(simDimensionality + "");
             if (simDimensionality == 1) {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
@@ -1895,7 +1901,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             } else {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation2D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
-                info[2] = Locale.LS("components = ");
+                info[2] = Locale.LS("components = " + simulation2D.printTCEs());
 
 
             }
