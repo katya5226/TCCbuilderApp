@@ -248,7 +248,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Timer testTimer;
 
     // Two-dimensional choice
-    int simDimensionality = 1;
+    int simDimensionality = 2;
 
     public enum LengthUnit {
         MICROMETER(1e6, "µm"), MILLIMETER(1e3, "mm"), CENTIMETER(1e2, "cm"), METER(1, "m"), KILOMETER(1e-3, "km");
@@ -3756,6 +3756,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     simulation1D.resetHeatSim();
                     trackedTemperatures.remove(ce);
                     Collections.sort(trackedTemperatures);
+                }
+                if (ce instanceof TwoDimComponent) {
+                    simulation2D.simTwoDimComponents.remove((TwoDimComponent) ce);
+                    simulation2D.resetHeatSim();
                 }
                 // *************************************************************************
                 hasDeleted = true;

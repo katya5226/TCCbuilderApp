@@ -266,7 +266,7 @@ public class ZigZagInterface extends TwoDimComponent {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 7:
-                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
+                color2 = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 8:
                 double prevLength = length;
