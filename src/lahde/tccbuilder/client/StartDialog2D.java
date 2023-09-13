@@ -212,7 +212,8 @@ public class StartDialog2D extends Dialog {
                 sim.simulation2D.eastBoundary = Simulation1D.BorderCondition.values()[rightBoundary.getSelectedIndex()];
                 sim.simulation2D.westBoundary = Simulation1D.BorderCondition.values()[leftBoundary.getSelectedIndex()];
 
-
+                sim.simulation2D.minTemp = Math.min(sim.simulation2D.startTemp, Math.min(sim.simulation2D.twoDimBC.h[0], sim.simulation2D.twoDimBC.h[1]));
+                sim.simulation2D.maxTemp = Math.max(sim.simulation2D.startTemp, Math.max(sim.simulation2D.twoDimBC.h[0], sim.simulation2D.twoDimBC.h[1]));
 
                 apply();
             }

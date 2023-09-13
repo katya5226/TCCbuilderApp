@@ -44,10 +44,9 @@ public class Simulation2D extends Simulation {
         twoDimTCE = new TwoDimTCE("2D TCE", 0, simTwoDimComponents);
         twoDimTCE.buildTCE();
         twoDimES = new TwoDimEqSys(twoDimTCE, twoDimBC);
-        TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, 300.0, true);
+        TwoDimTCCmanager.setTemperatures(twoDimTCE.cvs, startTemp, true);
         setTemperatureRange();
 
-        GWT.log(minTemp + " - " + maxTemp);
         time = 0;
 
     }

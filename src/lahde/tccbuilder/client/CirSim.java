@@ -1893,7 +1893,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else if (mouseElm != null) {
             mouseElm.getInfo(info);
         } else {
-            GWT.log(simDimensionality + "");
             if (simDimensionality == 1) {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";

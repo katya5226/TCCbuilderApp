@@ -1,6 +1,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -320,8 +321,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             double cvY = y + cv.yIndex * cvHeight;
 
             double temperatureRange = sim.simulation2D.maxTemp - sim.simulation2D.minTemp;
+            GWT.log(String.valueOf(cv.temperature));
             double temperatureRatio = (cv.temperature - sim.simulation2D.minTemp) / temperatureRange;
-
             // Just for testing of color mixing, comment out when not needed
             // temperatureRatio = ((double) i % n) / n;
             // i++;
