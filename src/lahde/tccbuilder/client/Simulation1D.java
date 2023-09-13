@@ -230,7 +230,7 @@ public class Simulation1D extends Simulation {
 
     public String dumpSimulation() {
         StringBuilder sb = new StringBuilder();
-
+        sb.append("!").append(" ");
         sb.append(hWest).append(' ')
                 .append(hEast).append(' ')
                 .append(westBoundary.ordinal()).append(' ')
@@ -244,11 +244,16 @@ public class Simulation1D extends Simulation {
                 .append(dt).append(' ')
                 .append(cyclic).append(' ');
 
-        for(CyclePart cp  : cycleParts)
+
+        return sb.append("\n").toString();
+    }
+
+    public String dumpSimulationCycleParts() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("@").append(" ");
+        for (CyclePart cp : cycleParts)
             sb.append(cp.dump());
-
-
-        return sb.toString();
+        return sb.append("\n").toString();
     }
 
 
@@ -266,6 +271,7 @@ public class Simulation1D extends Simulation {
         dt = Double.parseDouble(tokenizer.nextToken());
         cyclic = Boolean.parseBoolean(tokenizer.nextToken());
     }
+
 }
 
 

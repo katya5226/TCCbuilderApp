@@ -311,7 +311,7 @@ public class CyclePart {
         String dump = partIndex + " " + partType + " " + duration + " " + TCEs.size() + " ";
         if (!TCEs.isEmpty())
             for (ThermalControlElement tce : TCEs) {
-                dump += sim.simulation1D.simTCEs.indexOf(tce);
+                dump += sim.simulation1D.simTCEs.indexOf(tce) + " ";
             }
 
         switch (partType) {

@@ -2308,7 +2308,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsText() {
         // String dump = dumpCircuit();
-        String dump = dumpSimulation(); // Katni
+        String dump = dumpCircuit(); // Katni
         dialogShowing = new ExportAsTextDialog(this, dump);
         dialogShowing.show();
     }
@@ -2324,7 +2324,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsLocalFile() {
         // String dump = dumpCircuit();
-        String dump = dumpSimulation(); // Katni
+        String dump = dumpCircuit(); // Katni
         dialogShowing = new ExportAsLocalFileDialog(dump);
         dialogShowing.show();
     }
@@ -2353,6 +2353,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int i;
 
         String dump = dumpOptions();
+        dump += simulation1D.dumpSimulation();
 
         for (i = 0; i != elmList.size(); i++) {
             CircuitElm ce = getElm(i);
@@ -2366,6 +2367,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             dump += "38 " + adj.dump() + "\n";
         }
         if (hintType != -1) dump += "h " + hintType + " " + hintItem1 + " " + hintItem2 + "\n";
+        dump += simulation1D.dumpSimulationCycleParts();
         return dump;
     }
 
