@@ -94,6 +94,15 @@ public class Simulation2D extends Simulation {
     }
 
     @Override
+    String printTCEs() {
+        String tces = "";
+        for (TwoDimComponent twoDimComponent : simTwoDimComponents) {
+            tces += twoDimComponent.index + (twoDimComponent == simTwoDimComponents.get(simTwoDimComponents.size() - 1) ? "" : ", ");
+        }
+        return tces;
+    }
+
+    @Override
     public void heatTransferStep() {
         // GWT.log(String.valueOf(minTemp));
         // GWT.log(String.valueOf(maxTemp));

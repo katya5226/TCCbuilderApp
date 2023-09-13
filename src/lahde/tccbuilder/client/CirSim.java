@@ -659,14 +659,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dimensionality.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                switch (dimensionality.getSelectedItemText()) {
-                    case "1D":
-                        simDimensionality = 1;
-                        break;
-                    case "2D":
-                        simDimensionality = 2;
-                        break;
-                }
+                simDimensionality= Integer.parseInt(String.valueOf(dimensionality.getSelectedItemText().charAt(0)));
                 updateDrawMenus();
                 readSetupFile("blank.txt", "Blank Circuit");
 
@@ -863,7 +856,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         else for (TwoDimComponent c : simulation2D.simTwoDimComponents)
             c.calculateLengthHeight();
 
-        if (set.size() > 1) Window.alert("asdsaasdasd");
+        if (set.size() > 1) Window.alert("differing defined length units");
         setSimRunning(false);
     }
 
@@ -1894,6 +1887,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else if (mouseElm != null) {
             mouseElm.getInfo(info);
         } else {
+            GWT.log(simDimensionality+"");
             if (simDimensionality == 1) {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
@@ -2927,7 +2921,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             dragElm.drag(gx, gy);
         }
         boolean success = true;
-        GWT.log(tempMouseMode + "");
         switch (tempMouseMode) {
             case MODE_DRAG_ALL:
                 dragAll(e.getX(), e.getY());
