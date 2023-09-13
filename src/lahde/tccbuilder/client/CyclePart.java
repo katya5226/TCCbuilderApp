@@ -349,4 +349,60 @@ public class CyclePart {
         }
         return dump;
     }
+
+    public void unDump(StringTokenizer st) {
+        // Parse and set common properties
+        partIndex = Integer.parseInt(st.nextToken());
+        partType = PartType.valueOf(st.nextToken());
+        duration = Double.parseDouble(st.nextToken());
+        int numTCEs = Integer.parseInt(st.nextToken());
+
+        // Parse and set TCEs
+        TCEs.clear();
+        for (int i = 0; i < numTCEs; i++) {
+            int tceIndex = Integer.parseInt(st.nextToken());
+            TCEs.add(sim.simulation1D.simTCEs.get(tceIndex));
+        }
+
+        // Parse and set properties based on partType
+        switch (partType) {
+            case HEAT_TRANSFER:
+                break;
+            case HEAT_INPUT:
+                int numHeatInputs = Integer.parseInt(st.nextToken());
+                heatInputs.clear();
+                for (int i = 0; i < numHeatInputs; i++) {
+                    heatInputs.add(Double.parseDouble(st.nextToken()));
+                }
+                break;
+            case MECHANIC_DISPLACEMENT:
+                int numNewIndexes = Integer.parseInt(st.nextToken());
+                newIndexes.clear();
+                for (int i = 0; i < numNewIndexes; i++) {
+                    newIndexes.add(Integer.parseInt(st.nextToken()));
+                }
+                break;
+            case MAGNETIC_FIELD_CHANGE:
+                int numNewFieldIndexes = Integer.parseInt(st.nextToken());
+                newFieldIndexes.clear();
+                for (int i = 0; i < numNewFieldIndexes; i++) {
+                    newFieldIndexes.add(Integer.parseInt(st.nextToken()));
+                }
+                break;
+            case ELECTRIC_FIELD_CHANGE:
+                break;
+            case PRESSURE_CHANGE:
+                break;
+            case SHEAR_STRESS_CHANGE:
+                break;
+            case PROPERTIES_CHANGE:
+                break;
+            case TEMPERATURE_CHANGE:
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case VALUE_CHANGE:
+                break;
+        }
+    }
 }

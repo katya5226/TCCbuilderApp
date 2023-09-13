@@ -250,6 +250,8 @@ public class Simulation1D extends Simulation {
 
     public String dumpSimulationCycleParts() {
         StringBuilder sb = new StringBuilder();
+        if (cycleParts.isEmpty())
+            return "";
         sb.append("@").append(" ");
         for (CyclePart cp : cycleParts)
             sb.append(cp.dump());
@@ -270,6 +272,9 @@ public class Simulation1D extends Simulation {
         ambientTemperature = Double.parseDouble(tokenizer.nextToken());
         dt = Double.parseDouble(tokenizer.nextToken());
         cyclic = Boolean.parseBoolean(tokenizer.nextToken());
+    }
+    public void loadCycleParts(StringTokenizer tokenizer) {
+        int cyclePartNum = Integer.parseInt(tokenizer.nextToken());
     }
 
 }

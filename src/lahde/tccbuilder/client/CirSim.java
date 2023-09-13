@@ -2739,7 +2739,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     }
                     if (tint == '@') {
-                        simulation1D.loadSimulation(st);
+                        simulation1D.loadCycleParts(st);
                         break;
                     }
 
