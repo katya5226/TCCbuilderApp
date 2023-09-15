@@ -32,6 +32,7 @@ import java.util.*;
 import java.lang.Math;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.dev.shell.BrowserChannel;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
@@ -265,14 +266,27 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int simDimensionality = 1;
 
     public enum LengthUnit {
-        MICROMETER(1e6, "µm"), MILLIMETER(1e3, "mm"), CENTIMETER(1e2, "cm"), METER(1, "m"), KILOMETER(1e-3, "km");
+        MICROMETER(1e6, "µm", "micrometer"),
+        MICROMETER_10(1e5, "10µm", "10 micrometers"),
+        MILLIMETER(1e3, "mm", "millimeter"),
+        CENTIMETER(1e2, "cm", "centimeter"),
+        DECIMETER(1e1, "dm", "decimeter"),
+        METER(1, "m", "meter"),
+        KILOMETER(1e-3, "km", "kilometer");
 
         final double conversionFactor;
         final String unitName;
+        final String longName;
 
-        LengthUnit(double conversionFactor, String unitName) {
+        LengthUnit(double conversionFactor, String unitName, String longName) {
             this.conversionFactor = conversionFactor;
             this.unitName = unitName;
+            this.longName = longName;
+        }
+
+        @Override
+        public String toString() {
+            return longName;
         }
     }
 
@@ -655,12 +669,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         simulationConsolePanel.add(l = new Label(Locale.LS("Scale")));
         l.addStyleName("topSpace");
         scale = new ListBox();
-        scale.addItem("micrometer");
-        scale.addItem("millimeter");
-        scale.addItem("centimeter");
-        scale.addItem("meter");
+        for (LengthUnit lu : LengthUnit.values())
+            scale.addItem(lu.toString());
+
         scale.addStyleName("topSpace");
-        scale.setSelectedIndex(1);
+        scale.setSelectedIndex(selectedLengthUnit.ordinal());
         simulationConsolePanel.add(scale);
         simulationConsolePanel.add(l = new Label(Locale.LS("Dimensionality")));
         l.addStyleName("topSpace");
@@ -690,20 +703,31 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         scale.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
+
                 switch (scale.getSelectedItemText()) {
                     case "micrometer":
-                        selectedLengthUnit = CirSim.LengthUnit.MICROMETER;
+                        selectedLengthUnit = LengthUnit.MICROMETER;
+                        break;
+                    case "10 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_10;
                         break;
                     case "millimeter":
-                        selectedLengthUnit = CirSim.LengthUnit.MILLIMETER;
+                        selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
                     case "centimeter":
-                        selectedLengthUnit = CirSim.LengthUnit.CENTIMETER;
+                        selectedLengthUnit = LengthUnit.CENTIMETER;
+                        break;
+                    case "decimeter":
+                        selectedLengthUnit = LengthUnit.DECIMETER;
                         break;
                     case "meter":
-                        selectedLengthUnit = CirSim.LengthUnit.METER;
+                        selectedLengthUnit = LengthUnit.METER;
+                        break;
+                    case "kilometer":
+                        selectedLengthUnit = LengthUnit.KILOMETER;
                         break;
                 }
+
                 calculateElementsLengths();
             }
         });
