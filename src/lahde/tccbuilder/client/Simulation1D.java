@@ -233,6 +233,8 @@ public class Simulation1D extends Simulation {
     public String dumpSimulation() {
         StringBuilder sb = new StringBuilder();
         sb.append("!").append(" ");
+        sb.append(CirSim.theSim.selectedLengthUnit.ordinal()).append(" ");
+
         sb.append(hWest).append(' ')
                 .append(hEast).append(' ')
                 .append(westBoundary.ordinal()).append(' ')
@@ -262,6 +264,8 @@ public class Simulation1D extends Simulation {
 
 
     public void loadSimulation(StringTokenizer tokenizer) {
+        CirSim.theSim.selectedLengthUnit = (CirSim.LengthUnit) Arrays.stream(CirSim.LengthUnit.values()).toArray()[Integer.parseInt(tokenizer.nextToken())];
+        CirSim.theSim.scale.setSelectedIndex(CirSim.theSim.selectedLengthUnit.ordinal());
         hWest = Double.parseDouble(tokenizer.nextToken());
         hEast = Double.parseDouble(tokenizer.nextToken());
         westBoundary = BorderCondition.values()[Integer.parseInt(tokenizer.nextToken())];
