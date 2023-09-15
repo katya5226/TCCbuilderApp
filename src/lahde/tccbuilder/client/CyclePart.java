@@ -10,6 +10,8 @@ import java.lang.Math;
 
 @SuppressWarnings("ReassignedVariable")
 public class CyclePart {
+
+
     public enum PartType {
         HEAT_TRANSFER,
         HEAT_INPUT,
@@ -23,10 +25,6 @@ public class CyclePart {
         TOGGLE_THERMAL_CONTROL_ELEMENT,
         VALUE_CHANGE;
 
-        @Override
-        public String toString() {
-            return this.name().toLowerCase().replace("_", " ");
-        }
 
         public String toSpacedCamelCase() {
             String[] words = this.name().toLowerCase().split("_");
@@ -47,7 +45,7 @@ public class CyclePart {
     PartType partType;
     Vector<Double> newTemperatures;
     Vector<Integer> newIndexes;
-    Vector<Integer> fieldIndexes;
+    Vector<Integer> newFieldIndexes;
     Vector<Double> heatInputs;
     boolean toggleTCE;
 
@@ -67,7 +65,7 @@ public class CyclePart {
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
         newIndexes = new Vector<Integer>();
-        fieldIndexes = new Vector<Integer>();
+        newFieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         this.sim = sim;
         duration = 0;
@@ -90,9 +88,13 @@ public class CyclePart {
             flexTable.setText(row++, column, "all");
         if (toggleTCE) {
             //ignore
-        } else if (!fieldIndexes.isEmpty()) {
-            for (Integer index : fieldIndexes)
-                flexTable.setText(row, column++, index.toString() + "T");
+        } else if (!newFieldIndexes.isEmpty()) {
+            for (int i = 0; i < newFieldIndexes.size(); i++) {
+                int index = newFieldIndexes.get(i);
+                if (TCEs.get(i).material.isLoaded()) {
+                    flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
+                }
+            }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)
                 flexTable.setText(row, column++, temperature.toString());
@@ -180,18 +182,18 @@ public class CyclePart {
 
     void heatInput() {
         for (int i = 0; i < TCEs.size(); i++) {
-	        for (ControlVolume cv : TCEs.get(i).cvs) {
-	            cv.qGenerated = heatInputs.get(i);
-	        }
-	    }
+            for (ControlVolume cv : TCEs.get(i).cvs) {
+                cv.qGenerated = heatInputs.get(i);
+            }
+        }
     }
 
     void removeHeat() {
         for (int i = 0; i < TCEs.size(); i++) {
-	        for (ControlVolume cv : TCEs.get(i).cvs) {
-	            cv.qGenerated = 0.0;
-	        }
-	    }
+            for (ControlVolume cv : TCEs.get(i).cvs) {
+                cv.qGenerated = 0.0;
+            }
+        }
     }
 
     void mechanicDisplacement() {
@@ -199,7 +201,7 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).index = newIndexes.get(i);
             }
-            sim.simulation1D.heatCircuit.buildTCC();
+            sim.reorderByIndex();
         }
     }
 
@@ -307,4 +309,126 @@ public class CyclePart {
         }
     }
 
+    public String dump() {
+        String dump = partIndex + " " + partType + " " + duration + " " + TCEs.size() + " ";
+        if (!TCEs.isEmpty())
+            for (ThermalControlElement tce : TCEs) {
+                dump += sim.simulation1D.simTCEs.indexOf(tce) + " ";
+            }
+
+        switch (partType) {
+            case HEAT_TRANSFER:
+                break;
+            case HEAT_INPUT:
+                dump += heatInputs.size() + " ";
+                for (Double d : heatInputs)
+                    dump += d + " ";
+                break;
+            case MECHANIC_DISPLACEMENT:
+                dump += newIndexes.size() + " ";
+                for (Integer i : newIndexes)
+                    dump += i + " ";
+                break;
+            case MAGNETIC_FIELD_CHANGE:
+                dump += newFieldIndexes.size() + " ";
+                for (Integer i : newFieldIndexes)
+                    dump += i + " ";
+                break;
+            case ELECTRIC_FIELD_CHANGE:
+                break;
+            case PRESSURE_CHANGE:
+                break;
+            case SHEAR_STRESS_CHANGE:
+                break;
+            case PROPERTIES_CHANGE:
+                dump += newProperties.size() + " ";
+                for (Vector<Double> v : newProperties)
+                    for (Double d : v) {
+                        dump += d + " ";
+                    }
+                break;
+            case TEMPERATURE_CHANGE:
+                dump += newTemperatures.size() + " ";
+                for (Double t : newTemperatures)
+                    dump += t + " ";
+
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case VALUE_CHANGE:
+                break;
+        }
+        return dump;
+    }
+
+    public void unDump(StringTokenizer st) {
+        // Parse and set common properties
+        partIndex = Integer.parseInt(st.nextToken());
+        partType = PartType.valueOf(st.nextToken());
+        duration = Double.parseDouble(st.nextToken());
+        int numTCEs = Integer.parseInt(st.nextToken());
+
+        // Parse and set TCEs
+        TCEs.clear();
+        for (int i = 0; i < numTCEs; i++) {
+            int tceIndex = Integer.parseInt(st.nextToken());
+            TCEs.add(sim.simulation1D.simTCEs.get(tceIndex));
+        }
+
+
+        // Parse and set properties based on partType
+        switch (partType) {
+            case HEAT_TRANSFER:
+                break;
+            case HEAT_INPUT:
+                int numHeatInputs = Integer.parseInt(st.nextToken());
+                heatInputs.clear();
+                for (int i = 0; i < numHeatInputs; i++) {
+                    heatInputs.add(Double.parseDouble(st.nextToken()));
+                }
+                break;
+            case MECHANIC_DISPLACEMENT:
+                int numNewIndexes = Integer.parseInt(st.nextToken());
+                newIndexes.clear();
+                for (int i = 0; i < numNewIndexes; i++) {
+                    newIndexes.add(Integer.parseInt(st.nextToken()));
+                }
+                break;
+            case MAGNETIC_FIELD_CHANGE:
+                int numNewFieldIndexes = Integer.parseInt(st.nextToken());
+                newFieldIndexes.clear();
+                for (int i = 0; i < numNewFieldIndexes; i++) {
+                    newFieldIndexes.add(Integer.parseInt(st.nextToken()));
+                }
+                break;
+            case ELECTRIC_FIELD_CHANGE:
+                break;
+            case PRESSURE_CHANGE:
+                break;
+            case SHEAR_STRESS_CHANGE:
+                break;
+            case PROPERTIES_CHANGE:
+                int numNewProperties = Integer.parseInt(st.nextToken());
+                newProperties.clear();
+                for (int i = 0; i < numNewProperties; i++) {
+                    Vector<Double> v = new Vector<>();
+                    v.add(Double.parseDouble(st.nextToken()));
+                    v.add(Double.parseDouble(st.nextToken()));
+                    v.add(Double.parseDouble(st.nextToken()));
+                    newProperties.add(v);
+                }
+                break;
+            case TEMPERATURE_CHANGE:
+                int numNewTemperatures = Integer.parseInt(st.nextToken());
+                newTemperatures.clear();
+                for (int i = 0; i < numNewTemperatures; i++) {
+                    newTemperatures.add(Double.parseDouble(st.nextToken()));
+                }
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case VALUE_CHANGE:
+                break;
+        }
+    }
 }

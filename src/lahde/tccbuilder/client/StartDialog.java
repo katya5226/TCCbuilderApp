@@ -63,7 +63,7 @@ public class StartDialog extends Dialog {
                 "</ul>\n");*/
         HTML test = new HTML(
                 "<iframe src=\"start-help.html\" frameborder=\"0\">" +
-                "</iframe>");
+                        "</iframe>");
 
         flowPanel.add(getHelpButton(test));
 
@@ -72,11 +72,14 @@ public class StartDialog extends Dialog {
         leftBoundary.addItem("Constant Heat Flux");
         leftBoundary.addItem("Constant Temperature");
         leftBoundary.addItem("Convective");
+        leftBoundary.setSelectedIndex(sim.simulation1D.westBoundary.ordinal());
         rightBoundary = new ListBox();
         rightBoundary.addItem("Adiabatic");
         rightBoundary.addItem("Constant Heat Flux");
         rightBoundary.addItem("Constant Temperature");
         rightBoundary.addItem("Convective");
+        rightBoundary.setSelectedIndex(sim.simulation1D.eastBoundary.ordinal());
+
 
         cyclic = new Checkbox("Cyclic");
         cyclic.setState(sim.simulation1D.cyclic);
@@ -168,6 +171,10 @@ public class StartDialog extends Dialog {
         for (Widget w : leftToggleables) {
             w.setVisible(false);
         }
+
+        updateRightBoundary();
+        updateLeftBoundary();
+
         applyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -259,82 +266,20 @@ public class StartDialog extends Dialog {
         leftBoundary.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                int selectedIndex = leftBoundary.getSelectedIndex();
-                String selectedItem = leftBoundary.getValue(selectedIndex);
-                for (Widget w : leftToggleables) {
-                    w.setVisible(false);
-                    if (w instanceof DoubleBox)
-                        ((DoubleBox) w).setText("");
-                }
-                switch (selectedItem) {
-                    case "Constant Heat Flux":
-                        inletHeatFluxLabel.setVisible(true);
-                        inletHeatFlux.setVisible(true);
-                        inletHeatFlux.setValue(sim.simulation1D.qWest);
-                        break;
-                    case "Constant Temperature":
-                        leftTemperatureLabel.setVisible(true);
-                        leftTemperature.setVisible(true);
-                        leftTemperature.setValue(sim.simulation1D.tempWest);
-                        break;
-                    case "Convective":
-                        leftTemperatureLabel.setVisible(true);
-                        leftTemperature.setVisible(true);
-                        leftTemperature.setValue(sim.simulation1D.tempWest);
-                        leftConvectionCoefficientLabel.setVisible(true);
-                        leftConvectionCoefficient.setVisible(true);
-                        leftConvectionCoefficient.setValue(sim.simulation1D.hWest);
-                        break;
-                    default:
-
-                        break;
-                }
-                center();
+                updateLeftBoundary();
             }
         });
         rightBoundary.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                int selectedIndex = rightBoundary.getSelectedIndex();
-                String selectedItem = rightBoundary.getValue(selectedIndex);
-                for (Widget w : rightToggleables) {
-                    w.setVisible(false);
-                    if (w instanceof DoubleBox)
-                        ((DoubleBox) w).setText("");
-                }
-                switch (selectedItem) {
-                    case "Constant Heat Flux":
-                        outletHeatFluxLabel.setVisible(true);
-                        outletHeatFlux.setVisible(true);
-                        outletHeatFlux.setValue(sim.simulation1D.qEast);
-                        break;
-                    case "Constant Temperature":
-                        rightTemperatureLabel.setVisible(true);
-                        rightTemperature.setVisible(true);
-                        rightTemperature.setValue(sim.simulation1D.tempEast);
-                        break;
-                    case "Convective":
-                        rightTemperatureLabel.setVisible(true);
-                        rightTemperature.setVisible(true);
-                        rightTemperature.setValue(sim.simulation1D.tempEast);
-                        rightConvectionCoefficientLabel.setVisible(true);
-                        rightConvectionCoefficient.setVisible(true);
-                        rightConvectionCoefficient.setValue(sim.simulation1D.hEast);
-                        break;
-                    default:
-                        break;
-                }
-                center();
+                updateRightBoundary();
             }
         });
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                sim.simulation1D.cyclic = cyclic.getState();
+                sim.setCyclic(cyclic.getState());
                 cyclicButton.setEnabled(cyclic.getState());
-                sim.drawLayoutPanel(false, false);
-                sim.setCanvasSize();
-                sim.centreCircuit();
 
             }
 
@@ -360,6 +305,75 @@ public class StartDialog extends Dialog {
         buttonPanel.addStyleName("dialogButtonPanel");
         flowPanel.add(buttonPanel);
         this.center();
+    }
+
+
+
+    private void updateRightBoundary() {
+        int selectedIndex = rightBoundary.getSelectedIndex();
+        String selectedItem = rightBoundary.getValue(selectedIndex);
+        for (Widget w : rightToggleables) {
+            w.setVisible(false);
+            if (w instanceof DoubleBox)
+                ((DoubleBox) w).setText("");
+        }
+        switch (selectedItem) {
+            case "Constant Heat Flux":
+                outletHeatFluxLabel.setVisible(true);
+                outletHeatFlux.setVisible(true);
+                outletHeatFlux.setValue(sim.simulation1D.qEast);
+                break;
+            case "Constant Temperature":
+                rightTemperatureLabel.setVisible(true);
+                rightTemperature.setVisible(true);
+                rightTemperature.setValue(sim.simulation1D.tempEast);
+                break;
+            case "Convective":
+                rightTemperatureLabel.setVisible(true);
+                rightTemperature.setVisible(true);
+                rightTemperature.setValue(sim.simulation1D.tempEast);
+                rightConvectionCoefficientLabel.setVisible(true);
+                rightConvectionCoefficient.setVisible(true);
+                rightConvectionCoefficient.setValue(sim.simulation1D.hEast);
+                break;
+            default:
+                break;
+        }
+        center();
+    }
+
+    private void updateLeftBoundary() {
+        int selectedIndex = leftBoundary.getSelectedIndex();
+        String selectedItem = leftBoundary.getValue(selectedIndex);
+        for (Widget w : leftToggleables) {
+            w.setVisible(false);
+            if (w instanceof DoubleBox)
+                ((DoubleBox) w).setText("");
+        }
+        switch (selectedItem) {
+            case "Constant Heat Flux":
+                inletHeatFluxLabel.setVisible(true);
+                inletHeatFlux.setVisible(true);
+                inletHeatFlux.setValue(sim.simulation1D.qWest);
+                break;
+            case "Constant Temperature":
+                leftTemperatureLabel.setVisible(true);
+                leftTemperature.setVisible(true);
+                leftTemperature.setValue(sim.simulation1D.tempWest);
+                break;
+            case "Convective":
+                leftTemperatureLabel.setVisible(true);
+                leftTemperature.setVisible(true);
+                leftTemperature.setValue(sim.simulation1D.tempWest);
+                leftConvectionCoefficientLabel.setVisible(true);
+                leftConvectionCoefficient.setVisible(true);
+                leftConvectionCoefficient.setValue(sim.simulation1D.hWest);
+                break;
+            default:
+
+                break;
+        }
+        center();
     }
 
 

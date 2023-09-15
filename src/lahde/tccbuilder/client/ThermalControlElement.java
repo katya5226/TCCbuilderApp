@@ -48,6 +48,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
         index++;
         material = sim.materialHashMap.get("100001-Inox");
+        if (material != null && !material.isLoaded()) material.readFiles();
 
         isDisabled = false;
         field = false;
@@ -64,6 +65,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         length = Double.parseDouble(st.nextToken());
         name = st.nextToken().replaceAll("#", " ");
         resizable = Boolean.parseBoolean(st.nextToken());
+        constRho = Double.parseDouble(st.nextToken());
+        constCp = Double.parseDouble(st.nextToken());
+        constK = Double.parseDouble(st.nextToken());
+        westResistance = Double.parseDouble(st.nextToken());
+        eastResistance = Double.parseDouble(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
@@ -75,14 +81,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         while (st.hasMoreTokens()) {
             int materialIndex = Integer.parseInt(st.nextToken(" "));
             m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
+            if (m != null && !m.isLoaded()) m.readFiles();
             int number = Integer.parseInt(st.nextToken(" "));
             counter += number;
-            for (int i = 0; i < number; i++)
+            for (int i = 0; i < number; i++) {
                 cvs.get(i).material = m;
+            }
             if (counter == numCvs) break;
         }
         material = m;
-        if (material != null && !material.isLoaded()) material.readFiles();
+
     }
 
     public void initializeThermalControlElement() {
@@ -179,11 +187,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(length).append(' ');
         sb.append(name.replaceAll(" ", "#")).append(' ');
         sb.append(resizable).append(' ');
+        sb.append(constRho).append(' ');
+        sb.append(constCp).append(' ');
+        sb.append(constK).append(' ');
+        sb.append(westResistance).append(' ');
+        sb.append(eastResistance).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
 
         int counter = 0;
-        int currentIndex = sim.materialNames.indexOf(cvs.get(0).material.materialName);
+        int currentIndex = sim.materialNames.indexOf(material.materialName);
         sb.append(currentIndex).append(' ');
         for (ControlVolume cv : cvs) {
             int i = sim.materialNames.indexOf(cv.material.materialName);

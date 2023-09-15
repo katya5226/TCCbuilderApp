@@ -8,7 +8,8 @@ public class SwitchElm_FM1 extends SwitchElm {
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
-        sim.scale.setSelectedIndex(1);
+        sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+
         sim.calculateElementsLengths();
 
         int newX = sim.snapGrid((int) (xx + length * sim.selectedLengthUnit.conversionFactor * sim.gridSize));

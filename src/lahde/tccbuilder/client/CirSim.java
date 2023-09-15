@@ -32,6 +32,7 @@ import java.util.*;
 import java.lang.Math;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.dev.shell.BrowserChannel;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
@@ -242,23 +243,50 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 timer.scheduleRepeating(FASTTIMER);
                 responseTimer.cancel();
             }
+
+        }
+    };
+    final Timer displayTimer = new Timer() {
+        public void run() {
+            if (CirSim.theSim.awaitedResponses.isEmpty()) {
+                if (CirSim.theSim.stopMessage != null) return;
+                if (CirSim.theSim.simulation1D.cyclic) {
+                    for (CyclePart cp : CirSim.theSim.simulation1D.cycleParts)
+                        CirSim.theSim.cyclicPanel.add(cp.toHTML());
+                }
+                displayTimer.cancel();
+            }
+
         }
     };
     int testCounter = 0;
     Timer testTimer;
 
     // Two-dimensional choice
-    int simDimensionality = 2;
+    int simDimensionality = 1;
 
     public enum LengthUnit {
-        MICROMETER(1e6, "µm"), MILLIMETER(1e3, "mm"), CENTIMETER(1e2, "cm"), METER(1, "m"), KILOMETER(1e-3, "km");
+        MICROMETER(1e6, "µm", "micrometer"),
+        MICROMETER_10(1e5, "10µm", "10 micrometers"),
+        MILLIMETER(1e3, "mm", "millimeter"),
+        CENTIMETER(1e2, "cm", "centimeter"),
+        DECIMETER(1e1, "dm", "decimeter"),
+        METER(1, "m", "meter"),
+        KILOMETER(1e-3, "km", "kilometer");
 
         final double conversionFactor;
         final String unitName;
+        final String longName;
 
-        LengthUnit(double conversionFactor, String unitName) {
+        LengthUnit(double conversionFactor, String unitName, String longName) {
             this.conversionFactor = conversionFactor;
             this.unitName = unitName;
+            this.longName = longName;
+        }
+
+        @Override
+        public String toString() {
+            return longName;
         }
     }
 
@@ -641,12 +669,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         simulationConsolePanel.add(l = new Label(Locale.LS("Scale")));
         l.addStyleName("topSpace");
         scale = new ListBox();
-        scale.addItem("micrometer");
-        scale.addItem("millimeter");
-        scale.addItem("centimeter");
-        scale.addItem("meter");
+        for (LengthUnit lu : LengthUnit.values())
+            scale.addItem(lu.toString());
+
         scale.addStyleName("topSpace");
-        scale.setSelectedIndex(1);
+        scale.setSelectedIndex(selectedLengthUnit.ordinal());
         simulationConsolePanel.add(scale);
         simulationConsolePanel.add(l = new Label(Locale.LS("Dimensionality")));
         l.addStyleName("topSpace");
@@ -676,16 +703,26 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "micrometer":
                         selectedLengthUnit = CirSim.LengthUnit.MICROMETER;
                         break;
+                    case "10 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_10;
+                        break;
                     case "millimeter":
-                        selectedLengthUnit = CirSim.LengthUnit.MILLIMETER;
+                        selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
                     case "centimeter":
-                        selectedLengthUnit = CirSim.LengthUnit.CENTIMETER;
+                        selectedLengthUnit = LengthUnit.CENTIMETER;
+                        break;
+                    case "decimeter":
+                        selectedLengthUnit = LengthUnit.DECIMETER;
                         break;
                     case "meter":
-                        selectedLengthUnit = CirSim.LengthUnit.METER;
+                        selectedLengthUnit = LengthUnit.METER;
+                        break;
+                    case "kilometer":
+                        selectedLengthUnit = LengthUnit.KILOMETER;
                         break;
                 }
+
                 calculateElementsLengths();
             }
         });
@@ -793,7 +830,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         materialNames = new Vector<String>();
+        materialNames.add("000000-Custom");
         materialHashMap = new HashMap<String, Material>();
+        materialHashMap.put("000000-Custom", new Material("000000-Custom", theSim));
         colorChoices = new Vector<String>();
         setSimRunning(running);
         colorChoices.add("white");  // I will fix this later.
@@ -817,6 +856,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         readMaterialFlags(baseURL + "materials_flags.csv");
 
 
+    }
+
+    void setCyclic(boolean c) {
+        simulation1D.cyclic = c;
+        drawLayoutPanel(false, false);
+        setCanvasSize();
+        centreCircuit();
+        repaint();
     }
 
     public void drawLayoutPanel(boolean hideSidebar, boolean hideMenu) {
@@ -859,7 +906,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         else for (TwoDimComponent c : simulation2D.simTwoDimComponents)
             c.calculateLengthHeight();
 
-        if (set.size() > 1) Window.alert("differing defined length units");
+        if (set.size() > 1) Window.alert("Differing length units");
         setSimRunning(false);
     }
 
@@ -1619,32 +1666,31 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByIndex() {
-        if (simDimensionality == 1) {
-            Collections.sort(simulation1D.simTCEs);
-            Collections.sort(trackedTemperatures);
-            redrawElements(simulation1D.simTCEs);
-        }
+        if (simDimensionality == 2) return;
+        Collections.sort(simulation1D.simTCEs);
+        Collections.sort(trackedTemperatures);
+        redrawElements(simulation1D.simTCEs);
     }
 
     public void reorderByPosition() {
-        if (simDimensionality == 1) {
-            Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
-                @Override
-                public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-                    return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
+        if (simDimensionality == 2) return;
+        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
+            @Override
+            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
+                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
+            }
+        };
 
-                }
-            };
-            simulation1D.simTCEs.sort(comparator);
-            trackedTemperatures.sort(comparator);
-            int i = 0;
-            for (ThermalControlElement tce : simulation1D.simTCEs)
-                tce.index = i++;
+        simulation1D.simTCEs.sort(comparator);
+        trackedTemperatures.sort(comparator);
+        int i = 0;
+        for (ThermalControlElement tce : simulation1D.simTCEs)
+            tce.index = i++;
 
-            redrawElements(simulation1D.simTCEs);
-        }
-//        centreCircuit();
+        redrawElements(simulation1D.simTCEs);
     }
+//        centreCircuit();
+
 
     void redrawElements(Vector<ThermalControlElement> simTCEs) {
         int x = Integer.MAX_VALUE;
@@ -2307,7 +2353,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsText() {
         // String dump = dumpCircuit();
-        String dump = dumpSimulation(); // Katni
+        String dump = dumpCircuit(); // Katni
         dialogShowing = new ExportAsTextDialog(this, dump);
         dialogShowing.show();
     }
@@ -2323,7 +2369,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void doExportAsLocalFile() {
         // String dump = dumpCircuit();
-        String dump = dumpSimulation(); // Katni
+        String dump = dumpCircuit(); // Katni
         dialogShowing = new ExportAsLocalFileDialog(dump);
         dialogShowing.show();
     }
@@ -2352,6 +2398,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int i;
 
         String dump = dumpOptions();
+        dump += simulation1D.dumpSimulation();
 
         for (i = 0; i != elmList.size(); i++) {
             CircuitElm ce = getElm(i);
@@ -2365,13 +2412,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             dump += "38 " + adj.dump() + "\n";
         }
         if (hintType != -1) dump += "h " + hintType + " " + hintItem1 + " " + hintItem2 + "\n";
+        dump += simulation1D.dumpSimulationCycleParts();
         return dump;
     }
 
     String dumpSimulation() {
         String dump;
-        if (simDimensionality == 1) dump = simulation1D.dump();
-        else dump = simulation2D.dump();
+        if (simDimensionality == 1)
+            dump = /*simulation1D.dump() +*/  simulation1D.dumpSimulation();
+        else
+            dump = simulation2D.dump();
+
+
         return dump;
     }
 
@@ -2727,10 +2779,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     }
 
-                    if (tint == '%' || tint == '?' || tint == 'B') {
-                        // ignore afilter-specific stuff
+                    if (tint == '!') {
+                        simulation1D.loadSimulation(st);
                         break;
                     }
+                    if (tint == '@') {
+
+                        simulation1D.loadCycleParts(st);
+                        break;
+                    }
+
+
                     // do not add new symbols here without testing export as link
 
                     // if first character is a digit then parse the type as a number
@@ -3543,6 +3602,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 elmList.addElement(dragElm);
                 if (dragElm instanceof ThermalControlElement) simulation1D.simTCEs.add((ThermalControlElement) dragElm);
                 if (dragElm instanceof TwoDimComponent) simulation2D.simTwoDimComponents.add((TwoDimComponent) dragElm);
+
 
                 reorderByPosition();
                 dragElm.draggingDone();

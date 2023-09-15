@@ -3,6 +3,7 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +57,6 @@ public class Simulation1D extends Simulation {
         ud = 0;
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
-
 
     }
 
@@ -160,6 +160,7 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         printing_interval = 1;
         totalTime = 1.0;
+        time = 0.0;
         GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
         for (ControlVolume cv : heatCircuit.cvs) {
             GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
@@ -230,4 +231,72 @@ public class Simulation1D extends Simulation {
         }
         return tces;
     }
+
+    public String dumpSimulation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("!").append(" ");
+        sb.append(CirSim.theSim.selectedLengthUnit.ordinal()).append(" ");
+
+        sb.append(hWest).append(' ')
+                .append(hEast).append(' ')
+                .append(westBoundary.ordinal()).append(' ')
+                .append(eastBoundary.ordinal()).append(' ')
+                .append(tempWest).append(' ')
+                .append(tempEast).append(' ')
+                .append(qWest).append(' ')
+                .append(qEast).append(' ')
+                .append(startTemp).append(' ')
+                .append(ambientTemperature).append(' ')
+                .append(dt).append(' ')
+                .append(cyclic).append(' ');
+
+
+        return sb.append("\n").toString();
+    }
+
+    public String dumpSimulationCycleParts() {
+        StringBuilder sb = new StringBuilder();
+        if (cycleParts.isEmpty())
+            return "";
+        sb.append("@").append(" ").append(cycleParts.size()).append(" ");
+        for (CyclePart cp : cycleParts)
+            sb.append(cp.dump());
+        return sb.append("\n").toString();
+    }
+
+
+    public void loadSimulation(StringTokenizer tokenizer) {
+        CirSim.theSim.selectedLengthUnit = CirSim.LengthUnit.values()[Integer.parseInt(tokenizer.nextToken())];
+        CirSim.theSim.scale.setSelectedIndex(CirSim.theSim.selectedLengthUnit.ordinal());
+        hWest = Double.parseDouble(tokenizer.nextToken());
+        hEast = Double.parseDouble(tokenizer.nextToken());
+        westBoundary = BorderCondition.values()[Integer.parseInt(tokenizer.nextToken())];
+        eastBoundary = BorderCondition.values()[Integer.parseInt(tokenizer.nextToken())];
+        tempWest = Double.parseDouble(tokenizer.nextToken());
+        tempEast = Double.parseDouble(tokenizer.nextToken());
+        qWest = Double.parseDouble(tokenizer.nextToken());
+        qEast = Double.parseDouble(tokenizer.nextToken());
+        startTemp = Double.parseDouble(tokenizer.nextToken());
+        ambientTemperature = Double.parseDouble(tokenizer.nextToken());
+        dt = Double.parseDouble(tokenizer.nextToken());
+        cyclic = Boolean.parseBoolean(tokenizer.nextToken());
+        CirSim.theSim.setCyclic(cyclic);
+    }
+
+    public void loadCycleParts(StringTokenizer tokenizer) {
+        cycleParts.clear();
+        int cyclePartNum = Integer.parseInt(tokenizer.nextToken());
+        for (int i = 0; i < cyclePartNum; i++) {
+            CyclePart cp = new CyclePart(-1, CirSim.theSim);
+            cp.unDump(tokenizer);
+            cycleParts.add(cp);
+        }
+
+        //this is some reaallly ugly code 0_0
+
+        CirSim.theSim.displayTimer.scheduleRepeating(CirSim.theSim.FASTTIMER);
+    }
+
 }
+
+
