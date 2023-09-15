@@ -321,7 +321,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             double cvY = y + cv.yIndex * cvHeight;
 
             double temperatureRange = sim.simulation2D.maxTemp - sim.simulation2D.minTemp;
-            GWT.log(String.valueOf(cv.temperature));
+            GWT.log(String.valueOf(temperatureRange));
             double temperatureRatio = (cv.temperature - sim.simulation2D.minTemp) / temperatureRange;
             // Just for testing of color mixing, comment out when not needed
             // temperatureRatio = ((double) i % n) / n;
