@@ -264,7 +264,7 @@ public class Simulation1D extends Simulation {
 
 
     public void loadSimulation(StringTokenizer tokenizer) {
-        CirSim.theSim.selectedLengthUnit = (CirSim.LengthUnit) Arrays.stream(CirSim.LengthUnit.values()).toArray()[Integer.parseInt(tokenizer.nextToken())];
+        CirSim.theSim.selectedLengthUnit = CirSim.LengthUnit.values()[Integer.parseInt(tokenizer.nextToken())];
         CirSim.theSim.scale.setSelectedIndex(CirSim.theSim.selectedLengthUnit.ordinal());
         hWest = Double.parseDouble(tokenizer.nextToken());
         hEast = Double.parseDouble(tokenizer.nextToken());

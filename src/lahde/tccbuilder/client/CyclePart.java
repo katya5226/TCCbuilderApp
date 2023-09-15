@@ -91,8 +91,9 @@ public class CyclePart {
         } else if (!newFieldIndexes.isEmpty()) {
             for (int i = 0; i < newFieldIndexes.size(); i++) {
                 int index = newFieldIndexes.get(i);
-                if (TCEs.get(i).material.isLoaded())
+                if (TCEs.get(i).material.isLoaded()) {
                     flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
+                }
             }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)

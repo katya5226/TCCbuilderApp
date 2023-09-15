@@ -257,6 +257,7 @@ public class Material {
             isLoaded = isLoaded && !cp.isEmpty();
             isLoaded = isLoaded && !k.isEmpty();
         } else if (magnetocaloric || barocaloric || electrocaloric || elastocaloric) {
+            isLoaded = isLoaded && fields != null && !fields.isEmpty();
             if (dTThysteresis) {
                 isLoaded = isLoaded && dTcooling != null && !dTcooling.isEmpty();
                 isLoaded = isLoaded && dTheating != null && !dTheating.isEmpty();
@@ -430,7 +431,7 @@ public class Material {
         jsonStyleLog.append("\"Cp Thysteresis\": " + cpThysteresis + ",\n");
         jsonStyleLog.append("\"dT Thysteresis\": " + dTThysteresis + ",\n");
         jsonStyleLog.append("\"k Thysteresis\": " + kThysteresis + ",\n");
-        jsonStyleLog.append("\"Interp Temps\": " + interpTemps + ",\n");
+        jsonStyleLog.append("\"Interp Temps\": " + interpTemps.size() + ",\n");
         jsonStyleLog.append("\"Rho\": " + rho + ",\n");
         jsonStyleLog.append("\"K\": " + k + ",\n");
         jsonStyleLog.append("\"K Heating\": " + kHeating + ",\n");

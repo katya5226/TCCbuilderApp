@@ -48,6 +48,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
         index++;
         material = sim.materialHashMap.get("100001-Inox");
+        if (material != null && !material.isLoaded()) material.readFiles();
 
         isDisabled = false;
         field = false;
@@ -78,14 +79,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         while (st.hasMoreTokens()) {
             int materialIndex = Integer.parseInt(st.nextToken(" "));
             m = sim.materialHashMap.get(sim.materialNames.get(materialIndex));
+            if (m != null && !m.isLoaded()) m.readFiles();
             int number = Integer.parseInt(st.nextToken(" "));
             counter += number;
-            for (int i = 0; i < number; i++)
+            for (int i = 0; i < number; i++) {
                 cvs.get(i).material = m;
+            }
             if (counter == numCvs) break;
         }
         material = m;
-        if (material != null && !material.isLoaded()) material.readFiles();
+
     }
 
     public void initializeThermalControlElement() {
