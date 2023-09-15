@@ -201,7 +201,7 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).index = newIndexes.get(i);
             }
-            sim.simulation1D.heatCircuit.buildTCC();
+            sim.reorderByIndex();
         }
     }
 
@@ -348,6 +348,10 @@ public class CyclePart {
                     }
                 break;
             case TEMPERATURE_CHANGE:
+                dump += newTemperatures.size() + " ";
+                for (Double t : newTemperatures)
+                    dump += t + " ";
+
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
@@ -415,6 +419,11 @@ public class CyclePart {
                 }
                 break;
             case TEMPERATURE_CHANGE:
+                int numNewTemperatures = Integer.parseInt(st.nextToken());
+                newTemperatures.clear();
+                for (int i = 0; i < numNewTemperatures; i++) {
+                    newTemperatures.add(Double.parseDouble(st.nextToken()));
+                }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
