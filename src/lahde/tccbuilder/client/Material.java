@@ -78,7 +78,24 @@ public class Material {
             double temp = Math.round(0.1 * i * 10.0) / 10.0;
             interpTemps.add(temp);
         }
-        setFlags(sim.materialFlagText);
+        if (materialName.equals("000000-Custom")) {
+            this.rho = new Vector<Double>();
+            this.k = new Vector<Vector<Double>>();
+            this.cp = new Vector<Vector<Double>>();
+
+            Vector<Double> kVector = new Vector<>();
+            Vector<Double> cpVector = new Vector<>();
+            this.k.add(kVector);
+            this.cp.add(cpVector);
+
+            for (int i = 0; i < interpTemps.size(); i++) {
+                kVector.add(1.0);
+                cpVector.add(100.0);
+                rho.add(1000.0);
+            }
+
+        } else
+            setFlags(sim.materialFlagText);
     }
 
 
@@ -134,7 +151,7 @@ public class Material {
 
                     if (!sim.awaitedResponses.contains(url_rho)) {
                         sim.awaitedResponses.add(url_rho);
-                        fillVectorFromURL(url_rho, rho,1000);
+                        fillVectorFromURL(url_rho, rho, 1000);
                     }
 
                     if (invariant) {
@@ -142,7 +159,7 @@ public class Material {
                         if (!sim.awaitedResponses.contains(url_cp)) {
                             sim.awaitedResponses.add(url_cp);
                             Vector<Double> vector = new Vector<Double>();
-                            fillVectorFromURL(url_cp, vector,200);
+                            fillVectorFromURL(url_cp, vector, 200);
                             cp.add(vector);
                         }
                     } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {

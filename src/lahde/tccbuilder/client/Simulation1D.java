@@ -3,6 +3,7 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,6 +160,7 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         printing_interval = 1;
         totalTime = 1.0;
+        time = 0.0;
         GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
         for (ControlVolume cv : heatCircuit.cvs) {
             GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
@@ -252,7 +254,7 @@ public class Simulation1D extends Simulation {
         StringBuilder sb = new StringBuilder();
         if (cycleParts.isEmpty())
             return "";
-        sb.append("@").append(" ");
+        sb.append("@").append(" ").append(cycleParts.size()).append(" ");
         for (CyclePart cp : cycleParts)
             sb.append(cp.dump());
         return sb.append("\n").toString();
@@ -272,9 +274,21 @@ public class Simulation1D extends Simulation {
         ambientTemperature = Double.parseDouble(tokenizer.nextToken());
         dt = Double.parseDouble(tokenizer.nextToken());
         cyclic = Boolean.parseBoolean(tokenizer.nextToken());
+        CirSim.theSim.setCyclic(cyclic);
     }
+
     public void loadCycleParts(StringTokenizer tokenizer) {
+        cycleParts.clear();
         int cyclePartNum = Integer.parseInt(tokenizer.nextToken());
+        for (int i = 0; i < cyclePartNum; i++) {
+            CyclePart cp = new CyclePart(-1, CirSim.theSim);
+            cp.unDump(tokenizer);
+            cycleParts.add(cp);
+        }
+
+        //this is some reaallly ugly code 0_0
+
+        CirSim.theSim.displayTimer.scheduleRepeating(CirSim.theSim.FASTTIMER);
     }
 
 }

@@ -91,7 +91,8 @@ public class CyclePart {
         } else if (!newFieldIndexes.isEmpty()) {
             for (int i = 0; i < newFieldIndexes.size(); i++) {
                 int index = newFieldIndexes.get(i);
-                flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
+                if (TCEs.get(i).material.isLoaded())
+                    flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
             }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)
@@ -339,6 +340,11 @@ public class CyclePart {
             case SHEAR_STRESS_CHANGE:
                 break;
             case PROPERTIES_CHANGE:
+                dump += newProperties.size() + " ";
+                for (Vector<Double> v : newProperties)
+                    for (Double d : v) {
+                        dump += d + " ";
+                    }
                 break;
             case TEMPERATURE_CHANGE:
                 break;
@@ -363,6 +369,7 @@ public class CyclePart {
             int tceIndex = Integer.parseInt(st.nextToken());
             TCEs.add(sim.simulation1D.simTCEs.get(tceIndex));
         }
+
 
         // Parse and set properties based on partType
         switch (partType) {
@@ -396,6 +403,15 @@ public class CyclePart {
             case SHEAR_STRESS_CHANGE:
                 break;
             case PROPERTIES_CHANGE:
+                int numNewProperties = Integer.parseInt(st.nextToken());
+                newProperties.clear();
+                for (int i = 0; i < numNewProperties; i++) {
+                    Vector<Double> v = new Vector<>();
+                    v.add(Double.parseDouble(st.nextToken()));
+                    v.add(Double.parseDouble(st.nextToken()));
+                    v.add(Double.parseDouble(st.nextToken()));
+                    newProperties.add(v);
+                }
                 break;
             case TEMPERATURE_CHANGE:
                 break;

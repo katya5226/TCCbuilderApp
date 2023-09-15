@@ -64,6 +64,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         length = Double.parseDouble(st.nextToken());
         name = st.nextToken().replaceAll("#", " ");
         resizable = Boolean.parseBoolean(st.nextToken());
+        constRho = Double.parseDouble(st.nextToken());
+        constCp = Double.parseDouble(st.nextToken());
+        constK = Double.parseDouble(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
@@ -179,11 +182,14 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(length).append(' ');
         sb.append(name.replaceAll(" ", "#")).append(' ');
         sb.append(resizable).append(' ');
+        sb.append(constRho).append(' ');
+        sb.append(constCp).append(' ');
+        sb.append(constK).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
 
         int counter = 0;
-        int currentIndex = sim.materialNames.indexOf(cvs.get(0).material.materialName);
+        int currentIndex = sim.materialNames.indexOf(material.materialName);
         sb.append(currentIndex).append(' ');
         for (ControlVolume cv : cvs) {
             int i = sim.materialNames.indexOf(cv.material.materialName);

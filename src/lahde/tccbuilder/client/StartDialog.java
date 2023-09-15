@@ -278,11 +278,8 @@ public class StartDialog extends Dialog {
         cyclic.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                sim.simulation1D.cyclic = cyclic.getState();
+                sim.setCyclic(cyclic.getState());
                 cyclicButton.setEnabled(cyclic.getState());
-                sim.drawLayoutPanel(false, false);
-                sim.setCanvasSize();
-                sim.centreCircuit();
 
             }
 
@@ -309,6 +306,8 @@ public class StartDialog extends Dialog {
         flowPanel.add(buttonPanel);
         this.center();
     }
+
+
 
     private void updateRightBoundary() {
         int selectedIndex = rightBoundary.getSelectedIndex();

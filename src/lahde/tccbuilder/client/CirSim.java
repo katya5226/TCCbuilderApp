@@ -242,6 +242,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 timer.scheduleRepeating(FASTTIMER);
                 responseTimer.cancel();
             }
+
+        }
+    };
+    final Timer displayTimer = new Timer() {
+        public void run() {
+            if (CirSim.theSim.awaitedResponses.isEmpty()) {
+                if (CirSim.theSim.stopMessage != null) return;
+                if (CirSim.theSim.simulation1D.cyclic) {
+                    for (CyclePart cp : CirSim.theSim.simulation1D.cycleParts)
+                        CirSim.theSim.cyclicPanel.add(cp.toHTML());
+                }
+                displayTimer.cancel();
+            }
+
         }
     };
     int testCounter = 0;
@@ -797,7 +811,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         materialNames = new Vector<String>();
+        materialNames.add("000000-Custom");
         materialHashMap = new HashMap<String, Material>();
+        materialHashMap.put("000000-Custom", new Material("000000-Custom", theSim));
         colorChoices = new Vector<String>();
         setSimRunning(running);
         colorChoices.add("white");  // I will fix this later.
@@ -821,6 +837,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         readMaterialFlags(baseURL + "materials_flags.csv");
 
 
+    }
+
+    void setCyclic(boolean c) {
+        simulation1D.cyclic = c;
+        drawLayoutPanel(false, false);
+        setCanvasSize();
+        centreCircuit();
+        repaint();
     }
 
     public void drawLayoutPanel(boolean hideSidebar, boolean hideMenu) {
@@ -863,7 +887,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         else for (TwoDimComponent c : simulation2D.simTwoDimComponents)
             c.calculateLengthHeight();
 
-        if (set.size() > 1) Window.alert("asdsaasdasd");
+        if (set.size() > 1) Window.alert("Differing length units");
         setSimRunning(false);
     }
 
@@ -2739,6 +2763,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     }
                     if (tint == '@') {
+
                         simulation1D.loadCycleParts(st);
                         break;
                     }
