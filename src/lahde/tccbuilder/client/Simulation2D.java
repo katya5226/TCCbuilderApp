@@ -58,8 +58,8 @@ public class Simulation2D extends Simulation {
 
     @Override
     void setTemperatureRange() {
-        minTemp = Math.min(twoDimBC.T[0], twoDimBC.T[1]);
-        maxTemp = Math.max(twoDimBC.T[0], twoDimBC.T[1]);
+        minTemp = Math.min(startTemp, Math.min(twoDimBC.h[0], twoDimBC.h[1]));
+        maxTemp = Math.max(startTemp, Math.max(twoDimBC.h[0], twoDimBC.h[1]));
     }
 
     @Override
