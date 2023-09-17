@@ -3590,9 +3590,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         selectedArea = null;
         dragging = false;
         boolean circuitChanged = false;
-        reorderByPosition();
-
-        if (dragElm != null) {
+        if (dragElm == null)
+            reorderByPosition();
+        else {
             // if the element is zero size then don't create it
             // IES - and disable any previous selection
             if (dragElm.creationFailed()) {
@@ -3606,7 +3606,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
                 reorderByPosition();
                 dragElm.draggingDone();
-                reorderByPosition();
                 circuitChanged = true;
                 writeRecoveryToStorage();
                 unsavedChanges = true;
