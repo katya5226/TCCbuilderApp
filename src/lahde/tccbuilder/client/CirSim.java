@@ -211,7 +211,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     int canvasWidth, canvasHeight;
 
     static final int MENUBARHEIGHT = 30;
-    static int VERTICALPANELWIDTH = 300; // default
+    static int VERTICALPANELWIDTH = 332; // default
     static final int POSTGRABSQ = 25;
     static final int MINPOSTGRABSIZE = 256;
     final Timer timer = new Timer() {

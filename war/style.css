@@ -310,7 +310,6 @@ iframe {
 }
 
 .simulationConsole {
-    box-sizing: border-box;
     padding: 1rem;
     background-color: var(--deep-blue);
     display: flex;
@@ -320,7 +319,7 @@ iframe {
 }
 
 .simulationConsole > * > * {
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .simulationConsole > * {
