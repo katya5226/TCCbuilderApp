@@ -90,7 +90,7 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(componentsLabel);
         inputWidgets.add(componentsListBox);
 
-        heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Flux (W/m²): "));
+        heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Input (W/m²): "));
         heatInput = new DoubleBox();
         inputWidgets.add(heatInputLabel);
         inputWidgets.add(heatInput);

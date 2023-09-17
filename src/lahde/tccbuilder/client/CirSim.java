@@ -734,7 +734,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cyclicOperationLabel = new HTML();
         simulationConsolePanel.add(cyclicOperationLabel);
 
-        cyclicPanel.add(l = new Label(Locale.LS("Cyclic Parts: ")));
+        cyclicPanel.add(l = new Label(Locale.LS("Cycle Parts: ")));
         l.addStyleName("topSpace");
 
         titleLabel = new Label("Label");

@@ -81,7 +81,7 @@ public class StartDialog extends Dialog {
         rightBoundary.setSelectedIndex(sim.simulation1D.eastBoundary.ordinal());
         cyclic = new Checkbox("Cyclic");
         cyclic.setState(sim.simulation1D.cyclic);
-        cyclicButton = new Button("Add Cyclic Part");
+        cyclicButton = new Button("Add Cycle Part");
         cyclicButton.setEnabled(cyclic.getState());
         cyclicContainer = new FlowPanel();
         cyclicContainer.addStyleName("cyclicContainer");

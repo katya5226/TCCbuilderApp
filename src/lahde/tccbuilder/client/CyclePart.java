@@ -85,7 +85,7 @@ public class CyclePart {
             row++;
             column = 0;
         } else
-            flexTable.setText(row++, column, "all");
+            flexTable.setText(row++, column, "All components/TCEs");
         if (toggleTCE) {
             //ignore
         } else if (!newFieldIndexes.isEmpty()) {
