@@ -114,6 +114,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem elmSliderMenuItem;
     MenuBar mainMenuBar, drawMenuBar;
 
+    StartDialog startDialog;
+
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
 
@@ -634,8 +636,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         buttonPanel.add(runStopButton);
         resetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                if (simDimensionality == 1) new StartDialog(theSim).show();
-                else if (simDimensionality == 2) new StartDialog2D(theSim).show();
+                if (simDimensionality == 1) {
+                    if (startDialog == null)
+                        startDialog = new StartDialog(theSim);
+                    startDialog.show();
+                } else if (simDimensionality == 2) new StartDialog2D(theSim).show();
             }
         });
         quickResetButton.addClickHandler(new ClickHandler() {

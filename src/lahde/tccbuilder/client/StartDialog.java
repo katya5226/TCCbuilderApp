@@ -79,8 +79,6 @@ public class StartDialog extends Dialog {
         rightBoundary.addItem("Constant Temperature");
         rightBoundary.addItem("Convective");
         rightBoundary.setSelectedIndex(sim.simulation1D.eastBoundary.ordinal());
-
-
         cyclic = new Checkbox("Cyclic");
         cyclic.setState(sim.simulation1D.cyclic);
         cyclicButton = new Button("Add Cyclic Part");
