@@ -32,7 +32,6 @@ import java.util.*;
 import java.lang.Math;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.dev.shell.BrowserChannel;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
@@ -71,7 +70,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.canvas.dom.client.TextMetrics;
 
-@SuppressWarnings({"Convert2Lambda", "CStyleArrayDeclaration"})
+@SuppressWarnings({"Convert2Lambda", "CStyleArrayDeclaration", "ReassignedVariable"})
 public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, ClickHandler, DoubleClickHandler, ContextMenuHandler, NativePreviewHandler, MouseOutHandler, MouseWheelHandler {
 
     Random random;
@@ -1761,17 +1760,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double XOffSet = 0;
         // drawing the displays
         for (ThermalControlElement tce : trackedTemperatures) {
-            try {
-                XOffSet = 0;
-                double[] temps = tce.listTemps();
-                double elementWidth = (circuitArea.width * 1.00 - indexWidth) / (temps.length);
-                drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, tce.index + "", tce.color.getHexValue());
-                XOffSet += indexWidth;
-                for (double temp : temps) {
-                    drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), tce.color.getHexValue());
-                    XOffSet += elementWidth;
-                }
-            } catch (Exception e) {
+            XOffSet = 0;
+            double[] temps = tce.listTemps();
+            double elementWidth = (circuitArea.width * 1.00 - indexWidth) / (temps.length);
+            drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, tce.index + "", tce.color.getHexValue());
+            XOffSet += indexWidth;
+            for (double temp : temps) {
+                drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), tce.color.getHexValue());
+                XOffSet += elementWidth;
             }
 
             YOffset += elementHeight;
@@ -1781,9 +1777,21 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void drawTemperatureGraphs(Graphics g) {
-        double maxElementHeight = 30.0;
-        int h = (int) (trackedTemperatures.size() * maxElementHeight < 200 ? trackedTemperatures.size() * maxElementHeight : 200);
-        h = 250;
+        class GraphPoint {
+            double x;
+            double y;
+            Color color;
+
+            int outOfRange;
+
+            public GraphPoint(double x, double y, Color color, int outOfRange) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.outOfRange = outOfRange;
+            }
+        }
+        int h = 250;
         if (simulation1D.heatCircuit == null) return;
 
         double elementWidth = (double) (circuitArea.width) / trackedTemperatures.size();
@@ -1791,8 +1799,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         double YOffset = circuitArea.height - h;
         double XOffSet = 100;
-        double prevX = 0;
-        double prevY = 0;
 
         //drawing the graph's background
         Context2d ctx = g.context;
@@ -1825,90 +1831,73 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
         double tempWidth = ((double) (circuitArea.width - 1.5 * XOffSet) / ((simulation1D.heatCircuit.cvs.size()) - 1));
-        double innerX = XOffSet;
-        Color prevColor = Color.NONE;
+        double innerX = XOffSet - tempWidth / 2;
+        ArrayList<GraphPoint> points = new ArrayList<>();
         for (ThermalControlElement tce : trackedTemperatures) {
-            try {
-                double[] temps = tce.listTemps();
-                double tempHeight = elementHeight;
-                double innerY = YOffset;
-
-/*                if (trackedTemperatures.size() > 1) {
-                    drawRectangleWithText(g, innerX, YOffset - 25, tempWidth * temps.length, 25, String.valueOf(tce.index), tce.color.getHexValue(), false);
-                }*/
-                if (tce == trackedTemperatures.get(0)) {
-                    innerX -= tempWidth / 2;
+            for (double temp : tce.listTemps()) {
+                double valueRange = simulation1D.maxTemp - simulation1D.minTemp;
+                double relativeValue = (temp - simulation1D.minTemp) / valueRange;
+                double pointY = (YOffset + elementHeight) - (elementHeight * relativeValue);
+                double pointX = innerX + tempWidth / 2.0;
+                int outOfRange = 0;
+                if (pointY < YOffset) {
+                    pointY = YOffset;
+                    outOfRange = 1;
+                }
+                if (pointY > YOffset + elementHeight) {
+                    pointY = YOffset + elementHeight;
+                    outOfRange = -1;
                 }
 
-                for (int i = 0, tempsLength = temps.length; i < tempsLength; i++) {
-                    double temp = temps[i];
-
-                    double[] tmp;
-                    if (i == 0) {
-                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, simulation1D.minTemp, simulation1D.maxTemp, prevColor.getHexValue());
-                    } else {
-                        drawGraphLine(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, simulation1D.minTemp, simulation1D.maxTemp, tce.color.getHexValue());
-                    }
-
-                    tmp = drawGraphDot(g, prevX, prevY, innerX, innerY, tempWidth, tempHeight, temp, simulation1D.minTemp, simulation1D.maxTemp, tce.color.getHexValue());
-
-                    prevX = tmp[0];
-                    prevY = tmp[1];
-                    innerX += tempWidth;
-                }
-                prevColor = tce.color;
-
-            } catch (Exception ignored) {
-
+                points.add(new GraphPoint(pointX, pointY, tce.color, outOfRange));
+                innerX += tempWidth;
             }
+
 
             XOffSet += elementWidth;
 
         }
-
-    }
-
-    private double[] drawGraphDot(Graphics g, double prevX, double prevY, double x, double y, double width, double height, double value, double minValue, double maxValue, String colorDot) {
-        Context2d ctx = g.context;
-
-        // Calculate the position of the dot relative to the value and the min/max values
-        double dotRadius = 5;
-        double valueRange = maxValue - minValue;
-        double relativeValue = (value - minValue) / valueRange;
-        double dotY = (y + height) - (height * relativeValue);
-        double dotX = x + width / 2.0;
-        ctx.setFillStyle(colorDot);
-
-        //g.drawLine(prevX,prevY,dotX,dotY);
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, dotRadius, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
-        return new double[]{dotX, dotY};
-    }
-
-    private double[] drawGraphLine(Graphics g, double prevX, double prevY, double x, double y, double width, double height, double value, double minValue, double maxValue, String colorLine) {
-        Context2d ctx = g.context;
-
-        // Calculate the position of the dot relative to the value and the min/max values
-        double dotRadius = 5;
-        double valueRange = maxValue - minValue;
-        double relativeValue = (value - minValue) / valueRange;
-        double dotY = (y + height) - (height * relativeValue);
-        dotY = Math.max(dotY, y + height);
-
-        double dotX = x + width / 2.0;
-
-        ctx.setStrokeStyle(colorLine);
-        ctx.setLineWidth(2.5);
-
-        if (prevY != 0) {
+        for (int i = 0; i < points.size() - 1; i++) {
+            GraphPoint current = points.get(i);
+            GraphPoint right = points.get(i + 1);
+            ctx.setStrokeStyle(current.color.getHexValue());
             ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(dotX, dotY);
+            ctx.setLineWidth(2.5);
+            ctx.moveTo(current.x, current.y);
+            if (!current.color.equals(right.color)) {
+                double midX = (current.x + right.x) / 2;
+                double midY = (current.y + right.y) / 2;
+                ctx.lineTo(midX, midY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(midX, midY);
+                ctx.setStrokeStyle(right.color.getHexValue());
+
+            }
+            ctx.lineTo(right.x, right.y);
             ctx.stroke();
+            ctx.closePath();
         }
-        return new double[]{dotX, dotY};
+        for (GraphPoint point : points) {
+            ctx.setStrokeStyle(point.color.getHexValue());
+            ctx.setFillStyle(point.color.getHexValue());
+            //draw a triangle above point if out of range
+            double radius = 5;
+            if (point.outOfRange != 0) {
+                ctx.beginPath();
+                ctx.moveTo(point.x - radius * point.outOfRange, point.y - radius * point.outOfRange);
+                ctx.lineTo(point.x, point.y - radius * 2 * point.outOfRange);
+                ctx.lineTo(point.x + radius * point.outOfRange, point.y - radius * point.outOfRange);
+                ctx.stroke();
+                ctx.closePath();
+            }
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+        }
+
     }
 
 
