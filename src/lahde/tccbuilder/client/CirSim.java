@@ -83,24 +83,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem importFromDropboxItem;
     MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
-    CheckboxMenuItem dotsCheckItem;
-    CheckboxMenuItem voltsCheckItem;
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
-    CheckboxMenuItem powerCheckItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
-    CheckboxMenuItem showValuesCheckItem;
-    CheckboxMenuItem euroResistorCheckItem;
-    CheckboxMenuItem euroGatesCheckItem;
-    CheckboxMenuItem printableCheckItem;
-    CheckboxMenuItem conventionCheckItem;
     CheckboxMenuItem noEditCheckItem;
     CheckboxMenuItem mouseWheelEditCheckItem;
     Label titleLabel;
     Scrollbar speedBar;
     ListBox scale, dimensionality;
-    HTML cyclicOperationLabel;
 
     MenuBar elmMenuBar;
     MenuItem elmEditMenuItem;
@@ -118,7 +109,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
 
-    // Class addingClass;
     PopupPanel contextPanel = null;
     int mouseMode = MODE_SELECT;
     int tempMouseMode = MODE_SELECT;
@@ -161,7 +151,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     // incremented each time we advance t by maxTimeStep
     int timeStepCount;
 
-    boolean adjustTimeStep;
     boolean developerMode;
     Vector<CircuitElm> elmList;
     Vector<Adjustable> adjustables;
@@ -197,7 +186,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     FlowPanel cyclicPanel;
     FlowPanel buttonPanel;
     private boolean mouseDragging;
-    double scopeHeightFraction = 0.2;
 
     Vector<CheckboxMenuItem> mainMenuItems = new Vector<CheckboxMenuItem>();
     Vector<String> mainMenuItemNames = new Vector<String>();
@@ -532,22 +520,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         showOverlayCheckItem.setState(false);
-        dotsCheckItem = new CheckboxMenuItem(Locale.LS("Show Current"));
-        dotsCheckItem.setState(true);
-        voltsCheckItem = new CheckboxMenuItem(Locale.LS("Show Voltage"), new Command() {
-            public void execute() {
-                if (voltsCheckItem.getState()) powerCheckItem.setState(false);
-            }
-        });
-        voltsCheckItem.setState(true);
-        powerCheckItem = new CheckboxMenuItem(Locale.LS("Show Power"), new Command() {
-            public void execute() {
-                if (powerCheckItem.getState()) voltsCheckItem.setState(false);
-            }
-        });
-        showValuesCheckItem = new CheckboxMenuItem(Locale.LS("Show Values"));
-        showValuesCheckItem.setState(true);
-        // m.add(conductanceCheckItem = getCheckItem(LS("Show Conductance")));
+
+
         m.addItem(smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
             public void execute() {
                 setGrid();
@@ -559,34 +533,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         crossHairCheckItem.setState(getOptionFromStorage("crossHair", false));
-        euroResistorCheckItem = new CheckboxMenuItem(Locale.LS("European Resistors"), new Command() {
-            public void execute() {
-                setOptionInStorage("euroResistors", euroResistorCheckItem.getState());
-            }
-        });
-        euroResistorCheckItem.setState(euroSetting);
-        euroGatesCheckItem = new CheckboxMenuItem(Locale.LS("IEC Gates"), new Command() {
-            public void execute() {
-                setOptionInStorage("euroGates", euroGatesCheckItem.getState());
-                int i;
-                for (i = 0; i != elmList.size(); i++)
-                    getElm(i).setPoints();
-            }
-        });
-        euroGatesCheckItem.setState(euroGates);
-        m.addItem(printableCheckItem = new CheckboxMenuItem(Locale.LS("White Background"), new Command() {
-            public void execute() {
-                setOptionInStorage("whiteBackground", printableCheckItem.getState());
-            }
-        }));
-        printableCheckItem.setState(printable);
 
-        conventionCheckItem = new CheckboxMenuItem(Locale.LS("Conventional Current Motion"), new Command() {
-            public void execute() {
-                setOptionInStorage("conventionalCurrent", conventionCheckItem.getState());
-            }
-        });
-        conventionCheckItem.setState(convention);
+
+
         m.addItem(noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing")));
         noEditCheckItem.setState(noEditing);
 
@@ -730,8 +679,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 calculateElementsLengths();
             }
         });
-        cyclicOperationLabel = new HTML();
-        simulationConsolePanel.add(cyclicOperationLabel);
 
         cyclicPanel.add(l = new Label(Locale.LS("Cycle Parts: ")));
         l.addStyleName("topSpace");
@@ -2379,13 +2326,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     String dumpOptions() {
-        int f = (dotsCheckItem.getState()) ? 1 : 0;
-        f |= (smallGridCheckItem.getState()) ? 2 : 0;
-        f |= (voltsCheckItem.getState()) ? 0 : 4;
-        f |= (powerCheckItem.getState()) ? 8 : 0;
-        f |= (showValuesCheckItem.getState()) ? 0 : 16;
+        int f = (smallGridCheckItem.getState()) ? 2 : 0;
         // 32 = linear scale in afilter
-        f |= adjustTimeStep ? 64 : 0;
         String dump = "$ " + f + " " + maxTimeStep + " " + getIterCount() + " " + " " + minTimeStep + "\n";
         return dump;
     }
@@ -2735,11 +2677,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             hintType = -1;
             maxTimeStep = 5e-6;
             minTimeStep = 50e-12;
-            dotsCheckItem.setState(false);
             smallGridCheckItem.setState(false);
-            powerCheckItem.setState(false);
-            voltsCheckItem.setState(true);
-            showValuesCheckItem.setState(true);
             setGrid();
             speedBar.setValue(100); // 57
             lastIterTime = 0;
@@ -2923,12 +2861,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             return;
         }
 
-        dotsCheckItem.setState((flags & 1) != 0);
         smallGridCheckItem.setState((flags & 2) != 0);
-        voltsCheckItem.setState((flags & 4) == 0);
-        powerCheckItem.setState((flags & 8) == 8);
-        showValuesCheckItem.setState((flags & 16) == 0);
-        adjustTimeStep = (flags & 64) != 0;
         maxTimeStep = timeStep = Double.parseDouble(st.nextToken());
         double sp = Double.parseDouble(st.nextToken());
         int sp2 = (int) (Math.log(10 * sp) * 24 + 61.5);
@@ -3041,9 +2974,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void dragSplitter(int x, int y) {
         double h = (double) canvasHeight;
         if (h < 1) h = 1;
-        scopeHeightFraction = 1.0 - (((double) y) / h);
-        if (scopeHeightFraction < 0.1) scopeHeightFraction = 0.1;
-        if (scopeHeightFraction > 0.9) scopeHeightFraction = 0.9;
         setCircuitArea();
         repaint();
     }
@@ -4384,17 +4314,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double scale = 1;
 
         // turn on white background, turn off current display
-        boolean p = printableCheckItem.getState();
-        boolean c = dotsCheckItem.getState();
         boolean print = (type == CAC_PRINT);
-        if (print) printableCheckItem.setState(true);
-        if (printableCheckItem.getState()) {
+        if (print) {
             g.setColor(Color.white);
         } else {
             g.setColor(Color.black);
             g.fillRect(0, 0, w, h);
         }
-        dotsCheckItem.setState(false);
 
         int wmargin = 140;
         int hmargin = 100;
@@ -4419,8 +4345,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
 
         // restore everything
-        printableCheckItem.setState(p);
-        dotsCheckItem.setState(c);
         transform = oldTransform;
     }
 

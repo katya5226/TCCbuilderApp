@@ -24,7 +24,6 @@ import com.google.gwt.user.client.Window;
 import lahde.tccbuilder.client.util.Locale;
 
 
-//TODO: CHANGE OPTIONS
 class EditOptions implements Editable {
     CirSim sim;
 
@@ -35,10 +34,7 @@ class EditOptions implements Editable {
     public EditInfo getEditInfo(int n) {
         if (n == 0)
             return new EditInfo("Time step size (s)", sim.maxTimeStep, 0, 0);
-        if (n == 1)
-            return new EditInfo("Range for voltage color (V)",
-                    0, 0, 0);
-        if (n == 2) {
+        if (n == 1) {
             EditInfo ei = new EditInfo("Change Language", 0, -1, -1);
             ei.choice = new Choice();
             ei.choice.add("(no change)");
@@ -58,32 +54,6 @@ class EditOptions implements Editable {
             return ei;
         }
 
-        if (n == 3)
-            return new EditInfo("Positive Color", "#000");
-        if (n == 4)
-            return new EditInfo("Negative Color", "#000");
-        if (n == 5)
-            return new EditInfo("Neutral Color", "#000");
-        if (n == 6)
-            return new EditInfo("Selection Color", "#000");
-        if (n == 7)
-            return new EditInfo("Current Color", "#000");
-        if (n == 8)
-            return new EditInfo("# of Decimal Digits (short format)", 0);
-        if (n == 9)
-            return new EditInfo("# of Decimal Digits (long format)", 0);
-        if (n == 10) {
-            EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox = new Checkbox("Developer Mode", sim.developerMode);
-            return ei;
-        }
-        if (n == 11) {
-            EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox = new Checkbox("Auto-Adjust Timestep", sim.adjustTimeStep);
-            return ei;
-        }
-        if (n == 12 && sim.adjustTimeStep)
-            return new EditInfo("Minimum time step size (s)", sim.minTimeStep, 0, 0);
 
 
         return null;
@@ -93,9 +63,7 @@ class EditOptions implements Editable {
         if (n == 0 && ei.value > 0) {
             sim.maxTimeStep = ei.value;
         }
-        if (n == 1 && ei.value > 0)
-            return;
-        if (n == 2) {
+        if (n == 1) {
             int lang = ei.choice.getSelectedIndex();
             if (lang == 0)
                 return;
@@ -153,42 +121,7 @@ class EditOptions implements Editable {
             if (Window.confirm(Locale.LS("Must restart to set language.  Restart now?")))
                 Window.Location.reload();
         }
-        if (n == 3) {
-            setColor("positiveColor", ei, Color.green);
-        }
-        if (n == 4) {
-            setColor("negativeColor", ei, Color.red);
-        }
-        if (n == 5) {
-            setColor("neutralColor", ei, Color.gray);
-        }
-        if (n == 6)
-            setColor("selectColor", ei, Color.cyan);
-        if (n == 7)
-            setColor("currentColor", ei, Color.yellow);
-        if (n == 8) {
-        //CircuitElm.setDecimalDigits((int) ei.value, true, true);
-        }
-        if (n == 9) {
-        //CircuitElm.setDecimalDigits((int) ei.value, false, true);
-        }
-        if (n == 10)
-            sim.developerMode = ei.checkbox.getState();
-        if (n == 11) {
-            sim.adjustTimeStep = ei.checkbox.getState();
-            ei.newDialog = true;
-        }
-        if (n == 12 && ei.value > 0)
-            sim.minTimeStep = ei.value;
+
     }
 
-    Color setColor(String name, EditInfo ei, Color def) {
-        String val = ei.textf.getText();
-        if (val.isEmpty())
-            val = def.getHexValue();
-        Storage stor = Storage.getLocalStorageIfSupported();
-        if (stor != null)
-            stor.setItem(name, val);
-        return new Color(val);
-    }
 };
