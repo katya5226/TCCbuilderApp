@@ -265,6 +265,50 @@ public class CyclicDialog extends Dialog {
                         case VALUE_CHANGE:
                             break;
                     }
+                else {
+                    int index = cyclePart.TCEs.indexOf(chosenComponent);
+                    switch (cyclePart.partType) {
+                        case HEAT_TRANSFER:
+                            break;
+                        case HEAT_INPUT:
+                            cyclePart.heatInputs.set(index, heatInput.getValue());
+                            break;
+                        case MECHANIC_DISPLACEMENT:
+                            cyclePart.newIndexes.set(index, newIndex.getValue().intValue());
+                            break;
+                        case MAGNETIC_FIELD_CHANGE:
+                            chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
+                            cyclePart.newFieldIndexes.set(index, chosenComponent.fieldIndex);
+                            break;
+                        case ELECTRIC_FIELD_CHANGE:
+                            break;
+                        case PRESSURE_CHANGE:
+                            break;
+                        case SHEAR_STRESS_CHANGE:
+                            break;
+                        case PROPERTIES_CHANGE:
+                            if (newRho.getValue() == 0 || newCp.getValue() == 0 || newK.getValue() == 0) {
+                                Window.alert("Value must be -1 or greater than 0.001!");
+                                sim.simulation1D.cycleParts.remove(sim.simulation1D.cycleParts.size() - 1);
+                                break;
+                            }
+
+                            cyclePart.newProperties.set(index, new Vector<Double>());
+                            cyclePart.newProperties.lastElement().add(newRho.getValue());
+                            cyclePart.newProperties.lastElement().add(newCp.getValue());
+                            cyclePart.newProperties.lastElement().add(newK.getValue());
+
+                            break;
+                        case TEMPERATURE_CHANGE:
+                            cyclePart.newTemperatures.set(index, newTemperature.getValue());
+                            break;
+                        case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                            break;
+                        case VALUE_CHANGE:
+                            break;
+                    }
+                }
+
 
                 //just for cycle part display, will be overridden when clicking apply
                 if (duration.isVisible()) {
