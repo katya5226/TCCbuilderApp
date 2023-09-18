@@ -301,6 +301,7 @@ public class CyclicDialog extends Dialog {
                             break;
                         case TEMPERATURE_CHANGE:
                             cyclePart.newTemperatures.set(index, newTemperature.getValue());
+                            sim.simulation1D.setTemperatureRange();
                             break;
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
                             break;

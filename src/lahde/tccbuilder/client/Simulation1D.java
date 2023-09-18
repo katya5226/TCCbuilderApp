@@ -169,7 +169,7 @@ public class Simulation1D extends Simulation {
     }
 
     void setTemperatureRange() {
-        double maxValue = 0;
+        double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
             if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
                 for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
@@ -188,6 +188,16 @@ public class Simulation1D extends Simulation {
             minTemp = startTemp - maxValue;
             maxTemp = startTemp + maxValue;
         }
+        maxValue = Double.MIN_VALUE;
+        minValue = Double.MAX_VALUE;
+        for (CyclePart cp : cycleParts)
+            if (cp.partType == CyclePart.PartType.TEMPERATURE_CHANGE) {
+                minValue = Math.min(minValue, Collections.min(cp.newTemperatures));
+                maxValue = Math.max(maxValue, Collections.max(cp.newTemperatures));
+            }
+        minTemp = Math.min(minValue, minTemp);
+        maxTemp = Math.max(maxValue, maxTemp);
+
     }
 
     @Override
