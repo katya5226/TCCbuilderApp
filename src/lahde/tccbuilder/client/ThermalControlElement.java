@@ -262,6 +262,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
             double temperatureRange = sim.simulation1D.maxTemp - sim.simulation1D.minTemp;
             double temperatureRatio = (cv.temperature - sim.simulation1D.minTemp) / temperatureRange;
+            temperatureRatio = Math.min(temperatureRatio, 1.0);
+            temperatureRatio = Math.max(temperatureRatio, 0.0);
 
             Color color1 = Color.blue;
             Color color2 = Color.white;
