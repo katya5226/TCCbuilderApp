@@ -1895,6 +1895,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double valueRange = maxValue - minValue;
         double relativeValue = (value - minValue) / valueRange;
         double dotY = (y + height) - (height * relativeValue);
+        dotY = Math.max(dotY, y + height);
+
         double dotX = x + width / 2.0;
 
         ctx.setStrokeStyle(colorLine);
