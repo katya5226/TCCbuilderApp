@@ -14,7 +14,6 @@
 }
 
 
-
 *::-webkit-scrollbar {
     display: none;
 }
@@ -397,4 +396,35 @@ iframe {
     color: var(--black);
     padding: 0.25rem;
 
+}
+
+#loadingScreen {
+    position: absolute;
+    background-color: rgba(47, 56, 71, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+.loading-bar {
+    width: 3rem;
+    height: 3rem;
+    border: 6px solid var(--white);
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

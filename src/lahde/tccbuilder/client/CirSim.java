@@ -32,6 +32,7 @@ import java.util.*;
 import java.lang.Math;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
@@ -179,6 +180,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     boolean unsavedChanges;
 
     DockLayoutPanel layoutPanel;
+    Element loadingScreen;
     MenuBar menuBar;
     MenuBar fileMenuBar;
     FlowPanel verticalPanel;
@@ -224,6 +226,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     ArrayList<String> awaitedResponses;
     final Timer responseTimer = new Timer() {
         public void run() {
+            loadingScreen.getStyle().setProperty("display", "flex");
             if (awaitedResponses.isEmpty()) {
                 if (stopMessage != null) return;
                 simRunning = true;
@@ -231,6 +234,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 runStopButton.removeStyleName("topButton-red");
                 timer.scheduleRepeating(FASTTIMER);
                 responseTimer.cancel();
+                loadingScreen.getStyle().setProperty("display", "none");
             }
 
         }
@@ -456,11 +460,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         fileMenuBar.addItem(aboutItem);
         aboutItem.setScheduledCommand(new MyCommand("file", "about"));
 
-        int width = (int) RootLayoutPanel.get().getOffsetWidth();
-/*        if (VERTICALPANELWIDTH > 166)
-            VERTICALPANELWIDTH = 166;
-        if (VERTICALPANELWIDTH < 128)
-            VERTICALPANELWIDTH = 128;*/
+
+        loadingScreen = Document.get().getElementById("loadingScreen");
+        loadingScreen.getStyle().setProperty("display", "none");
 
         menuBar = new MenuBar();
         menuBar.addItem(Locale.LS("File"), fileMenuBar);
@@ -533,7 +535,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         crossHairCheckItem.setState(getOptionFromStorage("crossHair", false));
-
 
 
         m.addItem(noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing")));
