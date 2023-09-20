@@ -308,12 +308,15 @@ public abstract class CircuitElm implements Editable {
     }
 
     void drawHandles(Graphics g, Color c) {
-        g.setColor(c);
+        g.context.save();
+        g.context.setStrokeStyle(c.getHexValue());
+        g.context.setFillStyle(c.getHexValue());
         g.fillRect((int) (x - postSize), (int) (y - postSize), (int) (postSize * 2), (int) (postSize * 2));
         if (getNumHandles() > 1) {
             g.fillRect((int) (x2 - postSize), (int) (y2 - postSize), (int) (postSize * 2), (int) (postSize * 2));
-
         }
+        g.context.restore();
+
     }
 
     int getHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
@@ -339,8 +342,12 @@ public abstract class CircuitElm implements Editable {
 
 
     void drawPost(Graphics g, Point pt) {
-        g.setColor(!needsHighlight() ? Color.white : Color.cyan);
+        g.context.save();
+        g.context.setStrokeStyle((!needsHighlight() ? Color.white : Color.cyan).getHexValue());
+        g.context.setFillStyle((!needsHighlight() ? Color.white : Color.cyan).getHexValue());
         g.fillOval((int) (pt.x - postSize), (int) (pt.y - postSize), (int) (postSize * 2), (int) (postSize * 2));
+        g.context.restore();
+
     }
 
     void drawPosts(Graphics g) {

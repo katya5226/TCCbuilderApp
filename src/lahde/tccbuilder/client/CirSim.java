@@ -1334,11 +1334,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 //        noEditCheckItem.setState(simRunning);
         if (simRunning) {
 
-            //reorder elements on the canvas
-            if (simDimensionality == 1) {
-                reorderByPosition();
-            }
-
             // Run circuit
             perfmon.startContext("runCircuit()");
             try {
@@ -1410,11 +1405,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 CircuitElm ce = getElm(i);
                 // ce.drawPost(g, ce.x , ce.y );
                 // ce.drawPost(g, ce.x2, ce.y2);
-                if (ce != mouseElm || tempMouseMode != MODE_DRAG_POST) {
-                    g.setColor(Color.lightGray);
-                    g.fillOval(ce.x - 3, ce.y - 3, 7, 7);
-                    g.fillOval(ce.x2 - 3, ce.y2 - 3, 7, 7);
-                } else {
+                if (!(ce != mouseElm || tempMouseMode != MODE_DRAG_POST)) {
                     ce.drawHandles(g, CircuitElm.selectColor);
                 }
             }
@@ -1456,9 +1447,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         // draw the display
-        if (viewTempsOverlay)
-            drawTemperatureScale(cvcontext, 20, circuitArea.height - 50,
-                    canvasWidth - 40, 30, simulation1D.minTemp, simulation1D.maxTemp, 10);
+        if (viewTempsOverlay) drawTemperatureScale(cvcontext, 20, circuitArea.height - 50, canvasWidth - 40, 30, simulation1D.minTemp, simulation1D.maxTemp, 10);
         else if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
@@ -1532,7 +1521,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             textWidth = ctx.measureText(NumberFormat.getFormat("0.00").format(temperatures[i])).getWidth();
 
             ctx.fillText(text, cvX - (textWidth / 2), y - 16);
-            ctx.moveTo(cvX, y );
+            ctx.moveTo(cvX, y);
             ctx.lineTo(cvX, y - 8);
             ctx.stroke();
 
