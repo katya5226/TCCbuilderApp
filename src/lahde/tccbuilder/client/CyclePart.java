@@ -2,6 +2,9 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.Vector;
@@ -55,8 +58,10 @@ public class CyclePart {
     Vector<HashMap<Simulation.Property, Double>> changedProperties;
     CirSim sim;
     double duration;
+    CyclePart theCyclePart;
 
     public CyclePart(int index, CirSim sim) {
+        theCyclePart = this;
         partIndex = index;
         partType = PartType.HEAT_TRANSFER;
         TCEs = new Vector<ThermalControlElement>();
@@ -71,7 +76,7 @@ public class CyclePart {
         duration = 0;
     }
 
-    public HTML toHTML() {
+    public Widget toWidget() {
         FlexTable flexTable = new FlexTable();
         flexTable.setStyleName("cycle-part");
         Element tableElement = flexTable.getElement();
@@ -122,12 +127,33 @@ public class CyclePart {
         row++;
         column = 0;
 
-        HTML html = new HTML();
-        html.setHTML("<div>" + partIndex + ".\t" + partType.toSpacedCamelCase() + "</br>" + duration + "s </div>");
-        html.setHTML(html.getHTML() + flexTable);
 
-        html.setStyleName("cycle-part-outer");
-        return html;
+        HTMLPanel htmlPanel = new HTMLPanel("");
+        htmlPanel.addStyleName("cycle-part-outer");
+        HTMLPanel contentPanel = new HTMLPanel("");
+        contentPanel.setStyleName("cycle-part-header");
+        HTMLPanel titlePanel = new HTMLPanel(partIndex + ". " + partType.toSpacedCamelCase());
+        titlePanel.addStyleName("d-flex");
+        titlePanel.addStyleName("justify-between");
+        titlePanel.addStyleName("align-v-center");
+        contentPanel.add(titlePanel);
+        contentPanel.add(new HTMLPanel(duration + "s"));
+        Button button = new Button("x");
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                CirSim.theSim.simulation1D.cycleParts.remove(theCyclePart);
+                CirSim.theSim.fillCyclicPanel();
+            }
+        });
+
+        htmlPanel.add(contentPanel);
+        titlePanel.add(button);
+        htmlPanel.add(flexTable);
+
+        return htmlPanel;
+
+
     }
 
 

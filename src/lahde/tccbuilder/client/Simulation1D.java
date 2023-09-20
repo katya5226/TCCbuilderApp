@@ -302,6 +302,8 @@ public class Simulation1D extends Simulation {
             cycleParts.add(cp);
         }
 
+
+
         //this is some reaallly ugly code 0_0
 
         CirSim.theSim.displayTimer.scheduleRepeating(CirSim.theSim.FASTTIMER);

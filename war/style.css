@@ -60,6 +60,7 @@ div.gwt-DialogBox {
     border: 0.125rem solid var(--deep-blue);
 }
 
+
 .dialogContainerOuter {
     display: flex;
     align-items: flex-start;
@@ -374,6 +375,10 @@ iframe {
     background-color: rgba(24, 28, 36, 0.33);
 }
 
+.cycle-part-outer > * {
+    font-size: 0.75rem;
+}
+
 .cycle-part {
     width: 100%;
     background-color: var(--deep-blue);
@@ -382,19 +387,37 @@ iframe {
 }
 
 .cycle-part td {
-    padding: 0.25rem;
+    padding: 0.125rem;
     background-color: var(--deep-blue);
 }
 
 .cyclicPanel > .gwt-HTML > .heading {
-    padding: 0.25rem;
+    padding: 0.125rem;
+
 }
 
-
-.cycle-part-outer > div {
+.cycle-part-header {
     background-color: var(--white);
     color: var(--black);
-    padding: 0.25rem;
+    padding: 0.125rem;
+
+}
+
+.cycle-part-header > * {
+    background-color: var(--white);
+    color: var(--black);
+    padding: 0.125rem;
+
+}
+
+.cycle-part-header button {
+    color: var(--black);
+    background: none;
+}
+
+.cycle-part-header button:hover {
+    color: var(--red);
+    background: none;
 
 }
 
@@ -427,4 +450,54 @@ iframe {
     100% {
         transform: rotate(360deg);
     }
+}
+
+
+/*Utility classes*/
+
+.d-flex {
+    display: flex;
+}
+
+.align-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.align-v-center {
+    align-items: center;
+}
+
+.align-h-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.align-start {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.align-v-start {
+    align-items: flex-start;
+}
+
+.align-h-start {
+    justify-content: flex-start;
+}
+
+.align-end {
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.align-v-end {
+    align-items: flex-end;
+}
+
+.align-h-end {
+    justify-content: flex-end;
 }

@@ -209,7 +209,7 @@ public class CyclicDialog extends Dialog {
                         break;
                 }
                 sim.simulation1D.cycleParts.add(cyclePart);
-                sim.cyclicPanel.add(cyclePart.toHTML());
+                sim.fillCyclicPanel();
 //                printCyclePart(cyclePart, sim.cyclicOperationLabel);
                 closeDialog();
             }
@@ -217,7 +217,6 @@ public class CyclicDialog extends Dialog {
         addComponentButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                //TODO: maybe add ability to change value when component is already added?
                 if (!cyclePart.TCEs.contains(chosenComponent))
                     switch (cyclePart.partType) {
                         case HEAT_TRANSFER:
@@ -318,7 +317,7 @@ public class CyclicDialog extends Dialog {
                 }
 
 
-                cyclePartLabel.setHTML(cyclePart.toHTML().getHTML());
+                CirSim.theSim.fillCyclicPanel();
                 center();
             }
         });

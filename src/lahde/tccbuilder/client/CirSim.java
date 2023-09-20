@@ -241,11 +241,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     };
     final Timer displayTimer = new Timer() {
         public void run() {
-            if (CirSim.theSim.awaitedResponses.isEmpty()) {
-                if (CirSim.theSim.stopMessage != null) return;
-                if (CirSim.theSim.simulation1D.cyclic) {
-                    for (CyclePart cp : CirSim.theSim.simulation1D.cycleParts)
-                        CirSim.theSim.cyclicPanel.add(cp.toHTML());
+            if (awaitedResponses.isEmpty()) {
+                if (stopMessage != null) return;
+                if (simulation1D.cyclic) {
+                    fillCyclicPanel();
                 }
                 displayTimer.cancel();
             }
@@ -681,8 +680,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         });
 
-        cyclicPanel.add(l = new Label(Locale.LS("Cycle Parts: ")));
-        l.addStyleName("topSpace");
 
         titleLabel = new Label("Label");
 
@@ -723,6 +720,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         simulation1D = new Simulation1D();
         simulation2D = new Simulation2D();
+
+        fillCyclicPanel();
 
 
         if (startCircuitText != null) {
@@ -808,6 +807,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         readMaterialFlags(baseURL + "materials_flags.csv");
 
 
+    }
+
+    public void fillCyclicPanel() {
+        cyclicPanel.clear();
+        Label l = new Label(Locale.LS("Cycle Parts: "));
+        l.addStyleName("topSpace");
+        cyclicPanel.add(l);
+
+        for (CyclePart cp : simulation1D.cycleParts) {
+            cyclicPanel.add(cp.toWidget());
+        }
     }
 
     void setCyclic(boolean c) {
