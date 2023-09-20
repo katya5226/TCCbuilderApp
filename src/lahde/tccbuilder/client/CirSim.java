@@ -1448,7 +1448,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         // draw the display
         if (viewTempsOverlay)
-            drawTemperatureScale(cvcontext, 20, circuitArea.height - 50, canvasWidth - 40, 30, simDimensionality == 1 ? simulation1D.minTemp : simulation2D.minTemp, simDimensionality == 1 ? simulation1D.maxTemp : simulation2D.maxTemp, 10);
+            drawTemperatureScale(g.context, 20, circuitArea.height - 50, canvasWidth - 40, 30, simDimensionality == 1 ? simulation1D.minTemp : simulation2D.minTemp, simDimensionality == 1 ? simulation1D.maxTemp : simulation2D.maxTemp, 10);
         else if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
@@ -1512,8 +1512,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         double textWidth;
 
         ctx.setFillStyle(Color.white.getHexValue());
-        ctx.setStrokeStyle(Color.gray.getHexValue());
-        ctx.setLineWidth(2);
+        ctx.setStrokeStyle(Color.white.getHexValue());
+        ctx.setLineWidth(1.5);
         ctx.setFont("10px Roboto");
         for (int i = 0; i < temperatures.length; i++) {
             if (i != temperatures.length - 1 && i != 0 && i % (temperatures.length / labelInterval) != 0) continue;
@@ -1522,6 +1522,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             textWidth = ctx.measureText(NumberFormat.getFormat("0.00").format(temperatures[i])).getWidth();
 
             ctx.fillText(text, cvX - (textWidth / 2), y - 16);
+            ctx.beginPath();
             ctx.moveTo(cvX, y);
             ctx.lineTo(cvX, y - 8);
             ctx.stroke();
@@ -1539,7 +1540,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             ctx.strokeRect(cvX, y, temperatureWidth, height);
             ctx.fillRect(cvX, y, temperatureWidth, height);
         }
-        ctx.setStrokeStyle(Color.gray.getHexValue());
+        ctx.setStrokeStyle(Color.white.getHexValue());
         ctx.rect(x, y, width, height);
         ctx.stroke();
     }

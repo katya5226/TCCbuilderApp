@@ -308,14 +308,14 @@ public abstract class CircuitElm implements Editable {
     }
 
     void drawHandles(Graphics g, Color c) {
-        g.context.save();
+        postSize+=1;
         g.context.setStrokeStyle(c.getHexValue());
         g.context.setFillStyle(c.getHexValue());
         g.fillRect((int) (x - postSize), (int) (y - postSize), (int) (postSize * 2), (int) (postSize * 2));
         if (getNumHandles() > 1) {
             g.fillRect((int) (x2 - postSize), (int) (y2 - postSize), (int) (postSize * 2), (int) (postSize * 2));
         }
-        g.context.restore();
+        postSize-=1;
 
     }
 
