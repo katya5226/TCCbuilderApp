@@ -52,6 +52,7 @@ public class TwoDimCV {
             TwoDimCV sn = neighbours[2];
             y = sn.y + dy;
         }
+
     }
 
     double rho() {

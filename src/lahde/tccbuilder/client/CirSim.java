@@ -1125,6 +1125,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (simDimensionality == 2) {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add 2DComponent"), "2DComponent"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add ZigZagInterface"), "ZigZagInterface"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add CircularInterface"), "CircularInterface"));
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
             mainMenuBar.addSeparator();
@@ -1419,7 +1420,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // draw handles for elm we're dragging
         if (dragElm != null && (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2)) {
             dragElm.draw(g);
-            if (dragElm instanceof ZigZagInterface) ((TwoDimComponent) dragElm).calculateLengthHeight();
             if (dragElm instanceof TwoDimComponent) ((TwoDimComponent) dragElm).calculateLengthHeight();
             if (dragElm instanceof ThermalControlElement) ((ThermalControlElement) dragElm).calculateLength();
 
@@ -4075,6 +4075,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new TwoDimComponent(x1, y1, x2, y2, f, st);
             case 522:
                 return new ZigZagInterface(x1, y1, x2, y2, f, st);
+            case 523:
+                return new CircularInterface(x1, y1, x2, y2, f, st);
 
 
         }
@@ -4119,6 +4121,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new TwoDimComponent(x1, y1);
             case "ZigZagInterface":
                 return new ZigZagInterface(x1, y1);
+            case "CircularInterface":
+                return new CircularInterface(x1, y1);
             default:
                 return null;
         }
