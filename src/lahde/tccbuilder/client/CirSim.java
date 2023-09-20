@@ -949,129 +949,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-//    void makeTCC() {
-//        // simTCEs.clear();
-//        // simTCEs.add(new TCE("TCE1", 0, simComponents));
-//        heatCircuit = new TCC("Heat circuit", simTCEs);
-//        heatCircuit.westBoundary = left_boundary;
-//        heatCircuit.eastBoundary = right_boundary;
-//        heatCircuit.hWest = h_left;
-//        heatCircuit.hEast = h_right;
-//        heatCircuit.temperatureWest = temp_left;
-//        heatCircuit.temperatureEast = temp_right;
-//        heatCircuit.qWest = qIn;
-//        heatCircuit.qEast = qOut;
-//
-//        heatCircuit.buildTCC();
-//        heatCircuit.initializeMatrix();
-//        int n = heatCircuit.cvs.size();
-//        double[] temps = new double[n];
-//        Arrays.fill(temps, startTemp);
-//        heatCircuit.setTemperatures(temps);
-//
-//        double maxValue = 0;
-//        for (ThermalControlElement c : simTCEs) {
-//            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
-//                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
-//                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
-//                }
-//
-//                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
-//                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
-//                }
-//            }
-//        }
-//        if (maxValue == 0) {
-//            minTemp = Math.min(startTemp, Math.min(temp_left, temp_right));
-//            maxTemp = Math.max(startTemp, Math.max(temp_left, temp_right));
-//        } else {
-//            minTemp = startTemp - maxValue;
-//            maxTemp = startTemp + maxValue;
-//        }
-//
-//        GWT.log("NUMCVS: " + String.valueOf(heatCircuit.cvs.size()));
-//        for (ControlVolume cv : heatCircuit.cvs) {
-//            GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
-//        }
-//    }
-//    void setHeatSim() {
-//        // underdiag = new double[heatCircuit.cvs.size()];
-//        // diag = new double[heatCircuit.cvs.size()];
-//        // upperdiag = new double[heatCircuit.cvs.size()];
-//        // rhs = new double[heatCircuit.cvs.size()];
-//        left_boundary = heatCircuit.westBoundary;  // TODO - correct this
-//        right_boundary = heatCircuit.eastBoundary;
-//        start_temperatures = new double[heatCircuit.cvs.size()];
-//        numCycleParts = this.cycleParts.size();
-//        if (!cycleParts.isEmpty()) cyclePart = this.cycleParts.get(0);
-//        cyclePartTime = 0.0;
-//        printing_interval = 1;
-//        total_time = 1.0;
-//        reach_steady = false;
-//    }
-//
-//    void resetHeatSim() {
-//        times.clear();
-//        temperatures.clear();
-//        numCycleParts = 0;
-//        cyclic = false;
-//        time = 0.0;
-//        cycleParts.clear();
-//    }
-//
-//    public void append_new_temps() {
-//        Double[] ttemps = new Double[heatCircuit.cvs.size()];
-//        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-//            ttemps[i] = heatCircuit.cvs.get(i).temperature;
-//        }
-//        this.temperatures.add(ttemps);
-//        this.times.add(this.time);
-//    }
-//
-//    public void heat_transfer_step() {
-//        x_mod.clear();
-//        x_prev.clear();
-//
-//        for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-//            x_prev.add(heatCircuit.cvs.get(i).temperatureOld);
-//            x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
-//        }
-//        //while (true) {
-//        for (int k = 0; k < 3; k++) {
-//            // heatCircuit.neighbours()
-//            heatCircuit.calculateConductivities();
-//
-//            heatCircuit.makeMatrix(dt);
-//            ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-//            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-//                x_mod.set(i, heatCircuit.cvs.get(i).temperature);
-//            }
-//            // flag = hf.compare(x_mod, x_prev, pa.tolerance)
-//            boolean flag = true;
-//            for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-//                x_prev.set(i, x_mod.get(i));
-//            }
-//            for (int i = 0; i < simTCEs.size(); i++) {
-//                if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
-//                    simTCEs.get(i).updateModes();
-//            }
-//            // if (flag) {
-//            //     break;
-//            // }
-//        }
-//
-//        heatCircuit.calculateConductivities();
-//        heatCircuit.makeMatrix(this.dt);
-//        ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
-//        // if len(this.PCMs) > 0:
-//        // for i in range(0, len(this.PCMs)):
-//        // this.PCMs[i].update_temperatures()
-//        // this.PCMs[i].raise_latent_heat(pa.dt)
-//        heatCircuit.replaceTemperatures();
-//        this.append_new_temps();
-//        // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
-//        // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
-//    }
 
     void setColors(String positiveColor, String negativeColor, String neutralColor, String selectColor, String currentColor) {
         Storage stor = Storage.getLocalStorageIfSupported();
@@ -1512,9 +1389,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 if (viewTempsOverlay) ((ThermalControlElement) elm).drawCVTemperatures(g, elm.point1, elm.point2);
                 else ((ThermalControlElement) elm).draw(g);
             } else elm.draw(g);
-
-
         }
+
         perfmon.stopContext();
         // Draw posts normally
 
@@ -1579,8 +1455,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cvcontext.setTransform(scale, 0, 0, scale, 0, 0);
 
 
-        // draw the temperature display
-        if (viewTempsInGraph) drawTemperatureGraphs(g);
+        // draw the display
+        if (viewTempsOverlay)
+            drawTemperatureScale(cvcontext, 20, circuitArea.height - 50,
+                    canvasWidth - 40, 30, simulation1D.minTemp, simulation1D.maxTemp, 10);
+        else if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
         perfmon.startContext("drawBottomArea()");
@@ -1625,6 +1504,71 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         // This should always be the last
         // thing called by updateCircuit();
         callUpdateHook();
+    }
+
+    public void drawTemperatureScale(Context2d ctx, double x, double y, double width, double height, double minTemp, double maxTemp, int labelInterval) {
+        int intervalNumber = 250;
+        double temperatureRange = maxTemp - minTemp;
+        double temperatureInterval = temperatureRange / (intervalNumber - 1);
+        double[] temperatures = new double[intervalNumber];
+        temperatures[0] = minTemp;
+
+        for (int i = 1; i < temperatures.length; i++) {
+            temperatures[i] = temperatures[i - 1] + temperatureInterval;
+        }
+
+
+        double cvX = x;
+        double textWidth;
+
+        ctx.setFillStyle(Color.white.getHexValue());
+        ctx.setStrokeStyle(Color.gray.getHexValue());
+        ctx.setLineWidth(2);
+        ctx.setFont("10px Roboto");
+        for (int i = 0; i < temperatures.length; i++) {
+            if (i != temperatures.length - 1 && i != 0 && i % (temperatures.length / labelInterval) != 0) continue;
+            String text = NumberFormat.getFormat("0.00").format(temperatures[i]);
+
+            textWidth = ctx.measureText(NumberFormat.getFormat("0.00").format(temperatures[i])).getWidth();
+
+            ctx.fillText(text, cvX - (textWidth / 2), y - 16);
+            ctx.moveTo(cvX, y );
+            ctx.lineTo(cvX, y - 8);
+            ctx.stroke();
+
+            cvX += (width / labelInterval);
+        }
+
+        for (int i = 0; i < temperatures.length; i++) {
+            double temperatureRatio = (temperatures[i] - minTemp) / temperatureRange;
+            String mixedColor = CirSim.getMixedColor(temperatureRatio);
+            ctx.setFillStyle(mixedColor);
+            ctx.setStrokeStyle(mixedColor);
+            double temperatureWidth = (width / intervalNumber);
+            cvX = x + i * temperatureWidth;
+            ctx.strokeRect(cvX, y, temperatureWidth, height);
+            ctx.fillRect(cvX, y, temperatureWidth, height);
+        }
+        ctx.setStrokeStyle(Color.gray.getHexValue());
+        ctx.rect(x, y, width, height);
+        ctx.stroke();
+    }
+
+
+    public static String getMixedColor(double temperatureRatio) {
+        Color color1 = Color.blue;
+        Color color2 = Color.white;
+        Color color3 = Color.red;
+
+        int red = (int) (color1.getRed() * (1 - temperatureRatio) + color2.getRed() * temperatureRatio);
+        int green = (int) (color1.getGreen() * (1 - temperatureRatio) + color2.getGreen() * temperatureRatio);
+        int blue = (int) (color1.getBlue() * (1 - temperatureRatio) + color2.getBlue() * temperatureRatio);
+
+        red = (int) (red * (1 - temperatureRatio) + color3.getRed() * temperatureRatio);
+        green = (int) (green * (1 - temperatureRatio) + color3.getGreen() * temperatureRatio);
+        blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
+
+        return "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
     }
 
     public void reorderByIndex() {
@@ -1724,7 +1668,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             drawDisplaySegment(g, XOffSet, YOffset, indexWidth, elementHeight, tce.index + "", tce.color.getHexValue());
             XOffSet += indexWidth;
             for (double temp : temps) {
-                drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("#.00").format(temp), tce.color.getHexValue());
+                drawDisplaySegment(g, XOffSet, YOffset, elementWidth, elementHeight, NumberFormat.getFormat("0.00").format(temp), tce.color.getHexValue());
                 XOffSet += elementWidth;
             }
 

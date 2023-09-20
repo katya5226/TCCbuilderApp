@@ -254,7 +254,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         double cvHeight = height;
         ctx.setStrokeStyle(Color.deepBlue.getHexValue());
         ctx.setLineWidth(0.5);
-        ctx.strokeRect(x, y, width, height);
         for (int i = 0; i < cvs.size(); i++) {
             ControlVolume cv = cvs.get(i);
             double cvX = x + i * cvWidth;
@@ -265,25 +264,15 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             temperatureRatio = Math.min(temperatureRatio, 1.0);
             temperatureRatio = Math.max(temperatureRatio, 0.0);
 
-            Color color1 = Color.blue;
-            Color color2 = Color.white;
-            Color color3 = Color.red;
-
-            int red = (int) (color1.getRed() * (1 - temperatureRatio) + color2.getRed() * temperatureRatio);
-            int green = (int) (color1.getGreen() * (1 - temperatureRatio) + color2.getGreen() * temperatureRatio);
-            int blue = (int) (color1.getBlue() * (1 - temperatureRatio) + color2.getBlue() * temperatureRatio);
-
-            red = (int) (red * (1 - temperatureRatio) + color3.getRed() * temperatureRatio);
-            green = (int) (green * (1 - temperatureRatio) + color3.getGreen() * temperatureRatio);
-            blue = (int) (blue * (1 - temperatureRatio) + color3.getBlue() * temperatureRatio);
-
-            String cvColor = "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
+            String cvColor = CirSim.getMixedColor(temperatureRatio);
             ctx.setFillStyle(cvColor.equals("#000") ? color.getHexValue() : cvColor);
             ctx.strokeRect(cvX, cvY, cvWidth, cvHeight);
             ctx.fillRect(cvX, cvY, cvWidth, cvHeight);
         }
 
     }
+
+
 
 
     double[] listTemps() {
