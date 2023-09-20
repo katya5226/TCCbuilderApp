@@ -1447,7 +1447,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         // draw the display
-        if (viewTempsOverlay) drawTemperatureScale(cvcontext, 20, circuitArea.height - 50, canvasWidth - 40, 30, simulation1D.minTemp, simulation1D.maxTemp, 10);
+        if (viewTempsOverlay)
+            drawTemperatureScale(cvcontext, 20, circuitArea.height - 50, canvasWidth - 40, 30, simDimensionality == 1 ? simulation1D.minTemp : simulation2D.minTemp, simDimensionality == 1 ? simulation1D.maxTemp : simulation2D.maxTemp, 10);
         else if (viewTempsInGraph) drawTemperatureGraphs(g);
         else drawTemperatureDisplays(g);
 
@@ -2616,7 +2617,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
             t = timeStepAccum = 0;
             elmList.removeAllElements();
-            simulation1D.simTCEs = new Vector<ThermalControlElement>();
+            simulation1D = new Simulation1D();
             trackedTemperatures = new ArrayList<ThermalControlElement>();
             hintType = -1;
             maxTimeStep = 5e-6;
@@ -3678,7 +3679,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 if (ce.isMouseElm()) setMouseElm(null);
                 ce.delete();
                 elmList.removeElementAt(i);
-                // Katni *******************************************************************
+
                 if (ce instanceof ThermalControlElement) {
                     simulation1D.simTCEs.remove((ThermalControlElement) ce);
                     simulation1D.resetHeatSim();
@@ -3689,7 +3690,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     simulation2D.simTwoDimComponents.remove((TwoDimComponent) ce);
                     simulation2D.resetHeatSim();
                 }
-                // *************************************************************************
+
                 hasDeleted = true;
             }
         }
