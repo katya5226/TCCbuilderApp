@@ -167,6 +167,7 @@ setNewLength(ei.value);
                 break;
             case 8:
                 kOff = ei.value;
+                constK = kOff;
                 break;
             case 9:
                 cp = ei.value;
@@ -188,6 +189,8 @@ setNewLength(ei.value);
         position++;
         if (position >= posCount)
             position = 0;
+        if (position == 0) constK = kOn;
+        else constK = kOff;
     }
 
 

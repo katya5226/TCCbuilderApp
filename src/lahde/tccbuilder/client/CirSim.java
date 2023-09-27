@@ -1935,6 +1935,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                                 // GWT.log("FIELD: " + String.valueOf(tce.field));
                             }
                         }*/
+                        if (simulation1D.cyclePart.partType == simulation1D.cyclePart.partType.TOGGLE_THERMAL_CONTROL_ELEMENT && simulation1D.cyclePart.duration > 0.0) {
+                            for (int i = 0; i < simulation1D.cyclePart.TCEs.size(); i++) {
+                                ThermalControlElement thermalControlElement = simulation1D.cyclePart.TCEs.get(i);
+                                if (thermalControlElement instanceof SwitchElm) {
+                                    SwitchElm switchElm = (SwitchElm) thermalControlElement;
+                                    switchElm.toggle();
+                                }
+                            }
+                        }
                         simulation1D.cyclePartTime = 0.0;
                         simulation1D.cyclePartIndex = (simulation1D.cyclePartIndex + 1) % simulation1D.numCycleParts;
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);

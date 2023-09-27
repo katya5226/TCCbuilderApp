@@ -191,6 +191,8 @@ public class CyclePart {
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 toggleThermalControlElement();
+                if (duration > sim.simulation1D.dt)
+                    sim.simulation1D.heatTransferStep();
                 break;
             case VALUE_CHANGE:
                 valueChange();
@@ -328,10 +330,27 @@ public class CyclePart {
     }
 
     void toggleThermalControlElement() {
-        for (int i = 0; i < TCEs.size(); i++) {
-            ThermalControlElement thermalControlElement = TCEs.get(i);
-            SwitchElm switchElm = (SwitchElm) thermalControlElement;
-            switchElm.toggle();
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement thermalControlElement = TCEs.get(i);
+                if (thermalControlElement instanceof SwitchElm) {
+                    SwitchElm switchElm = (SwitchElm) thermalControlElement;
+                    switchElm.toggle();
+                }
+            }
+        } else if (duration > 0.0) {
+            int steps = (int) (duration / sim.simulation1D.dt);
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement thermalControlElement = TCEs.get(i);
+                if (thermalControlElement instanceof SwitchElm) {
+                    SwitchElm switchElm = (SwitchElm) thermalControlElement;
+                    double changeInStep = (switchElm.kOn - switchElm.kOff) / steps;
+                    if (switchElm.position == 0)
+                        switchElm.constK -= changeInStep;
+                    else if (switchElm.position == 1)
+                        switchElm.constK += changeInStep;
+                }
+            }
         }
     }
 
