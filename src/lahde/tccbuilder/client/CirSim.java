@@ -1563,30 +1563,30 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByIndex() {
-        if (simDimensionality == 2) return;
-        Collections.sort(simulation1D.simTCEs);
-        Collections.sort(trackedTemperatures);
-        redrawElements(simulation1D.simTCEs);
+//        if (simDimensionality == 2) return;
+//        Collections.sort(simulation1D.simTCEs);
+//        Collections.sort(trackedTemperatures);
+//        redrawElements(simulation1D.simTCEs);
     }
 
     public void reorderByPosition() {
-        if (simDimensionality == 2) return;
-        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
-            @Override
-            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
-            }
-        };
 
-        simulation1D.simTCEs.sort(comparator);
-        trackedTemperatures.sort(comparator);
-        int i = 0;
-        for (ThermalControlElement tce : simulation1D.simTCEs)
-            tce.index = i++;
-
-        redrawElements(simulation1D.simTCEs);
+//        if (simDimensionality == 2) return;
+//        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
+//            @Override
+//            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
+//                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
+//            }
+//        };
+//
+//        simulation1D.simTCEs.sort(comparator);
+//        trackedTemperatures.sort(comparator);
+//        int i = 0;
+//        for (ThermalControlElement tce : simulation1D.simTCEs)
+//            tce.index = i++;
+//
+//        redrawElements(simulation1D.simTCEs);
     }
-//        centreCircuit();
 
 
     void redrawElements(Vector<ThermalControlElement> simTCEs) {
