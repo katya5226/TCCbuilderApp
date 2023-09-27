@@ -1132,7 +1132,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "WireElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
+            // mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
