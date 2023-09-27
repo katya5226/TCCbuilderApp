@@ -133,18 +133,6 @@ setNewLength(ei.value);
         return 610;
     }
 
-    @Override
-    void toggle() {
-        super.toggle();
-        if (position == 0) {
-            constCp = cpOn;
-            constK = kOn;
-            constRho = rhoOn;
-        } else {
-            constCp = cpOff;
-            constK = kOff;
-            constRho = rhoOff;
-        }
-        buildThermalControlElement();
-    }
+
+
 }

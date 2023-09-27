@@ -133,18 +133,5 @@ public class SwitchElm_MM1 extends SwitchElm {
         return 611;
     }
 
-    @Override
-    void toggle() {
-        super.toggle();
-        if (position == 0) {
-            constCp = cpOn;
-            constK = kOn;
-            constRho = rhoOn;
-        } else {
-            constCp = cpOff;
-            constK = kOff;
-            constRho = rhoOff;
-        }
-        buildThermalControlElement();
-    }
+
 }

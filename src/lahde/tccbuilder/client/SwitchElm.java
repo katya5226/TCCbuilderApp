@@ -19,6 +19,8 @@
 
 package lahde.tccbuilder.client;
 
+import com.google.gwt.core.client.GWT;
+
 class SwitchElm extends ThermalControlElement {
     boolean momentary;
     // position 0 == closed, position 1 == open
@@ -27,8 +29,6 @@ class SwitchElm extends ThermalControlElement {
     double kOn, kOff;
     double cpOn, cpOff;
     double rhoOn, rhoOff;
-    double cp;
-    double rho;
     double responseTime;
 
     public SwitchElm(int xx, int yy) {
@@ -57,7 +57,6 @@ class SwitchElm extends ThermalControlElement {
     int getDumpType() {
         return 's';
     }
-
 
 
     @Override
@@ -127,9 +126,9 @@ class SwitchElm extends ThermalControlElement {
             case 8:
                 return new EditInfo("Thermal Conductivity (Off)", kOff);
             case 9:
-                return new EditInfo("Specific Heat Capacity", cp);
+                return new EditInfo("Specific Heat Capacity", constCp);
             case 10:
-                return new EditInfo("Density", rho);
+                return new EditInfo("Density", constRho);
             case 11:
                 return new EditInfo("Response Time", responseTime);
             default:
@@ -139,7 +138,6 @@ class SwitchElm extends ThermalControlElement {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -154,7 +152,7 @@ class SwitchElm extends ThermalControlElement {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-setNewLength(ei.value);
+                setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;
@@ -163,16 +161,16 @@ setNewLength(ei.value);
                 eastResistance = ei.value;
                 break;
             case 7:
-                kOn = ei.value;
+                constK = kOn = ei.value;
                 break;
             case 8:
-                kOff = ei.value;
+                constK = kOff = ei.value;
                 break;
             case 9:
-                cp = ei.value;
+                constCp = cpOff = cpOn = ei.value;
                 break;
             case 10:
-                rho = ei.value;
+                constRho = rhoOff = rhoOn = ei.value;
                 break;
             case 11:
                 responseTime = ei.value;
@@ -184,11 +182,34 @@ setNewLength(ei.value);
         updateElement();
     }
 
+    @Override
+    public void initializeThermalControlElement() {
+        super.initializeThermalControlElement();
+        constK = kOff = kOn = -1;
+        constCp = cpOff = cpOn = -1;
+        constRho = rhoOff = rhoOn = -1;
+        responseTime = 0.0;
+    }
+
     void toggle() {
         position++;
         if (position >= posCount)
             position = 0;
+
+        if (position == 0) {
+            constCp = cpOn;
+            constK = kOn;
+            constRho = rhoOn;
+        } else {
+            constCp = cpOff;
+            constK = kOff;
+            constRho = rhoOff;
+        }
+        for (ControlVolume cv : cvs) {
+            cv.constRho = constRho;
+            cv.constK = constK;
+            cv.constCp = constCp;
+        }
+
     }
-
-
 }
