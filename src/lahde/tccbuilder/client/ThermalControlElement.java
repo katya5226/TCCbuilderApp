@@ -434,7 +434,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             return null;
     }
 
-    public void set_constant_parameters(String[] parameters, double[] values) {
+    /*public void set_constant_parameters(String[] parameters, double[] values) {
         for (int i = 0; i < parameters.length; i++) {
             if (parameters[i].equals("rho")) {
                 for (ControlVolume cv : cvs) {
@@ -480,6 +480,23 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             for (int i = 0; i < numCvs; i++) {
                 this.cvs.get(i).constK = value;
             }
+        }
+    }*/
+
+    public void setConstProperty(Simulation.Property property, double value) {
+        switch(property) {
+            case DENSITY:
+                for (ControlVolume cv : cvs) {
+                    cv.constRho = value;
+                }
+            case SPECIFIC_HEAT_CAPACITY:
+                for (ControlVolume cv : cvs) {
+                    cv.constCp = value;
+                }
+            case THERMAL_CONDUCTIVITY:
+                for (ControlVolume cv : cvs) {
+                    cv.constK = value;
+                }           
         }
     }
 

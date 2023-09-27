@@ -277,7 +277,9 @@ public class CyclePart {
             ThermalControlElement tce = TCEs.get(i);
             GWT.log(newProperties.size() + "");
             Vector<Double> newProps = newProperties.get(i);
-            tce.setConstProperties(newProps);
+            tce.setConstProperty(Simulation.Property.DENSITY, newProps.get(0));
+            tce.setConstProperty(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newProps.get(1));
+            tce.setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, newProps.get(2));
         }
         GWT.log("Properties changed for component: " + String.valueOf(TCEs.get(0).index));
         GWT.log("Component k: " + String.valueOf(TCEs.get(0).cvs.get(0).constK));
