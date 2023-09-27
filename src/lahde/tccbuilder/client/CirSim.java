@@ -2856,7 +2856,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int gy = inverseTransformY(e.getY());
         if (!circuitArea.contains(e.getX(), e.getY())) return;
         boolean changed = false;
-        if (dragElm != null) {
+        if (dragElm != null && dragElm.resizable) {
             dragElm.drag(gx, gy);
         }
         boolean success = true;
