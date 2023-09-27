@@ -1,4 +1,3 @@
 ### setuplist.txt first line must be a comments
-KlinarDiode.txt test
 mc_with_fluidic_switch.txt MCWithFluidicSwitch
 thermal_switch_capacitor.txt ThermalSwitchCapacitor

@@ -80,7 +80,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Button testButton;
     Button runStopButton;
     MenuItem aboutItem;
-    MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem,reportAsLocalFileItem, exportAsTextItem, reportAsTextItem, printItem, recoverItem,saveReportItem, saveFileItem;
+    MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, reportAsLocalFileItem, exportAsTextItem, reportAsTextItem, printItem, recoverItem, saveReportItem, saveFileItem;
     MenuItem importFromDropboxItem;
     MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
@@ -528,20 +528,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         showOverlayCheckItem.setState(false);
 
 
-        m.addItem(smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
+        smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
             public void execute() {
                 setGrid();
             }
-        }));
-        m.addItem(crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"), new Command() {
+        });
+        crossHairCheckItem = new CheckboxMenuItem(Locale.LS("Show Cursor Cross Hairs"), new Command() {
             public void execute() {
                 setOptionInStorage("crossHair", crossHairCheckItem.getState());
             }
-        }));
+        });
         crossHairCheckItem.setState(getOptionFromStorage("crossHair", false));
 
 
-        m.addItem(noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing")));
+        noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing"));
         noEditCheckItem.setState(noEditing);
 
         m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"), new Command() {
@@ -551,8 +551,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }));
         mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
-        m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts")));
-        m.addItem(optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other")));
+        new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts"));
+        optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other"));
         if (isElectron())
             m.addItem(new CheckboxAlignedMenuItem(Locale.LS("Toggle Dev Tools"), new MyCommand("options", "devtools")));
 
@@ -2267,7 +2267,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 dump = simulation1D.getReport();
             else
                 dump = simulation2D.getReport();
-        } catch (Exception ignore){
+        } catch (Exception ignore) {
         }
 
         dialogShowing = new ExportAsTextDialog(this, dump);
@@ -2292,7 +2292,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 dump = simulation1D.getReport();
             else
                 dump = simulation2D.getReport();
-        } catch (Exception ignore){
+        } catch (Exception ignore) {
         }
 
         dialogShowing = new ExportAsLocalFileDialog(dump);
@@ -2430,7 +2430,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     void readSetupFile(String str, String title) {
-        System.out.println(str);
         // TODO: Maybe think about some better approach to cache management!
         String url = GWT.getModuleBaseURL() + "circuits/" + str + "?v=" + random.nextInt();
         loadFileFromURL(url);
