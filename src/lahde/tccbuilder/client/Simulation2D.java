@@ -64,6 +64,16 @@ public class Simulation2D extends Simulation {
 
     @Override
     String dump() {
+        return null;
+    }
+
+    @Override
+    void undump(StringTokenizer stringTokenizer) {
+
+    }
+
+    @Override
+    String getReport() {
         String dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 2D\n" + "Boundary condition on the left: " + westBoundary + "\n" + "Boundary condition on the right: " + eastBoundary + "\n" + "Temperature on the left: " + " K\n" + "Convection coefficient on the left: " + " W/(m²K)\n" + "Temperature on the right: " + " K\n" + "Convection coefficient on the right: " + " W/(m²K)\n";
 
         dump += "\nThermal control elements: \n";

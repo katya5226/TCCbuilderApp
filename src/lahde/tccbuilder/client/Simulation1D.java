@@ -3,7 +3,6 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,9 +198,8 @@ public class Simulation1D extends Simulation {
         maxTemp = Math.max(maxValue, maxTemp);
 
     }
-
     @Override
-    String dump() {
+    String getReport() {
         String dump;
         dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 1D\n" + "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" + "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" + "Temperature on the left: " + heatCircuit.temperatureWest + " K\n" + "Convection coefficient on the left: " + heatCircuit.hWest + " W/(m²K)\n" + "Temperature on the right: " + heatCircuit.temperatureEast + " K\n" + "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
 
@@ -241,8 +239,8 @@ public class Simulation1D extends Simulation {
         }
         return tces;
     }
-
-    public String dumpSimulation() {
+    @Override
+    public String dump() {
         StringBuilder sb = new StringBuilder();
         sb.append("!").append(" ");
         sb.append(CirSim.theSim.selectedLengthUnit.ordinal()).append(" ");
@@ -264,6 +262,8 @@ public class Simulation1D extends Simulation {
         return sb.append("\n").toString();
     }
 
+
+
     public String dumpSimulationCycleParts() {
         StringBuilder sb = new StringBuilder();
         if (cycleParts.isEmpty())
@@ -274,8 +274,7 @@ public class Simulation1D extends Simulation {
         return sb.append("\n").toString();
     }
 
-
-    public void loadSimulation(StringTokenizer tokenizer) {
+    public void undump(StringTokenizer tokenizer) {
         CirSim.theSim.selectedLengthUnit = CirSim.LengthUnit.values()[Integer.parseInt(tokenizer.nextToken())];
         CirSim.theSim.scale.setSelectedIndex(CirSim.theSim.selectedLengthUnit.ordinal());
         hWest = Double.parseDouble(tokenizer.nextToken());

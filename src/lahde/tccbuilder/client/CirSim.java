@@ -80,7 +80,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     Button testButton;
     Button runStopButton;
     MenuItem aboutItem;
-    MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, exportAsTextItem, printItem, recoverItem, saveFileItem;
+    MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem,reportAsLocalFileItem, exportAsTextItem, reportAsTextItem, printItem, recoverItem,saveReportItem, saveFileItem;
     MenuItem importFromDropboxItem;
     MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
@@ -421,41 +421,46 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         fileMenuBar = new MenuBar(true);
 
         if (isElectron())
-            fileMenuBar.addItem(menuItemWithShortcut("window", "New Window...", Locale.LS(ctrlMetaKey + "N"), new MyCommand("file", "newwindow")));
+            fileMenuBar.addItem(menuItemWithShortcut("window", "New Window", Locale.LS(ctrlMetaKey + "N"), new MyCommand("file", "newwindow")));
 
         fileMenuBar.addItem(iconMenuItem("doc-new", "New Blank Circuit", new MyCommand("file", "newblankcircuit")));
-        importFromLocalFileItem = menuItemWithShortcut("folder", "Open File...", Locale.LS(ctrlMetaKey + "O"), new MyCommand("file", "importfromlocalfile"));
+        importFromLocalFileItem = menuItemWithShortcut("folder", "Open File", Locale.LS(ctrlMetaKey + "O"), new MyCommand("file", "importfromlocalfile"));
         importFromLocalFileItem.setEnabled(LoadFile.isSupported());
         fileMenuBar.addItem(importFromLocalFileItem);
-        importFromTextItem = iconMenuItem("doc-text", "Import From Text...", new MyCommand("file", "importfromtext"));
+        importFromTextItem = iconMenuItem("doc-text", "Import From Text", new MyCommand("file", "importfromtext"));
         fileMenuBar.addItem(importFromTextItem);
-        importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox...", new MyCommand("file", "importfromdropbox"));
-        fileMenuBar.addItem(importFromDropboxItem);
+        importFromDropboxItem = iconMenuItem("dropbox", "Import From Dropbox", new MyCommand("file", "importfromdropbox"));
+
+//        fileMenuBar.addItem(importFromDropboxItem);
         if (isElectron()) {
             saveFileItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "S"), new MyCommand("file", "save")));
-            fileMenuBar.addItem(iconMenuItem("floppy", "Save As...", new MyCommand("file", "saveas")));
+            fileMenuBar.addItem(iconMenuItem("floppy", "Save Circuit As", new MyCommand("file", "saveas")));
+            saveReportItem = fileMenuBar.addItem(menuItemWithShortcut("floppy", "Save", Locale.LS(ctrlMetaKey + "R"), new MyCommand("file", "save")));
+            fileMenuBar.addItem(iconMenuItem("floppy", "Save Report As", new MyCommand("file", "savereport")));
         } else {
-            exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save As...", Locale.LS(ctrlMetaKey + "S"), new MyCommand("file", "exportaslocalfile"));
+            exportAsLocalFileItem = menuItemWithShortcut("floppy", "Save Circuit As", Locale.LS(ctrlMetaKey + "S"), new MyCommand("file", "exportaslocalfile"));
             exportAsLocalFileItem.setEnabled(ExportAsLocalFileDialog.downloadIsSupported());
             fileMenuBar.addItem(exportAsLocalFileItem);
+            reportAsLocalFileItem = menuItemWithShortcut("floppy", "Save Report As", "", new MyCommand("file", "reportaslocalfile"));
+            fileMenuBar.addItem(reportAsLocalFileItem);
         }
-        exportAsUrlItem = iconMenuItem("export", "Export As Link...", new MyCommand("file", "exportasurl"));
+        exportAsUrlItem = iconMenuItem("export", "Export Circuit As Link", new MyCommand("file", "exportasurl"));
         fileMenuBar.addItem(exportAsUrlItem);
-        exportAsTextItem = iconMenuItem("export", "Export As Text...", new MyCommand("file", "exportastext"));
+        exportAsTextItem = iconMenuItem("export", "Export Circuit As Text", new MyCommand("file", "exportastext"));
         fileMenuBar.addItem(exportAsTextItem);
-        fileMenuBar.addItem(iconMenuItem("export", "Export As Image...", new MyCommand("file", "exportasimage")));
-        fileMenuBar.addItem(iconMenuItem("export", "Export As SVG...", new MyCommand("file", "exportassvg")));
-        //fileMenuBar.addItem(iconMenuItem("microchip", "Create Subcircuit...", new MyCommand("file", "createsubcircuit")));
-        //fileMenuBar.addItem(iconMenuItem("magic", "Find DC Operating Point", new MyCommand("file", "dcanalysis")));
+        reportAsTextItem = iconMenuItem("export", "Export Report As Text", new MyCommand("file", "reportastext"));
+        fileMenuBar.addItem(reportAsTextItem);
+        fileMenuBar.addItem(iconMenuItem("export", "Export Circuit As Image", new MyCommand("file", "exportasimage")));
+        fileMenuBar.addItem(iconMenuItem("export", "Export Circuit As SVG", new MyCommand("file", "exportassvg")));
         recoverItem = iconMenuItem("back-in-time", "Recover Auto-Save", new MyCommand("file", "recover"));
         recoverItem.setEnabled(recovery != null);
         fileMenuBar.addItem(recoverItem);
-        printItem = menuItemWithShortcut("print", "Print...", Locale.LS(ctrlMetaKey + "P"), new MyCommand("file", "print"));
+        printItem = menuItemWithShortcut("print", "Print", Locale.LS(ctrlMetaKey + "P"), new MyCommand("file", "print"));
         fileMenuBar.addItem(printItem);
         fileMenuBar.addSeparator();
         fileMenuBar.addItem(iconMenuItem("resize-full-alt", "Toggle Full Screen", new MyCommand("view", "fullscreen")));
         fileMenuBar.addSeparator();
-        aboutItem = iconMenuItem("info-circled", "About...", (Command) null);
+        aboutItem = iconMenuItem("info-circled", "About", (Command) null);
         fileMenuBar.addItem(aboutItem);
         aboutItem.setScheduledCommand(new MyCommand("file", "about"));
 
@@ -2079,8 +2084,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             doExportAsLocalFile();
             unsavedChanges = false;
         }
+        if (item == "reportaslocalfile") {
+            doReportAsLocalFile();
+            unsavedChanges = false;
+        }
         if (item == "exportastext") {
             doExportAsText();
+            unsavedChanges = false;
+        }
+        if (item == "reportastext") {
+            getReportAsText();
             unsavedChanges = false;
         }
         if (item == "exportasimage") doExportAsImage();
@@ -2247,18 +2260,41 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dialogShowing.show();
     }
 
+    void getReportAsText() {
+        String dump = "An error occurred.";
+        try {
+            if (simDimensionality == 1)
+                dump = simulation1D.getReport();
+            else
+                dump = simulation2D.getReport();
+        } catch (Exception ignore){
+        }
+
+        dialogShowing = new ExportAsTextDialog(this, dump);
+        dialogShowing.show();
+    }
+
     void doExportAsImage() {
         dialogShowing = new ExportAsImageDialog(CAC_IMAGE);
         dialogShowing.show();
     }
 
-    void doCreateSubcircuit() {
-
+    void doExportAsLocalFile() {
+        String dump = dumpCircuit();
+        dialogShowing = new ExportAsLocalFileDialog(dump);
+        dialogShowing.show();
     }
 
-    void doExportAsLocalFile() {
-        // String dump = dumpCircuit();
-        String dump = dumpCircuit(); // Katni
+    void doReportAsLocalFile() {
+        String dump = "An error occurred.";
+        try {
+            if (simDimensionality == 1)
+                dump = simulation1D.getReport();
+            else
+                dump = simulation2D.getReport();
+        } catch (Exception ignore){
+        }
+
         dialogShowing = new ExportAsLocalFileDialog(dump);
         dialogShowing.show();
     }
@@ -2282,7 +2318,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int i;
 
         String dump = dumpOptions();
-        dump += simulation1D.dumpSimulation();
+        dump += simulation1D.dump();
 
         for (i = 0; i != elmList.size(); i++) {
             CircuitElm ce = getElm(i);
@@ -2297,17 +2333,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         if (hintType != -1) dump += "h " + hintType + " " + hintItem1 + " " + hintItem2 + "\n";
         dump += simulation1D.dumpSimulationCycleParts();
-        return dump;
-    }
-
-    String dumpSimulation() {
-        String dump;
-        if (simDimensionality == 1)
-            dump = /*simulation1D.dump() +*/  simulation1D.dumpSimulation();
-        else
-            dump = simulation2D.dump();
-
-
         return dump;
     }
 
@@ -2660,7 +2685,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     }
 
                     if (tint == '!') {
-                        simulation1D.loadSimulation(st);
+                        simulation1D.undump(st);
                         break;
                     }
                     if (tint == '@') {
