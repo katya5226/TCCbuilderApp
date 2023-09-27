@@ -816,7 +816,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         cyclicPanel.add(l);
 
         for (CyclePart cp : simulation1D.cycleParts) {
-            cyclicPanel.add(cp.toWidget());
+            cyclicPanel.add(cp.toWidget(true));
         }
     }
 

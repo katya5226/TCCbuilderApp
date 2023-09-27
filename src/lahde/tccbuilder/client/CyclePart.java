@@ -76,7 +76,7 @@ public class CyclePart {
         duration = 0;
     }
 
-    public Widget toWidget() {
+    public Widget toWidget(boolean deletable) {
         FlexTable flexTable = new FlexTable();
         flexTable.setStyleName("cycle-part");
         Element tableElement = flexTable.getElement();
@@ -148,7 +148,8 @@ public class CyclePart {
         });
 
         htmlPanel.add(contentPanel);
-        titlePanel.add(button);
+        if (deletable)
+            titlePanel.add(button);
         htmlPanel.add(flexTable);
 
         return htmlPanel;
