@@ -29,7 +29,7 @@ class SwitchElm extends ThermalControlElement {
     double rhoOn, rhoOff;
     double cp;
     double rho;
-    double responseTime;
+    boolean toBeToggled;
 
     public SwitchElm(int xx, int yy) {
         super(xx, yy);
@@ -43,6 +43,7 @@ class SwitchElm extends ThermalControlElement {
         position = (mm) ? 1 : 0;
         momentary = mm;
         posCount = 2;
+        toBeToggled = true;
     }
 
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
@@ -51,6 +52,7 @@ class SwitchElm extends ThermalControlElement {
         position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
         posCount = 2;
+        toBeToggled = true;
     }
 
     @Override

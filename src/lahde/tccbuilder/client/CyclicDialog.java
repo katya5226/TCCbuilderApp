@@ -208,6 +208,7 @@ public class CyclicDialog extends Dialog {
                         cyclePart.duration = 0.0;
                         break;
                 }
+                durationLabel.setText("Part Duration (s): ");
                 sim.simulation1D.cycleParts.add(cyclePart);
                 sim.fillCyclicPanel();
 //                printCyclePart(cyclePart, sim.cyclicOperationLabel);
@@ -364,9 +365,9 @@ public class CyclicDialog extends Dialog {
                     case "Magnetic Field Change":
                         componentsLabel.setVisible(true);
                         componentsListBox.setVisible(true);
-//                        durationLabel.setVisible(true);
+                        durationLabel.setText("Duration: 0 s");
+                        durationLabel.setVisible(true);
 //                        duration.setVisible(true);
-
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
                         break;

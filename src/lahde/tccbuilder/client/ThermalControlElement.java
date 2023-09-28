@@ -30,6 +30,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double operatingMin;
     public boolean hasOperatingRange;
     public Vector<ControlVolume> cvs;
+    public double responseTime;
 
     public boolean isDisabled;
 
@@ -108,6 +109,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constRho = -1;
         constCp = -1;
         constK = -1;
+        responseTime = 0.0;
         double tmpDx = length / numCvs;
         if (!(tmpDx < 1e-6) || tmpDx == 0) {
             set_dx(tmpDx);

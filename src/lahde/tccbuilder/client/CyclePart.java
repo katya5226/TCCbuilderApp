@@ -330,6 +330,15 @@ public class CyclePart {
     }
 
     void toggleThermalControlElement() {
+        boolean durationChanged = false;
+        for (ThermalControlElement tce : TCEs) {
+            if (tce.responseTime > duration) {
+                duration = tce.responseTime;
+                durationChanged = true;
+            }
+        }
+        if (durationChanged) Window.alert("Duration changed to match the response time.");
+
         if (duration == 0.0) {
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement thermalControlElement = TCEs.get(i);
@@ -339,18 +348,35 @@ public class CyclePart {
                 }
             }
         } else if (duration > 0.0) {
-            int steps = (int) (duration / sim.simulation1D.dt);
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement thermalControlElement = TCEs.get(i);
                 if (thermalControlElement instanceof SwitchElm) {
                     SwitchElm switchElm = (SwitchElm) thermalControlElement;
+                    int steps = (int) (switchElm.responseTime / sim.simulation1D.dt);
                     double changeInStep = (switchElm.kOn - switchElm.kOff) / steps;
-                    if (switchElm.position == 0)
-                        switchElm.constK -= changeInStep;
-                    else if (switchElm.position == 1)
-                        switchElm.constK += changeInStep;
+                    if (switchElm.position == 0) {
+                        if(switchElm.constK - changeInStep >= switchElm.kOff)
+                            switchElm.constK -= changeInStep;
+                        else {
+                            if (switchElm.toBeToggled == true) {
+                                switchElm.toggle();
+                                switchElm.toBeToggled = false;
+                            }
+                        }
+                    }
+                    else if (switchElm.position == 1) {
+                        if(switchElm.constK + changeInStep <= switchElm.kOn)
+                            switchElm.constK += changeInStep;
+                        else {
+                            if (switchElm.toBeToggled == true) {
+                                switchElm.toggle();
+                                switchElm.toBeToggled = false;
+                            }
+                        }
+                    }    
                 }
             }
+
         }
     }
 
