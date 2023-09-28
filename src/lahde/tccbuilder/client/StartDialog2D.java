@@ -46,6 +46,11 @@ public class StartDialog2D extends Dialog {
         fp = new FlowPanel();
         setWidget(fp);
         fp.addStyleName("dialogContainer");
+        HTML test = new HTML(
+                "<iframe src=\"start-help-2D.html\" frameborder=\"0\">" +
+                        "</iframe>");
+
+        fp.add(getHelpButton(test));
         leftBoundary = new ListBox();
         /*
         leftBoundary.addItem("Adiabatic");

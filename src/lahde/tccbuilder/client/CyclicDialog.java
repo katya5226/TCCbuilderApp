@@ -48,7 +48,7 @@ public class CyclicDialog extends Dialog {
     Label rhoLabel;
     Label cpLabel;
     Label kLabel;
-    HTML cyclePartLabel;
+    FlowPanel cyclePartLabel;
     List<Widget> inputWidgets;
 
     CyclePart cyclePart;
@@ -70,9 +70,11 @@ public class CyclicDialog extends Dialog {
         vp.addStyleName("dialogContainer");
         setWidget(vp);
 
+
+
         inputWidgets = new ArrayList<>();
 
-        cyclePartLabel = new HTML();
+        cyclePartLabel = new FlowPanel();
         cyclePartLabel.addStyleName("cycle-part-outer");
         cyclePartListBox = new ListBox();
         vp.add(cyclePartLabel);
@@ -367,7 +369,8 @@ public class CyclicDialog extends Dialog {
                 //just for cycle part display, will be overridden when clicking apply
                 if (duration.isVisible()) {
                     cyclePart.duration = duration.getValue();
-                    cyclePartLabel.setHTML("");
+                    cyclePartLabel.clear();
+                    cyclePartLabel.add(cyclePart.toWidget(false));
                 }
 
 

@@ -38,5 +38,7 @@ public abstract class Simulation {
     abstract  void resetHeatSim();
     abstract  void setTemperatureRange();
     abstract String dump();
+    abstract void undump(StringTokenizer stringTokenizer);
+    abstract String getReport();
     abstract String printTCEs();
 }

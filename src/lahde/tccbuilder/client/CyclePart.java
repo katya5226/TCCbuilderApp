@@ -86,7 +86,7 @@ public class CyclePart {
         duration = 0;
     }
 
-    public Widget toWidget() {
+    public Widget toWidget(boolean deletable) {
         FlexTable flexTable = new FlexTable();
         flexTable.setStyleName("cycle-part");
         Element tableElement = flexTable.getElement();
@@ -134,12 +134,17 @@ public class CyclePart {
 
             flexTable.setText(0, column, "property");
         } else if (!changedValues.isEmpty()) {
-            for (Vector<PropertyValuePair> v : changedValues)
+            flexTable.removeAllRows();
+            for (int i = 0; i < changedValues.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                flexTable.setText(row++, 0, tce.index + " " + tce.name);
+                Vector<PropertyValuePair> v = changedValues.get(i);
                 for (PropertyValuePair pvp : v) {
                     flexTable.setText(row, 0, String.valueOf(pvp.property));
                     flexTable.setText(row++, 1, String.valueOf(pvp.value));
 
                 }
+            }
         }
         row++;
         column = 0;
@@ -165,7 +170,8 @@ public class CyclePart {
         });
 
         htmlPanel.add(contentPanel);
-        titlePanel.add(button);
+        if (deletable)
+            titlePanel.add(button);
         htmlPanel.add(flexTable);
 
         return htmlPanel;
