@@ -1,5 +1,8 @@
 package lahde.tccbuilder.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.*;
@@ -22,6 +25,11 @@ public class CyclicDialog extends Dialog {
     DoubleBox newRho;
     DoubleBox newCp;
     DoubleBox newK;
+
+    Checkbox rhoCheckBox;
+    Checkbox cpCheckBox;
+    Checkbox kCheckBox;
+
     DoubleBox heatInput;
     DoubleBox newIndex;
     DoubleBox electricFieldStrength;
@@ -62,11 +70,18 @@ public class CyclicDialog extends Dialog {
         vp.addStyleName("dialogContainer");
         setWidget(vp);
 
+        inputWidgets = new ArrayList<>();
+
         cyclePartLabel = new HTML();
         cyclePartLabel.addStyleName("cycle-part-outer");
         cyclePartListBox = new ListBox();
         vp.add(cyclePartLabel);
         vp.add(cyclePartListBox);
+
+        durationLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Part Duration (s): "));
+        duration = new DoubleBox();
+        inputWidgets.add(durationLabel);
+        inputWidgets.add(duration);
 
         cyclePartListBox.addItem("< Choose Cycle Part >");
         for (CyclePart.PartType pt : CyclePart.PartType.values())
@@ -82,9 +97,6 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Temperature Change");*/
 
 
-        inputWidgets = new ArrayList<>();
-
-
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
         componentsListBox = new ListBox();
         inputWidgets.add(componentsLabel);
@@ -95,16 +107,45 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(heatInputLabel);
         inputWidgets.add(heatInput);
 
-        rhoLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Input new density (kg/m^3): "));
+        rhoCheckBox = new Checkbox("New density (kg/m^3): ");
+        inputWidgets.add(rhoCheckBox);
+        rhoCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                newRho.setVisible(!newRho.isVisible());
+            }
+        });
+
+        rhoLabel = new Label(Locale.LS("Input new density (kg/m^3): "));
         newRho = new DoubleBox();
         inputWidgets.add(rhoLabel);
         inputWidgets.add(newRho);
+
+        cpCheckBox = new Checkbox("New specific heat capacity (J/kg/K): ");
+        inputWidgets.add(cpCheckBox);
+
+        cpCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                newCp.setVisible(!newCp.isVisible());
+            }
+        });
 
         cpLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Input new specific heat capacity (J/kg/K): "));
         newCp = new DoubleBox();
         inputWidgets.add(cpLabel);
         inputWidgets.add(newCp);
 
+
+        kCheckBox = new Checkbox("New thermal conductivity (W/m/K): ");
+        inputWidgets.add(kCheckBox);
+
+        kCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                newK.setVisible(!newK.isVisible());
+            }
+        });
         kLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Input new thermal conductivity (W/m/K): "));
         newK = new DoubleBox();
         inputWidgets.add(kLabel);
@@ -155,10 +196,6 @@ public class CyclicDialog extends Dialog {
         addComponentButton = new Button(Locale.LS("Add Component"));
         inputWidgets.add(addComponentButton);
 
-        durationLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Part Duration (s): "));
-        duration = new DoubleBox();
-        inputWidgets.add(durationLabel);
-        inputWidgets.add(duration);
 
         duration.addClickHandler(new ClickHandler() {
             @Override
@@ -262,6 +299,16 @@ public class CyclicDialog extends Dialog {
                             cyclePart.TCEs.add(chosenComponent);
                             break;
                         case VALUE_CHANGE:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.changedValues.add(new Vector<>());
+//                            GWT.log(cyclePart.changedValues.lastElement().toString());
+                            CyclePart.PropertyValuePair propertyValuePair = null;
+                            if (newRho.isVisible() && !newRho.getText().isEmpty())
+                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
+                            if (newCp.isVisible() && !newCp.getText().isEmpty())
+                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
+                            if (newK.isVisible() && !newK.getText().isEmpty())
+                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                     }
                 else {
@@ -293,9 +340,9 @@ public class CyclicDialog extends Dialog {
                             }
 
                             cyclePart.newProperties.set(index, new Vector<Double>());
-                            cyclePart.newProperties.lastElement().add(newRho.getValue());
-                            cyclePart.newProperties.lastElement().add(newCp.getValue());
-                            cyclePart.newProperties.lastElement().add(newK.getValue());
+                            cyclePart.newProperties.get(index).add(newRho.getValue());
+                            cyclePart.newProperties.get(index).add(newCp.getValue());
+                            cyclePart.newProperties.get(index).add(newK.getValue());
 
                             break;
                         case TEMPERATURE_CHANGE:
@@ -305,6 +352,13 @@ public class CyclicDialog extends Dialog {
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
                             break;
                         case VALUE_CHANGE:
+                            cyclePart.changedValues.set(index, new Vector<>());
+                            if (newRho.isVisible() && !newRho.getText().isEmpty())
+                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
+                            if (newCp.isVisible() && !newCp.getText().isEmpty())
+                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
+                            if (newK.isVisible() && !newK.getText().isEmpty())
+                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                     }
                 }
@@ -414,6 +468,15 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TOGGLE_THERMAL_CONTROL_ELEMENT;
                         break;
+                    case "Value Change":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        durationLabel.setVisible(true);
+                        duration.setVisible(true);
+
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.VALUE_CHANGE;
+                        break;
                     default:
                         Window.alert("Please select a cycle part");
                         return;
@@ -503,6 +566,11 @@ public class CyclicDialog extends Dialog {
                         addComponentButton.setVisible(true);
                         break;
                     case VALUE_CHANGE:
+                        rhoCheckBox.setVisible(true);
+                        cpCheckBox.setVisible(true);
+                        kCheckBox.setVisible(true);
+                        addComponentButton.setVisible(true);
+
                         break;
                 }
 

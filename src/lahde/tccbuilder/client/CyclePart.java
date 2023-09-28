@@ -14,6 +14,15 @@ import java.lang.Math;
 @SuppressWarnings("ReassignedVariable")
 public class CyclePart {
 
+    public static class PropertyValuePair {
+        Simulation.Property property;
+        Double value;
+
+        public PropertyValuePair(Simulation.Property property, Double value) {
+            this.property = property;
+            this.value = value;
+        }
+    }
 
     public enum PartType {
         HEAT_TRANSFER,
@@ -56,6 +65,7 @@ public class CyclePart {
     Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
     // rho, cp and k. In Cyclic dialog, the value of const_x (x = rho, cp or k) is set to -1 if a constant value needs not be set.
     Vector<HashMap<Simulation.Property, Double>> changedProperties;
+    Vector<Vector<PropertyValuePair>> changedValues;
     CirSim sim;
     double duration;
     CyclePart theCyclePart;
@@ -69,9 +79,9 @@ public class CyclePart {
         newTemperatures = new Vector<Double>();
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
-        newIndexes = new Vector<Integer>();
         newFieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
+        changedValues = new Vector<>();
         this.sim = sim;
         duration = 0;
     }
@@ -123,6 +133,13 @@ public class CyclePart {
                 flexTable.setText(startingRow++, column, s);
 
             flexTable.setText(0, column, "property");
+        } else if (!changedValues.isEmpty()) {
+            for (Vector<PropertyValuePair> v : changedValues)
+                for (PropertyValuePair pvp : v) {
+                    flexTable.setText(row, 0, String.valueOf(pvp.property));
+                    flexTable.setText(row++, 1, String.valueOf(pvp.value));
+
+                }
         }
         row++;
         column = 0;
@@ -231,14 +248,6 @@ public class CyclePart {
         }
     }
 
-    /* void magneticFieldChange() {
-        for (int i = 0; i < TCEs.size(); i++) {
-            // Check if given component's' material's magnetocaloric flag is TRUE;
-            // if not, abort and inform the user.
-            TCEs.get(i).magnetize();
-        }
-    } */
-
     void magneticFieldChange() {
         if (duration == 0.0) {
             for (ThermalControlElement tce : TCEs) {
@@ -285,29 +294,26 @@ public class CyclePart {
         GWT.log("Component k: " + String.valueOf(TCEs.get(0).cvs.get(0).constK));
     }
 
+
     void valueChange() {
-        if (duration == 0.0) {
-            for (int i = 0; i < changedProperties.size(); i++) {
-                for (HashMap.Entry prop : changedProperties.get(i).entrySet()) {
-                    for (ControlVolume cv : TCEs.get(i).cvs) {
-                        cv.setProperty((Simulation.Property) prop.getKey(), (double) prop.getValue());
-                    }
-                }
-            }
-        } else {
-            int steps = (int) (duration / sim.simulation1D.dt);
-            for (int i = 0; i < changedProperties.size(); i++) {
-                for (HashMap.Entry prop : changedProperties.get(i).entrySet()) {
-                    for (ControlVolume cv : TCEs.get(i).cvs) {
-                        double currentValue = cv.getProperty((Simulation.Property) prop.getKey());
-                        double finalValue = (double) prop.getValue();
+        int steps = (int) (duration / sim.simulation1D.dt);
+        for (int i = 0; i < changedValues.size(); i++) {
+            Vector<PropertyValuePair> v = changedValues.get(i);
+            for (PropertyValuePair pvp : v)
+                for (ControlVolume cv : TCEs.get(i).cvs) {
+                    if (duration == 0.0) {
+                        cv.setProperty(pvp.property, pvp.value);
+                    } else {
+                        double currentValue = cv.getProperty(pvp.property);
+                        double finalValue = pvp.value;
                         double changeInStep = (finalValue - currentValue) / steps;
-                        cv.setProperty((Simulation.Property) prop.getKey(), changeInStep);
+                        cv.setProperty(pvp.property, changeInStep);
                     }
                 }
-            }
         }
+
     }
+
 
     void temperatureChange() {
         if (duration == 0.0) {
@@ -383,6 +389,7 @@ public class CyclePart {
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
+
             case VALUE_CHANGE:
                 break;
         }
