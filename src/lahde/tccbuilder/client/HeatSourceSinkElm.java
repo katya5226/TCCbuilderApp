@@ -35,14 +35,18 @@ class HeatSourceSinkElm extends ThermalControlElement {
 
     }
 
-    @Override
-    void setPoints() {
-        super.setPoints();
-        Point tmp = point1;
-        point1 = point2;
-        point2 = tmp;
-    }
 
+//
+//    @Override
+//    void draggingDone() {
+//        super.draggingDone();
+//        int tmpX = x;
+//        int tmpY = y;
+//        x = x2;
+//        y = y2;
+//        x2 = tmpX;
+//        y2 = tmpY;
+//    }
 
     @Override
     int getDumpType() {

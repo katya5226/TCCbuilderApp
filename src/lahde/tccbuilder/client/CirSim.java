@@ -140,7 +140,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     // current timestep (time between iterations)
     double timeStep;
-
+    boolean elementToggled = false;
     // maximum timestep (== timeStep unless we reduce it because of trouble
     // converging)
     double maxTimeStep;
@@ -1576,21 +1576,31 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public void reorderByPosition() {
 
-//        if (simDimensionality == 2) return;
+        if (simDimensionality == 2) return;
 //        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
 //            @Override
 //            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
 //                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
 //            }
 //        };
-//
-//        simulation1D.simTCEs.sort(comparator);
-//        trackedTemperatures.sort(comparator);
-//        int i = 0;
-//        for (ThermalControlElement tce : simulation1D.simTCEs)
-//            tce.index = i++;
-//
-//        redrawElements(simulation1D.simTCEs);
+        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
+            @Override
+            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
+                int x1 = (tce1.x + tce1.x2) / 2;
+                int x2 = (tce2.x + tce2.x2) / 2;
+                int y1 = (tce1.y + tce1.y2) / 2;
+                int y2 = (tce2.y + tce2.y2) / 2;
+
+                return x1 == x2 ? y1 - y2 : x1 - x2;
+            }
+        };
+        simulation1D.simTCEs.sort(comparator);
+        trackedTemperatures.sort(comparator);
+        int i = 0;
+        for (ThermalControlElement tce : simulation1D.simTCEs)
+            tce.index = i++;
+
+        redrawElements(simulation1D.simTCEs);
     }
 
 
@@ -1627,16 +1637,28 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (int i = 0; i < simTCEs.size(); i++) {
             ThermalControlElement tce = simTCEs.get(i);
             if (tce.y == tce.y2) {
-                tce.x = x;
-                x += lengths.get(i);
-                tce.x2 = x;
+                if (tce.x < tce.x2) {
+                    tce.x = x;
+                    x += lengths.get(i);
+                    tce.x2 = x;
+                } else {
+                    tce.x2 = x;
+                    x += lengths.get(i);
+                    tce.x = x;
+                }
                 tce.y = tce.y2 = y;
                 tce.setPoints();
             }
             if (tce.x == tce.x2) {
-                tce.y = y;
-                y += lengths.get(i);
-                tce.y2 = y;
+                if (tce.y < tce.y2) {
+                    tce.y = y;
+                    y += lengths.get(i);
+                    tce.y2 = y;
+                } else {
+                    tce.y2 = y;
+                    y += lengths.get(i);
+                    tce.y = y;
+                }
                 tce.x = tce.x2 = x;
                 tce.setPoints();
             }
@@ -2854,8 +2876,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         SwitchElm se = (SwitchElm) mouseElm;
         if (!se.getSwitchRect().contains(x, y)) return false;
         se.toggle();
-
-
+        elementToggled = true;
         return true;
     }
 
@@ -3476,6 +3497,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         e.preventDefault();
         mouseDragging = false;
 
+        if (elementToggled) {
+            elementToggled = false;
+            return;
+        }
         // click to clear selection
         if (tempMouseMode == MODE_SELECT && selectedArea == null) clearSelection();
 

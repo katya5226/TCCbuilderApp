@@ -524,6 +524,7 @@ public abstract class CircuitElm implements Editable {
     }
 
     void draggingDone() {
+
     }
 
     String dumpModel() {
