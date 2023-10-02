@@ -1568,10 +1568,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByIndex() {
-//        if (simDimensionality == 2) return;
-//        Collections.sort(simulation1D.simTCEs);
-//        Collections.sort(trackedTemperatures);
-//        redrawElements(simulation1D.simTCEs);
+        if (simDimensionality == 2) return;
+        Collections.sort(simulation1D.simTCEs);
+        Collections.sort(trackedTemperatures);
+        redrawElements(simulation1D.simTCEs);
     }
 
     public void reorderByPosition() {
