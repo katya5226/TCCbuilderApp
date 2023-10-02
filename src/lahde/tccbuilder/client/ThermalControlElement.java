@@ -391,7 +391,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         }
 
-        //TODO: Implement this with better functionality
 
         updateElement();
 

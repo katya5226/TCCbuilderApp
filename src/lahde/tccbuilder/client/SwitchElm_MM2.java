@@ -117,7 +117,7 @@ setNewLength(ei.value);
                 break;
         }
 
-        //TODO: Implement this with better functionality
+
 
         updateElement();
     }

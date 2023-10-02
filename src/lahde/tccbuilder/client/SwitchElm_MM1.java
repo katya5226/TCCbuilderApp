@@ -118,7 +118,7 @@ public class SwitchElm_MM1 extends SwitchElm {
                 break;
         }
 
-        //TODO: Implement this with better functionality
+
 
         updateElement();
     }

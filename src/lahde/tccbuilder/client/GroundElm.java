@@ -135,7 +135,7 @@ class GroundElm extends ThermalControlElement {
 
         }
 
-        //TODO: Implement this with better functionality
+
         updateElement();
     }
 }
