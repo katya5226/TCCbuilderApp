@@ -1617,7 +1617,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         }
 
-    GWT.log(lengths.toString());
+        GWT.log(lengths.toString());
 
 
         for (int i = 0; i < simTCEs.size(); i++) {
@@ -2733,7 +2733,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                      */
                     newce.setPoints();
                     elmList.addElement(newce);
-                    if (newce instanceof ThermalControlElement) simulation1D.simTCEs.add((ThermalControlElement) newce);
+                    if (newce instanceof ThermalControlElement) {
+                        simulation1D.simTCEs.add((ThermalControlElement) newce);
+                        trackedTemperatures.add((ThermalControlElement) newce);
+                    }
                     if (newce instanceof TwoDimComponent) simulation2D.simTwoDimComponents.add((TwoDimComponent) newce);
 
                 } catch (Exception ee) {
@@ -3507,7 +3510,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 if (mouseMode == MODE_SELECT || mouseMode == MODE_DRAG_SELECTED) clearSelection();
             } else {
                 elmList.addElement(dragElm);
-                if (dragElm instanceof ThermalControlElement) simulation1D.simTCEs.add((ThermalControlElement) dragElm);
+                if (dragElm instanceof ThermalControlElement) {
+                    simulation1D.simTCEs.add((ThermalControlElement) dragElm);
+                    trackedTemperatures.add((ThermalControlElement) dragElm);
+
+                }
                 if (dragElm instanceof TwoDimComponent) simulation2D.simTwoDimComponents.add((TwoDimComponent) dragElm);
 
 
