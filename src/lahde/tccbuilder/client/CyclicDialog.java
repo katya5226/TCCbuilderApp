@@ -369,9 +369,9 @@ public class CyclicDialog extends Dialog {
                 //just for cycle part display, will be overridden when clicking apply
                 if (duration.isVisible()) {
                     cyclePart.duration = duration.getValue();
-                    cyclePartLabel.clear();
-                    cyclePartLabel.add(cyclePart.toWidget(false));
                 }
+                cyclePartLabel.clear();
+                cyclePartLabel.add(cyclePart.toWidget(false));
 
 
                 CirSim.theSim.fillCyclicPanel();

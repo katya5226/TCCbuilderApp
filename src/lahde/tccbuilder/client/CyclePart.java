@@ -401,8 +401,8 @@ public class CyclePart {
         }
         return dump;
     }
-
     public void unDump(StringTokenizer st) {
+
         // Parse and set common properties
         partIndex = Integer.parseInt(st.nextToken());
         partType = PartType.valueOf(st.nextToken());
