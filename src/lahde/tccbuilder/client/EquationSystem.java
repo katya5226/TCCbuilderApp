@@ -26,9 +26,9 @@ public class EquationSystem {
                 }
                 if (circuit.westBoundary == 31) {
                     // left resistance is approximated with the resistance of the first cv
-                    circuit.diag[0] = (cv.k() + cv.kEast) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
+                    circuit.diag[0] = (2 * cv.k() + cv.kEast) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
                     circuit.rhs[0] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
-                    circuit.rhs[0] += cv.k() * dt * circuit.temperatureWest;
+                    circuit.rhs[0] += 2 * cv.k() * dt * circuit.temperatureWest;
                     circuit.rhs[0] += cv.qGenerated * dt * Math.pow(cv.dx, 2);
                 }
 
@@ -52,9 +52,9 @@ public class EquationSystem {
                     circuit.rhs[0] += cv.qGenerated * dt * Math.pow(cv.dx, 2);
                 }
                 if (circuit.eastBoundary == 32) { // right resistance is approximated with the resistance of the last cv
-                    circuit.diag[n - 1] = (cv.k() + cv.kWest) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
+                    circuit.diag[n - 1] = (2 * cv.k() + cv.kWest) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
                     circuit.rhs[n - 1] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
-                    circuit.rhs[n - 1] += cv.k() * dt * circuit.temperatureEast;
+                    circuit.rhs[n - 1] += 2 * cv.k() * dt * circuit.temperatureEast;
                     circuit.rhs[n - 1] += cv.qGenerated * dt * Math.pow(cv.dx, 2);
                 }
                 if (circuit.eastBoundary == 42) { // left resistance is approximated with the resistance of the first cv
