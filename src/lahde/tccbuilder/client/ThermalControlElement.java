@@ -273,8 +273,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
 
-
-
     double[] listTemps() {
         double[] temps = new double[numCvs];
         for (int i = 0; i < temps.length; i++) {
@@ -407,8 +405,15 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
 
         double ratio = length / prevLength;
-        int deltaX = (int) ((point2.x - point1.x) * ratio);
-        drag(sim.snapGrid(point1.x + deltaX), y);
+        if (y == y2) {
+            int deltaX = (int) ((point2.x - point1.x) * ratio);
+            drag(sim.snapGrid(point1.x + deltaX), y);
+        }else{
+            int deltaY = (int) ((point2.y - point1.y) * ratio);
+            drag(x, sim.snapGrid(point1.y + deltaY));
+
+
+        }
     }
 
     void updateElement() {
@@ -483,7 +488,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }*/
 
     public void setConstProperty(Simulation.Property property, double value) {
-        switch(property) {
+        switch (property) {
             case DENSITY:
                 for (ControlVolume cv : cvs) {
                     cv.constRho = value;
@@ -495,7 +500,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case THERMAL_CONDUCTIVITY:
                 for (ControlVolume cv : cvs) {
                     cv.constK = value;
-                }           
+                }
         }
     }
 

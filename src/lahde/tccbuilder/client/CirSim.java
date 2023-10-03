@@ -828,8 +828,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void setCyclic(boolean c) {
         simulation1D.cyclic = c;
         drawLayoutPanel(false, false);
-        setCanvasSize();
         centreCircuit();
+        setCanvasSize();
         repaint();
     }
 
@@ -1336,10 +1336,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         g.setColor(Color.black);
         canvas.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
-
+//        if (mouseElm != null)
+//            GWT.log("mouseElm" + mouseElm.toString());
+//        if (dragElm != null)
+//            GWT.log("dragElm" + dragElm.toString());
+//        if (mouseMode > -1)
+//            GWT.log("mouse mode: "+mouseMode);
 //        noEditCheckItem.setState(simRunning);
-        if (simRunning) {
 
+
+        if (simRunning) {
             // Run circuit
             perfmon.startContext("runCircuit()");
             try {
@@ -1401,7 +1407,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (CircuitElm elm : elmList) {
             if (elm.needsHighlight()) elm.drawPosts(g);
         }
-
 
         // for some mouse modes, what matters is not the posts but the endpoints (which
         // are only the same for 2-terminal elements). We draw those now if needed
@@ -1575,14 +1580,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByPosition() {
-
         if (simDimensionality == 2) return;
-//        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
-//            @Override
-//            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-//                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
-//            }
-//        };
         Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
             @Override
             public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
@@ -1614,24 +1612,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (tce.y == tce.y2)
                 lengths.add(Math.abs(tce.x - tce.x2));
 
-            if (tce == mouseElm) {
-                continue;
-            }
             x = Math.min(x, tce.x);
             y = Math.min(y, tce.y);
 
         }
 
-        if (mouseElm != null && mouseElm == simTCEs.get(0)) {
-            if (mouseElm.y == mouseElm.y2) {
-                x -= lengths.get(simTCEs.indexOf(mouseElm));
-            }
-            if (mouseElm.x == mouseElm.x2) {
-                y -= lengths.get(simTCEs.indexOf(mouseElm));
-            }
-
-
-        }
+    GWT.log(lengths.toString());
 
 
         for (int i = 0; i < simTCEs.size(); i++) {
@@ -1646,7 +1632,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     x += lengths.get(i);
                     tce.x = x;
                 }
-                tce.y = tce.y2 = y;
+                tce.y = tce.y2 = canvasHeight / 2;
                 tce.setPoints();
             }
             if (tce.x == tce.x2) {
@@ -1659,7 +1645,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     y += lengths.get(i);
                     tce.y = y;
                 }
-                tce.x = tce.x2 = x;
+                tce.x = tce.x2 = canvasWidth / 2;
                 tce.setPoints();
             }
         }
@@ -3471,8 +3457,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    static int lastSubcircuitMenuUpdate;
-
     // check/uncheck/enable/disable menu items as appropriate when menu bar clicked
     // on, or when
     // right mouse menu accessed. also displays shortcuts as a side effect
@@ -3511,6 +3495,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         selectedArea = null;
         dragging = false;
         boolean circuitChanged = false;
+
+
         if (dragElm == null)
             reorderByPosition();
         else {
