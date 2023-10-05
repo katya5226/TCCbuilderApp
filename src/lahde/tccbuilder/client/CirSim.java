@@ -3733,7 +3733,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     simulation2D.simTwoDimComponents.remove((TwoDimComponent) ce);
                     simulation2D.resetHeatSim();
                 }
-
+                reorderByPosition();
                 hasDeleted = true;
             }
         }

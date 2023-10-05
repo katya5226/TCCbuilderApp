@@ -144,6 +144,7 @@ public abstract class CircuitElm implements Editable {
         dsign = (dy == 0) ? sign(dx) : sign(dy);
         point1 = new Point(x, y);
         point2 = new Point(x2, y2);
+
     }
 
     // calculate lead points for an element of length len. Handy for simple
