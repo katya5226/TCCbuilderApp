@@ -260,11 +260,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public enum LengthUnit {
         MICROMETER(1e6, "µm", "micrometer"),
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
+        MICROMETER_100(1e4, "10µm", "100 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
         CENTIMETER(1e2, "cm", "centimeter"),
         DECIMETER(1e1, "dm", "decimeter"),
-        METER(1, "m", "meter"),
-        KILOMETER(1e-3, "km", "kilometer");
+        METER(1, "m", "meter");
 
         final double conversionFactor;
         final String unitName;
@@ -664,6 +664,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "10 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_10;
                         break;
+                    case "100 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_100;
+                        break;
                     case "millimeter":
                         selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
@@ -676,9 +679,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "meter":
                         selectedLengthUnit = LengthUnit.METER;
                         break;
-                    case "kilometer":
-                        selectedLengthUnit = LengthUnit.KILOMETER;
-                        break;
+
                 }
 
                 calculateElementsLengths();
@@ -1619,7 +1620,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             y = Math.min(y, tce.y);
 
         }
-
 
 
         for (int i = 0; i < simTCEs.size(); i++) {
