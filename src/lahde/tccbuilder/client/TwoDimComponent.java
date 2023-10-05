@@ -304,10 +304,6 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         super.setPoints();
         point3 = new Point(x, oldY);
         point4 = new Point(x2, oldY);
-        GWT.log(point1.toString());
-        GWT.log(point2.toString());
-        GWT.log(point3.toString());
-        GWT.log(point4.toString());
     }
 
     void drawCVMaterials(Graphics g, Point pa, Point pb) {

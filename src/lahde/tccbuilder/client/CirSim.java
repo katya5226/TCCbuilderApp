@@ -1519,8 +1519,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         double cvX = x;
-        double textWidth;
+        for (int i = 0; i < temperatures.length; i++) {
+            double temperatureRatio = (temperatures[i] - minTemp) / temperatureRange;
+            String mixedColor = CirSim.getMixedColor(temperatureRatio);
+            ctx.setFillStyle(mixedColor);
+            ctx.setStrokeStyle(mixedColor);
+            double temperatureWidth = (width / intervalNumber);
+            cvX = x + i * temperatureWidth;
+            ctx.strokeRect(cvX, y, temperatureWidth, height);
+            ctx.fillRect(cvX, y, temperatureWidth, height);
+        }
+        cvX = x;
 
+
+        double textWidth;
         ctx.setFillStyle(Color.white.getHexValue());
         ctx.setStrokeStyle(Color.white.getHexValue());
         ctx.setLineWidth(1.5);
@@ -1533,23 +1545,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             ctx.fillText(text, cvX - (textWidth / 2), y - 16);
             ctx.beginPath();
-            ctx.moveTo(cvX, y);
+            ctx.moveTo(cvX, y + 4);
             ctx.lineTo(cvX, y - 8);
             ctx.stroke();
 
             cvX += (width / labelInterval);
         }
 
-        for (int i = 0; i < temperatures.length; i++) {
-            double temperatureRatio = (temperatures[i] - minTemp) / temperatureRange;
-            String mixedColor = CirSim.getMixedColor(temperatureRatio);
-            ctx.setFillStyle(mixedColor);
-            ctx.setStrokeStyle(mixedColor);
-            double temperatureWidth = (width / intervalNumber);
-            cvX = x + i * temperatureWidth;
-            ctx.strokeRect(cvX, y, temperatureWidth, height);
-            ctx.fillRect(cvX, y, temperatureWidth, height);
-        }
+
         ctx.setStrokeStyle(Color.white.getHexValue());
         ctx.rect(x, y, width, height);
         ctx.stroke();
@@ -1617,7 +1620,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         }
 
-        GWT.log(lengths.toString());
 
 
         for (int i = 0; i < simTCEs.size(); i++) {
