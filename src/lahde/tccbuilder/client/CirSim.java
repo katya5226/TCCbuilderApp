@@ -3505,6 +3505,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (dragElm == null)
             reorderByPosition();
         else {
+//            GWT.log(String.valueOf(dragElm.direction));
             // if the element is zero size then don't create it
             // IES - and disable any previous selection
             if (dragElm.creationFailed()) {

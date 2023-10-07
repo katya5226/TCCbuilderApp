@@ -28,14 +28,7 @@ class DiodeElm extends ThermalControlElement {
     double cp;
     double rho;
     double responseTime;
-    Direction direction;
 
-    public enum Direction {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
-    }
 
 
     public DiodeElm(int xx, int yy) {
@@ -64,10 +57,6 @@ class DiodeElm extends ThermalControlElement {
         y2 = yy;
         setPoints();
 
-        if (y == y2)
-            direction = x2 < x ? Direction.LEFT : Direction.RIGHT;
-        else if (x == x2)
-            direction = y2 < y ? Direction.UP : Direction.DOWN;
     }
 
     @Override

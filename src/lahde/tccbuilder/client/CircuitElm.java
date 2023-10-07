@@ -72,7 +72,14 @@ public abstract class CircuitElm implements Editable {
 
     public boolean selected;
     public boolean resizable = true;
+    Direction direction;
 
+    public enum Direction {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
     int getDumpType() {
 
         throw new IllegalStateException(); // Seems necessary to work-around what appears to be a compiler
@@ -243,6 +250,10 @@ public abstract class CircuitElm implements Editable {
         x2 = xx;
         y2 = yy;
         setPoints();
+        if (y == y2)
+            direction = x2 < x ? Direction.LEFT : Direction.RIGHT;
+        else if (x == x2)
+            direction = y2 < y ? Direction.UP : Direction.DOWN;
     }
 
     void move(int dx, int dy) {

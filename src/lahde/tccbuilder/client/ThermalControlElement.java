@@ -38,6 +38,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     CirSim.LengthUnit DEFINED_LENGTH_UNIT;
 
+
+
     public ThermalControlElement(int xx, int yy) {
         super(xx, yy);
         initializeThermalControlElement();
