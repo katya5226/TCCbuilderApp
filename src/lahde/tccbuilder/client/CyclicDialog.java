@@ -71,7 +71,6 @@ public class CyclicDialog extends Dialog {
         setWidget(vp);
 
 
-
         inputWidgets = new ArrayList<>();
 
         cyclePartLabel = new FlowPanel();
@@ -86,17 +85,18 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(duration);
 
         cyclePartListBox.addItem("< Choose Cycle Part >");
-        for (CyclePart.PartType pt : CyclePart.PartType.values())
-            cyclePartListBox.addItem(pt.toSpacedCamelCase());
-/*        cyclePartListBox.addItem("Heat Transfer");
+        cyclePartListBox.addItem("Heat Transfer");
         cyclePartListBox.addItem("Heat Input");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
-        //addBox.addItem("Electric Field Change");
-        //addBox.addItem("Shear Stress Change");
-        //addBox.addItem("Pressure change");
+//        cyclePartListBox.addItem("Electric Field Change");
+//        cyclePartListBox.addItem("Pressure Change");
+//        cyclePartListBox.addItem("Shear Stress Change");
         cyclePartListBox.addItem("Properties Change");
-        cyclePartListBox.addItem("Temperature Change");*/
+        cyclePartListBox.addItem("Temperature Change");
+        cyclePartListBox.addItem("Toggle Thermal Control Element");
+//        cyclePartListBox.addItem("Value Change ");
+
 
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));

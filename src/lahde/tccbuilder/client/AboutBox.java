@@ -44,7 +44,8 @@ public class AboutBox extends Dialog {
         vp.setWidth("400px");
         //vp.add(new HTML("<iframe src=\"about.html\" width=\"400\" height=\"430\" scrolling=\"auto\" frameborder=\"0\"></iframe><br>"));
         aboutText = "The original code was forked from the project CircuitJS1 (Copyright (C) Paul Falstad and Iain Sharp, https://github.com/pfalstad/circuitjs1).\n" +
-                "TCCBuilder is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License.";
+                "TCCBuilder is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License.\n";
+        aboutText += "Version 1.1";
         label = new Label();
         setText("About");
         label.setText(aboutText);
