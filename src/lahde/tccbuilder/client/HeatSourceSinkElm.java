@@ -105,7 +105,7 @@ class HeatSourceSinkElm extends ThermalControlElement {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 3:
-                return new EditInfo("Temperature", temperature);
+                return new EditInfo("Temperature (K)", temperature);
 
             default:
                 return null;

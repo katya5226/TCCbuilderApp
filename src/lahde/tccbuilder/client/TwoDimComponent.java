@@ -28,6 +28,8 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
     boolean field;
     int fieldIndex;
     Point point3, point4;
+    int oldX;
+    int oldY;
 
     TwoDimComponent(int xx, int yy) {
         super(xx, yy);
@@ -64,7 +66,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
         index = Integer.parseInt(st.nextToken());
 
-        setPoints();
+//        setPoints();
         point3 = new Point(Integer.parseInt(st.nextToken(" ")), Integer.parseInt(st.nextToken(" ")));
         point4 = new Point(Integer.parseInt(st.nextToken(" ")), Integer.parseInt(st.nextToken(" ")));
 
@@ -206,8 +208,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
 
     @Override
     void drag(int xx, int yy) {
-        int oldX = xx > x ? sim.snapGrid(xx) : x;
-        int oldY = yy > y ? sim.snapGrid(yy) : y;
+
+        oldX = xx > x ? sim.snapGrid(xx) : x;
+        oldY = yy > y ? sim.snapGrid(yy) : y;
 
         if (point1 != null) for (TwoDimComponent twoDimComponent : sim.simulation2D.simTwoDimComponents) {
             if (twoDimComponent.x2 == point1.x && twoDimComponent.y2 == point1.y) {
@@ -217,8 +220,7 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         x2 = oldX;
         y2 = y;
         setPoints();
-        point3 = new Point(point1.x, oldY);
-        point4 = new Point(oldX, oldY);
+
 
     }
 
@@ -230,6 +232,20 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         point3.y += dy;
         point4.y += dy;
     }
+
+//    @Override
+//    void movePoint(int n, int dx, int dy) {
+//        if (noDiagonal) {
+//            if (x == x2) dx = 0;
+//            else dy = 0;
+//        }
+//        if (n == 0) {
+//            drag(oldX = x + dx, y);
+//        } else {
+//            drag(oldX = x2 + dx, y2);
+//        }
+//
+//    }
 
     @Override
     int getDumpType() {
@@ -281,6 +297,13 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
         TwoDimTCCmanager.setdxdy(cvs, tmpDx, tmpDy);
 
 
+    }
+
+    @Override
+    void setPoints() {
+        super.setPoints();
+        point3 = new Point(x, oldY);
+        point4 = new Point(x2, oldY);
     }
 
     void drawCVMaterials(Graphics g, Point pa, Point pb) {

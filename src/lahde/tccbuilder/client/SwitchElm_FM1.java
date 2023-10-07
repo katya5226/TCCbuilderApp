@@ -71,17 +71,17 @@ public class SwitchElm_FM1 extends SwitchElm {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity-On (W/m/K)", kOn, false);
+                return new EditInfo("Thermal Conductivity (W/m/K) - ON", kOn, false);
             case 8:
-                return new EditInfo("Thermal Conductivity-Off (W/m/K)", kOff, false);
+                return new EditInfo("Thermal Conductivity (W/m/K) - OFF", kOff, false);
             case 9:
-                return new EditInfo("Specific Heat Capacity-On (J/kg/K)", cpOn, false);
+                return new EditInfo("Specific Heat Capacity (J/kg/K) - ON", cpOn, false);
             case 10:
-                return new EditInfo("Specific Heat Capacity-Off (J/kg/K)", cpOff, false);
+                return new EditInfo("Specific Heat Capacity (J/kg/K) - OFF", cpOff, false);
             case 11:
-                return new EditInfo("Density-On (kg/m³)", rhoOn, false);
+                return new EditInfo("Density (kg/m³) - ON", rhoOn, false);
             case 12:
-                return new EditInfo("Density-Off (kg/m³)", rhoOff, false);
+                return new EditInfo("Density (kg/m³) - OFF", rhoOff, false);
             case 13:
                 return new EditInfo("Response Time (s)", responseTime, false);
             default:
@@ -91,7 +91,7 @@ public class SwitchElm_FM1 extends SwitchElm {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
+        Material m  = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -118,7 +118,7 @@ setNewLength(ei.value);
                 break;
         }
 
-        //TODO: Implement this with better functionality
+
 
         updateElement();
     }

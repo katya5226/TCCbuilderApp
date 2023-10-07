@@ -58,7 +58,7 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "-" + operatingMax);
+                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
                 operatingRange.editable = false;
                 return operatingRange;
             default:
@@ -82,7 +82,7 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-setNewLength(ei.value);
+                setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;
@@ -96,7 +96,6 @@ setNewLength(ei.value);
 
         }
 
-        //TODO: Implement this with better functionality
 
         updateElement();
     }
@@ -108,7 +107,7 @@ setNewLength(ei.value);
 
     @Override
     public void buildThermalControlElement() {
-        cvs.clear();
+        super.buildThermalControlElement();
         Material NiTi = sim.materialHashMap.get("100004-NiTi");
         Material Graphite = sim.materialHashMap.get("500006-Graphite");
         if (!NiTi.isLoaded())
@@ -117,12 +116,8 @@ setNewLength(ei.value);
             Graphite.readFiles();
         int ratioIndex = (int) (0.5 * numCvs);
         for (int i = 0; i < numCvs; i++) {
-            cvs.add(new ControlVolume(i));
-            cvs.get(i).parent = this;
             cvs.get(i).material = i < ratioIndex ? NiTi : Graphite;
         }
-        cvs.get(0).westResistance = westResistance;
-        cvs.get(numCvs - 1).eastResistance = eastResistance;
     }
 
     @Override

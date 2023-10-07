@@ -260,11 +260,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public enum LengthUnit {
         MICROMETER(1e6, "µm", "micrometer"),
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
+        MICROMETER_100(1e4, "10µm", "100 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
         CENTIMETER(1e2, "cm", "centimeter"),
         DECIMETER(1e1, "dm", "decimeter"),
-        METER(1, "m", "meter"),
-        KILOMETER(1e-3, "km", "kilometer");
+        METER(1, "m", "meter");
 
         final double conversionFactor;
         final String unitName;
@@ -664,6 +664,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "10 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_10;
                         break;
+                    case "100 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_100;
+                        break;
                     case "millimeter":
                         selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
@@ -676,9 +679,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "meter":
                         selectedLengthUnit = LengthUnit.METER;
                         break;
-                    case "kilometer":
-                        selectedLengthUnit = LengthUnit.KILOMETER;
-                        break;
+
                 }
 
                 calculateElementsLengths();
@@ -828,8 +829,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void setCyclic(boolean c) {
         simulation1D.cyclic = c;
         drawLayoutPanel(false, false);
-        setCanvasSize();
         centreCircuit();
+        setCanvasSize();
         repaint();
     }
 
@@ -1336,10 +1337,16 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
         g.setColor(Color.black);
         canvas.getElement().getStyle().setBackgroundColor(Color.gray.getHexValue());
-
+//        if (mouseElm != null)
+//            GWT.log("mouseElm" + mouseElm.toString());
+//        if (dragElm != null)
+//            GWT.log("dragElm" + dragElm.toString());
+//        if (mouseMode > -1)
+//            GWT.log("mouse mode: "+mouseMode);
 //        noEditCheckItem.setState(simRunning);
-        if (simRunning) {
 
+
+        if (simRunning) {
             // Run circuit
             perfmon.startContext("runCircuit()");
             try {
@@ -1401,7 +1408,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         for (CircuitElm elm : elmList) {
             if (elm.needsHighlight()) elm.drawPosts(g);
         }
-
 
         // for some mouse modes, what matters is not the posts but the endpoints (which
         // are only the same for 2-terminal elements). We draw those now if needed
@@ -1514,8 +1520,20 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         double cvX = x;
-        double textWidth;
+        for (int i = 0; i < temperatures.length; i++) {
+            double temperatureRatio = (temperatures[i] - minTemp) / temperatureRange;
+            String mixedColor = CirSim.getMixedColor(temperatureRatio);
+            ctx.setFillStyle(mixedColor);
+            ctx.setStrokeStyle(mixedColor);
+            double temperatureWidth = (width / intervalNumber);
+            cvX = x + i * temperatureWidth;
+            ctx.strokeRect(cvX, y, temperatureWidth, height);
+            ctx.fillRect(cvX, y, temperatureWidth, height);
+        }
+        cvX = x;
 
+
+        double textWidth;
         ctx.setFillStyle(Color.white.getHexValue());
         ctx.setStrokeStyle(Color.white.getHexValue());
         ctx.setLineWidth(1.5);
@@ -1528,23 +1546,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             ctx.fillText(text, cvX - (textWidth / 2), y - 16);
             ctx.beginPath();
-            ctx.moveTo(cvX, y);
+            ctx.moveTo(cvX, y + 4);
             ctx.lineTo(cvX, y - 8);
             ctx.stroke();
 
             cvX += (width / labelInterval);
         }
 
-        for (int i = 0; i < temperatures.length; i++) {
-            double temperatureRatio = (temperatures[i] - minTemp) / temperatureRange;
-            String mixedColor = CirSim.getMixedColor(temperatureRatio);
-            ctx.setFillStyle(mixedColor);
-            ctx.setStrokeStyle(mixedColor);
-            double temperatureWidth = (width / intervalNumber);
-            cvX = x + i * temperatureWidth;
-            ctx.strokeRect(cvX, y, temperatureWidth, height);
-            ctx.fillRect(cvX, y, temperatureWidth, height);
-        }
+
         ctx.setStrokeStyle(Color.white.getHexValue());
         ctx.rect(x, y, width, height);
         ctx.stroke();
@@ -1568,21 +1577,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     }
 
     public void reorderByIndex() {
-//        if (simDimensionality == 2) return;
-//        Collections.sort(simulation1D.simTCEs);
-//        Collections.sort(trackedTemperatures);
-//        redrawElements(simulation1D.simTCEs);
+        if (simDimensionality == 2) return;
+        Collections.sort(simulation1D.simTCEs);
+        Collections.sort(trackedTemperatures);
+        redrawElements(simulation1D.simTCEs);
     }
 
     public void reorderByPosition() {
-
         if (simDimensionality == 2) return;
-//        Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
-//            @Override
-//            public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
-//                return tce1.y == tce1.y2 ? tce1.x - tce2.x : tce1.y - tce2.y;
-//            }
-//        };
         Comparator<ThermalControlElement> comparator = new Comparator<ThermalControlElement>() {
             @Override
             public int compare(ThermalControlElement tce1, ThermalControlElement tce2) {
@@ -1614,22 +1616,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (tce.y == tce.y2)
                 lengths.add(Math.abs(tce.x - tce.x2));
 
-            if (tce == mouseElm) {
-                continue;
-            }
             x = Math.min(x, tce.x);
             y = Math.min(y, tce.y);
-
-        }
-
-        if (mouseElm != null && mouseElm == simTCEs.get(0)) {
-            if (mouseElm.y == mouseElm.y2) {
-                x -= lengths.get(simTCEs.indexOf(mouseElm));
-            }
-            if (mouseElm.x == mouseElm.x2) {
-                y -= lengths.get(simTCEs.indexOf(mouseElm));
-            }
-
 
         }
 
@@ -1646,7 +1634,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     x += lengths.get(i);
                     tce.x = x;
                 }
-                tce.y = tce.y2 = y;
+                tce.y = tce.y2 = canvasHeight / 2;
                 tce.setPoints();
             }
             if (tce.x == tce.x2) {
@@ -1659,7 +1647,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     y += lengths.get(i);
                     tce.y = y;
                 }
-                tce.x = tce.x2 = x;
+                tce.x = tce.x2 = canvasWidth / 2;
                 tce.setPoints();
             }
         }
@@ -2747,7 +2735,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                      */
                     newce.setPoints();
                     elmList.addElement(newce);
-                    if (newce instanceof ThermalControlElement) simulation1D.simTCEs.add((ThermalControlElement) newce);
+                    if (newce instanceof ThermalControlElement) {
+                        simulation1D.simTCEs.add((ThermalControlElement) newce);
+                        trackedTemperatures.add((ThermalControlElement) newce);
+                    }
                     if (newce instanceof TwoDimComponent) simulation2D.simTwoDimComponents.add((TwoDimComponent) newce);
 
                 } catch (Exception ee) {
@@ -3471,8 +3462,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
     }
 
-    static int lastSubcircuitMenuUpdate;
-
     // check/uncheck/enable/disable menu items as appropriate when menu bar clicked
     // on, or when
     // right mouse menu accessed. also displays shortcuts as a side effect
@@ -3511,9 +3500,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         selectedArea = null;
         dragging = false;
         boolean circuitChanged = false;
+
+
         if (dragElm == null)
             reorderByPosition();
         else {
+//            GWT.log(String.valueOf(dragElm.direction));
             // if the element is zero size then don't create it
             // IES - and disable any previous selection
             if (dragElm.creationFailed()) {
@@ -3521,7 +3513,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 if (mouseMode == MODE_SELECT || mouseMode == MODE_DRAG_SELECTED) clearSelection();
             } else {
                 elmList.addElement(dragElm);
-                if (dragElm instanceof ThermalControlElement) simulation1D.simTCEs.add((ThermalControlElement) dragElm);
+                if (dragElm instanceof ThermalControlElement) {
+                    simulation1D.simTCEs.add((ThermalControlElement) dragElm);
+                    trackedTemperatures.add((ThermalControlElement) dragElm);
+
+                }
                 if (dragElm instanceof TwoDimComponent) simulation2D.simTwoDimComponents.add((TwoDimComponent) dragElm);
 
 
@@ -3740,7 +3736,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     simulation2D.simTwoDimComponents.remove((TwoDimComponent) ce);
                     simulation2D.resetHeatSim();
                 }
-
+                reorderByPosition();
                 hasDeleted = true;
             }
         }

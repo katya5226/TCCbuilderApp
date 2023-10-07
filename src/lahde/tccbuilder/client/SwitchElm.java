@@ -122,15 +122,15 @@ class SwitchElm extends ThermalControlElement {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity (On)", kOn);
+                return new EditInfo("Thermal Conductivity (W/mK) - ON", kOn);
             case 8:
-                return new EditInfo("Thermal Conductivity (Off)", kOff);
+                return new EditInfo("Thermal Conductivity (W/mK) - OFF", kOff);
             case 9:
-                return new EditInfo("Specific Heat Capacity", constCp);
+                return new EditInfo("Specific Heat Capacity (J/kgK)", constCp);
             case 10:
-                return new EditInfo("Density", constRho);
+                return new EditInfo("Density (kg/m³)", constRho);
             case 11:
-                return new EditInfo("Response Time", responseTime);
+                return new EditInfo("Response time (s)", responseTime);
             default:
                 return null;
         }
@@ -177,7 +177,7 @@ class SwitchElm extends ThermalControlElement {
                 break;
         }
 
-        //TODO: Implement this with better functionality
+
 
         updateElement();
     }

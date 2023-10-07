@@ -51,7 +51,7 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "-" + operatingMax);
+                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
                 operatingRange.editable = false;
                 return operatingRange;
             default:
@@ -89,12 +89,12 @@ setNewLength(ei.value);
 
         }
 
-        //TODO: Implement this with better functionality
+
 
         updateElement();
     }
 /*                case 12:
-    EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "-" + operatingMax);
+    EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
     operatingRange.editable = false;
                 return operatingRange;*/
 
@@ -116,7 +116,7 @@ setNewLength(ei.value);
 
     @Override
     public void buildThermalControlElement() {
-        cvs.clear();
+        super.buildThermalControlElement();
         Material LSCO = sim.materialHashMap.get("200002-LaSrCoO");
         Material LCO = sim.materialHashMap.get("200001-LaCoO");
         if (!LSCO.isLoaded())
@@ -125,12 +125,8 @@ setNewLength(ei.value);
             LCO.readFiles();
         int ratioIndex = (int) ((6.1 / 12.4) * numCvs);
         for (int i = 0; i < numCvs; i++) {
-            cvs.add(new ControlVolume(i));
-            cvs.get(i).parent = this;
             cvs.get(i).material = i < ratioIndex ? LSCO : LCO;
         }
-        cvs.get(0).westResistance = westResistance;
-        cvs.get(numCvs - 1).eastResistance = eastResistance;
     }
 
     @Override
