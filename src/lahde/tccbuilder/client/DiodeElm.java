@@ -104,15 +104,15 @@ class DiodeElm extends ThermalControlElement {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity (forward)", kForward);
+                return new EditInfo("Thermal Conductivity (W/mK) - forward", kForward);
             case 8:
-                return new EditInfo("Thermal Conductivity (backward)", kBackward);
+                return new EditInfo("Thermal Conductivity (W/mK) - backward", kBackward);
             case 9:
-                return new EditInfo("Specific Heat Capacity", cp);
+                return new EditInfo("Specific Heat Capacity (J/kgK)", cp);
             case 10:
-                return new EditInfo("Density", rho);
+                return new EditInfo("Density (kg/m³)", rho);
             case 11:
-                return new EditInfo("Response time", responseTime);
+                return new EditInfo("Response time (s)", responseTime);
             default:
                 return null;
         }

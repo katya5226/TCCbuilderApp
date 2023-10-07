@@ -39,39 +39,6 @@ class ConduitElm extends ThermalControlElement {
         drawLine(g, point1, point2,lineThickness,color);
     }
 
-    @Override
-    public EditInfo getEditInfo(int n) {
-        EditInfo out = super.getEditInfo(n);
-        switch (n) {
-            case 8:
-                out = EditInfo.createCheckboxWithField("Costant Density", !(constRho == -1), constRho);
-                break;
-            case 9:
-                out = EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
-                break;
-            case 10:
-                out = EditInfo.createCheckboxWithField("Constant Thermal Conductivity", !(constK == -1), constK);
-                break;
-        }
-        return out;
-    }
-
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        super.setEditValue(n, ei);
-        switch (n) {
-            case 8:
-                constRho = ei.value;
-                break;
-            case 9:
-                constCp = ei.value;
-                break;
-            case 10:
-                constK = ei.value;
-                break;
-        }
-        updateElement();
-    }
 
 
 

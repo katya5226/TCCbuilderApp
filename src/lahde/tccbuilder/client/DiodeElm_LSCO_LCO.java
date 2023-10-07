@@ -51,7 +51,7 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "-" + operatingMax);
+                EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
                 operatingRange.editable = false;
                 return operatingRange;
             default:
@@ -94,7 +94,7 @@ setNewLength(ei.value);
         updateElement();
     }
 /*                case 12:
-    EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "-" + operatingMax);
+    EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
     operatingRange.editable = false;
                 return operatingRange;*/
 

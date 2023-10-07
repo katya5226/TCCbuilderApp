@@ -167,25 +167,25 @@ class RegulatorElm extends ThermalControlElement {
             case 6:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity 1", k1);
+                return new EditInfo("Thermal Conductivity (W/mK) 1", k1);
             case 8:
-                return new EditInfo("Thermal Conductivity 2", k2);
+                return new EditInfo("Thermal Conductivity (W/mK) 2", k2);
             case 9:
-                return new EditInfo("Specific Heat Capacity 1", cp1);
+                return new EditInfo("Specific Heat Capacity (J/kgK) 1", cp1);
             case 10:
-                return new EditInfo("Specific Heat Capacity 2", cp2);
+                return new EditInfo("Specific Heat Capacity (J/kgK) 2", cp2);
             case 11:
-                return new EditInfo("Density 1 ", rho1);
+                return new EditInfo("Density (kg/m³) 1", rho1);
             case 12:
-                return new EditInfo("Density 2", rho2);
+                return new EditInfo("Density (kg/m³) 2", rho2);
             case 13:
-                return new EditInfo("Temperature 1 ", temperature1);
+                return new EditInfo("Temperature (K) 1", temperature1);
             case 14:
-                return new EditInfo("Temperature 2", temperature2);
+                return new EditInfo("Temperature (K) 2", temperature2);
             case 15:
-                return new EditInfo("Latent heat", latentHeat);
+                return new EditInfo("Latent heat (J/kg)", latentHeat);
             case 16:
-                return new EditInfo("Response time", responseTime);
+                return new EditInfo("Response time (s)", responseTime);
             default:
                 return null;
         }

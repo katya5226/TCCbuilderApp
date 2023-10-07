@@ -116,7 +116,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         length = Math.sqrt(Math.pow((y2 - y), 2) + Math.pow((x2 - x), 2)) / sim.selectedLengthUnit.conversionFactor;
         //gridSize px = 1 unit of measurement
         length /= sim.gridSize;
-        if(cvs!=null)
+        if (cvs != null)
             buildThermalControlElement();
     }
 
@@ -337,11 +337,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 7:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 8:
-                return EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
+                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
             case 9:
-                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
+                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
             case 10:
-                return EditInfo.createCheckboxWithField("Constant Thermal Conductivity", !(constK == -1), constK);
+                return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
             default:
                 return null;
         }
@@ -432,7 +432,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     String getOperatingRangeString() {
         if (hasOperatingRange)
-            return "Ideal operating range: " + operatingMin + "-" + operatingMax + "K";
+            return "Ideal operating range: " + operatingMin + "K - " + operatingMax + "K";
         else
             return null;
     }
