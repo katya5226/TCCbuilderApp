@@ -39,7 +39,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     CirSim.LengthUnit DEFINED_LENGTH_UNIT;
 
 
-
     public ThermalControlElement(int xx, int yy) {
         super(xx, yy);
         initializeThermalControlElement();
@@ -110,24 +109,26 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constRho = -1;
         constCp = -1;
         constK = -1;
-        double tmpDx = length / numCvs;
-        if (!(tmpDx < 1e-6) || tmpDx == 0) {
-            set_dx(tmpDx);
-        }
+
     }
 
     public void calculateLength() {
         length = Math.sqrt(Math.pow((y2 - y), 2) + Math.pow((x2 - x), 2)) / sim.selectedLengthUnit.conversionFactor;
         //gridSize px = 1 unit of measurement
         length /= sim.gridSize;
+        if(cvs!=null)
+            buildThermalControlElement();
     }
 
+
     public void buildThermalControlElement() {
+        double newDX = length / numCvs;
         cvs.clear();
         for (int i = 0; i < numCvs; i++) {
             cvs.add(new ControlVolume(i));
             cvs.get(i).parent = this;
             cvs.get(i).material = material;
+            cvs.get(i).dx = newDX;
 
             if (constRho != -1) {
                 cvs.get(i).constRho = constRho;
@@ -141,6 +142,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
+
     }
 
     public void set_starting_temps(double start_temp) {
@@ -229,17 +231,18 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         int hs = 13;
         setBbox(point1, point2, hs);
 
-        double tmpDx = length / numCvs;
-        if (tmpDx < 1e-6 && tmpDx != 0) {
-            //Window.alert("TCE can't have a dx < 1µ, current is " + tmpDx);
-            drawLine(g, point1, point2, lineThickness, Color.red);
-            set_dx(tmpDx);
-            isDisabled = true;
-        } else {
-            drawLine(g, point1, point2, lineThickness, color);
-            set_dx(tmpDx);
-            isDisabled = false;
-        }
+//        double tmpDx = length / numCvs;
+//        if (tmpDx < 1e-6 && tmpDx != 0) {
+//            //Window.alert("TCE can't have a dx < 1µ, current is " + tmpDx);
+//            drawLine(g, point1, point2, lineThickness, Color.red);
+//            set_dx(tmpDx);
+//            isDisabled = true;
+//        } else {
+//            drawLine(g, point1, point2, lineThickness, color);
+//            set_dx(tmpDx);
+//            isDisabled = false;
+//        }
+        drawLine(g, point1, point2, lineThickness, color);
 
     }
 
@@ -407,22 +410,19 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         if (y == y2) {
             int deltaX = (int) ((point2.x - point1.x) * ratio);
             drag(sim.snapGrid(point1.x + deltaX), y);
-        }else{
+        } else {
             int deltaY = (int) ((point2.y - point1.y) * ratio);
             drag(x, sim.snapGrid(point1.y + deltaY));
-
-
         }
     }
 
     void updateElement() {
         if (length / numCvs < 1e-6) {
-            String input = String.valueOf(numCvs);
             if (!isDisabled)
                 Window.alert("TCE can't have a dx < 1e-6, current is " + (length / numCvs) + "\n Please enter a smaller number of control volumes!");
             isDisabled = true;
         } else {
-            set_dx(length / numCvs);
+//            set_dx(length / numCvs);
             buildThermalControlElement();
             isDisabled = false;
         }
