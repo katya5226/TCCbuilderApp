@@ -163,5 +163,29 @@ class DiodeElm extends ThermalControlElement {
         updateElement();
     }
 
+    public void checkDirection(double boundaryTw, double boundaryTe) {
+        double Twest, Teast;
+        if (westNeighbour != null && westNeighbour != this)
+            Twest = cvs.get(0).westNeighbour.temperature;
+        else Twest = boundaryTw;
+        if (westNeighbour != null && westNeighbour != this)
+            Teast = cvs.get(cvs.size() - 1).eastNeighbour.temperature;
+        else Teast = boundaryTe;
+
+        double dT = Twest - Teast;
+        if (direction == CircuitElm.Direction.RIGHT && dT >= 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kForward);
+        }
+        if (direction == CircuitElm.Direction.LEFT && dT <= 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kForward);
+        }
+        if (direction == CircuitElm.Direction.RIGHT && dT < 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+        }
+        if (direction == CircuitElm.Direction.LEFT && dT > 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+        }
+    }
+
 
 }

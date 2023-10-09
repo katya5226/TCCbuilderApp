@@ -77,6 +77,15 @@ public class Simulation1D extends Simulation {
         this.times.add(this.time);
     }
 
+    void checkDiodes() {
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce instanceof DiodeElm) {
+                DiodeElm di = (DiodeElm) tce;
+                di.checkDirection(heatCircuit.temperatureWest, heatCircuit.temperatureEast);
+            }
+        }
+    }
+
     public void heatTransferStep() {
         x_mod.clear();
         x_prev.clear();
@@ -88,6 +97,7 @@ public class Simulation1D extends Simulation {
         //while (true) {
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
+            checkDiodes();
             heatCircuit.calculateConductivities();
 
             heatCircuit.makeMatrix(dt);
@@ -108,7 +118,7 @@ public class Simulation1D extends Simulation {
             //     break;
             // }
         }
-
+        checkDiodes();
         heatCircuit.calculateConductivities();
         heatCircuit.makeMatrix(this.dt);
         ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
