@@ -176,7 +176,7 @@ public class ControlVolume {
         double T = 0.0;
         ThermalControlElement tce = (ThermalControlElement) parent;
         if (!tce.field) {
-            dTheatcool = material.dTheating.get(tce.fieldIndex);
+            dTheatcool = material.dTheating.get(tce.fieldIndex - 1);
             // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
             dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature + dT;
@@ -190,7 +190,7 @@ public class ControlVolume {
             // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
             dT = dTheatcool.get((int)Math.round(temperature * 10));
             T = temperature - dT;
-            GWT.log("Field = " + String.valueOf(tce.field - 1));
+            GWT.log("Field = " + String.valueOf(tce.field));
             GWT.log("dT = -" + String.valueOf(dT));
             temperature = T;
             temperatureOld = T;
