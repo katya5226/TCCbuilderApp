@@ -260,6 +260,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public enum LengthUnit {
         MICROMETER(1e6, "µm", "micrometer"),
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
+        MICROMETER_20(5e4, "20µm", "20 micrometers"),
         MICROMETER_100(1e4, "10µm", "100 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
         CENTIMETER(1e2, "cm", "centimeter"),
@@ -663,6 +664,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     case "10 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_10;
+                        break;
+                    case "20 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_20;
                         break;
                     case "100 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_100;
