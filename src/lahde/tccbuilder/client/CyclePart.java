@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
@@ -107,7 +108,7 @@ public class CyclePart {
             for (int i = 0; i < newFieldIndexes.size(); i++) {
                 int index = newFieldIndexes.get(i);
                 if (TCEs.get(i).material.isLoaded()) {
-                    flexTable.setText(row, column++, TCEs.get(i).material.fields.get(index) + "T");
+                    flexTable.setText(row, column++, NumberFormat.getFormat("0.0").format(TCEs.get(i).material.fields.get(index)) + "T");
                 }
             }
         } else if (!newTemperatures.isEmpty()) {
@@ -256,14 +257,18 @@ public class CyclePart {
 
     void magneticFieldChange() {
         if (duration == 0.0) {
-            for (ThermalControlElement tce : TCEs) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = newFieldIndexes.get(i);
                 tce.magnetize();
+                //TODO: fieldIndex should be passes as a parameter to magnetize and removed from TCE
             }
-        } else if (duration > 0.0) {  // TO BE CORRECTED
+        } else if (duration > 0.0) {  // TODO: FIX THIS
             int steps = (int) (duration / sim.simulation1D.dt); // one execution will have length dt at most
-            for (ThermalControlElement tce : TCEs) {
-                Vector<Double> dTheatcool = new Vector<Double>();
-                dTheatcool = tce.field ? tce.material.dTcooling.get(tce.fieldIndex - 1) : tce.material.dTheating.get(tce.fieldIndex - 1);
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                int fieldIndex = newFieldIndexes.get(i);
+                Vector<Double> dTheatcool = tce.field ? tce.material.dTcooling.get(fieldIndex) : tce.material.dTheating.get(fieldIndex);
                 for (ControlVolume cv : tce.cvs) {
                     // Check if given cv's material's magnetocaloric flag is TRUE;
                     // if not, abort and inform the user.
@@ -290,7 +295,6 @@ public class CyclePart {
     void propertiesChange() {
         for (int i = 0; i < TCEs.size(); i++) {
             ThermalControlElement tce = TCEs.get(i);
-            GWT.log(newProperties.size() + "");
             Vector<Double> newProps = newProperties.get(i);
             tce.setConstProperty(Simulation.Property.DENSITY, newProps.get(0));
             tce.setConstProperty(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newProps.get(1));
@@ -401,6 +405,7 @@ public class CyclePart {
         }
         return dump;
     }
+
     public void unDump(StringTokenizer st) {
 
         // Parse and set common properties

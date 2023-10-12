@@ -98,7 +98,6 @@ public class CyclicDialog extends Dialog {
 //        cyclePartListBox.addItem("Value Change ");
 
 
-
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
         componentsListBox = new ListBox();
         inputWidgets.add(componentsLabel);
@@ -266,7 +265,7 @@ public class CyclicDialog extends Dialog {
                             break;
                         case MECHANIC_DISPLACEMENT:
                             cyclePart.TCEs.add(chosenComponent);
-                            cyclePart.newIndexes.add(newIndex.getValue().intValue());
+                            cyclePart.newIndexes.add(newIndex.getValue().intValue() + 1);
                             break;
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
