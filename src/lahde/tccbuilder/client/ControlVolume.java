@@ -68,7 +68,7 @@ public class ControlVolume {
             rho = constRho;
         else {
             // rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
-            rho = material.rho.get((int)Math.round(temperature * 10));
+            rho = material.rho.get((int) Math.round(temperature * 10));
         }
         return rho;
     }
@@ -86,13 +86,13 @@ public class ControlVolume {
             if (material.cpThysteresis) {
                 if (mode == 1)
                     // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpHeating.get(fI));
-                    cp = material.cpHeating.get(fI).get((int)Math.round(temperature * 10));
+                    cp = material.cpHeating.get(fI).get((int) Math.round(temperature * 10));
                 else if (mode == -1)
                     // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpCooling.get(fI));
-                    cp = material.cpCooling.get(fI).get((int)Math.round(temperature * 10));
+                    cp = material.cpCooling.get(fI).get((int) Math.round(temperature * 10));
             } else {
                 // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
-                cp = material.cp.get(fI).get((int)Math.round(temperature * 10));
+                cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
             }
         }
         if (parent instanceof RegulatorElm) {
@@ -109,13 +109,13 @@ public class ControlVolume {
             k = constK;
         else {
             // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
-            k = material.k.get(0).get((int)Math.round(temperature * 10));
+            k = material.k.get(0).get((int) Math.round(temperature * 10));
         }
         return k;
     }
 
     public double getProperty(Simulation.Property property) {
-        switch(property) {
+        switch (property) {
             case DENSITY:
                 return rho();
             case SPECIFIC_HEAT_CAPACITY:
@@ -171,30 +171,26 @@ public class ControlVolume {
     public void magnetize() {
         // TODO: inform user
 
-        Vector<Double> dTheatcool = new Vector<Double>();
+        Vector<Double> dTheatcool = new Vector<>();
         double dT = 0.0;
         double T = 0.0;
-        ThermalControlElement tce = (ThermalControlElement) parent;
-        if (!tce.field) {
-            dTheatcool = material.dTheating.get(tce.fieldIndex - 1);
-            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
-            dT = dTheatcool.get((int)Math.round(temperature * 10));
+        int fieldIndex = parent.fieldIndex - 1;
+        if (fieldIndex < 0) return;
+
+        if (!parent.field) {
+            dTheatcool = material.dTheating.get(fieldIndex);
+            dT = dTheatcool.get((int) (temperature * 10) - 1);
             T = temperature + dT;
-            temperature = T;
-            temperatureOld = T;
-            // GWT.log("Field = " + String.valueOf(tce.field));
-            // GWT.log("dT = " + String.valueOf(dT));
-        }
-        if (tce.field) {
-            dTheatcool = material.dTcooling.get(tce.fieldIndex - 1);
-            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
-            dT = dTheatcool.get((int)Math.round(temperature * 10));
+        } else {
+            dTheatcool = material.dTcooling.get(fieldIndex);
+            dT = dTheatcool.get((int) (temperature * 10) - 1);
             T = temperature - dT;
-            GWT.log("Field = " + String.valueOf(tce.field));
-            GWT.log("dT = -" + String.valueOf(dT));
-            temperature = T;
-            temperatureOld = T;
         }
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        GWT.log("Temperature = " + temperature);
+        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+        temperature = T;
+        temperatureOld = T;
     }
 
 }

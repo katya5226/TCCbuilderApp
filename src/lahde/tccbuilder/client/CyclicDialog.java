@@ -266,7 +266,7 @@ public class CyclicDialog extends Dialog {
                             break;
                         case MECHANIC_DISPLACEMENT:
                             cyclePart.TCEs.add(chosenComponent);
-                            cyclePart.newIndexes.add(newIndex.getValue().intValue());
+                            cyclePart.newIndexes.add(newIndex.getValue().intValue() + 1);
                             break;
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
