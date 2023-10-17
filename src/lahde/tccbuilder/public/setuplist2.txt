@@ -1,0 +1,1 @@
+### setuplist.txt first line must be a comments; last line should be empty

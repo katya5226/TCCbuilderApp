@@ -82,8 +82,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuItem aboutItem;
     MenuItem importFromLocalFileItem, importFromTextItem, exportAsUrlItem, exportAsLocalFileItem, reportAsLocalFileItem, exportAsTextItem, reportAsTextItem, printItem, recoverItem, saveReportItem, saveFileItem;
     MenuItem importFromDropboxItem;
+
     MenuItem undoItem, redoItem, cutItem, copyItem, pasteItem, selectAllItem, optionsItem;
     MenuBar optionsMenuBar;
+    MenuItem circuitsMenuItem;
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
     CheckboxMenuItem smallGridCheckItem;
@@ -647,10 +649,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 simDimensionality = Integer.parseInt(String.valueOf(dimensionality.getSelectedItemText().charAt(0)));
                 updateDrawMenus();
                 readSetupFile("blank.txt", "Blank Circuit");
+                cyclicPanel.clear();
                 if (simDimensionality == 2) {
                     viewTempsOverlay = true;
                     showOverlayCheckItem.setState(true);
                 }
+                getSetupList(false);
             }
         });
 
@@ -828,6 +832,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     void setCyclic(boolean c) {
         simulation1D.cyclic = c;
+        updatePageLayout();
+    }
+
+    void updatePageLayout() {
         drawLayoutPanel(false, false);
         centreCircuit();
         setCanvasSize();
@@ -2349,7 +2357,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void getSetupList(final boolean openDefault) {
 
         String url;
-        url = GWT.getModuleBaseURL() + "setuplist.txt" + "?v=" + random.nextInt();
+        url = GWT.getModuleBaseURL() + "setuplist" + simDimensionality + ".txt" + "?v=" + random.nextInt();
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
@@ -2382,7 +2390,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         int stackptr = 0;
         currentMenuBar = new MenuBar(true);
         currentMenuBar.setAutoOpen(true);
-        menuBar.addItem(Locale.LS("Circuits"), currentMenuBar);
+        if (circuitsMenuItem != null) {
+            int index = menuBar.getItemIndex(circuitsMenuItem);
+            menuBar.removeItem(circuitsMenuItem);
+            menuBar.insertItem(circuitsMenuItem = new MenuItem(Locale.LS("Circuits"), currentMenuBar), index);
+        } else
+            menuBar.addItem(circuitsMenuItem = new MenuItem(Locale.LS("Circuits"), currentMenuBar));
+
         stack[stackptr++] = currentMenuBar;
         int p;
         for (p = 0; p < len; ) {
@@ -2653,6 +2667,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             t = timeStepAccum = 0;
             elmList.removeAllElements();
             simulation1D = new Simulation1D();
+            updatePageLayout();
+            simulation2D = new Simulation2D();
             trackedTemperatures = new ArrayList<ThermalControlElement>();
             hintType = -1;
             maxTimeStep = 5e-6;
