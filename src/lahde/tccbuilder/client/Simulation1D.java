@@ -144,8 +144,8 @@ public class Simulation1D extends Simulation {
         }
 
         heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.westBoundary = 41;
-        heatCircuit.eastBoundary = 42;//TODO: change
+        heatCircuit.westBoundary = 11;
+        heatCircuit.eastBoundary = 42; //TODO: change
         heatCircuit.hWest = hWest;
         heatCircuit.hEast = hEast;
         heatCircuit.temperatureWest = tempWest;
