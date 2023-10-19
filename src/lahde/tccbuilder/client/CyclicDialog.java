@@ -21,6 +21,7 @@ public class CyclicDialog extends Dialog {
     ListBox cyclePartListBox;
     ListBox componentsListBox;
     ListBox magneticFieldListBox;
+    ListBox electricFieldListBox;
     DoubleBox duration;
     DoubleBox newRho;
     DoubleBox newCp;
@@ -89,7 +90,7 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Heat Input");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
-//        cyclePartListBox.addItem("Electric Field Change");
+        cyclePartListBox.addItem("Electric Field Change");
 //        cyclePartListBox.addItem("Pressure Change");
 //        cyclePartListBox.addItem("Shear Stress Change");
         cyclePartListBox.addItem("Properties Change");
@@ -173,10 +174,12 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(magneticFieldListBox);
 
 
-        electricFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (V/m): "));
+        electricFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (MV/m): "));
         electricFieldStrength = new DoubleBox();
+        electricFieldListBox = new ListBox();
         inputWidgets.add(electricFieldStrengthLabel);
-        inputWidgets.add(electricFieldStrength);
+        // inputWidgets.add(electricFieldStrength);
+        inputWidgets.add(electricFieldListBox);
 
 
         pressureFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (Bar): "));
@@ -237,6 +240,7 @@ public class CyclicDialog extends Dialog {
                     case VALUE_CHANGE:
                     case HEAT_INPUT:
                     case ELECTRIC_FIELD_CHANGE:
+                        cyclePart.duration = 0.0;
                     case PRESSURE_CHANGE:
                     case SHEAR_STRESS_CHANGE:
                         cyclePart.duration = duration.getValue();
@@ -275,6 +279,10 @@ public class CyclicDialog extends Dialog {
                             cyclePart.fieldIndexes.add(magneticFieldListBox.getSelectedIndex());
                             break;
                         case ELECTRIC_FIELD_CHANGE:
+                            cyclePart.duration = 0.0;
+                            cyclePart.TCEs.add(chosenComponent);
+                            chosenComponent.fieldIndex = electricFieldListBox.getSelectedIndex();
+                            cyclePart.fieldIndexes.add(electricFieldListBox.getSelectedIndex());
                             break;
                         case PRESSURE_CHANGE:
                             break;
@@ -330,6 +338,8 @@ public class CyclicDialog extends Dialog {
                             cyclePart.fieldIndexes.set(index, magneticFieldListBox.getSelectedIndex());
                             break;
                         case ELECTRIC_FIELD_CHANGE:
+                            chosenComponent.fieldIndex = electricFieldListBox.getSelectedIndex();
+                            cyclePart.fieldIndexes.set(index, electricFieldListBox.getSelectedIndex());
                             break;
                         case PRESSURE_CHANGE:
                             break;
@@ -428,8 +438,11 @@ public class CyclicDialog extends Dialog {
                         cyclePart.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
                         break;
                     case "Electric Field Change":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
                         electricFieldStrengthLabel.setVisible(true);
-                        electricFieldStrength.setVisible(true);
+                        // electricFieldStrength.setVisible(true);
+                        electricFieldListBox.setVisible(true);
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
@@ -541,6 +554,13 @@ public class CyclicDialog extends Dialog {
 
                         break;
                     case ELECTRIC_FIELD_CHANGE:
+                        electricFieldListBox.clear();
+                        for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
+                            electricFieldListBox.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
+                        }
+                        electricFieldStrengthLabel.setVisible(true);
+                        electricFieldListBox.setVisible(true);
+                        addComponentButton.setVisible(true);
                         break;
                     case PRESSURE_CHANGE:
                         break;
@@ -610,6 +630,7 @@ public class CyclicDialog extends Dialog {
                     add = tce.material.magnetocaloric;
                     break;
                 case ELECTRIC_FIELD_CHANGE:
+                    add = tce.material.electrocaloric;
                     break;
                 case PRESSURE_CHANGE:
                     break;

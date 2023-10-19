@@ -195,4 +195,29 @@ public class ControlVolume {
         temperatureOld = T;
     }
 
+    
+    public void ePolarize() {
+        // TODO: inform user
+
+        double dT = 0.0;
+        double T = 0.0;
+        int fieldIndex = parent.fieldIndex - 1;
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        if (fieldIndex < 0) return;
+
+        Vector<Double> dTvec = material.dT.get(fieldIndex);
+        dT = dTvec.get((int) ((temperature * 10) + 0.5));
+
+        if (!parent.field)
+            T = temperature + dT;
+        else
+            T = temperature - dT;
+
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        GWT.log("Temperature = " + temperature);
+        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+        temperature = T;
+        temperatureOld = T;
+    }
+
 }

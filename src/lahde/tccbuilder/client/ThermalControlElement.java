@@ -544,5 +544,15 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         field = !field;
     }
 
+    public void ePolarize() {
+        // Check if given TCE's material's electrocaloric flag is TRUE;
+        // if not, abort and inform the user.
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).ePolarize();
+        }
+        // GWT.log("Finished (de)polarization.");
+        field = !field;
+    }
+
 
 }

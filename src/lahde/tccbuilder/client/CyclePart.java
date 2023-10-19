@@ -84,7 +84,7 @@ public class CyclePart {
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         changedValues = new Vector<>();
         this.sim = sim;
-        duration = 0;
+        duration = 0.0;
     }
 
     public Widget toWidget(boolean deletable) {
@@ -282,6 +282,13 @@ public class CyclePart {
     }
 
     void electricFieldChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
+                tce.ePolarize();
+            }
+        }
     }
 
     void pressureChange() {
