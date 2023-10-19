@@ -271,7 +271,8 @@ public class CyclicDialog extends Dialog {
                         case MAGNETIC_FIELD_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
                             chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
-                            cyclePart.newFieldIndexes.add(chosenComponent.fieldIndex);
+                            // cyclePart.fieldIndexes.add(chosenComponent.fieldIndex);
+                            cyclePart.fieldIndexes.add(magneticFieldListBox.getSelectedIndex());
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;
@@ -326,7 +327,7 @@ public class CyclicDialog extends Dialog {
                             break;
                         case MAGNETIC_FIELD_CHANGE:
                             chosenComponent.fieldIndex = magneticFieldListBox.getSelectedIndex();
-                            cyclePart.newFieldIndexes.set(index, chosenComponent.fieldIndex);
+                            cyclePart.fieldIndexes.set(index, magneticFieldListBox.getSelectedIndex());
                             break;
                         case ELECTRIC_FIELD_CHANGE:
                             break;
@@ -423,7 +424,6 @@ public class CyclicDialog extends Dialog {
                         componentsListBox.setVisible(true);
 //                        durationLabel.setVisible(true);
 //                        duration.setVisible(true);
-
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.MAGNETIC_FIELD_CHANGE;
                         break;

@@ -74,18 +74,18 @@ public class ModelMethods {
         return s;
     }
 
-    public static String return_bc_name(int bc) {
+    public static String return_bc_name(Simulation.BorderCondition bc) {
         String bcName = "";
-        if (bc == 11 || bc == 12) {
+        if (bc == Simulation.BorderCondition.ADIABATIC) {
             bcName = "Adiabatic";
         }
-        if (bc == 21 || bc == 22) {
-            bcName = "Constant heat flow";
+        if (bc == Simulation.BorderCondition.CONSTANT_HEAT_FLUX) {
+            bcName = "Constant heat flux";
         }
-        if (bc == 31 || bc == 32) {
+        if (bc == Simulation.BorderCondition.CONSTANT_TEMPERATURE) {
             bcName = "Constant temperature";
         }
-        if (bc == 41 || bc == 42) {
+        if (bc == Simulation.BorderCondition.CONVECTIVE) {
             bcName = "Convection";
         }
 

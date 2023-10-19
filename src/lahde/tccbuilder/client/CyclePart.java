@@ -58,7 +58,7 @@ public class CyclePart {
     PartType partType;
     Vector<Double> newTemperatures;
     Vector<Integer> newIndexes;
-    Vector<Integer> newFieldIndexes;
+    Vector<Integer> fieldIndexes;
     Vector<Double> heatInputs;
     boolean toggleTCE;
 
@@ -80,7 +80,7 @@ public class CyclePart {
         newTemperatures = new Vector<Double>();
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
-        newFieldIndexes = new Vector<Integer>();
+        fieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
         changedValues = new Vector<>();
         this.sim = sim;
@@ -104,9 +104,9 @@ public class CyclePart {
             flexTable.setText(row++, column, "All components/TCEs");
         if (toggleTCE) {
             //ignore
-        } else if (!newFieldIndexes.isEmpty()) {
-            for (int i = 0; i < newFieldIndexes.size(); i++) {
-                int index = newFieldIndexes.get(i);
+        } else if (!fieldIndexes.isEmpty()) {
+            for (int i = 0; i < fieldIndexes.size(); i++) {
+                int index = fieldIndexes.get(i);
                 if (TCEs.get(i).material.isLoaded()) {
                     flexTable.setText(row, column++, NumberFormat.getFormat("0.0").format(TCEs.get(i).material.fields.get(index)) + "T");
                 }
@@ -259,15 +259,14 @@ public class CyclePart {
         if (duration == 0.0) {
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement tce = TCEs.get(i);
-                tce.fieldIndex = newFieldIndexes.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
                 tce.magnetize();
-                //TODO: fieldIndex should be passes as a parameter to magnetize and removed from TCE
             }
         } else if (duration > 0.0) {  // TODO: FIX THIS
             int steps = (int) (duration / sim.simulation1D.dt); // one execution will have length dt at most
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement tce = TCEs.get(i);
-                int fieldIndex = newFieldIndexes.get(i);
+                int fieldIndex = fieldIndexes.get(i);
                 Vector<Double> dTheatcool = tce.field ? tce.material.dTcooling.get(fieldIndex) : tce.material.dTheating.get(fieldIndex);
                 for (ControlVolume cv : tce.cvs) {
                     // Check if given cv's material's magnetocaloric flag is TRUE;
@@ -375,8 +374,8 @@ public class CyclePart {
                     dump += i + " ";
                 break;
             case MAGNETIC_FIELD_CHANGE:
-                dump += newFieldIndexes.size() + " ";
-                for (Integer i : newFieldIndexes)
+                dump += fieldIndexes.size() + " ";
+                for (Integer i : fieldIndexes)
                     dump += i + " ";
                 break;
             case ELECTRIC_FIELD_CHANGE:
@@ -441,10 +440,10 @@ public class CyclePart {
                 }
                 break;
             case MAGNETIC_FIELD_CHANGE:
-                int numNewFieldIndexes = Integer.parseInt(st.nextToken());
-                newFieldIndexes.clear();
-                for (int i = 0; i < numNewFieldIndexes; i++) {
-                    newFieldIndexes.add(Integer.parseInt(st.nextToken()));
+                int numfieldIndexes = Integer.parseInt(st.nextToken());
+                fieldIndexes.clear();
+                for (int i = 0; i < numfieldIndexes; i++) {
+                    fieldIndexes.add(Integer.parseInt(st.nextToken()));
                 }
                 break;
             case ELECTRIC_FIELD_CHANGE:

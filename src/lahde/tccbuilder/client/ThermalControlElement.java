@@ -21,8 +21,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double eastResistance;
     public ThermalControlElement westNeighbour;
     public ThermalControlElement eastNeighbour;
-    public int westBoundary;
-    public int eastBoundary;
+    public Simulation.BorderCondition westBoundary;
+    public Simulation.BorderCondition eastBoundary;
     public double constRho;
     public double constCp;
     public double constK;
@@ -104,8 +104,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         eastResistance = 0.0;
         westNeighbour = null;
         eastNeighbour = null;
-        westBoundary = 51;
-        eastBoundary = 52;
+        westBoundary = Simulation.BorderCondition.CONVECTIVE;
+        eastBoundary = Simulation.BorderCondition.CONVECTIVE;
         constRho = -1;
         constCp = -1;
         constK = -1;
