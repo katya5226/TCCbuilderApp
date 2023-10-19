@@ -317,22 +317,22 @@ public class StartDialog extends Dialog {
         }
         switch (selectedItem) {
             case "Adiabatic":
-                // sim.simulation1D.heatCircuit.eastBoundary = 12;
+                sim.simulation1D.eastBoundary = Simulation.BorderCondition.ADIABATIC;
                 break;
             case "Constant Heat Flux":
-                // sim.simulation1D.heatCircuit.eastBoundary = 22;
+                sim.simulation1D.eastBoundary = Simulation.BorderCondition.CONSTANT_HEAT_FLUX;
                 outletHeatFluxLabel.setVisible(true);
                 outletHeatFlux.setVisible(true);
                 outletHeatFlux.setValue(sim.simulation1D.qEast);
                 break;
             case "Constant Temperature":
-                // sim.simulation1D.heatCircuit.eastBoundary = 32;
+                sim.simulation1D.eastBoundary = Simulation.BorderCondition.CONSTANT_TEMPERATURE;
                 rightTemperatureLabel.setVisible(true);
                 rightTemperature.setVisible(true);
                 rightTemperature.setValue(sim.simulation1D.tempEast);
                 break;
             case "Convective":
-                // sim.simulation1D.heatCircuit.eastBoundary = 42;
+                sim.simulation1D.eastBoundary = Simulation.BorderCondition.CONVECTIVE;
                 rightTemperatureLabel.setVisible(true);
                 rightTemperature.setVisible(true);
                 rightTemperature.setValue(sim.simulation1D.tempEast);
@@ -356,22 +356,22 @@ public class StartDialog extends Dialog {
         }
         switch (selectedItem) {
             case "Adiabatic":
-                // sim.simulation1D.heatCircuit.westBoundary = 11;
+                sim.simulation1D.westBoundary = Simulation.BorderCondition.ADIABATIC;
                 break;
             case "Constant Heat Flux":
-                // sim.simulation1D.heatCircuit.westBoundary = 21;
+                sim.simulation1D.westBoundary = Simulation.BorderCondition.CONSTANT_HEAT_FLUX;
                 inletHeatFluxLabel.setVisible(true);
                 inletHeatFlux.setVisible(true);
                 inletHeatFlux.setValue(sim.simulation1D.qWest);
                 break;
             case "Constant Temperature":
-                // sim.simulation1D.heatCircuit.westBoundary = 31;
+                sim.simulation1D.westBoundary = Simulation.BorderCondition.CONSTANT_TEMPERATURE;
                 leftTemperatureLabel.setVisible(true);
                 leftTemperature.setVisible(true);
                 leftTemperature.setValue(sim.simulation1D.tempWest);
                 break;
             case "Convective":
-                // sim.simulation1D.heatCircuit.westBoundary = 41;
+                sim.simulation1D.westBoundary = Simulation.BorderCondition.CONVECTIVE;
                 leftTemperatureLabel.setVisible(true);
                 leftTemperature.setVisible(true);
                 leftTemperature.setValue(sim.simulation1D.tempWest);

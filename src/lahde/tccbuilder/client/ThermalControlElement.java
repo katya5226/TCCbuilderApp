@@ -21,8 +21,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double eastResistance;
     public ThermalControlElement westNeighbour;
     public ThermalControlElement eastNeighbour;
-    public int westBoundary;
-    public int eastBoundary;
+    public Simulation.BorderCondition westBoundary;
+    public Simulation.BorderCondition eastBoundary;
     public double constRho;
     public double constCp;
     public double constK;
@@ -104,8 +104,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         eastResistance = 0.0;
         westNeighbour = null;
         eastNeighbour = null;
-        westBoundary = 51;
-        eastBoundary = 52;
+        westBoundary = Simulation.BorderCondition.CONVECTIVE;
+        eastBoundary = Simulation.BorderCondition.CONVECTIVE;
         constRho = -1;
         constCp = -1;
         constK = -1;
@@ -541,6 +541,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             cvs.get(i).magnetize();
         }
         // GWT.log("Finished (de)magnetization.");
+        field = !field;
+    }
+
+    public void ePolarize() {
+        // Check if given TCE's material's electrocaloric flag is TRUE;
+        // if not, abort and inform the user.
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).ePolarize();
+        }
+        // GWT.log("Finished (de)polarization.");
         field = !field;
     }
 

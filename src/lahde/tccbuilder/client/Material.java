@@ -165,7 +165,10 @@ public class Material {
                     } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {
                         String url_cp, url_dT;
                         for (double field : fields) {
+                            GWT.log("FIELD: " + String.valueOf(field));
                             String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
+                            if (electrocaloric)
+                                fieldName = String.valueOf(field);
 
                             Vector<Double> vector;
                             if (cpThysteresis) {
@@ -183,7 +186,11 @@ public class Material {
                                 fillVectorFromURL(url_cp, vector, 200);
                                 cpHeating.add(vector);
                             } else {
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T.txt";
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
+                                if (magnetocaloric)
+                                    url_cp += "T.txt";
+                                else if (electrocaloric)
+                                    url_cp = baseURL + materialName + "/appInfo/cp.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
@@ -206,7 +213,11 @@ public class Material {
                                     fillVectorFromURL(url_dT, vector, 0);
                                     dTheating.add(vector);
                                 } else {
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T.txt";
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                    if (magnetocaloric)
+                                        url_dT += "T.txt";
+                                    else if (electrocaloric)
+                                        url_dT += "MVm.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
@@ -322,6 +333,8 @@ public class Material {
                         shortName = obj.get("short_name") != null ? obj.get("short_name").toString() : "";
                         longName = obj.get("long_name") != null ? obj.get("long_name").toString() : "";
                         JSONArray fieldsArray = obj.get("fields") != null ? obj.get("fields").isArray() : new JSONArray();
+                        GWT.log("FIELDS SIZE: " + String.valueOf(fieldsArray.size()));
+                        if (electrocaloric) fields.add((double) 0);  // TODO: CORRECT THIS!!
                         for (int i = 0; i < fieldsArray.size(); i++) {
                             fields.add(Double.parseDouble(fieldsArray.get(i).isNumber().toString()));
                         }

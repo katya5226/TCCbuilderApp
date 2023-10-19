@@ -96,7 +96,8 @@ public class ControlVolume {
             }
         }
         if (parent instanceof RegulatorElm) {
-            // cp = parent.cpCurve.get(math.round(temperature * 10));
+            RegulatorElm r = (RegulatorElm) parent;
+            cp = r.cpCurve.get((int) Math.round(temperature * 10));
         }
         return cp;
     }
@@ -175,17 +176,43 @@ public class ControlVolume {
         double dT = 0.0;
         double T = 0.0;
         int fieldIndex = parent.fieldIndex - 1;
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
         if (fieldIndex < 0) return;
 
         if (!parent.field) {
             dTheatcool = material.dTheating.get(fieldIndex);
-            dT = dTheatcool.get((int) (temperature * 10) - 1);
+            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
             T = temperature + dT;
         } else {
             dTheatcool = material.dTcooling.get(fieldIndex);
-            dT = dTheatcool.get((int) (temperature * 10) - 1);
+            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
             T = temperature - dT;
         }
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        GWT.log("Temperature = " + temperature);
+        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+        temperature = T;
+        temperatureOld = T;
+    }
+
+    
+    public void ePolarize() {
+        // TODO: inform user
+
+        double dT = 0.0;
+        double T = 0.0;
+        int fieldIndex = parent.fieldIndex - 1;
+        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        if (fieldIndex < 0) return;
+
+        Vector<Double> dTvec = material.dT.get(fieldIndex);
+        dT = dTvec.get((int) ((temperature * 10) + 0.5));
+
+        if (!parent.field)
+            T = temperature + dT;
+        else
+            T = temperature - dT;
+
         GWT.log("Field = " + material.fields.get(parent.fieldIndex));
         GWT.log("Temperature = " + temperature);
         GWT.log("dT = " + (parent.field ? "-" : "") + dT);

@@ -5,6 +5,7 @@ import java.lang.Math;
 import java.util.Vector;
 import java.util.Collections;
 
+
 public class TCC {
     public String name;
     public Vector<ThermalControlElement> TCEs;
@@ -13,8 +14,8 @@ public class TCC {
     public double[] diag;
     public double[] upperdiag;
     public double[] rhs;
-    public int westBoundary;
-    public int eastBoundary;
+    public Simulation.BorderCondition westBoundary;
+    public Simulation.BorderCondition eastBoundary;
     //public int[) other_ht_types;
     public double qWest, qEast;
     public double temperatureWest, temperatureEast;
@@ -35,8 +36,8 @@ public class TCC {
         diag = new double[numCvs];
         upperdiag = new double[numCvs];
         rhs = new double[numCvs];
-        westBoundary = 51;
-        eastBoundary = 52;
+        westBoundary = Simulation.BorderCondition.CONVECTIVE;
+        eastBoundary = Simulation.BorderCondition.CONVECTIVE;
         //other_ht_types = [);
         qWest = 0.0;
         qEast = 0.0;
@@ -74,12 +75,12 @@ public class TCC {
         // TCEs.get(0).westBoundary = westBoundary;
         // TCEs.get(TCEs.size() - 1).eastBoundary = eastBoundary;
         for (int i = 0; i < TCEs.size() - 1; i++) {
-            TCEs.get(i).eastBoundary = 52;
+            TCEs.get(i).eastBoundary = Simulation.BorderCondition.CONVECTIVE;
             TCEs.get(i).eastNeighbour = TCEs.get(i + 1);
             TCEs.get(i + 1).westNeighbour = TCEs.get(i);
         }
         for (int i = 1; i < TCEs.size(); i++) {
-            TCEs.get(i).westBoundary = 51;
+            TCEs.get(i).westBoundary = Simulation.BorderCondition.CONVECTIVE;
             int l = TCEs.get(i - 1).cvs.size();
             TCEs.get(i - 1).cvs.get(l - 1).eastNeighbour = TCEs.get(i).cvs.get(0);
             TCEs.get(i).cvs.get(0).westNeighbour = TCEs.get(i - 1).cvs.get(l - 1);
@@ -136,17 +137,17 @@ public class TCC {
         String bcEast = ModelMethods.return_bc_name(eastBoundary);
         txt += "\nBoundary condition on the left: " + bcWest;
         txt += "\nBoundary condition on the right: " + bcEast;
-        if (westBoundary == 31 || westBoundary == 41)
+        if (westBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE || westBoundary == Simulation.BorderCondition.CONVECTIVE)
             txt += "\nTemperature on the left: " + String.valueOf(temperatureWest) + " K";
-        if (westBoundary == 41)
+        if (westBoundary == Simulation.BorderCondition.CONVECTIVE)
             txt += "\nConvection coefficient on the left: " + String.valueOf(hWest) + " W/(m^2K)";
-        if (westBoundary == 21)
+        if (westBoundary == Simulation.BorderCondition.CONSTANT_HEAT_FLUX)
             txt += "\nHeat flow on the left: " + String.valueOf(qWest) + " W/(m^2K)";
-        if (eastBoundary == 32 || eastBoundary == 42)
+        if (eastBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE || eastBoundary == Simulation.BorderCondition.CONVECTIVE)
             txt += "\nTemperature on the right: " + String.valueOf(temperatureEast) + " K";
-        if (eastBoundary == 42)
+        if (eastBoundary == Simulation.BorderCondition.CONVECTIVE)
             txt += "\nConvection coefficient on the right: " + String.valueOf(hEast) + " W/(m^2K)";
-        if (eastBoundary == 22)
+        if (eastBoundary == Simulation.BorderCondition.CONSTANT_HEAT_FLUX)
             txt += "\nHeat flow on the right: " + String.valueOf(qEast) + " W/(m^2K)";
         txt += "\n\nThermal control elements:";
         // for el in TCEs:
