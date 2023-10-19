@@ -53,7 +53,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         isDisabled = false;
         field = false;
-        fieldIndex = 1;
+        fieldIndex = 0;
         buildThermalControlElement();
 
     }
@@ -75,7 +75,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
         field = false;
-        fieldIndex = 1;
+        fieldIndex = Integer.parseInt(st.nextToken());
         buildThermalControlElement();
         int counter = 0;
         Material m = null;
@@ -195,6 +195,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(eastResistance).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
+        sb.append(fieldIndex).append(' ');
 
         int counter = 0;
         int currentIndex = sim.materialNames.indexOf(material.materialName);

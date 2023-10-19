@@ -316,17 +316,23 @@ public class StartDialog extends Dialog {
                 ((DoubleBox) w).setText("");
         }
         switch (selectedItem) {
+            case "Adiabatic":
+                // sim.simulation1D.heatCircuit.eastBoundary = 12;
+                break;
             case "Constant Heat Flux":
+                // sim.simulation1D.heatCircuit.eastBoundary = 22;
                 outletHeatFluxLabel.setVisible(true);
                 outletHeatFlux.setVisible(true);
                 outletHeatFlux.setValue(sim.simulation1D.qEast);
                 break;
             case "Constant Temperature":
+                // sim.simulation1D.heatCircuit.eastBoundary = 32;
                 rightTemperatureLabel.setVisible(true);
                 rightTemperature.setVisible(true);
                 rightTemperature.setValue(sim.simulation1D.tempEast);
                 break;
             case "Convective":
+                // sim.simulation1D.heatCircuit.eastBoundary = 42;
                 rightTemperatureLabel.setVisible(true);
                 rightTemperature.setVisible(true);
                 rightTemperature.setValue(sim.simulation1D.tempEast);
@@ -349,17 +355,23 @@ public class StartDialog extends Dialog {
                 ((DoubleBox) w).setText("");
         }
         switch (selectedItem) {
+            case "Adiabatic":
+                // sim.simulation1D.heatCircuit.westBoundary = 11;
+                break;
             case "Constant Heat Flux":
+                // sim.simulation1D.heatCircuit.westBoundary = 21;
                 inletHeatFluxLabel.setVisible(true);
                 inletHeatFlux.setVisible(true);
                 inletHeatFlux.setValue(sim.simulation1D.qWest);
                 break;
             case "Constant Temperature":
+                // sim.simulation1D.heatCircuit.westBoundary = 31;
                 leftTemperatureLabel.setVisible(true);
                 leftTemperature.setVisible(true);
                 leftTemperature.setValue(sim.simulation1D.tempWest);
                 break;
             case "Convective":
+                // sim.simulation1D.heatCircuit.westBoundary = 41;
                 leftTemperatureLabel.setVisible(true);
                 leftTemperature.setVisible(true);
                 leftTemperature.setValue(sim.simulation1D.tempWest);
@@ -368,7 +380,6 @@ public class StartDialog extends Dialog {
                 leftConvectionCoefficient.setValue(sim.simulation1D.hWest);
                 break;
             default:
-
                 break;
         }
         center();
