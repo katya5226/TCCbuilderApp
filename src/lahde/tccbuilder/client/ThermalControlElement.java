@@ -19,6 +19,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public Material material;
     public double westResistance;
     public double eastResistance;
+    public double volumeHeatGeneration;
     public ThermalControlElement westNeighbour;
     public ThermalControlElement eastNeighbour;
     public Simulation.BorderCondition westBoundary;
@@ -102,6 +103,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.
         eastResistance = 0.0;
+        volumeHeatGeneration = 0.0;
         westNeighbour = null;
         eastNeighbour = null;
         westBoundary = Simulation.BorderCondition.CONVECTIVE;
@@ -139,6 +141,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             if (constK != -1) {
                 cvs.get(i).constK = constK;
             }
+            cvs.get(i).constQgen = volumeHeatGeneration;
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
@@ -338,10 +341,12 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 7:
                 return new EditInfo("East contact resistance (mK/W)", eastResistance);
             case 8:
-                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
+                return new EditInfo("Heat generation (W/m³)", volumeHeatGeneration);
             case 9:
-                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
+                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
             case 10:
+                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
+            case 11:
                 return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
             default:
                 return null;
@@ -381,15 +386,17 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 eastResistance = ei.value;
                 break;
             case 8:
-                constRho = ei.value;
+                volumeHeatGeneration = ei.value;
                 break;
             case 9:
-                constCp = ei.value;
+                constRho = ei.value;
                 break;
             case 10:
+                constCp = ei.value;
+                break;
+            case 11:
                 constK = ei.value;
                 break;
-
         }
 
 

@@ -24,6 +24,7 @@ public class ControlVolume {
     public double qWest;
     public double qEast;
     public double qGenerated;
+    public double constQgen;  // W/m3 !!!
     public double constRho;
     public double constCp;
     public double constK;
@@ -52,6 +53,7 @@ public class ControlVolume {
         constRho = -1;
         constCp = -1;
         constK = -1;
+        constQgen = 0.0;
         eps = 1.0;
         mode = 0;
 
@@ -113,6 +115,16 @@ public class ControlVolume {
             k = material.k.get(0).get((int) Math.round(temperature * 10));
         }
         return k;
+    }
+
+    double qGen() {
+        double q = 0.0;
+        if (constQgen != -1)
+            q = constQgen * dx;
+        else {
+            q = parent.sim.simulation1D.time * 0.0001 + temperature * 100000;
+        }
+        return q;
     }
 
     public double getProperty(Simulation.Property property) {
