@@ -57,6 +57,8 @@ public class Simulation1D extends Simulation {
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
 
+        customTempRange = false;
+
     }
 
     void resetHeatSim() {

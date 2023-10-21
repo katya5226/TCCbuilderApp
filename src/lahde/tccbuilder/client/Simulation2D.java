@@ -35,6 +35,8 @@ public class Simulation2D extends Simulation {
         totalTime = 0.0;
         time = 0.0;
 
+        customTempRange = false;
+
     }
 
     @Override

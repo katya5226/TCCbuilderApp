@@ -86,6 +86,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar optionsMenuBar;
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
+    CheckboxMenuItem customTempRangeCheckItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
     CheckboxMenuItem noEditCheckItem;
@@ -527,6 +528,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         showOverlayCheckItem.setState(false);
+
+        m.addItem(customTempRangeCheckItem = new CheckboxMenuItem(Locale.LS("Set custom temperature range"), new Command() {
+            public void execute() { 
+                if (simulation1D != null) {
+                    simulation1D.customTempRange = !simulation1D.customTempRange;
+                }                  
+                if (simulation2D != null)
+                    simulation2D.customTempRange = !simulation2D.customTempRange;
+            }
+        }));
+        customTempRangeCheckItem.setState(false);
 
 
         smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
@@ -2239,7 +2251,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         repaint();
     }
-
 
     void doEdit(Editable eable) {
         clearSelection();
