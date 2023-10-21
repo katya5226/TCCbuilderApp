@@ -86,6 +86,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar optionsMenuBar;
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
+    CheckboxMenuItem customTempRangeCheckItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
     CheckboxMenuItem noEditCheckItem;
@@ -106,6 +107,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar mainMenuBar, drawMenuBar;
 
     StartDialog startDialog;
+    TemperaturesDialog tempsDialog;
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -527,6 +529,27 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         showOverlayCheckItem.setState(false);
+
+        m.addItem(customTempRangeCheckItem = new CheckboxMenuItem(Locale.LS("Set custom temperature range"), new Command() {
+            public void execute() {
+                tempsDialog = new TemperaturesDialog(theSim);
+                if (theSim.simDimensionality == 1) {
+                    simulation1D.customTempRange = !simulation1D.customTempRange;
+                    if (simulation1D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation1D.setTemperatureRange();
+                    }
+                }                  
+                else if (theSim.simDimensionality == 2) {
+                    simulation2D.customTempRange = !simulation2D.customTempRange;
+                    if (simulation2D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation2D.setTemperatureRange();
+                    }
+                }
+            }
+        }));
+        customTempRangeCheckItem.setState(false);
 
 
         smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
@@ -2239,7 +2262,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         repaint();
     }
-
 
     void doEdit(Editable eable) {
         clearSelection();

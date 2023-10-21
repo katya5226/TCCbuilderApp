@@ -35,6 +35,8 @@ public class Simulation2D extends Simulation {
         totalTime = 0.0;
         time = 0.0;
 
+        customTempRange = false;
+
     }
 
     @Override
@@ -58,6 +60,7 @@ public class Simulation2D extends Simulation {
 
     @Override
     void setTemperatureRange() {
+        if (customTempRange == true) return;
         minTemp = Math.min(startTemp, Math.min(twoDimBC.T[0], twoDimBC.T[1]));
         maxTemp = Math.max(startTemp, Math.max(twoDimBC.T[0], twoDimBC.T[1]));
     }
