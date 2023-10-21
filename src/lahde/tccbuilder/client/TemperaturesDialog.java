@@ -11,7 +11,7 @@ import lahde.tccbuilder.client.util.Locale;
 
 import java.util.ArrayList;
 
-public class TempeaturesDialog extends Dialog {
+public class TemperaturesDialog extends Dialog {
     CirSim sim;
     FlowPanel flowPanel;
     HorizontalPanel buttonPanel;
@@ -19,11 +19,14 @@ public class TempeaturesDialog extends Dialog {
     Button cancelButton;
     Button applyButton;
 
-    Label minTemperature;
-    Label maxTemperature;
+    DoubleBox minTemperature;
+    DoubleBox maxTemperature;
+    
+    // ArrayList<Widget> leftToggleables = new ArrayList<Widget>();
+    // ArrayList<Widget> rightToggleables = new ArrayList<Widget>();
 
 
-    public TempeaturesDialog(CirSim sim) {
+    public TemperaturesDialog(CirSim sim) {
         super();
 
         setText(Locale.LS("Set graph temperature range"));
@@ -35,9 +38,15 @@ public class TempeaturesDialog extends Dialog {
         setWidget(flowPanel);
 
         minTemperature = new DoubleBox();
-        minTemperature.setValue(sim.simulation1D.minTemp);
         maxTemperature = new DoubleBox();
-        maxTemperature.setValue(sim.simulation1D.maxTemp);
+        if (sim.simDimensionality == 1) {
+            minTemperature.setValue(sim.simulation1D.minTemp);
+            maxTemperature.setValue(sim.simulation1D.maxTemp);
+        }
+        else if (sim.simDimensionality == 2) {
+            minTemperature.setValue(sim.simulation2D.minTemp);
+            maxTemperature.setValue(sim.simulation2D.maxTemp);
+        }
 
         flowPanel.add(new Label(Locale.LS("Enter minimum temperature (K): ")));
         flowPanel.add(minTemperature);
@@ -47,15 +56,12 @@ public class TempeaturesDialog extends Dialog {
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
 
-        for (Widget w : rightToggleables) {
-            w.setVisible(false);
-        }
-        for (Widget w : leftToggleables) {
-            w.setVisible(false);
-        }
-
-        updateRightBoundary();
-        updateLeftBoundary();
+        // for (Widget w : rightToggleables) {
+        //     w.setVisible(false);
+        // }
+        // for (Widget w : leftToggleables) {
+        //     w.setVisible(false);
+        // }
 
         applyButton.addClickHandler(new ClickHandler() {
             @Override
@@ -70,8 +76,16 @@ public class TempeaturesDialog extends Dialog {
                     Window.alert("Temperature not between 0 K and 2000 K");
                     return;
                 }
-                sim.simulation1D.minTemp = minTempValue;
-                sim.simulation1D.maxTemp = maxTempValue;
+                if (sim.simDimensionality == 1) {
+                    sim.simulation1D.minTemp = minTempValue;
+                    sim.simulation1D.maxTemp = maxTempValue;
+                }
+
+                if (sim.simDimensionality == 2) {
+                    sim.simulation2D.minTemp = minTempValue;
+                    sim.simulation2D.maxTemp = maxTempValue;
+                }
+                
                 apply();
             }
         });

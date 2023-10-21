@@ -107,6 +107,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar mainMenuBar, drawMenuBar;
 
     StartDialog startDialog;
+    TemperaturesDialog tempsDialog;
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -530,12 +531,22 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         showOverlayCheckItem.setState(false);
 
         m.addItem(customTempRangeCheckItem = new CheckboxMenuItem(Locale.LS("Set custom temperature range"), new Command() {
-            public void execute() { 
-                if (simulation1D != null) {
+            public void execute() {
+                tempsDialog = new TemperaturesDialog(theSim);
+                if (theSim.simDimensionality == 1) {
                     simulation1D.customTempRange = !simulation1D.customTempRange;
+                    if (simulation1D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation1D.setTemperatureRange();
+                    }
                 }                  
-                if (simulation2D != null)
+                else if (theSim.simDimensionality == 2) {
                     simulation2D.customTempRange = !simulation2D.customTempRange;
+                    if (simulation2D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation2D.setTemperatureRange();
+                    }
+                }
             }
         }));
         customTempRangeCheckItem.setState(false);

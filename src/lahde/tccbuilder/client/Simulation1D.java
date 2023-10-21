@@ -180,6 +180,7 @@ public class Simulation1D extends Simulation {
     }
 
     void setTemperatureRange() {
+        if (customTempRange == true) return;
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
             if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
