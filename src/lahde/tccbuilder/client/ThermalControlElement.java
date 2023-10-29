@@ -27,6 +27,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double constRho;
     public double constCp;
     public double constK;
+    public double startTemperature;
     public double operatingMax;
     public double operatingMin;
     public boolean hasOperatingRange;
@@ -111,7 +112,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constRho = -1;
         constCp = -1;
         constK = -1;
-
+        startTemperature = -1;
     }
 
     public void calculateLength() {
@@ -148,10 +149,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     }
 
-    public void set_starting_temps(double start_temp) {
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).temperature = start_temp;
-            cvs.get(i).temperatureOld = start_temp;
+    public void setTemperatures(double startTemp) {
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).temperature = startTemp;
+            cvs.get(i).temperatureOld = startTemp;
         }
     }
 
@@ -348,6 +349,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
             case 11:
                 return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
+            case 12:
+                return new EditInfo("Initial Temperature (K)", startTemperature);
             default:
                 return null;
         }
@@ -397,9 +400,13 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 11:
                 constK = ei.value;
                 break;
+            case 12:
+                startTemperature = (double) ei.value;
+                if (startTemperature >= 0) {
+                    setTemperatures(startTemperature);
+                }
+                break;
         }
-
-
         updateElement();
 
     }
@@ -514,13 +521,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public void set_dx(double dx) {
         for (ControlVolume cv : cvs) {
             cv.dx = dx;
-        }
-    }
-
-    public void set_temperatures(double temp) {
-        for (ControlVolume cv : cvs) {
-            cv.temperature = temp;
-            cv.temperatureOld = temp;
         }
     }
 

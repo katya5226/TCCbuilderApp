@@ -1,5 +1,7 @@
 package lahde.tccbuilder.client;
 
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -96,6 +98,13 @@ public class StartDialog extends Dialog {
 
         startTemperature = new DoubleBox();
         startTemperature.setValue(sim.simulation1D.startTemp);
+        startTemperature.addMouseOverHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent e) {
+                startTemperature.setTitle("Starting temperature will be set for a component/TCE only if it hasn't been set earlier.");
+            }
+        });
+
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));

@@ -22,6 +22,9 @@ package lahde.tccbuilder.client;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+
 class HeatSourceSinkElm extends ThermalControlElement {
     double temperature;
 
@@ -88,48 +91,30 @@ class HeatSourceSinkElm extends ThermalControlElement {
     }
 
 
-    @Override
-    public EditInfo getEditInfo(int n) {
-        switch (n) {
-            case 0:
-                return new EditInfo("Name", String.valueOf(name));
-            case 1:
-                return new EditInfo("Index", index);
-            case 2:
-                EditInfo ei2 = new EditInfo("Color", 0);
-                ei2.choice = new Choice();
-                for (int ch = 0; ch < sim.colorChoices.size(); ch++) {
-                    ei2.choice.add(sim.colorChoices.get(ch));
-                }
+    // @Override
+    // public EditInfo getEditInfo(int n) {
+    //     EditInfo out = super.getEditInfo(n);
+    //     switch (n) {
+    //         case 12:
+    //             return new EditInfo("Initial Temperature (K)", temperature);
+    //         default:
+    //             return null;
+    //     }
+    // }
 
-                ei2.choice.select(Color.colorToIndex(color));
-                return ei2;
-            case 3:
-                return new EditInfo("Temperature (K)", temperature);
 
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void setEditValue(int n, EditInfo ei) {
-        switch (n) {
-            case 0:
-                name = ei.textf.getText();
-                break;
-            case 1:
-                index = (int) ei.value;
-                break;
-            case 2:
-                color = Color.translateColorIndex(ei.choice.getSelectedIndex());
-                break;
-            case 3:
-                temperature = (int) ei.value;
-                break;
-
-        }
-
-        updateElement();
-    }
+    // @Override
+    // public void setEditValue(int n, EditInfo ei) {
+    //     super.setEditValue(n, ei);
+    //     switch (n) {
+    //         case 12:
+    //             temperature = (double) ei.value;
+    //             for (ControlVolume cv : cvs) {
+    //                 cv.temperature = temperature;
+    //                 cv.temperatureOld = temperature;
+    //             }
+    //             break;
+    //     }
+    //     updateElement();
+    // }
 }
