@@ -26,7 +26,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 
 class HeatSourceSinkElm extends ThermalControlElement {
-    double temperature;
 
     public HeatSourceSinkElm(int xx, int yy) {
         super(xx, yy);
@@ -90,31 +89,4 @@ class HeatSourceSinkElm extends ThermalControlElement {
 
     }
 
-
-    // @Override
-    // public EditInfo getEditInfo(int n) {
-    //     EditInfo out = super.getEditInfo(n);
-    //     switch (n) {
-    //         case 12:
-    //             return new EditInfo("Initial Temperature (K)", temperature);
-    //         default:
-    //             return null;
-    //     }
-    // }
-
-
-    // @Override
-    // public void setEditValue(int n, EditInfo ei) {
-    //     super.setEditValue(n, ei);
-    //     switch (n) {
-    //         case 12:
-    //             temperature = (double) ei.value;
-    //             for (ControlVolume cv : cvs) {
-    //                 cv.temperature = temperature;
-    //                 cv.temperatureOld = temperature;
-    //             }
-    //             break;
-    //     }
-    //     updateElement();
-    // }
 }

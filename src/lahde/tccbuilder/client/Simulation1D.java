@@ -166,6 +166,10 @@ public class Simulation1D extends Simulation {
             if (tce.startTemperature == -1) {
                 tce.setTemperatures(startTemp);
             }
+            else {
+                tce.setTemperatures(tce.startTemperature);
+            }
+            GWT.log(String.valueOf(tce.cvs.get(0).temperature));
         }
 
         setTemperatureRange();
