@@ -186,8 +186,8 @@ public class StartDialog extends Dialog {
             @Override
             public void onClick(ClickEvent event) {
                 double dtValue = timeStep.getValue();
-                if (!(dtValue >= 0.001) || !(dtValue <= 1000)) {
-                    Window.alert("Time Step not between 1μs and 1s");
+                if (!(dtValue >= 0.000001) || !(dtValue <= 1000000)) {
+                    Window.alert("Time Step not between 1 ns and 1000 s");
                     return;
                 }
                 double startTempValue = startTemperature.getValue();

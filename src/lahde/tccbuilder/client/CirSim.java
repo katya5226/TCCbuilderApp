@@ -1871,11 +1871,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mouseElm.getInfo(info);
         } else {
             if (simDimensionality == 1) {
-                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
                 info[2] = Locale.LS("components = " + simulation1D.printTCEs());
             } else {
-                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation2D.time) + " s";
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation2D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
                 info[2] = Locale.LS("components = " + simulation2D.printTCEs());
 
