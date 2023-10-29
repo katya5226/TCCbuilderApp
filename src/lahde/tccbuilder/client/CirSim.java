@@ -87,7 +87,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
     CheckboxMenuItem customTempRangeCheckItem;
-    MenuItem outputIntervalItem;
+    CheckboxMenuItem outputIntervalItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
     CheckboxMenuItem noEditCheckItem;
@@ -265,9 +265,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         MICROMETER(1e6, "µm", "micrometer"),
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
         MICROMETER_20(5e4, "20µm", "20 micrometers"),
+        MICROMETER_50(2e4, "50µm", "50 micrometers"),
         MICROMETER_100(1e4, "10µm", "100 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
+        MILLIMETER_5(2e2, "5mm", "5 millimeters"),
         CENTIMETER(1e2, "cm", "centimeter"),
+        CENTIMETER_5(2e1, "5cm", "5 centimeters"),
         DECIMETER(1e1, "dm", "decimeter"),
         METER(1, "m", "meter");
 
@@ -553,12 +556,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }));
         customTempRangeCheckItem.setState(false);
 
-        m.addItem(outputIntervalCheckItem = new MenuItem(Locale.LS("Set custom output interval"), new Command() {
-            public void execute() {
-                intervalDialog = new IntervalDialog(theSim);
-            }
-        }));
-
         smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
             public void execute() {
                 setGrid();
@@ -581,6 +578,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         mouseWheelEditCheckItem.setState(mouseWheelEdit);
+
+        m.addItem(outputIntervalItem = new CheckboxMenuItem(Locale.LS("Set custom output interval"), new Command() {
+            public void execute() {
+                intervalDialog = new IntervalDialog(theSim);
+            }
+        }));
+        mouseWheelEditCheckItem.setState(false);
 
         new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts"));
         optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other"));
@@ -698,14 +702,23 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "20 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_20;
                         break;
+                    case "50 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_50;
+                        break;
                     case "100 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_100;
                         break;
                     case "millimeter":
                         selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
+                    case "5 millimeters":
+                        selectedLengthUnit = LengthUnit.MILLIMETER_5;
+                        break;
                     case "centimeter":
                         selectedLengthUnit = LengthUnit.CENTIMETER;
+                        break;
+                    case "5 centimeters":
+                        selectedLengthUnit = LengthUnit.CENTIMETER_5;
                         break;
                     case "decimeter":
                         selectedLengthUnit = LengthUnit.DECIMETER;

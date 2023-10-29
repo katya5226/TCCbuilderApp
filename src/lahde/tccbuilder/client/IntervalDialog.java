@@ -19,7 +19,7 @@ public class IntervalDialog extends Dialog {
     Button cancelButton;
     Button applyButton;
 
-    DoubleBox interval;
+    IntegerBox interval;
 
     public IntervalDialog(CirSim sim) {
         super();
@@ -32,12 +32,12 @@ public class IntervalDialog extends Dialog {
         flowPanel.addStyleName("dialogContainer");
         setWidget(flowPanel);
 
-        interval = new DoubleBox();
+        interval = new IntegerBox();
         if (sim.simDimensionality == 1) {
-            outputInterval.setValue(sim.simulation1D.outputInterval);
+            interval.setValue(sim.simulation1D.outputInterval);
         }
         else if (sim.simDimensionality == 2) {
-            outputInterval.setValue(sim.simulation2D.outputInterval);
+            interval.setValue(sim.simulation2D.outputInterval);
         }
 
         flowPanel.add(new Label(Locale.LS("Output temperatures every ? time steps:")));
@@ -56,7 +56,7 @@ public class IntervalDialog extends Dialog {
         applyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                double intervalValue = (int)interval.getValue();
+                int intervalValue = (int)interval.getValue();
 
                 if (sim.simDimensionality == 1) {
                     sim.simulation1D.outputInterval = intervalValue;
