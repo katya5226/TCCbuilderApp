@@ -87,6 +87,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
     CheckboxMenuItem customTempRangeCheckItem;
+    MenuItem outputIntervalItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
     CheckboxMenuItem noEditCheckItem;
@@ -108,6 +109,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     StartDialog startDialog;
     TemperaturesDialog tempsDialog;
+    IntervalDialog intervalDialog;
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -551,6 +553,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }));
         customTempRangeCheckItem.setState(false);
 
+        m.addItem(outputIntervalCheckItem = new MenuItem(Locale.LS("Set custom output interval"), new Command() {
+            public void execute() {
+                intervalDialog = new IntervalDialog(theSim);
+            }
+        }));
 
         smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
             public void execute() {

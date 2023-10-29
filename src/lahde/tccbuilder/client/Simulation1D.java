@@ -53,6 +53,8 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         cyclePartIndex = 0;
 
+        outputInterval = 1;
+
         ud = 0;
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
@@ -246,7 +248,7 @@ public class Simulation1D extends Simulation {
             dump += "CV# " + i + "\t";
         }
         dump += "\n";
-        for (int i = 0; i < temperatures.size(); i++) {
+        for (int i = 0; i < temperatures.size(); i+= outputInterval) {
             Double[] temp = temperatures.get(i);
             Double time = times.get(i);
             dump += NumberFormat.getFormat("0.000").format(time) + "\t";

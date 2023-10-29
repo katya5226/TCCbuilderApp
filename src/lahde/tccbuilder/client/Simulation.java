@@ -21,6 +21,7 @@ public abstract class Simulation {
     double minTemp;
     double maxTemp;
     boolean customTempRange;
+    int outputInterval;
 
     public static enum BorderCondition {
         ADIABATIC,
