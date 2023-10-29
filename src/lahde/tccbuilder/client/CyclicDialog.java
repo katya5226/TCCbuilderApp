@@ -95,7 +95,7 @@ public class CyclicDialog extends Dialog {
 //        cyclePartListBox.addItem("Shear Stress Change");
         cyclePartListBox.addItem("Properties Change");
         cyclePartListBox.addItem("Temperature Change");
-        cyclePartListBox.addItem("Toggle Thermal Control Element");
+        cyclePartListBox.addItem("Toggle TCE");
 //        cyclePartListBox.addItem("Value Change ");
 
 
@@ -105,12 +105,12 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(componentsLabel);
         inputWidgets.add(componentsListBox);
 
-        heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Input (W/m²): "));
+        heatInputLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Input (W/m³): "));
         heatInput = new DoubleBox();
         inputWidgets.add(heatInputLabel);
         inputWidgets.add(heatInput);
 
-        rhoCheckBox = new Checkbox("New density (kg/m^3): ");
+        rhoCheckBox = new Checkbox("New density (kg/m³): ");
         inputWidgets.add(rhoCheckBox);
         rhoCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
@@ -119,7 +119,7 @@ public class CyclicDialog extends Dialog {
             }
         });
 
-        rhoLabel = new Label(Locale.LS("Input new density (kg/m^3): "));
+        rhoLabel = new Label(Locale.LS("Input new density (kg/m³): "));
         newRho = new DoubleBox();
         inputWidgets.add(rhoLabel);
         inputWidgets.add(newRho);
@@ -478,7 +478,7 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TEMPERATURE_CHANGE;
                         break;
-                    case "Toggle Thermal Control Element":
+                    case "Toggle TCE":
                         componentsLabel.setVisible(true);
                         componentsListBox.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
