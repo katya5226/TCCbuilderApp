@@ -53,6 +53,8 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         cyclePartIndex = 0;
 
+        outputInterval = 1;
+
         ud = 0;
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
@@ -161,7 +163,16 @@ public class Simulation1D extends Simulation {
         double[] temps = new double[n];
 
         Arrays.fill(temps, startTemp);
-        heatCircuit.setTemperatures(temps);
+        //heatCircuit.setTemperatures(temps);
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.startTemperature == -1) {
+                tce.setTemperatures(startTemp);
+            }
+            else {
+                tce.setTemperatures(tce.startTemperature);
+            }
+            GWT.log(String.valueOf(tce.cvs.get(0).temperature));
+        }
 
         setTemperatureRange();
 
@@ -193,12 +204,21 @@ public class Simulation1D extends Simulation {
                 }
             }
         }
+        double TCEmax = 0;
+        double TCEmin = 2000;
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.startTemperature >= 0) {
+                if (tce.startTemperature > TCEmax) TCEmax = tce.startTemperature;
+                if (tce.startTemperature < TCEmin) TCEmin = tce.startTemperature;
+            }
+        }
+
         if (maxValue == 0) {
-            minTemp = Math.min(startTemp, Math.min(tempWest, tempEast));
-            maxTemp = Math.max(startTemp, Math.max(tempWest, tempEast));
+            minTemp = Math.min(Math.min(startTemp, TCEmin), Math.min(tempWest, tempEast));
+            maxTemp = Math.max(Math.max(startTemp, TCEmax), Math.max(tempWest, tempEast));
         } else {
-            minTemp = startTemp - maxValue;
-            maxTemp = startTemp + maxValue;
+            minTemp = Math.min(startTemp, TCEmin) - maxValue;
+            maxTemp = Math.max(startTemp, TCEmax) + maxValue;
         }
         maxValue = Double.MIN_VALUE;
         minValue = Double.MAX_VALUE;
@@ -228,7 +248,7 @@ public class Simulation1D extends Simulation {
             dump += "CV# " + i + "\t";
         }
         dump += "\n";
-        for (int i = 0; i < temperatures.size(); i++) {
+        for (int i = 0; i < temperatures.size(); i+= outputInterval) {
             Double[] temp = temperatures.get(i);
             Double time = times.get(i);
             dump += NumberFormat.getFormat("0.000").format(time) + "\t";

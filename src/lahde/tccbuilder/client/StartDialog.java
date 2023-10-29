@@ -1,5 +1,7 @@
 package lahde.tccbuilder.client;
 
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -96,6 +98,13 @@ public class StartDialog extends Dialog {
 
         startTemperature = new DoubleBox();
         startTemperature.setValue(sim.simulation1D.startTemp);
+        startTemperature.addMouseOverHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent e) {
+                startTemperature.setTitle("Starting temperature will be set for a component/TCE only if it hasn't been set earlier.");
+            }
+        });
+
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));
@@ -177,8 +186,8 @@ public class StartDialog extends Dialog {
             @Override
             public void onClick(ClickEvent event) {
                 double dtValue = timeStep.getValue();
-                if (!(dtValue >= 0.001) || !(dtValue <= 1000)) {
-                    Window.alert("Time Step not between 1μs and 1s");
+                if (!(dtValue >= 0.000001) || !(dtValue <= 1000000)) {
+                    Window.alert("Time Step not between 1 ns and 1000 s");
                     return;
                 }
                 double startTempValue = startTemperature.getValue();

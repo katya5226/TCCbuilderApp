@@ -191,7 +191,7 @@ public class CyclePart {
                 heatInput();
                 if (duration > sim.simulation1D.dt)
                     sim.simulation1D.heatTransferStep();
-                removeHeat();
+                // removeHeat();
                 break;
             case MECHANIC_DISPLACEMENT:
                 mechanicDisplacement();
@@ -233,7 +233,8 @@ public class CyclePart {
     void heatInput() {
         for (int i = 0; i < TCEs.size(); i++) {
             for (ControlVolume cv : TCEs.get(i).cvs) {
-                cv.qGenerated = heatInputs.get(i);
+                // cv.qGenerated = heatInputs.get(i);
+                cv.constQgen = heatInputs.get(i);
             }
         }
     }
@@ -241,7 +242,8 @@ public class CyclePart {
     void removeHeat() {
         for (int i = 0; i < TCEs.size(); i++) {
             for (ControlVolume cv : TCEs.get(i).cvs) {
-                cv.qGenerated = 0.0;
+                // cv.qGenerated = 0.0;
+                cv.constQgen = 0.0;
             }
         }
     }
