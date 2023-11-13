@@ -143,7 +143,7 @@ public class Simulation1D extends Simulation {
         for (ThermalControlElement tce : simTCEs) {
             if (tce instanceof RegulatorElm) {
                 RegulatorElm reg = (RegulatorElm) tce;
-                reg.setCpCurve();
+                reg.setThermalProperties();
             }
         }
 
@@ -156,6 +156,7 @@ public class Simulation1D extends Simulation {
         heatCircuit.temperatureEast = tempEast;
         heatCircuit.qWest = qWest;
         heatCircuit.qEast = qEast;
+        heatCircuit.ambientTemperature = ambientTemperature;
 
         heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();

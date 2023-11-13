@@ -100,9 +100,9 @@ class DiodeElm extends ThermalControlElement {
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/mK) - forward", kForward);
             case 8:
@@ -113,6 +113,8 @@ class DiodeElm extends ThermalControlElement {
                 return new EditInfo("Density (kg/m³)", rho);
             case 11:
                 return new EditInfo("Response time (s)", responseTime);
+            case 12:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -156,6 +158,9 @@ class DiodeElm extends ThermalControlElement {
                 break;
             case 11:
                 responseTime = ei.value;
+                break;
+            case 12:
+                hTransv = ei.value;      
                 break;
         }
 

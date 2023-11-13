@@ -66,7 +66,8 @@ public class EquationSystem {
                     circuit.rhs[n - 1] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
             }
-
+            circuit.diag[i] += cv.hTransv * Math.pow(cv.dx, 2) * dt;
+            circuit.rhs[i] += cv.hTransv * Math.pow(cv.dx, 2) * dt * circuit.ambientTemperature;
         }
     }
 }

@@ -37,6 +37,8 @@ class RegulatorElm extends ThermalControlElement {
     double temperature1, temperature2;
     double latentHeat;
     Vector<Double> cpCurve;
+    Vector<Double> kValues;
+    Vector<Double> rhoValues;
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
@@ -48,17 +50,21 @@ class RegulatorElm extends ThermalControlElement {
         cpCurve = new Vector<Double>();
     }
 
-    public void setCpCurve() {
+    public void setThermalProperties() {
         // Tm = transition temperature; lh = latent heat; w = transition width in K; cp1,cp2 specific heat capacities in each phase
         cpCurve.clear();
+        kValues.clear();
+        rhoValues.clear();
         double w = Math.abs(temperature2 - temperature1);
         double Tm = 0.5 * (temperature2 + temperature1);
         double a = 5.0 / w;
-        GWT.log("Tm: " + String.valueOf(Tm));
-        GWT.log("a: " + String.valueOf(a));
+        // GWT.log("Tm: " + String.valueOf(Tm));
+        // GWT.log("a: " + String.valueOf(a));
         for (int i = 0; i < 20000; i++) {
             try {
                 cpCurve.add(cp1 + (cp2 - cp1) / (1 + Math.exp(a * (Tm - 0.1 * i))) + a * latentHeat / (2 * (1 + Math.cosh(a * (0.1 * i - Tm)))));
+                kValues.add(k1 + (k2 - k1) / (1 + Math.exp(a * (Tm - 0.1 * i))));
+                rhoValues.add(rho1 + (rho2 - rho1) / (1 + Math.exp(a * (Tm - 0.1 * i))));
             } catch (Exception e) {
                 Window.alert("Error setting cp curve.");
             }
@@ -163,29 +169,31 @@ class RegulatorElm extends ThermalControlElement {
             case 4:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity (W/mK) 1", k1);
+                return new EditInfo("Thermal Conductivity 1 (W/mK)", k1);
             case 8:
-                return new EditInfo("Thermal Conductivity (W/mK) 2", k2);
+                return new EditInfo("Thermal Conductivity 2 (W/mK)", k2);
             case 9:
-                return new EditInfo("Specific Heat Capacity (J/kgK) 1", cp1);
+                return new EditInfo("Specific Heat Capacity 1 (J/kgK)", cp1);
             case 10:
-                return new EditInfo("Specific Heat Capacity (J/kgK) 2", cp2);
+                return new EditInfo("Specific Heat Capacity 2 (J/kgK)", cp2);
             case 11:
-                return new EditInfo("Density (kg/m³) 1", rho1);
+                return new EditInfo("Density 1 (kg/m³)", rho1);
             case 12:
-                return new EditInfo("Density (kg/m³) 2", rho2);
+                return new EditInfo("Density 2 (kg/m³)", rho2);
             case 13:
-                return new EditInfo("Temperature (K) 1", temperature1);
+                return new EditInfo("Temperature 1 (K)", temperature1);
             case 14:
-                return new EditInfo("Temperature (K) 2", temperature2);
+                return new EditInfo("Temperature 2 (K)", temperature2);
             case 15:
                 return new EditInfo("Latent heat (J/kg)", latentHeat);
             case 16:
                 return new EditInfo("Response time (s)", responseTime);
+            case 17:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -243,6 +251,9 @@ class RegulatorElm extends ThermalControlElement {
                 break;
             case 16:
                 responseTime = ei.value;
+                break;
+            case 17:
+                hTransv = ei.value;
                 break;
         }
 

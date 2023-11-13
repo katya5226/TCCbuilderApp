@@ -118,9 +118,9 @@ class SwitchElm extends ThermalControlElement {
             case 4:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/mK) - ON", kOn);
             case 8:

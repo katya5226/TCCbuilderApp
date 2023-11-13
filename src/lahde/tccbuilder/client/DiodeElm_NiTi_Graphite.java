@@ -54,13 +54,15 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
                 operatingRange.editable = false;
                 return operatingRange;
+            // case 8:
+            //     return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -90,6 +92,8 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
             case 6:
                 eastResistance = ei.value;
                 break;
+            // case 8:
+            //     hTransv = ei.value;   
             default:
                 break;
 
