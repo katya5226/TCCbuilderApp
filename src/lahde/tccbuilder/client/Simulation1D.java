@@ -195,13 +195,18 @@ public class Simulation1D extends Simulation {
         if (customTempRange == true) return;
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
-            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
-                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
+            if (c.material.magnetocaloric) {
+                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
                     maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
                 }
 
-                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
+                for (Vector<Double> dTheatingVector : c.material.dTheating) {
                     maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
+                }
+            }
+            if (c.material.electrocaloric) {
+                for (Vector<Double> dTVector : c.material.dT) {
+                    maxValue = Math.max(maxValue, Math.abs(Collections.max(dTVector)));
                 }
             }
         }
