@@ -1,4 +1,5 @@
 package lahde.tccbuilder.client;
+import com.google.gwt.user.client.ui.*;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
@@ -6,6 +7,8 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -356,7 +359,17 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 13:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 14:
-                return EditInfo.createCheckbox("Turn on external field", field);
+                //return EditInfo.createCheckbox("Turn on external field", field);
+                EditInfo ei3 = EditInfo.createButton("Toggle external field");
+                ei3.button.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        field = !field;
+                        Window.alert("Field = " + String.valueOf(field));
+                    }
+                });
+                return ei3;
+            // case 15:
+            //     return new EditInfo("Field", String.valueOf(field), false);
             default:
                 return null;
         }
