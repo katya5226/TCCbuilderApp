@@ -355,6 +355,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 return new EditInfo("Initial Temperature (K)", startTemperature);
             case 13:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 14:
+                return EditInfo.createCheckbox("Turn on external field", field);
             default:
                 return null;
         }
