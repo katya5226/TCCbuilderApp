@@ -97,7 +97,7 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Temperature Change");
         cyclePartListBox.addItem("Toggle TCE");
 //        cyclePartListBox.addItem("Value Change ");
-
+        cyclePartListBox.addItem("Time pass");
 
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
@@ -250,6 +250,9 @@ public class CyclicDialog extends Dialog {
                     case MECHANIC_DISPLACEMENT:
                         cyclePart.duration = 0.0;
                         break;
+                    case TIME_PASS:
+                        cyclePart.duration = duration.getValue();
+                        break;                        
                 }
                 sim.simulation1D.cycleParts.add(cyclePart);
                 sim.fillCyclicPanel();
@@ -321,6 +324,8 @@ public class CyclicDialog extends Dialog {
                             if (newK.isVisible() && !newK.getText().isEmpty())
                                 cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
+                        case TIME_PASS:
+                            break;
                     }
                 else {
                     int index = cyclePart.TCEs.indexOf(chosenComponent);
@@ -372,6 +377,8 @@ public class CyclicDialog extends Dialog {
                                 cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
                             if (newK.isVisible() && !newK.getText().isEmpty())
                                 cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
+                            break;
+                        case TIME_PASS:
                             break;
                     }
                 }
@@ -493,6 +500,12 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.VALUE_CHANGE;
                         break;
+                    case "Time pass":
+                        durationLabel.setVisible(true);
+                        duration.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.TIME_PASS;
+                        break;
                     default:
                         Window.alert("Please select a cycle part");
                         return;
@@ -595,6 +608,8 @@ public class CyclicDialog extends Dialog {
                         addComponentButton.setVisible(true);
 
                         break;
+                    case TIME_PASS:
+                        break;
                 }
 
 
@@ -644,6 +659,8 @@ public class CyclicDialog extends Dialog {
                     add = tce instanceof SwitchElm;
                     break;
                 case VALUE_CHANGE:
+                    break;
+                case TIME_PASS:
                     break;
 
             }
@@ -710,6 +727,10 @@ public class CyclicDialog extends Dialog {
             case TEMPERATURE_CHANGE:
                 break;
             case VALUE_CHANGE:
+                break;
+            case TIME_PASS:
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
         }
         center();

@@ -36,7 +36,8 @@ public class CyclePart {
         PROPERTIES_CHANGE,
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
-        VALUE_CHANGE;
+        VALUE_CHANGE,
+        TIME_PASS;
 
 
         public String toSpacedCamelCase() {
@@ -224,6 +225,8 @@ public class CyclePart {
                 temperatureChange();
                 if (duration > sim.simulation1D.dt)
                     sim.simulation1D.heatTransferStep();
+                break;
+            case TIME_PASS:
                 break;
             default:
                 break;
