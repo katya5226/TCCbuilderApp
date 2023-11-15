@@ -257,6 +257,7 @@ public class CyclePart {
                 TCEs.get(i).index = newIndexes.get(i);
             }
             sim.reorderByIndex();
+            sim.simulation1D.heatCircuit.buildTCC();
         }
     }
 
