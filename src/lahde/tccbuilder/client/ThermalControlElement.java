@@ -1,4 +1,5 @@
 package lahde.tccbuilder.client;
+import com.google.gwt.user.client.ui.*;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
@@ -6,6 +7,8 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -27,6 +30,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double constRho;
     public double constCp;
     public double constK;
+    public double hTransv;
     public double startTemperature;
     public double operatingMax;
     public double operatingMin;
@@ -143,6 +147,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 cvs.get(i).constK = constK;
             }
             cvs.get(i).constQgen = volumeHeatGeneration;
+            cvs.get(i).hTransv = hTransv;
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
@@ -338,9 +343,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 5:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 6:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 7:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 8:
                 return new EditInfo("Heat generation (W/m³)", volumeHeatGeneration);
             case 9:
@@ -351,6 +356,20 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
             case 12:
                 return new EditInfo("Initial Temperature (K)", startTemperature);
+            case 13:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 14:
+                //return EditInfo.createCheckbox("Turn on external field", field);
+                EditInfo ei3 = EditInfo.createButton("Toggle external field");
+                ei3.button.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        field = !field;
+                        Window.alert("Field = " + String.valueOf(field));
+                    }
+                });
+                return ei3;
+            // case 15:
+            //     return new EditInfo("Field", String.valueOf(field), false);
             default:
                 return null;
         }
@@ -406,6 +425,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                     setTemperatures(startTemperature);
                     // GWT.log(String.valueOf(cvs.get(0).temperature));
                 }
+                break;
+            case 13:
+                hTransv = (double) ei.value;
+                break;
+            case 14:
                 break;
         }
         updateElement();

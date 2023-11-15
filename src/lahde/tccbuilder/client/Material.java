@@ -334,7 +334,7 @@ public class Material {
                         longName = obj.get("long_name") != null ? obj.get("long_name").toString() : "";
                         JSONArray fieldsArray = obj.get("fields") != null ? obj.get("fields").isArray() : new JSONArray();
                         GWT.log("FIELDS SIZE: " + String.valueOf(fieldsArray.size()));
-                        if (electrocaloric) fields.add((double) 0);  // TODO: CORRECT THIS!!
+                        // if (electrocaloric) fields.add((double) 0);  // TODO: CORRECT THIS!!
                         for (int i = 0; i < fieldsArray.size(); i++) {
                             fields.add(Double.parseDouble(fieldsArray.get(i).isNumber().toString()));
                         }

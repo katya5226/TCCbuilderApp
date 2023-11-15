@@ -18,7 +18,7 @@ public class TCC {
     public Simulation.BorderCondition eastBoundary;
     //public int[) other_ht_types;
     public double qWest, qEast;
-    public double temperatureWest, temperatureEast;
+    public double temperatureWest, temperatureEast, ambientTemperature;
     public double hWest, hEast;
 
     public Vector<Double> fluxes;
@@ -43,6 +43,7 @@ public class TCC {
         qEast = 0.0;
         temperatureWest = 0.0;
         temperatureEast = 0.0;
+        ambientTemperature = 0.0;
         hWest = 500.0;
         hEast = 500.0;
 

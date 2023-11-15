@@ -57,9 +57,21 @@ class EditInfo {
         editable = true;
     }
 
+    EditInfo(String n, String txt, boolean editable) {
+        name = n;
+        text = txt;
+        this.editable = editable;
+    }
+
     static EditInfo createCheckbox(String name, boolean flag) {
         EditInfo ei = new EditInfo("", 0, -1, -1);
         ei.checkbox = new Checkbox(name, flag);
+        return ei;
+    }
+
+    static EditInfo createButton(String name) {
+        EditInfo ei = new EditInfo("", 0, -1, -1);
+        ei.button = new Button(name);
         return ei;
     }
 

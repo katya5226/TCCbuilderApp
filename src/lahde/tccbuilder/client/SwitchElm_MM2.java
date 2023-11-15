@@ -66,9 +66,9 @@ public class SwitchElm_MM2 extends SwitchElm {
             case 4:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/m/K) - ON", kOn, false);
             case 8:
@@ -83,6 +83,8 @@ public class SwitchElm_MM2 extends SwitchElm {
                 return new EditInfo("Density (kg/m³) - OFF", rhoOff, false);
             case 13:
                 return new EditInfo("Response Time (s)", responseTime, false);
+            case 14:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -112,6 +114,9 @@ public class SwitchElm_MM2 extends SwitchElm {
                 break;
             case 6:
                 eastResistance = ei.value;
+                break;
+            case 14:
+                hTransv = ei.value;
                 break;
             default:
                 break;

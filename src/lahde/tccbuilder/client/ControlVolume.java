@@ -23,6 +23,7 @@ public class ControlVolume {
     public double kEast;
     public double qWest;
     public double qEast;
+    public double hTransv;
     public double qGenerated;
     public double constQgen;  // W/m3 !!!
     public double constRho;
@@ -50,6 +51,7 @@ public class ControlVolume {
         qWest = 0.0;
         qEast = 0.0;
         qGenerated = 0.0;
+        hTransv = 0.0;
         constRho = -1;
         constCp = -1;
         constK = -1;
@@ -71,6 +73,10 @@ public class ControlVolume {
         else {
             // rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
             rho = material.rho.get((int) Math.round(temperature * 10));
+        }
+        if (parent instanceof RegulatorElm) {
+            RegulatorElm r = (RegulatorElm) parent;
+            rho = r.rhoValues.get((int) Math.round(temperature * 10));
         }
         return rho;
     }
@@ -95,6 +101,12 @@ public class ControlVolume {
             } else {
                 // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
                 cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
+                // if (material.cp.size() == 1) {
+                //     cp = material.cp.get(0).get((int) Math.round(temperature * 10));
+                // }
+                // else {
+                //     cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
+                // }
             }
         }
         if (parent instanceof RegulatorElm) {
@@ -113,6 +125,10 @@ public class ControlVolume {
         else {
             // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
             k = material.k.get(0).get((int) Math.round(temperature * 10));
+        }
+        if (parent instanceof RegulatorElm) {
+            RegulatorElm r = (RegulatorElm) parent;
+            k = r.kValues.get((int) Math.round(temperature * 10));
         }
         return k;
     }
@@ -157,13 +173,13 @@ public class ControlVolume {
     void calculateKWestFace() {
         kWestFace = westNeighbour.k() * k() * (westNeighbour.dx + dx) /
                 (westNeighbour.k() * dx + k() * westNeighbour.dx +
-                        westNeighbour.k() * k() * westResistance * (dx + westNeighbour.dx) / 2);
+                        westNeighbour.k() * k() * westResistance);
     }
 
     void calculateKEastFace() {
         kEastFace = k() * eastNeighbour.k() * (dx + eastNeighbour.dx) /
                 (k() * eastNeighbour.dx + eastNeighbour.k() * dx +
-                        eastNeighbour.k() * k() * eastResistance * (eastNeighbour.dx + dx) / 2);
+                        eastNeighbour.k() * k() * eastResistance);
     }
 
     void calculateKWest() {

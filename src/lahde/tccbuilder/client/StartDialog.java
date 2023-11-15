@@ -22,6 +22,8 @@ public class StartDialog extends Dialog {
     Button applyButton;
     DoubleBox timeStep;
     DoubleBox startTemperature;
+    DoubleBox ambientTemperature;
+    // DoubleBox hTransv;
 
     Label inletHeatFluxLabel;
     Label leftTemperatureLabel;
@@ -101,9 +103,22 @@ public class StartDialog extends Dialog {
         startTemperature.addMouseOverHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent e) {
-                startTemperature.setTitle("Starting temperature will be set for a component/TCE only if it hasn't been set earlier.");
+                startTemperature.setTitle("Starting temperature will be set for a component/TCE only if it hasn't been set earlier in component/TCE edit dialog.");
             }
         });
+
+        ambientTemperature = new DoubleBox();
+        ambientTemperature.setValue(sim.simulation1D.ambientTemperature);
+
+        // hTransv = new DoubleBox();
+        // hTransv.setValue(sim.simulation1D.hTransv);
+        // hTransv.addMouseOverHandler(new MouseOverHandler() {
+        //     @Override
+        //     public void onMouseOver(MouseOverEvent e) {
+        //         hTransv.setTitle("Refers to heat losses to the surroundings in transversal direction.
+        //         Usually calculated as convection coefficient of natural convection, multiplied by the ratio of the perimeter and cross area of considered object.");
+        //     }
+        // });
 
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
@@ -144,6 +159,10 @@ public class StartDialog extends Dialog {
         flowPanel.add(timeStep);
         flowPanel.add(new Label(Locale.LS("Enter starting temperature (K): ")));
         flowPanel.add(startTemperature);
+        flowPanel.add(new Label(Locale.LS("Enter ambient temperature (K): ")));
+        flowPanel.add(ambientTemperature);
+        // flowPanel.add(new Label(Locale.LS("Enter heat loss rate to the ambient (W/(m³K)): ")));
+        // flowPanel.add(hTransv);
         flowPanel.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
         l.addStyleName("dialogHeading");
         flowPanel.add(leftBoundary);
@@ -195,6 +214,12 @@ public class StartDialog extends Dialog {
                     Window.alert("Temperature not between 0 K and 2000 K");
                     return;
                 }
+                double ambientTempValue = ambientTemperature.getValue();
+                if (!(ambientTempValue >= 0.0) || !(ambientTempValue <= 2000)) {
+                    Window.alert("Temperature not between 0 K and 2000 K");
+                    return;
+                }
+                // double hTransvValue = hTransv.getValue();
                 if (leftTemperature.isVisible()) {
                     double leftTempValue = leftTemperature.getValue();
                     if (!(leftTempValue >= 0.0) || !(leftTempValue <= 2000)) {
@@ -249,6 +274,7 @@ public class StartDialog extends Dialog {
                 }
                 sim.simulation1D.dt = dtValue / 1e3;
                 sim.simulation1D.startTemp = startTempValue;
+                sim.simulation1D.ambientTemperature = ambientTempValue;
                 sim.simulation1D.eastBoundary = Simulation1D.BorderCondition.values()[rightBoundary.getSelectedIndex()];
                 sim.simulation1D.westBoundary = Simulation1D.BorderCondition.values()[leftBoundary.getSelectedIndex()];
 

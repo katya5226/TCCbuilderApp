@@ -36,7 +36,8 @@ public class CyclePart {
         PROPERTIES_CHANGE,
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
-        VALUE_CHANGE;
+        VALUE_CHANGE,
+        TIME_PASS;
 
 
         public String toSpacedCamelCase() {
@@ -225,6 +226,8 @@ public class CyclePart {
                 if (duration > sim.simulation1D.dt)
                     sim.simulation1D.heatTransferStep();
                 break;
+            case TIME_PASS:
+                break;
             default:
                 break;
         }
@@ -254,6 +257,7 @@ public class CyclePart {
                 TCEs.get(i).index = newIndexes.get(i);
             }
             sim.reorderByIndex();
+            sim.simulation1D.heatCircuit.buildTCC();
         }
     }
 

@@ -106,13 +106,13 @@ public class TwoDimCV {
             TwoDimCV neigh = neighbours[i];
             double r = resistances[i];
             kh[i] = neigh.k() * k() * (neigh.dx + dx) /
-                    (neigh.k() * dx + k() * neigh.dx + neigh.k() * k() * r * (dx + neigh.dx) / 2);
+                    (neigh.k() * dx + k() * neigh.dx + neigh.k() * k() * r);
         }
         for (int i = 2; i < 4; i++) {
             TwoDimCV neigh = neighbours[i];
             double r = resistances[i];
             kh[i] = neigh.k() * k() * (neigh.dy + dy) /
-                    (neigh.k() * dy + k() * neigh.dy + neigh.k() * k() * r * (dy + neigh.dy) / 2);
+                    (neigh.k() * dy + k() * neigh.dy + neigh.k() * k() * r);
         }
     }
 
