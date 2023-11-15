@@ -429,6 +429,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 13:
                 hTransv = (double) ei.value;
                 break;
+            case 14:
+                break;
         }
         updateElement();
 

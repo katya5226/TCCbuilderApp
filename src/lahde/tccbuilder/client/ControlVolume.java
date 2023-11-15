@@ -101,6 +101,12 @@ public class ControlVolume {
             } else {
                 // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
                 cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
+                // if (material.cp.size() == 1) {
+                //     cp = material.cp.get(0).get((int) Math.round(temperature * 10));
+                // }
+                // else {
+                //     cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
+                // }
             }
         }
         if (parent instanceof RegulatorElm) {
