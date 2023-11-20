@@ -266,7 +266,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
         MICROMETER_20(5e4, "20µm", "20 micrometers"),
         MICROMETER_50(2e4, "50µm", "50 micrometers"),
-        MICROMETER_100(1e4, "10µm", "100 micrometers"),
+        MICROMETER_100(1e4, "100µm", "100 micrometers"),
+        MICROMETER_200(5e3, "200µm", "200 micrometers"),
+        MICROMETER_500(2e3, "500µm", "500 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
         MILLIMETER_5(2e2, "5mm", "5 millimeters"),
         CENTIMETER(1e2, "cm", "centimeter"),
@@ -707,6 +709,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
                     case "100 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_100;
+                        break;
+                    case "200 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_200;
+                        break;
+                    case "500 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_500;
                         break;
                     case "millimeter":
                         selectedLengthUnit = LengthUnit.MILLIMETER;
