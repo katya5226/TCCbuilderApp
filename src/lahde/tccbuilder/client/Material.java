@@ -154,7 +154,7 @@ public class Material {
                         fillVectorFromURL(url_rho, rho, 1000);
                     }
 
-                    if (invariant) {
+                    if (invariant || thermoelectric || temperatureInducedPhaseChange) {
                         String url_cp = baseURL + materialName + "/appInfo/cp.txt";
                         if (!sim.awaitedResponses.contains(url_cp)) {
                             sim.awaitedResponses.add(url_cp);
@@ -172,7 +172,11 @@ public class Material {
 
                             Vector<Double> vector;
                             if (cpThysteresis) {
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_cooling.txt";
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
+                                if (magnetocaloric)
+                                    url_cp += "T_cooling.txt";
+                                else if (electrocaloric)
+                                    url_cp += "MVm_cooling.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
@@ -180,6 +184,10 @@ public class Material {
                                 cpCooling.add(vector);
 
                                 url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_heating.txt";
+                                if (magnetocaloric)
+                                    url_cp += "T_heating.txt";
+                                else if (electrocaloric)
+                                    url_cp += "MVm_heating.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
@@ -199,14 +207,22 @@ public class Material {
                             }
                             if (field != 0) {
                                 if (dTThysteresis) {
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T_cooling.txt";
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                    if (magnetocaloric)
+                                        url_dT += "T_cooling.txt";
+                                    else if (electrocaloric)
+                                        url_dT += "MVm_cooling.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
                                     fillVectorFromURL(url_dT, vector, 0);
                                     dTcooling.add(vector);
 
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName + "T_heating.txt";
+                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                    if (magnetocaloric)
+                                        url_dT += "T_heating.txt";
+                                    else if (electrocaloric)
+                                        url_dT += "MVm_heating.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);

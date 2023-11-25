@@ -57,7 +57,7 @@ public class ControlVolume {
         constK = -1;
         constQgen = 0.0;
         eps = 1.0;
-        mode = 0;
+        mode = 1;
 
         material = parent.sim.materialHashMap.get("100001-Inox");
         if (!material.isLoaded()) {
@@ -119,17 +119,25 @@ public class ControlVolume {
     double k() {
         //TODO: update this method for kThysteresis
         //GWT.log("Calculating k");
-        double k = 0.01;
+        double k = 1;
         if (constK != -1)
             k = constK;
         else {
             // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
-            k = material.k.get(0).get((int) Math.round(temperature * 10));
+            if(material.kThysteresis) {
+                if (mode == 1)
+                    k = material.kHeating.get(0).get((int) Math.round(temperature * 10));
+                else if (mode == -1)
+                    k = material.kCooling.get(0).get((int) Math.round(temperature * 10));
+            } else {
+                k = material.k.get(0).get((int) Math.round(temperature * 10));
+            }
         }
         if (parent instanceof RegulatorElm) {
             RegulatorElm r = (RegulatorElm) parent;
             k = r.kValues.get((int) Math.round(temperature * 10));
         }
+        //GWT.log(String.valueOf(k));
         return k;
     }
 
