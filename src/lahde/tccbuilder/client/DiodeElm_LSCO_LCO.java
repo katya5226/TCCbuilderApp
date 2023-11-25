@@ -129,9 +129,22 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
         if (!LCO.isLoaded())
             LCO.readFiles();
         int ratioIndex = (int) ((6.1 / 12.4) * numCvs);
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).material = i < ratioIndex ? LSCO : LCO;
+
+        if (direction == CircuitElm.Direction.RIGHT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < ratioIndex ? LSCO : LCO;
+            }
         }
+        if (direction == CircuitElm.Direction.LEFT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < (numCvs - ratioIndex) ? LCO : LSCO;
+            }
+        }
+    }
+
+    @Override
+        public void checkDirection(double boundaryTw, double boundaryTe) {
+        return;
     }
 
     @Override

@@ -119,9 +119,21 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
         if (!Graphite.isLoaded())
             Graphite.readFiles();
         int ratioIndex = (int) (0.5 * numCvs);
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).material = i < ratioIndex ? NiTi : Graphite;
+        if (direction == CircuitElm.Direction.RIGHT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < ratioIndex ? NiTi : Graphite;
+            }
         }
+        if (direction == CircuitElm.Direction.LEFT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < (numCvs - ratioIndex) ? Graphite : NiTi;
+            }
+        }
+    }
+
+    @Override
+        public void checkDirection(double boundaryTw, double boundaryTe) {
+        return;
     }
 
     @Override
