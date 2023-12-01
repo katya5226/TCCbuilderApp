@@ -1671,8 +1671,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (tce.y == tce.y2)
                 lengths.add(Math.abs(tce.x - tce.x2));
 
-            x = Math.min(x, tce.x);
-            y = Math.min(y, tce.y);
+            x = Math.min(tce.x2, Math.min(x, tce.x));
+            y = Math.min(tce.y2, Math.min(y, tce.y));
 
         }
 
