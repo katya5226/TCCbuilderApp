@@ -136,20 +136,20 @@ public class TCC {
         String txt = "";
         String bcWest = ModelMethods.return_bc_name(westBoundary);
         String bcEast = ModelMethods.return_bc_name(eastBoundary);
-        txt += "\nBoundary condition on the left: " + bcWest;
-        txt += "\nBoundary condition on the right: " + bcEast;
+        txt += "\nWest boundary condition: " + bcWest;
+        txt += "\nEast boundary condition: " + bcEast;
         if (westBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE || westBoundary == Simulation.BorderCondition.CONVECTIVE)
-            txt += "\nTemperature on the left: " + String.valueOf(temperatureWest) + " K";
+            txt += "\nWest temperature: " + String.valueOf(temperatureWest) + " K";
         if (westBoundary == Simulation.BorderCondition.CONVECTIVE)
-            txt += "\nConvection coefficient on the left: " + String.valueOf(hWest) + " W/(m^2K)";
+            txt += "\nWest convection coefficient: " + String.valueOf(hWest) + " W/(m^2K)";
         if (westBoundary == Simulation.BorderCondition.CONSTANT_HEAT_FLUX)
-            txt += "\nHeat flow on the left: " + String.valueOf(qWest) + " W/(m^2K)";
+            txt += "\nHeat flux at west boundary: " + String.valueOf(qWest) + " W/(m^2K)";
         if (eastBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE || eastBoundary == Simulation.BorderCondition.CONVECTIVE)
-            txt += "\nTemperature on the right: " + String.valueOf(temperatureEast) + " K";
+            txt += "\nEast temperature: " + String.valueOf(temperatureEast) + " K";
         if (eastBoundary == Simulation.BorderCondition.CONVECTIVE)
-            txt += "\nConvection coefficient on the right: " + String.valueOf(hEast) + " W/(m^2K)";
+            txt += "\nEast convection coefficient: " + String.valueOf(hEast) + " W/(m^2K)";
         if (eastBoundary == Simulation.BorderCondition.CONSTANT_HEAT_FLUX)
-            txt += "\nHeat flow on the right: " + String.valueOf(qEast) + " W/(m^2K)";
+            txt += "\nHeat flux at east boundary: " + String.valueOf(qEast) + " W/(m^2K)";
         txt += "\n\nThermal control elements:";
         // for el in TCEs:
         // txt += "\n\nTCE: " + String.valueOf(el.name);

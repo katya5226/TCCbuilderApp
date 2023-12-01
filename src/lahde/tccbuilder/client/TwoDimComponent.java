@@ -427,9 +427,9 @@ public class TwoDimComponent extends CircuitElm implements Comparable<TwoDimComp
             case 7:
                 return new EditInfo("Height (" + sim.selectedLengthUnit.unitName + ")", height * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 8:
-                return new EditInfo("Left contact resistance (mK/W)", resistances[0]);
+                return new EditInfo("West contact resistance (m²K/W)", resistances[0]);
             case 9:
-                return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
+                return new EditInfo("East contact resistance (m²K/W)", resistances[1]);
             default:
                 return null;
         }

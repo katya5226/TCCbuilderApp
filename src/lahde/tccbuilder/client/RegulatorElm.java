@@ -42,11 +42,23 @@ class RegulatorElm extends ThermalControlElement {
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
+        material = sim.materialHashMap.get("000000-Custom");
         cpCurve = new Vector<Double>();
     }
 
     public RegulatorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        k1 = Double.parseDouble(st.nextToken());
+        k2 = Double.parseDouble(st.nextToken());
+        cp1 = Double.parseDouble(st.nextToken());
+        cp2 = Double.parseDouble(st.nextToken());
+        rho1 = Double.parseDouble(st.nextToken());
+        rho2 = Double.parseDouble(st.nextToken());
+        responseTime = Double.parseDouble(st.nextToken());
+        temperature1 = Double.parseDouble(st.nextToken());
+        temperature2 = Double.parseDouble(st.nextToken());
+        latentHeat = Double.parseDouble(st.nextToken());
+        material = sim.materialHashMap.get("000000-Custom");
         cpCurve = new Vector<Double>();
     }
 
@@ -77,6 +89,18 @@ class RegulatorElm extends ThermalControlElement {
     @Override
     int getDumpType() {
         return 'e';
+    }
+
+    @Override
+    String dump() {
+        String du = super.dump();
+        du += k1 + " " + k2 + " ";
+        du += cp1 + " " + cp2 + " ";
+        du += rho1 + " " + rho2 + " ";
+        du += responseTime + " ";
+        du += temperature1 + " " + temperature2 + " ";
+        du += latentHeat;
+        return du;
     }
 
 
@@ -122,8 +146,7 @@ class RegulatorElm extends ThermalControlElement {
         double arrowStartY = hs * 3;
         double arrowEndY = -hs * 3;
 
-
-        drawLine(g, arrowStartX, arrowStartY, arrowEndX, arrowEndY, lineThickness);
+        drawLine(g, arrowStartX, arrowStartY, arrowEndX, arrowEndY, lineThickness, color);
         double lineAngle = Math.atan2(arrowEndY - arrowStartY, arrowEndX - arrowStartX);
         double arrowAngle = Math.PI / 6;
         double triangleSize = lineThickness * 1.5;
@@ -131,6 +154,7 @@ class RegulatorElm extends ThermalControlElement {
         g.context.beginPath();
         g.context.setLineWidth(lineThickness);
         g.context.setFillStyle(color.getHexValue());
+        g.context.setStrokeStyle(color.getHexValue());
         double x1 = arrowEndX - triangleSize * Math.cos(lineAngle - arrowAngle);
         double y1 = arrowEndY - triangleSize * Math.sin(lineAngle - arrowAngle);
         double x2 = arrowEndX - triangleSize * Math.cos(lineAngle + arrowAngle);

@@ -88,6 +88,14 @@ public class CyclePart {
         duration = 0.0;
     }
 
+    String shortenName(String name) {
+        if (name.length() <= 3) {
+            return name;
+        } else {
+            return name.substring(0, 3) + ".";
+        }
+    }
+
     public Widget toWidget(boolean deletable) {
         FlexTable flexTable = new FlexTable();
         flexTable.setStyleName("cycle-part");
@@ -98,7 +106,7 @@ public class CyclePart {
 
         if (!TCEs.isEmpty()) {
             for (ThermalControlElement tce : TCEs)
-                flexTable.setText(row, column++, tce.index + " " + tce.name);
+                flexTable.setText(row, column++, tce.index + " " + shortenName(tce.name));
             row++;
             column = 0;
         } else
@@ -109,7 +117,12 @@ public class CyclePart {
             for (int i = 0; i < fieldIndexes.size(); i++) {
                 int index = fieldIndexes.get(i);
                 if (TCEs.get(i).material.isLoaded()) {
-                    flexTable.setText(row, column++, NumberFormat.getFormat("0.0").format(TCEs.get(i).material.fields.get(index)) + "T");
+                    String unit = "";
+                    if (TCEs.get(i).material.magnetocaloric) unit = " T";
+                    if (TCEs.get(i).material.electrocaloric) unit = " MV/m";
+                    if (TCEs.get(i).material.elastocaloric) unit = " N/m";
+                    if (TCEs.get(i).material.barocaloric) unit = " bar";
+                    flexTable.setText(row, column++, NumberFormat.getFormat("0.0").format(TCEs.get(i).material.fields.get(index)) + unit);
                 }
             }
         } else if (!newTemperatures.isEmpty()) {
@@ -392,6 +405,9 @@ public class CyclePart {
                     dump += i + " ";
                 break;
             case ELECTRIC_FIELD_CHANGE:
+                dump += fieldIndexes.size() + " ";
+                for (Integer i : fieldIndexes)
+                    dump += i + " ";
                 break;
             case PRESSURE_CHANGE:
                 break;
@@ -453,13 +469,18 @@ public class CyclePart {
                 }
                 break;
             case MAGNETIC_FIELD_CHANGE:
-                int numfieldIndexes = Integer.parseInt(st.nextToken());
+                int numMagFieldIndexes = Integer.parseInt(st.nextToken());
                 fieldIndexes.clear();
-                for (int i = 0; i < numfieldIndexes; i++) {
+                for (int i = 0; i < numMagFieldIndexes; i++) {
                     fieldIndexes.add(Integer.parseInt(st.nextToken()));
                 }
                 break;
             case ELECTRIC_FIELD_CHANGE:
+                int numElFieldIndexes = Integer.parseInt(st.nextToken());
+                fieldIndexes.clear();
+                for (int i = 0; i < numElFieldIndexes; i++) {
+                    fieldIndexes.add(Integer.parseInt(st.nextToken()));
+                }
                 break;
             case PRESSURE_CHANGE:
                 break;
