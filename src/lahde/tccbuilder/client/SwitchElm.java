@@ -53,6 +53,8 @@ class SwitchElm extends ThermalControlElement {
         material = sim.materialHashMap.get("000000-Custom");
         position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
+        kOn = Double.parseDouble(st.nextToken());
+        kOff = Double.parseDouble(st.nextToken());
         posCount = 2;
     }
 
@@ -64,7 +66,7 @@ class SwitchElm extends ThermalControlElement {
 
     @Override
     String dump() {
-        return super.dump() + position + " " + momentary;
+        return super.dump() + position + " " + momentary + " " + kOn + " " + kOff;
     }
 
     Point ps, ps2;

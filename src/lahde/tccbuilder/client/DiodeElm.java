@@ -38,14 +38,20 @@ class DiodeElm extends ThermalControlElement {
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        kForward = Double.parseDouble(st.nextToken());
+        kBackward = Double.parseDouble(st.nextToken());
         material = sim.materialHashMap.get("000000-Custom");
-
     }
 
 
     @Override
     int getDumpType() {
         return 'd';
+    }
+
+    @Override
+    String dump() {
+        return super.dump() + kForward + " " + kBackward;
     }
 
 
