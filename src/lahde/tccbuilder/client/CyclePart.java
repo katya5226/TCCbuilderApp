@@ -88,6 +88,14 @@ public class CyclePart {
         duration = 0.0;
     }
 
+    String shortenName(String name) {
+        if (name.length() <= 3) {
+            return name;
+        } else {
+            return name.substring(0, 3) + ".";
+        }
+    }
+
     public Widget toWidget(boolean deletable) {
         FlexTable flexTable = new FlexTable();
         flexTable.setStyleName("cycle-part");
@@ -98,7 +106,7 @@ public class CyclePart {
 
         if (!TCEs.isEmpty()) {
             for (ThermalControlElement tce : TCEs)
-                flexTable.setText(row, column++, tce.index + " " + tce.name);
+                flexTable.setText(row, column++, tce.index + " " + shortenName(tce.name));
             row++;
             column = 0;
         } else
