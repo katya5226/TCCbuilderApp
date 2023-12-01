@@ -122,8 +122,7 @@ class RegulatorElm extends ThermalControlElement {
         double arrowStartY = hs * 3;
         double arrowEndY = -hs * 3;
 
-
-        drawLine(g, arrowStartX, arrowStartY, arrowEndX, arrowEndY, lineThickness);
+        drawLine(g, arrowStartX, arrowStartY, arrowEndX, arrowEndY, lineThickness, color);
         double lineAngle = Math.atan2(arrowEndY - arrowStartY, arrowEndX - arrowStartX);
         double arrowAngle = Math.PI / 6;
         double triangleSize = lineThickness * 1.5;
@@ -131,6 +130,7 @@ class RegulatorElm extends ThermalControlElement {
         g.context.beginPath();
         g.context.setLineWidth(lineThickness);
         g.context.setFillStyle(color.getHexValue());
+        g.context.setStrokeStyle(color.getHexValue());
         double x1 = arrowEndX - triangleSize * Math.cos(lineAngle - arrowAngle);
         double y1 = arrowEndY - triangleSize * Math.sin(lineAngle - arrowAngle);
         double x2 = arrowEndX - triangleSize * Math.cos(lineAngle + arrowAngle);
