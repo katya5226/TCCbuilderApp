@@ -8,10 +8,10 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
 
     public DiodeElm_LSCO_LCO(int xx, int yy) {
         super(xx, yy);
-        DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
-        sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
+        // DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
+        // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
-        sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+        // sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
         sim.calculateElementsLengths();
 
         int newX = sim.snapGrid((int) (xx + length * sim.selectedLengthUnit.conversionFactor * sim.gridSize));
@@ -43,7 +43,8 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                EditInfo editInfo = new EditInfo("Length", CirSim.formatLength(length));
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:

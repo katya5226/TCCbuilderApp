@@ -6,9 +6,9 @@ public class SwitchElm_FM1 extends SwitchElm {
     public SwitchElm_FM1(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
-        sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
+        // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
-        sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+        // sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
 
         sim.calculateElementsLengths();
 
@@ -65,7 +65,8 @@ public class SwitchElm_FM1 extends SwitchElm {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length", CirSim.formatLength(length));
             case 5:
                 return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
