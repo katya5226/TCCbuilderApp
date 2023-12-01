@@ -25,19 +25,20 @@ import com.google.gwt.user.client.Window;
 class DiodeElm extends ThermalControlElement {
 
     double kForward, kBackward;
-    double cp;
-    double rho;
+    // double cp;
+    // double rho;
     double responseTime;
 
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
-
+        material = sim.materialHashMap.get("000000-Custom");
     }
 
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        material = sim.materialHashMap.get("000000-Custom");
 
     }
 
@@ -108,9 +109,9 @@ class DiodeElm extends ThermalControlElement {
             case 8:
                 return new EditInfo("Thermal Conductivity (W/mK) - backward", kBackward);
             case 9:
-                return new EditInfo("Specific Heat Capacity (J/kgK)", cp);
+                return new EditInfo("Specific Heat Capacity (J/kgK)", constCp);
             case 10:
-                return new EditInfo("Density (kg/m³)", rho);
+                return new EditInfo("Density (kg/m³)", constRho);
             case 11:
                 return new EditInfo("Response time (s)", responseTime);
             case 12:
@@ -151,10 +152,10 @@ class DiodeElm extends ThermalControlElement {
                 kBackward = ei.value;
                 break;
             case 9:
-                constCp = cp = ei.value;
+                constCp = ei.value;
                 break;
             case 10:
-                constRho = rho = ei.value;
+                constRho = ei.value;
                 break;
             case 11:
                 responseTime = ei.value;

@@ -42,11 +42,13 @@ class RegulatorElm extends ThermalControlElement {
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
+        material = sim.materialHashMap.get("000000-Custom");
         cpCurve = new Vector<Double>();
     }
 
     public RegulatorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        material = sim.materialHashMap.get("000000-Custom");
         cpCurve = new Vector<Double>();
     }
 
