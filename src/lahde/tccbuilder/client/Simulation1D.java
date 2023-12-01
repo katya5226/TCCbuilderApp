@@ -240,13 +240,13 @@ public class Simulation1D extends Simulation {
     @Override
     String getReport() {
         String dump;
-        dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 1D\n" + "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" + "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" + "Temperature on the left: " + heatCircuit.temperatureWest + " K\n" + "Convection coefficient on the left: " + heatCircuit.hWest + " W/(m²K)\n" + "Temperature on the right: " + heatCircuit.temperatureEast + " K\n" + "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
+        dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 1D\n" + "West boundary condition: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" + "East boundary condition: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" + "West temperature: " + heatCircuit.temperatureWest + " K\n" + "West convection coefficient: " + heatCircuit.hWest + " W/(m²K)\n" + "East temperature: " + heatCircuit.temperatureEast + " K\n" + "East convection coefficient: " + heatCircuit.hEast + " W/(m²K)\n";
 
         dump += "\nThermal control elements: \n";
         for (ThermalControlElement tce : simTCEs) {
             dump += "TCE name: " + tce.name + "\n" + "TCE index: " + tce.index + "\n" +
                     //"Material: " + component.material.materialName + "\n" +
-                    "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + CirSim.formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "Left contact resistance: " + tce.westResistance + " mK/W\n" + "Right contact resistance: " + tce.eastResistance + " mK/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
+                    "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + CirSim.formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "West contact resistance: " + tce.westResistance + " m²K/W\n" + "East contact resistance: " + tce.eastResistance + " m²K/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
         }
         dump += "\nTemperatures:\n";
         dump += "Time\t";
