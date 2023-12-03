@@ -36,7 +36,6 @@ public class CyclePart {
         PROPERTIES_CHANGE,
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
-        VALUE_CHANGE,
         TIME_PASS;
 
 
@@ -64,12 +63,10 @@ public class CyclePart {
     boolean toggleTCE;
 
     Vector<ThermalControlElement> TCEs;
-    Vector<Vector<Double>> newProperties;  // Vector<Double> for each component must have three values, for
-    // rho, cp and k. In Cyclic dialog, the value of const_x (x = rho, cp or k) is set to -1 if a constant value needs not be set.
-    Vector<HashMap<Simulation.Property, Double>> changedProperties;
-    Vector<Vector<PropertyValuePair>> changedValues;
+    Vector<Vector<CyclePart.PropertyValuePair>> changedProperties;
     CirSim sim;
     double duration;
+    double partTime;
     CyclePart theCyclePart;
 
     public CyclePart(int index, CirSim sim) {
@@ -77,15 +74,14 @@ public class CyclePart {
         partIndex = index;
         partType = PartType.HEAT_TRANSFER;
         TCEs = new Vector<ThermalControlElement>();
-        newProperties = new Vector<Vector<Double>>();
         newTemperatures = new Vector<Double>();
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
         fieldIndexes = new Vector<Integer>();
-        changedProperties = new Vector<HashMap<Simulation.Property, Double>>();
-        changedValues = new Vector<>();
+        changedProperties = new Vector<>();
         this.sim = sim;
         duration = 0.0;
+        partTime = 0.0;
     }
 
     String shortenName(String name) {
@@ -134,30 +130,15 @@ public class CyclePart {
         } else if (!heatInputs.isEmpty()) {
             for (Double heatInput : heatInputs)
                 flexTable.setText(row, column++, heatInput.toString());
-        } else if (!newProperties.isEmpty()) {
-            int startingRow;
-            for (Vector<Double> properties : newProperties) {
-                startingRow = row;
-                for (Double p : properties) {
-                    flexTable.setText(startingRow++, column, p.toString());
-                }
-                column++;
-            }
-            startingRow = row;
-            for (String s : new String[]{"rho", "cp", "k"})
-                flexTable.setText(startingRow++, column, s);
-
-            flexTable.setText(0, column, "property");
-        } else if (!changedValues.isEmpty()) {
+        } else if (!changedProperties.isEmpty()) {
             flexTable.removeAllRows();
-            for (int i = 0; i < changedValues.size(); i++) {
+            for (int i = 0; i < changedProperties.size(); i++) {
                 ThermalControlElement tce = TCEs.get(i);
                 flexTable.setText(row++, 0, tce.index + " " + tce.name);
-                Vector<PropertyValuePair> v = changedValues.get(i);
+                Vector<PropertyValuePair> v = changedProperties.get(i);
                 for (PropertyValuePair pvp : v) {
                     flexTable.setText(row, 0, String.valueOf(pvp.property));
                     flexTable.setText(row++, 1, String.valueOf(pvp.value));
-
                 }
             }
         }
@@ -227,14 +208,12 @@ public class CyclePart {
                 break;
             case PROPERTIES_CHANGE:
                 propertiesChange();
+                if (duration > sim.simulation1D.dt)
+                    sim.simulation1D.heatTransferStep();
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 toggleThermalControlElement();
                 break;
-            case VALUE_CHANGE:
-                valueChange();
-                if (duration > sim.simulation1D.dt)
-                    sim.simulation1D.heatTransferStep();
             case TEMPERATURE_CHANGE:
                 temperatureChange();
                 if (duration > sim.simulation1D.dt)
@@ -318,37 +297,36 @@ public class CyclePart {
     }
 
     // This method must be modified by Katni - use constProperty, also change in cyclic dialog
+    // void propertiesChange() {
+    //     for (int i = 0; i < TCEs.size(); i++) {
+    //         ThermalControlElement tce = TCEs.get(i);
+    //         Vector<Double> newProps = newProperties.get(i);
+    //         tce.setConstProperty(Simulation.Property.DENSITY, newProps.get(0));
+    //         tce.setConstProperty(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newProps.get(1));
+    //         tce.setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, newProps.get(2));
+    //     }
+    // }
+
+
     void propertiesChange() {
-        for (int i = 0; i < TCEs.size(); i++) {
-            ThermalControlElement tce = TCEs.get(i);
-            GWT.log(newProperties.size() + "");
-            Vector<Double> newProps = newProperties.get(i);
-            tce.setConstProperty(Simulation.Property.DENSITY, newProps.get(0));
-            tce.setConstProperty(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newProps.get(1));
-            tce.setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, newProps.get(2));
-        }
-        GWT.log("Properties changed for component: " + String.valueOf(TCEs.get(0).index));
-        GWT.log("Component k: " + String.valueOf(TCEs.get(0).cvs.get(0).constK));
-    }
-
-
-    void valueChange() {
-        int steps = (int) (duration / sim.simulation1D.dt);
-        for (int i = 0; i < changedValues.size(); i++) {
-            Vector<PropertyValuePair> v = changedValues.get(i);
-            for (PropertyValuePair pvp : v)
+        // int steps = (int) (duration / sim.simulation1D.dt);
+        for (int i = 0; i < changedProperties.size(); i++) {
+            Vector<PropertyValuePair> v = changedProperties.get(i);
+            for (PropertyValuePair pvp : v) {
                 for (ControlVolume cv : TCEs.get(i).cvs) {
                     if (duration == 0.0) {
                         cv.setProperty(pvp.property, pvp.value);
                     } else {
                         double currentValue = cv.getProperty(pvp.property);
                         double finalValue = pvp.value;
-                        double changeInStep = (finalValue - currentValue) / steps;
-                        cv.setProperty(pvp.property, changeInStep);
+                        // double changeInStep = (finalValue - currentValue) / steps;
+                        double changeTo = currentValue + (partTime / duration) * (pvp.value - currentValue);
+                        // cv.setProperty(pvp.property, changeInStep);
+                        cv.setProperty(pvp.property, changeTo);
                     }
                 }
+            }
         }
-
     }
 
 
@@ -361,12 +339,14 @@ public class CyclePart {
                 }
             }
         } else if (duration > 0.0) {
-            int steps = (int) (duration / sim.simulation1D.dt);
+            // int steps = (int) (duration / sim.simulation1D.dt);
             for (int i = 0; i < TCEs.size(); i++) {
                 for (ControlVolume cv : TCEs.get(i).cvs) {
-                    double changeInStep = (newTemperatures.get(i) - cv.temperature) / steps;
-                    cv.temperature += changeInStep;
-                    cv.temperatureOld += changeInStep;
+                    // double changeInStep = (newTemperatures.get(i) - cv.temperature) / steps;
+                    // cv.temperature += changeInStep;
+                    // cv.temperatureOld += changeInStep;
+                    cv.temperature = cv.temperature + (partTime / duration) * (newTemperatures.get(i) - cv.temperature);
+                    cv.temperatureOld = cv.temperature;
                 }
             }
         }
@@ -415,11 +395,13 @@ public class CyclePart {
             case SHEAR_STRESS_CHANGE:
                 break;
             case PROPERTIES_CHANGE:
-                dump += newProperties.size() + " ";
-                for (Vector<Double> v : newProperties)
-                    for (Double d : v) {
-                        dump += d + " ";
-                    }
+                dump += changedProperties.size() + " ";
+                for (Vector<PropertyValuePair> v : changedProperties) {
+                    dump += v.size() + " ";
+                    for (PropertyValuePair pvp : v) {
+                        dump += Simulation.propToInt(pvp.property) + " " + pvp.value.toString() + " ";
+                    }                    
+                }
                 break;
             case TEMPERATURE_CHANGE:
                 dump += newTemperatures.size() + " ";
@@ -428,9 +410,6 @@ public class CyclePart {
 
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
-                break;
-
-            case VALUE_CHANGE:
                 break;
         }
         return dump;
@@ -488,14 +467,15 @@ public class CyclePart {
             case SHEAR_STRESS_CHANGE:
                 break;
             case PROPERTIES_CHANGE:
-                int numNewProperties = Integer.parseInt(st.nextToken());
-                newProperties.clear();
-                for (int i = 0; i < numNewProperties; i++) {
-                    Vector<Double> v = new Vector<>();
-                    v.add(Double.parseDouble(st.nextToken()));
-                    v.add(Double.parseDouble(st.nextToken()));
-                    v.add(Double.parseDouble(st.nextToken()));
-                    newProperties.add(v);
+                int numChosenTCEs = Integer.parseInt(st.nextToken());
+                changedProperties.clear();
+                for (int i = 0; i < numChosenTCEs; i++) {
+                    Vector<PropertyValuePair> v = new Vector<>();
+                    int numPVPs = Integer.parseInt(st.nextToken());
+                    for (int j = 0; j < numPVPs; j++) {
+                        v.add(new PropertyValuePair(Simulation.intToProp(Integer.parseInt(st.nextToken())), Double.parseDouble(st.nextToken())));
+                    }
+                    changedProperties.add(v);
                 }
                 break;
             case TEMPERATURE_CHANGE:
@@ -506,8 +486,6 @@ public class CyclePart {
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
-                break;
-            case VALUE_CHANGE:
                 break;
         }
     }

@@ -35,6 +35,37 @@ public abstract class Simulation {
         THERMAL_CONDUCTIVITY,
         EMISSIVITY
     }
+    
+    public static int propToInt(Simulation.Property p) {
+        switch(p) {
+            case DENSITY:
+                return 0;
+            case SPECIFIC_HEAT_CAPACITY:
+                return 1;
+            case THERMAL_CONDUCTIVITY:
+                return 2;
+            case EMISSIVITY:
+                return 3;
+            default:
+                return -1;
+        }
+    }
+
+    public static Simulation.Property intToProp(int i) {
+        switch(i) {
+            case 0:
+                return Property.DENSITY;
+            case 1:
+                return Property.SPECIFIC_HEAT_CAPACITY;
+            case 2:
+                return Property.THERMAL_CONDUCTIVITY;
+            case 3:
+                return Property.EMISSIVITY;
+            default:
+                return Property.DENSITY;
+        }
+    }
+
     abstract void makeTCC();
     abstract void heatTransferStep();
     abstract  void resetHeatSim();

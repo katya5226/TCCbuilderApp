@@ -1993,11 +1993,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
                     simulation1D.cyclePart.execute();  // executes cycle part for time dt at most
+                    GWT.log("FINISHED EXECUTION");
 
                     if (simulation1D.cyclePart.duration > 0.0) {  // maybe here should be > dt
                         simulation1D.time += simulation1D.dt;  // if the duration of current cycle part is 0.0 < duration, advance for dt
                     }
                     simulation1D.cyclePartTime += simulation1D.dt;
+                    simulation1D.cyclePart.partTime += simulation1D.dt;
+                    GWT.log("partTime: " + String.valueOf(simulation1D.cyclePart.partTime));
                     if (simulation1D.cyclePartTime >= simulation1D.cyclePart.duration) {
                         /*if (simulation1D.cyclePart.partType == CyclePart.PartType.MAGNETIC_FIELD_CHANGE && simulation1D.cyclePart.duration > 0.0) {
                             for (ThermalControlElement tce : simulation1D.cyclePart.TCEs) {
@@ -2006,8 +2009,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             }
                         }*/
                         simulation1D.cyclePartTime = 0.0;
+                        GWT.log("1");
+                        simulation1D.cyclePart.partTime = 0.0;
+                        GWT.log("2");
                         simulation1D.cyclePartIndex = (simulation1D.cyclePartIndex + 1) % simulation1D.numCycleParts;
+                        GWT.log("3");
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);
+                        GWT.log("4");
                     }
                 }
             }
