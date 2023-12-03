@@ -96,7 +96,6 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Properties Change");
         cyclePartListBox.addItem("Temperature Change");
         cyclePartListBox.addItem("Toggle TCE");
-//        cyclePartListBox.addItem("Value Change ");
         cyclePartListBox.addItem("Time pass");
 
 
@@ -238,10 +237,9 @@ public class CyclicDialog extends Dialog {
                         cyclePart.duration = duration.getValue();
                         break;
                     case PROPERTIES_CHANGE:
-                    case TEMPERATURE_CHANGE:
                         cyclePart.duration = duration.getValue();
                         break;
-                    case VALUE_CHANGE:
+                    case TEMPERATURE_CHANGE:
                         cyclePart.duration = duration.getValue();
                         break;
                     case HEAT_INPUT:
@@ -295,18 +293,16 @@ public class CyclicDialog extends Dialog {
                         case SHEAR_STRESS_CHANGE:
                             break;
                         case PROPERTIES_CHANGE:
-                            if (newRho.getValue() == 0 || newCp.getValue() == 0 || newK.getValue() == 0) {
-                                Window.alert("Value must be -1 or greater than 0.001!");
-                                sim.simulation1D.cycleParts.remove(sim.simulation1D.cycleParts.size() - 1);
-                                break;
-                            }
-
                             cyclePart.TCEs.add(chosenComponent);
-                            cyclePart.newProperties.add(new Vector<Double>());
-                            cyclePart.newProperties.lastElement().add(newRho.getValue());
-                            cyclePart.newProperties.lastElement().add(newCp.getValue());
-                            cyclePart.newProperties.lastElement().add(newK.getValue());
-
+                            cyclePart.changedProperties.add(new Vector<CyclePart.PropertyValuePair>());
+//                            GWT.log(cyclePart.changedProperties.lastElement().toString());
+                            CyclePart.PropertyValuePair propertyValuePair = null;
+                            if (newRho.isVisible() && !newRho.getText().isEmpty())
+                                cyclePart.changedProperties.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
+                            if (newCp.isVisible() && !newCp.getText().isEmpty())
+                                cyclePart.changedProperties.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
+                            if (newK.isVisible() && !newK.getText().isEmpty())
+                                cyclePart.changedProperties.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                         case TEMPERATURE_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
@@ -314,18 +310,6 @@ public class CyclicDialog extends Dialog {
                             break;
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
                             cyclePart.TCEs.add(chosenComponent);
-                            break;
-                        case VALUE_CHANGE:
-                            cyclePart.TCEs.add(chosenComponent);
-                            cyclePart.changedValues.add(new Vector<>());
-//                            GWT.log(cyclePart.changedValues.lastElement().toString());
-                            CyclePart.PropertyValuePair propertyValuePair = null;
-                            if (newRho.isVisible() && !newRho.getText().isEmpty())
-                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
-                            if (newCp.isVisible() && !newCp.getText().isEmpty())
-                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
-                            if (newK.isVisible() && !newK.getText().isEmpty())
-                                cyclePart.changedValues.lastElement().add(propertyValuePair = new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                         case TIME_PASS:
                             break;
@@ -354,32 +338,19 @@ public class CyclicDialog extends Dialog {
                         case SHEAR_STRESS_CHANGE:
                             break;
                         case PROPERTIES_CHANGE:
-                            if (newRho.getValue() == 0 || newCp.getValue() == 0 || newK.getValue() == 0) {
-                                Window.alert("Value must be -1 or greater than 0.001!");
-                                sim.simulation1D.cycleParts.remove(sim.simulation1D.cycleParts.size() - 1);
-                                break;
-                            }
-
-                            cyclePart.newProperties.set(index, new Vector<Double>());
-                            cyclePart.newProperties.get(index).add(newRho.getValue());
-                            cyclePart.newProperties.get(index).add(newCp.getValue());
-                            cyclePart.newProperties.get(index).add(newK.getValue());
-
+                            cyclePart.changedProperties.set(index, new Vector<CyclePart.PropertyValuePair>());
+                            if (newRho.isVisible() && !newRho.getText().isEmpty())
+                                cyclePart.changedProperties.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
+                            if (newCp.isVisible() && !newCp.getText().isEmpty())
+                                cyclePart.changedProperties.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
+                            if (newK.isVisible() && !newK.getText().isEmpty())
+                                cyclePart.changedProperties.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                         case TEMPERATURE_CHANGE:
                             cyclePart.newTemperatures.set(index, newTemperature.getValue());
                             sim.simulation1D.setTemperatureRange();
                             break;
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
-                            break;
-                        case VALUE_CHANGE:
-                            cyclePart.changedValues.set(index, new Vector<>());
-                            if (newRho.isVisible() && !newRho.getText().isEmpty())
-                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.DENSITY, newRho.getValue()));
-                            if (newCp.isVisible() && !newCp.getText().isEmpty())
-                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newCp.getValue()));
-                            if (newK.isVisible() && !newK.getText().isEmpty())
-                                cyclePart.changedValues.get(index).add(new CyclePart.PropertyValuePair(Simulation.Property.THERMAL_CONDUCTIVITY, newK.getValue()));
                             break;
                         case TIME_PASS:
                             break;
@@ -490,14 +461,6 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TOGGLE_THERMAL_CONTROL_ELEMENT;
                         break;
-                    case "Value Change":
-                        componentsLabel.setVisible(true);
-                        componentsListBox.setVisible(true);
-                        durationLabel.setVisible(true);
-                        duration.setVisible(true);
-                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
-                        cyclePart.partType = CyclePart.PartType.VALUE_CHANGE;
-                        break;
                     case "Time pass":
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
@@ -579,33 +542,18 @@ public class CyclicDialog extends Dialog {
                     case SHEAR_STRESS_CHANGE:
                         break;
                     case PROPERTIES_CHANGE:
-                        newRho.setValue(chosenComponent.constRho);
-                        newCp.setValue(chosenComponent.constCp);
-                        newK.setValue(chosenComponent.constK);
-                        rhoLabel.setVisible(true);
-                        newRho.setVisible(true);
-                        cpLabel.setVisible(true);
-                        newCp.setVisible(true);
-                        kLabel.setVisible(true);
-                        newK.setVisible(true);
+                        rhoCheckBox.setVisible(true);
+                        cpCheckBox.setVisible(true);
+                        kCheckBox.setVisible(true);
                         addComponentButton.setVisible(true);
-
                         break;
                     case TEMPERATURE_CHANGE:
                         newTemperatureLabel.setVisible(true);
                         newTemperature.setVisible(true);
                         addComponentButton.setVisible(true);
-
                         break;
                     case TOGGLE_THERMAL_CONTROL_ELEMENT:
                         addComponentButton.setVisible(true);
-                        break;
-                    case VALUE_CHANGE:
-                        rhoCheckBox.setVisible(true);
-                        cpCheckBox.setVisible(true);
-                        kCheckBox.setVisible(true);
-                        addComponentButton.setVisible(true);
-
                         break;
                     case TIME_PASS:
                         break;
@@ -656,8 +604,6 @@ public class CyclicDialog extends Dialog {
                     break;
                 case TOGGLE_THERMAL_CONTROL_ELEMENT:
                     add = tce instanceof SwitchElm;
-                    break;
-                case VALUE_CHANGE:
                     break;
                 case TIME_PASS:
                     break;
@@ -721,19 +667,15 @@ public class CyclicDialog extends Dialog {
                 for (int i = 0; i < TCEs.size(); i++) {
                     ThermalControlElement c = TCEs.get(i);
                     label.setHTML(label.getHTML() + "&emsp;&emsp;" + c.name + " " + c.index);
-                    if (cyclePart.newProperties.get(i).get(0) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;rho: " + cyclePart.newProperties.get(i).get(0) + ", ");
-                    if (cyclePart.newProperties.get(i).get(1) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;cp: " + cyclePart.newProperties.get(i).get(1) + ", ");
-                    if (cyclePart.newProperties.get(i).get(2) != -1)
-                        label.setHTML(label.getHTML() + "&emsp;k: " + cyclePart.newProperties.get(i).get(2) + ", ");
+                    Vector<CyclePart.PropertyValuePair> v = cp.changedProperties.get(i);
+                    for (CyclePart.PropertyValuePair pvp : v) {
+                        label.setHTML(label.getHTML() + "&emsp;&emsp;" + (pvp.property + " (" + Simulation.propUnit(pvp.property) + ") ") + pvp.value);
+                    }                    
                 }
                 label.setHTML(label.getHTML() + "</br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
             case TEMPERATURE_CHANGE:
-                break;
-            case VALUE_CHANGE:
                 break;
             case TIME_PASS:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
