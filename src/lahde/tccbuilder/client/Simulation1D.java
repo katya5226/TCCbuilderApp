@@ -248,6 +248,12 @@ public class Simulation1D extends Simulation {
                     //"Material: " + component.material.materialName + "\n" +
                     "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + CirSim.formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "West contact resistance: " + tce.westResistance + " m²K/W\n" + "East contact resistance: " + tce.eastResistance + " m²K/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
         }
+        if (cyclic) {
+            dump += "\nCycle parts:\n";
+            for (CyclePart cp : cycleParts) {
+                dump += cp.toReport();
+            }
+        }
         dump += "\nTemperatures:\n";
         dump += "Time\t";
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {

@@ -295,18 +295,6 @@ public class CyclePart {
     void shearStressChange() {
     }
 
-    // This method must be modified by Katni - use constProperty, also change in cyclic dialog
-    // void propertiesChange() {
-    //     for (int i = 0; i < TCEs.size(); i++) {
-    //         ThermalControlElement tce = TCEs.get(i);
-    //         Vector<Double> newProps = newProperties.get(i);
-    //         tce.setConstProperty(Simulation.Property.DENSITY, newProps.get(0));
-    //         tce.setConstProperty(Simulation.Property.SPECIFIC_HEAT_CAPACITY, newProps.get(1));
-    //         tce.setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, newProps.get(2));
-    //     }
-    // }
-
-
     void propertiesChange() {
         // int steps = (int) (duration / sim.simulation1D.dt);
         for (int i = 0; i < changedProperties.size(); i++) {
@@ -357,6 +345,64 @@ public class CyclePart {
             SwitchElm switchElm = (SwitchElm) thermalControlElement;
             switchElm.toggle();
         }
+    }
+
+    public String toReport() {
+        String report = partIndex + " " + partType + " Duration: " + duration + " s\n";
+        switch (partType) {
+            case HEAT_TRANSFER:
+                break;
+            case HEAT_INPUT:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Heat input: ";
+                    report += String.valueOf(heatInputs.get(TCEs.indexOf(tce))) + " W/m³\n";
+                }
+                break;
+            case MECHANIC_DISPLACEMENT:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New indeces: ";
+                    report += String.valueOf(newIndexes.get(TCEs.indexOf(tce))) + "\n";
+                }
+                break;
+            case MAGNETIC_FIELD_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexM = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexM)) + " T\n";
+                }
+                break;
+            case ELECTRIC_FIELD_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " T\n";
+                }
+                break;
+            case PRESSURE_CHANGE:
+                break;
+            case SHEAR_STRESS_CHANGE:
+                break;
+            case PROPERTIES_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Properties:\n";
+                    for (PropertyValuePair pvp : changedProperties.get(TCEs.indexOf(tce))) {
+                        report += pvp.property + " ";
+                        report += pvp.value;
+                        report += " " + Simulation.propUnit(pvp.property) + "\n";
+                    }
+                }
+                break;
+            case TEMPERATURE_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New tempeature: ";
+                    report += String.valueOf(newTemperatures.get(TCEs.indexOf(tce))) + " K\n";
+                }
+                break;
+            case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+        }
+        report += "\n";
+        return report;
     }
 
     public String dump() {
@@ -413,6 +459,7 @@ public class CyclePart {
         }
         return dump;
     }
+
     public void unDump(StringTokenizer st) {
 
         // Parse and set common properties
