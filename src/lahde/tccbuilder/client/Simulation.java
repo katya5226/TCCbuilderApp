@@ -66,6 +66,21 @@ public abstract class Simulation {
         }
     }
 
+    public static String propUnit(Simulation.Property p) {
+        switch(p) {
+            case DENSITY:
+                return "kg/m³";
+            case SPECIFIC_HEAT_CAPACITY:
+                return "J/(kgK)";
+            case THERMAL_CONDUCTIVITY:
+                return "W/(mK)";
+            case EMISSIVITY:
+                return "";
+            default:
+                return "";
+        }
+    }
+
     abstract void makeTCC();
     abstract void heatTransferStep();
     abstract  void resetHeatSim();

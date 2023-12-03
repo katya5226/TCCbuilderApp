@@ -137,14 +137,13 @@ public class CyclePart {
                 flexTable.setText(row++, 0, tce.index + " " + tce.name);
                 Vector<PropertyValuePair> v = changedProperties.get(i);
                 for (PropertyValuePair pvp : v) {
-                    flexTable.setText(row, 0, String.valueOf(pvp.property));
+                    flexTable.setText(row, 0, String.valueOf(pvp.property) + " (" + Simulation.propUnit(pvp.property) + ") ");
                     flexTable.setText(row++, 1, String.valueOf(pvp.value));
                 }
             }
         }
         row++;
         column = 0;
-
 
         HTMLPanel htmlPanel = new HTMLPanel("");
         htmlPanel.addStyleName("cycle-part-outer");

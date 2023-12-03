@@ -669,7 +669,7 @@ public class CyclicDialog extends Dialog {
                     label.setHTML(label.getHTML() + "&emsp;&emsp;" + c.name + " " + c.index);
                     Vector<CyclePart.PropertyValuePair> v = cp.changedProperties.get(i);
                     for (CyclePart.PropertyValuePair pvp : v) {
-                        label.setHTML(label.getHTML() + "&emsp;&emsp;" + pvp.property + " " + pvp.value);
+                        label.setHTML(label.getHTML() + "&emsp;&emsp;" + (pvp.property + " (" + Simulation.propUnit(pvp.property) + ") ") + pvp.value);
                     }                    
                 }
                 label.setHTML(label.getHTML() + "</br>");
