@@ -179,6 +179,7 @@ public class CyclePart {
         button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                Window.alert("Cycle part deletion is irreversible.");
                 CirSim.theSim.simulation1D.cycleParts.remove(theCyclePart);
                 CirSim.theSim.fillCyclicPanel();
             }
