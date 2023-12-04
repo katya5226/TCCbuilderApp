@@ -8,10 +8,10 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
 
     public DiodeElm_LSCO_LCO(int xx, int yy) {
         super(xx, yy);
-        DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
-        sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
+        // DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
+        // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
-        sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+        // sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
         sim.calculateElementsLengths();
 
         int newX = sim.snapGrid((int) (xx + length * sim.selectedLengthUnit.conversionFactor * sim.gridSize));
@@ -43,17 +43,20 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                EditInfo editInfo = new EditInfo("Length", CirSim.formatLength(length));
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
                 operatingRange.editable = false;
                 return operatingRange;
+            // case 8:
+            //     return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -75,7 +78,7 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-setNewLength(ei.value);
+                setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;
@@ -83,6 +86,9 @@ setNewLength(ei.value);
             case 6:
                 eastResistance = ei.value;
                 break;
+            // case 8:
+            //     hTransv = ei.value;
+            //     break;
             default:
                 break;
 
@@ -124,9 +130,22 @@ setNewLength(ei.value);
         if (!LCO.isLoaded())
             LCO.readFiles();
         int ratioIndex = (int) ((6.1 / 12.4) * numCvs);
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).material = i < ratioIndex ? LSCO : LCO;
+
+        if (direction == CircuitElm.Direction.RIGHT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < ratioIndex ? LSCO : LCO;
+            }
         }
+        if (direction == CircuitElm.Direction.LEFT) {
+            for (int i = 0; i < numCvs; i++) {
+                cvs.get(i).material = i < (numCvs - ratioIndex) ? LCO : LSCO;
+            }
+        }
+    }
+
+    @Override
+        public void checkDirection(double boundaryTw, double boundaryTe) {
+        return;
     }
 
     @Override

@@ -1,4 +1,5 @@
 package lahde.tccbuilder.client;
+import com.google.gwt.user.client.ui.*;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
@@ -6,6 +7,8 @@ import com.google.gwt.core.client.GWT;
 import java.lang.Math;
 import java.util.*;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
@@ -19,13 +22,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public Material material;
     public double westResistance;
     public double eastResistance;
+    public double volumeHeatGeneration;
     public ThermalControlElement westNeighbour;
     public ThermalControlElement eastNeighbour;
-    public int westBoundary;
-    public int eastBoundary;
+    public Simulation.BorderCondition westBoundary;
+    public Simulation.BorderCondition eastBoundary;
     public double constRho;
     public double constCp;
     public double constK;
+    public double hTransv;
+    public double startTemperature;
     public double operatingMax;
     public double operatingMin;
     public boolean hasOperatingRange;
@@ -53,7 +59,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
         isDisabled = false;
         field = false;
-        fieldIndex = 1;
+        fieldIndex = 0;
         buildThermalControlElement();
 
     }
@@ -75,7 +81,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
         field = false;
-        fieldIndex = 1;
+        fieldIndex = Integer.parseInt(st.nextToken());
         buildThermalControlElement();
         int counter = 0;
         Material m = null;
@@ -102,14 +108,15 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         cvs = new Vector<ControlVolume>();
         westResistance = 0.0; // This is yet to be linked to the CV.
         eastResistance = 0.0;
+        volumeHeatGeneration = 0.0;
         westNeighbour = null;
         eastNeighbour = null;
-        westBoundary = 51;
-        eastBoundary = 52;
+        westBoundary = Simulation.BorderCondition.CONVECTIVE;
+        eastBoundary = Simulation.BorderCondition.CONVECTIVE;
         constRho = -1;
         constCp = -1;
         constK = -1;
-
+        startTemperature = -1;
     }
 
     public void calculateLength() {
@@ -139,16 +146,18 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             if (constK != -1) {
                 cvs.get(i).constK = constK;
             }
+            cvs.get(i).constQgen = volumeHeatGeneration;
+            cvs.get(i).hTransv = hTransv;
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
 
     }
 
-    public void set_starting_temps(double start_temp) {
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).temperature = start_temp;
-            cvs.get(i).temperatureOld = start_temp;
+    public void setTemperatures(double startTemp) {
+        for (ControlVolume cv : cvs) {
+            cv.temperature = startTemp;
+            cv.temperatureOld = startTemp;
         }
     }
 
@@ -195,6 +204,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(eastResistance).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
+        sb.append(fieldIndex).append(' ');
 
         int counter = 0;
         int currentIndex = sim.materialNames.indexOf(material.materialName);
@@ -333,15 +343,33 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 5:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 6:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 7:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 8:
-                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
+                return new EditInfo("Heat generation (W/m³)", volumeHeatGeneration);
             case 9:
-                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
+                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
             case 10:
+                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
+            case 11:
                 return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
+            case 12:
+                return new EditInfo("Initial Temperature (K)", startTemperature);
+            case 13:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 14:
+                //return EditInfo.createCheckbox("Turn on external field", field);
+                EditInfo ei3 = EditInfo.createButton("Toggle external field");
+                ei3.button.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        field = !field;
+                        Window.alert("Field = " + String.valueOf(field));
+                    }
+                });
+                return ei3;
+            // case 15:
+            //     return new EditInfo("Field", String.valueOf(field), false);
             default:
                 return null;
         }
@@ -380,18 +408,30 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 eastResistance = ei.value;
                 break;
             case 8:
-                constRho = ei.value;
+                volumeHeatGeneration = ei.value;
                 break;
             case 9:
-                constCp = ei.value;
+                constRho = ei.value;
                 break;
             case 10:
+                constCp = ei.value;
+                break;
+            case 11:
                 constK = ei.value;
                 break;
-
+            case 12:
+                startTemperature = (double) ei.value;
+                if (startTemperature >= 0) {
+                    setTemperatures(startTemperature);
+                    // GWT.log(String.valueOf(cvs.get(0).temperature));
+                }
+                break;
+            case 13:
+                hTransv = (double) ei.value;
+                break;
+            case 14:
+                break;
         }
-
-
         updateElement();
 
     }
@@ -437,55 +477,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             return null;
     }
 
-    /*public void set_constant_parameters(String[] parameters, double[] values) {
-        for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i].equals("rho")) {
-                for (ControlVolume cv : cvs) {
-                    cv.constRho = values[i];
-                }
-            }
-            if (parameters[i].equals("cp")) {
-                for (ControlVolume cv : cvs) {
-                    cv.constCp = values[i];
-                }
-            }
-            if (parameters[i].equals("k")) {
-                for (ControlVolume cv : cvs) {
-                    cv.constK = values[i];
-                }
-            }
-        }
-    }
-
-    public void setConstProperties(Vector<Double> newProps) {
-        if (newProps.size() != 3) {
-            GWT.log("Vector of new properties must contain three values.");
-        }
-        for (int i = 0; i < numCvs; i++) {
-            cvs.get(i).constRho = newProps.get(0);
-            cvs.get(i).constCp = newProps.get(1);
-            cvs.get(i).constK = newProps.get(2);
-        }
-    }
-
-    public void setConstProperty(String property, double value) {
-        if (property.equals("rho")) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).constRho = value;
-            }
-        }
-        if (property.equals("cp")) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).constCp = value;
-            }
-        }
-        if (property.equals("k")) {
-            for (int i = 0; i < numCvs; i++) {
-                this.cvs.get(i).constK = value;
-            }
-        }
-    }*/
-
     public void setConstProperty(Simulation.Property property, double value) {
         switch (property) {
             case DENSITY:
@@ -506,13 +497,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public void set_dx(double dx) {
         for (ControlVolume cv : cvs) {
             cv.dx = dx;
-        }
-    }
-
-    public void set_temperatures(double temp) {
-        for (ControlVolume cv : cvs) {
-            cv.temperature = temp;
-            cv.temperatureOld = temp;
         }
     }
 
@@ -540,6 +524,16 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             cvs.get(i).magnetize();
         }
         // GWT.log("Finished (de)magnetization.");
+        field = !field;
+    }
+
+    public void ePolarize() {
+        // Check if given TCE's material's electrocaloric flag is TRUE;
+        // if not, abort and inform the user.
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).ePolarize();
+        }
+        // GWT.log("Finished (de)polarization.");
         field = !field;
     }
 

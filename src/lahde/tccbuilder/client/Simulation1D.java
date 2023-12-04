@@ -53,9 +53,13 @@ public class Simulation1D extends Simulation {
         cyclePartTime = 0.0;
         cyclePartIndex = 0;
 
+        outputInterval = 1;
+
         ud = 0;
         x_prev = new Vector<Double>();
         x_mod = new Vector<Double>();
+
+        customTempRange = false;
 
     }
 
@@ -77,6 +81,15 @@ public class Simulation1D extends Simulation {
         this.times.add(this.time);
     }
 
+    void checkDiodes() {
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce instanceof DiodeElm) {
+                DiodeElm di = (DiodeElm) tce;
+                di.checkDirection(heatCircuit.temperatureWest, heatCircuit.temperatureEast);
+            }
+        }
+    }
+
     public void heatTransferStep() {
         x_mod.clear();
         x_prev.clear();
@@ -88,6 +101,7 @@ public class Simulation1D extends Simulation {
         //while (true) {
         for (int k = 0; k < 3; k++) {
             // heatCircuit.neighbours()
+            checkDiodes();
             heatCircuit.calculateConductivities();
 
             heatCircuit.makeMatrix(dt);
@@ -108,7 +122,7 @@ public class Simulation1D extends Simulation {
             //     break;
             // }
         }
-
+        checkDiodes();
         heatCircuit.calculateConductivities();
         heatCircuit.makeMatrix(this.dt);
         ModelMethods.tdmaSolve(heatCircuit.cvs, heatCircuit.underdiag, heatCircuit.diag, heatCircuit.upperdiag, heatCircuit.rhs);
@@ -129,19 +143,20 @@ public class Simulation1D extends Simulation {
         for (ThermalControlElement tce : simTCEs) {
             if (tce instanceof RegulatorElm) {
                 RegulatorElm reg = (RegulatorElm) tce;
-                reg.setCpCurve();
+                reg.setThermalProperties();
             }
         }
 
         heatCircuit = new TCC("Heat circuit", simTCEs);
-        heatCircuit.westBoundary = 41;
-        heatCircuit.eastBoundary = 42;//TODO: change
+        heatCircuit.westBoundary = westBoundary;
+        heatCircuit.eastBoundary = eastBoundary;
         heatCircuit.hWest = hWest;
         heatCircuit.hEast = hEast;
         heatCircuit.temperatureWest = tempWest;
         heatCircuit.temperatureEast = tempEast;
         heatCircuit.qWest = qWest;
         heatCircuit.qEast = qEast;
+        heatCircuit.ambientTemperature = ambientTemperature;
 
         heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();
@@ -149,7 +164,16 @@ public class Simulation1D extends Simulation {
         double[] temps = new double[n];
 
         Arrays.fill(temps, startTemp);
-        heatCircuit.setTemperatures(temps);
+        //heatCircuit.setTemperatures(temps);
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.startTemperature == -1) {
+                tce.setTemperatures(startTemp);
+            }
+            else {
+                tce.setTemperatures(tce.startTemperature);
+            }
+            GWT.log(String.valueOf(tce.cvs.get(0).temperature));
+        }
 
         setTemperatureRange();
 
@@ -168,24 +192,39 @@ public class Simulation1D extends Simulation {
     }
 
     void setTemperatureRange() {
+        if (customTempRange == true) return;
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
-            if (c.cvs.get(0).material.magnetocaloric) {  // TODO - material
-                for (Vector<Double> dTcoolingVector : c.cvs.get(0).material.dTcooling) {
+            if (c.material.magnetocaloric) {
+                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
                     maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
                 }
 
-                for (Vector<Double> dTheatingVector : c.cvs.get(0).material.dTheating) {
+                for (Vector<Double> dTheatingVector : c.material.dTheating) {
                     maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
                 }
             }
+            if (c.material.electrocaloric) {
+                for (Vector<Double> dTVector : c.material.dT) {
+                    maxValue = Math.max(maxValue, Math.abs(Collections.max(dTVector)));
+                }
+            }
         }
+        double TCEmax = 0;
+        double TCEmin = 2000;
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.startTemperature >= 0) {
+                if (tce.startTemperature > TCEmax) TCEmax = tce.startTemperature;
+                if (tce.startTemperature < TCEmin) TCEmin = tce.startTemperature;
+            }
+        }
+
         if (maxValue == 0) {
-            minTemp = Math.min(startTemp, Math.min(tempWest, tempEast));
-            maxTemp = Math.max(startTemp, Math.max(tempWest, tempEast));
+            minTemp = Math.min(Math.min(startTemp, TCEmin), Math.min(tempWest, tempEast));
+            maxTemp = Math.max(Math.max(startTemp, TCEmax), Math.max(tempWest, tempEast));
         } else {
-            minTemp = startTemp - maxValue;
-            maxTemp = startTemp + maxValue;
+            minTemp = Math.min(startTemp, TCEmin) - maxValue;
+            maxTemp = Math.max(startTemp, TCEmax) + maxValue;
         }
         maxValue = Double.MIN_VALUE;
         minValue = Double.MAX_VALUE;
@@ -201,13 +240,19 @@ public class Simulation1D extends Simulation {
     @Override
     String getReport() {
         String dump;
-        dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 1D\n" + "Boundary condition on the left: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" + "Boundary condition on the right: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" + "Temperature on the left: " + heatCircuit.temperatureWest + " K\n" + "Convection coefficient on the left: " + heatCircuit.hWest + " W/(m²K)\n" + "Temperature on the right: " + heatCircuit.temperatureEast + " K\n" + "Convection coefficient on the right: " + heatCircuit.hEast + " W/(m²K)\n";
+        dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 1D\n" + "West boundary condition: " + ModelMethods.return_bc_name(heatCircuit.westBoundary) + "\n" + "East boundary condition: " + ModelMethods.return_bc_name(heatCircuit.eastBoundary) + "\n" + "West temperature: " + heatCircuit.temperatureWest + " K\n" + "West convection coefficient: " + heatCircuit.hWest + " W/(m²K)\n" + "East temperature: " + heatCircuit.temperatureEast + " K\n" + "East convection coefficient: " + heatCircuit.hEast + " W/(m²K)\n";
 
         dump += "\nThermal control elements: \n";
         for (ThermalControlElement tce : simTCEs) {
             dump += "TCE name: " + tce.name + "\n" + "TCE index: " + tce.index + "\n" +
                     //"Material: " + component.material.materialName + "\n" +
-                    "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + CirSim.formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "Left contact resistance: " + tce.westResistance + " mK/W\n" + "Right contact resistance: " + tce.eastResistance + " mK/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
+                    "Number of control volumes:  " + tce.numCvs + "\n" + "Control volume length: " + CirSim.formatLength(tce.cvs.get(0).dx) + "\n" + "Constant density: " + ((tce.constRho == -1) ? "not set" : tce.constRho + " kg/m³") + "\n" + "Constant specific heat: " + ((tce.constCp == -1) ? "not set" : tce.constCp + " J/(kgK)") + "\n" + "Constant thermal conductivity: " + ((tce.constK == -1) ? "not set" : tce.constK + " W/(mK)") + "\n" + "West contact resistance: " + tce.westResistance + " m²K/W\n" + "East contact resistance: " + tce.eastResistance + " m²K/W\n" + "Generated heat: " + 0.0 + " W/m²\n\n";
+        }
+        if (cyclic) {
+            dump += "\nCycle parts:\n";
+            for (CyclePart cp : cycleParts) {
+                dump += cp.toReport();
+            }
         }
         dump += "\nTemperatures:\n";
         dump += "Time\t";
@@ -215,7 +260,7 @@ public class Simulation1D extends Simulation {
             dump += "CV# " + i + "\t";
         }
         dump += "\n";
-        for (int i = 0; i < temperatures.size(); i++) {
+        for (int i = 0; i < temperatures.size(); i+= outputInterval) {
             Double[] temp = temperatures.get(i);
             Double time = times.get(i);
             dump += NumberFormat.getFormat("0.000").format(time) + "\t";

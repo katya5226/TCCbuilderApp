@@ -25,26 +25,33 @@ import com.google.gwt.user.client.Window;
 class DiodeElm extends ThermalControlElement {
 
     double kForward, kBackward;
-    double cp;
-    double rho;
+    // double cp;
+    // double rho;
     double responseTime;
 
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
-
+        material = sim.materialHashMap.get("000000-Custom");
     }
 
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-
+        kForward = Double.parseDouble(st.nextToken());
+        kBackward = Double.parseDouble(st.nextToken());
+        material = sim.materialHashMap.get("000000-Custom");
     }
 
 
     @Override
     int getDumpType() {
         return 'd';
+    }
+
+    @Override
+    String dump() {
+        return super.dump() + kForward + " " + kBackward;
     }
 
 
@@ -100,19 +107,21 @@ class DiodeElm extends ThermalControlElement {
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/mK) - forward", kForward);
             case 8:
                 return new EditInfo("Thermal Conductivity (W/mK) - backward", kBackward);
             case 9:
-                return new EditInfo("Specific Heat Capacity (J/kgK)", cp);
+                return new EditInfo("Specific Heat Capacity (J/kgK)", constCp);
             case 10:
-                return new EditInfo("Density (kg/m³)", rho);
+                return new EditInfo("Density (kg/m³)", constRho);
             case 11:
                 return new EditInfo("Response time (s)", responseTime);
+            case 12:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -149,18 +158,45 @@ class DiodeElm extends ThermalControlElement {
                 kBackward = ei.value;
                 break;
             case 9:
-                constCp = cp = ei.value;
+                constCp = ei.value;
                 break;
             case 10:
-                constRho = rho = ei.value;
+                constRho = ei.value;
                 break;
             case 11:
                 responseTime = ei.value;
+                break;
+            case 12:
+                hTransv = ei.value;      
                 break;
         }
 
 
         updateElement();
+    }
+
+    public void checkDirection(double boundaryTw, double boundaryTe) {
+        double Twest, Teast;
+        if (westNeighbour != null && westNeighbour != this)
+            Twest = cvs.get(0).westNeighbour.temperature;
+        else Twest = boundaryTw;
+        if (westNeighbour != null && westNeighbour != this)
+            Teast = cvs.get(cvs.size() - 1).eastNeighbour.temperature;
+        else Teast = boundaryTe;
+
+        double dT = Twest - Teast;
+        if (direction == CircuitElm.Direction.RIGHT && dT >= 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kForward);
+        }
+        if (direction == CircuitElm.Direction.LEFT && dT <= 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kForward);
+        }
+        if (direction == CircuitElm.Direction.RIGHT && dT < 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+        }
+        if (direction == CircuitElm.Direction.LEFT && dT > 0) {
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+        }
     }
 
 

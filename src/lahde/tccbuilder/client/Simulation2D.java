@@ -35,6 +35,8 @@ public class Simulation2D extends Simulation {
         totalTime = 0.0;
         time = 0.0;
 
+        customTempRange = false;
+
     }
 
     @Override
@@ -58,6 +60,7 @@ public class Simulation2D extends Simulation {
 
     @Override
     void setTemperatureRange() {
+        if (customTempRange == true) return;
         minTemp = Math.min(startTemp, Math.min(twoDimBC.T[0], twoDimBC.T[1]));
         maxTemp = Math.max(startTemp, Math.max(twoDimBC.T[0], twoDimBC.T[1]));
     }
@@ -74,13 +77,13 @@ public class Simulation2D extends Simulation {
 
     @Override
     String getReport() {
-        String dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 2D\n" + "Boundary condition on the left: " + westBoundary + "\n" + "Boundary condition on the right: " + eastBoundary + "\n" + "Temperature on the left: " + " K\n" + "Convection coefficient on the left: " + " W/(m²K)\n" + "Temperature on the right: " + " K\n" + "Convection coefficient on the right: " + " W/(m²K)\n";
+        String dump = "Data directory: " + "/materials\n" + "Time step dt: " + dt + "\n" + "Dimensionality: 2D\n" + "West boundary condition: " + westBoundary + "\n" + "East Boundary condition on the right: " + eastBoundary + "\n" + "West temperature: " + " K\n" + "West convection coefficient: " + " W/(m²K)\n" + "East temperature: " + " K\n" + "East convection coefficient: " + " W/(m²K)\n";
 
         dump += "\nThermal control elements: \n";
         dump += "\nTCE: " + twoDimTCE.name + "\n";
         dump += "Components: \n";
         for (TwoDimComponent component : twoDimTCE.components) {
-            dump += "Component name: " + component.name + "\n" + "Component index: " + component.index + "\n" + "Material: " + component.material.materialName + "\n" + "X-discretizaton number:  " + component.n + "\n" + "Y-discretizaton number:  " + component.m + "\n" + "Control volume length: " + CirSim.formatLength(component.cvs.get(0).dx) + "\n" + "Control volume height: " + CirSim.formatLength(component.cvs.get(0).dy) + "\n" + "Constant density: " + (component.cvs.get(0).constRho == -1 ? "not set" : component.cvs.get(0).constRho) + "kg/m³\n" + "Constant specific heat: " + (component.cvs.get(0).constCp == -1 ? "not set" : component.cvs.get(0).constCp) + "J/(kgK)\n" + "Constant thermal conductivity: " + (component.cvs.get(0).constK == -1 ? "not set" : component.cvs.get(0).constK) + " W/(mK)\n" + "Left contact resistance: " + component.resistances[0] + "mK/W\n" + "Right contact resistance: " + component.resistances[1] + "mK/W\n" + "Bottom contact resistance: " + component.resistances[2] + "mK/W\n" + "Top contact resistance: " + component.resistances[3] + "mK/W\n" + "Generated heat: " + 0.0 + "W/m²\n\n";
+            dump += "Component name: " + component.name + "\n" + "Component index: " + component.index + "\n" + "Material: " + component.material.materialName + "\n" + "X-discretizaton number:  " + component.n + "\n" + "Y-discretizaton number:  " + component.m + "\n" + "Control volume length: " + CirSim.formatLength(component.cvs.get(0).dx) + "\n" + "Control volume height: " + CirSim.formatLength(component.cvs.get(0).dy) + "\n" + "Constant density: " + (component.cvs.get(0).constRho == -1 ? "not set" : component.cvs.get(0).constRho) + "kg/m³\n" + "Constant specific heat: " + (component.cvs.get(0).constCp == -1 ? "not set" : component.cvs.get(0).constCp) + "J/(kgK)\n" + "Constant thermal conductivity: " + (component.cvs.get(0).constK == -1 ? "not set" : component.cvs.get(0).constK) + " W/(mK)\n" + "West contact resistance: " + component.resistances[0] + "m²K/W\n" + "East contact resistance: " + component.resistances[1] + "m²K/W\n" + "South contact resistance: " + component.resistances[2] + "m²K/W\n" + "North contact resistance: " + component.resistances[3] + "m²K/W\n" + "Generated heat: " + 0.0 + "W/m²\n\n";
         }
         dump += "\nTemperatures at " + NumberFormat.getFormat("0.00").format(time) + "s\n";
         Vector<TwoDimCV> cvs = twoDimTCE.cvs;

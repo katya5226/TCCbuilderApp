@@ -90,13 +90,13 @@ class ResistorElm extends ThermalControlElement {
     public EditInfo getEditInfo(int n) {
         EditInfo out = super.getEditInfo(n);
         switch (n) {
-            case 8:
+            case 9:
                 out = EditInfo.createCheckboxWithField("Constant Density", !(constRho == -1), constRho);
                 break;
-            case 9:
+            case 10:
                 out = EditInfo.createCheckboxWithField("Constant Specific Heat Capacity", !(constCp == -1), constCp);
                 break;
-            case 10:
+            case 11:
                 out = EditInfo.createCheckboxWithField("Constant Thermal Conductivity", !(constK == -1), constK);
                 break;
         }

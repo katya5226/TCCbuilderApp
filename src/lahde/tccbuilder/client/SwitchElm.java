@@ -33,6 +33,7 @@ class SwitchElm extends ThermalControlElement {
 
     public SwitchElm(int xx, int yy) {
         super(xx, yy);
+        material = sim.materialHashMap.get("000000-Custom");
         momentary = false;
         position = 1;
         posCount = 2;
@@ -40,6 +41,7 @@ class SwitchElm extends ThermalControlElement {
 
     SwitchElm(int xx, int yy, boolean mm) {
         super(xx, yy);
+        material = sim.materialHashMap.get("000000-Custom");
         position = (mm) ? 1 : 0;
         momentary = mm;
         posCount = 2;
@@ -48,8 +50,11 @@ class SwitchElm extends ThermalControlElement {
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        material = sim.materialHashMap.get("000000-Custom");
         position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
+        kOn = Double.parseDouble(st.nextToken());
+        kOff = Double.parseDouble(st.nextToken());
         posCount = 2;
     }
 
@@ -61,7 +66,7 @@ class SwitchElm extends ThermalControlElement {
 
     @Override
     String dump() {
-        return super.dump() + position + " " + momentary;
+        return super.dump() + position + " " + momentary + " " + kOn + " " + kOff;
     }
 
     Point ps, ps2;
@@ -118,9 +123,9 @@ class SwitchElm extends ThermalControlElement {
             case 4:
                 return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/mK) - ON", kOn);
             case 8:

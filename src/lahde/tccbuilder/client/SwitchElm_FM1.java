@@ -6,9 +6,9 @@ public class SwitchElm_FM1 extends SwitchElm {
     public SwitchElm_FM1(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
-        sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
+        // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
-        sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+        // sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
 
         sim.calculateElementsLengths();
 
@@ -65,11 +65,12 @@ public class SwitchElm_FM1 extends SwitchElm {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length", CirSim.formatLength(length));
             case 5:
-                return new EditInfo("West contact resistance (mK/W)", westResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
-                return new EditInfo("East contact resistance (mK/W)", eastResistance);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
                 return new EditInfo("Thermal Conductivity (W/m/K) - ON", kOn, false);
             case 8:
@@ -84,6 +85,8 @@ public class SwitchElm_FM1 extends SwitchElm {
                 return new EditInfo("Density (kg/m³) - OFF", rhoOff, false);
             case 13:
                 return new EditInfo("Response Time (s)", responseTime, false);
+            case 14:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
         }
@@ -106,13 +109,16 @@ public class SwitchElm_FM1 extends SwitchElm {
                 color = Color.translateColorIndex(ei.choice.getSelectedIndex());
                 break;
             case 4:
-setNewLength(ei.value);
+                setNewLength(ei.value);
                 break;
             case 5:
                 westResistance = ei.value;
                 break;
             case 6:
                 eastResistance = ei.value;
+                break;
+            case 14:
+                hTransv = ei.value;
                 break;
             default:
                 break;

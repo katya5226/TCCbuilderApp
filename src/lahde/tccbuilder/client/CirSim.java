@@ -86,6 +86,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar optionsMenuBar;
     CheckboxMenuItem showTemperaturesCheckItem;
     CheckboxMenuItem showOverlayCheckItem;
+    CheckboxMenuItem customTempRangeCheckItem;
+    CheckboxMenuItem outputIntervalItem;
     CheckboxMenuItem smallGridCheckItem;
     CheckboxMenuItem crossHairCheckItem;
     CheckboxMenuItem noEditCheckItem;
@@ -106,6 +108,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     MenuBar mainMenuBar, drawMenuBar;
 
     StartDialog startDialog;
+    TemperaturesDialog tempsDialog;
+    IntervalDialog intervalDialog;
 
     String lastCursorStyle;
     boolean mouseWasOverSplitter = false;
@@ -260,9 +264,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     public enum LengthUnit {
         MICROMETER(1e6, "µm", "micrometer"),
         MICROMETER_10(1e5, "10µm", "10 micrometers"),
-        MICROMETER_100(1e4, "10µm", "100 micrometers"),
+        MICROMETER_20(5e4, "20µm", "20 micrometers"),
+        MICROMETER_50(2e4, "50µm", "50 micrometers"),
+        MICROMETER_100(1e4, "100µm", "100 micrometers"),
+        MICROMETER_200(5e3, "200µm", "200 micrometers"),
+        MICROMETER_500(2e3, "500µm", "500 micrometers"),
         MILLIMETER(1e3, "mm", "millimeter"),
+        MILLIMETER_5(2e2, "5mm", "5 millimeters"),
         CENTIMETER(1e2, "cm", "centimeter"),
+        CENTIMETER_5(2e1, "5cm", "5 centimeters"),
         DECIMETER(1e1, "dm", "decimeter"),
         METER(1, "m", "meter");
 
@@ -527,6 +537,26 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }));
         showOverlayCheckItem.setState(false);
 
+        m.addItem(customTempRangeCheckItem = new CheckboxMenuItem(Locale.LS("Set custom temperature range"), new Command() {
+            public void execute() {
+                tempsDialog = new TemperaturesDialog(theSim);
+                if (theSim.simDimensionality == 1) {
+                    simulation1D.customTempRange = !simulation1D.customTempRange;
+                    if (simulation1D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation1D.setTemperatureRange();
+                    }
+                }                  
+                else if (theSim.simDimensionality == 2) {
+                    simulation2D.customTempRange = !simulation2D.customTempRange;
+                    if (simulation2D.customTempRange == false) {
+                        tempsDialog.closeDialog();
+                        simulation2D.setTemperatureRange();
+                    }
+                }
+            }
+        }));
+        customTempRangeCheckItem.setState(false);
 
         smallGridCheckItem = new CheckboxMenuItem(Locale.LS("Small Grid"), new Command() {
             public void execute() {
@@ -550,6 +580,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             }
         }));
         mouseWheelEditCheckItem.setState(mouseWheelEdit);
+
+        m.addItem(outputIntervalItem = new CheckboxMenuItem(Locale.LS("Set custom output interval"), new Command() {
+            public void execute() {
+                intervalDialog = new IntervalDialog(theSim);
+            }
+        }));
+        mouseWheelEditCheckItem.setState(false);
 
         new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts"));
         optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other"));
@@ -664,14 +701,32 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                     case "10 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_10;
                         break;
+                    case "20 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_20;
+                        break;
+                    case "50 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_50;
+                        break;
                     case "100 micrometers":
                         selectedLengthUnit = LengthUnit.MICROMETER_100;
+                        break;
+                    case "200 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_200;
+                        break;
+                    case "500 micrometers":
+                        selectedLengthUnit = LengthUnit.MICROMETER_500;
                         break;
                     case "millimeter":
                         selectedLengthUnit = LengthUnit.MILLIMETER;
                         break;
+                    case "5 millimeters":
+                        selectedLengthUnit = LengthUnit.MILLIMETER_5;
+                        break;
                     case "centimeter":
                         selectedLengthUnit = LengthUnit.CENTIMETER;
+                        break;
+                    case "5 centimeters":
+                        selectedLengthUnit = LengthUnit.CENTIMETER_5;
                         break;
                     case "decimeter":
                         selectedLengthUnit = LengthUnit.DECIMETER;
@@ -1616,8 +1671,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (tce.y == tce.y2)
                 lengths.add(Math.abs(tce.x - tce.x2));
 
-            x = Math.min(x, tce.x);
-            y = Math.min(y, tce.y);
+            x = Math.min(tce.x2, Math.min(x, tce.x));
+            y = Math.min(tce.y2, Math.min(y, tce.y));
 
         }
 
@@ -1844,11 +1899,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mouseElm.getInfo(info);
         } else {
             if (simDimensionality == 1) {
-                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation1D.time) + " s";
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
                 info[2] = Locale.LS("components = " + simulation1D.printTCEs());
             } else {
-                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000").format(simulation2D.time) + " s";
+                info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation2D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
                 info[2] = Locale.LS("components = " + simulation2D.printTCEs());
 
@@ -1938,11 +1993,14 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
                     simulation1D.cyclePart.execute();  // executes cycle part for time dt at most
+                    GWT.log("FINISHED EXECUTION");
 
                     if (simulation1D.cyclePart.duration > 0.0) {  // maybe here should be > dt
                         simulation1D.time += simulation1D.dt;  // if the duration of current cycle part is 0.0 < duration, advance for dt
                     }
                     simulation1D.cyclePartTime += simulation1D.dt;
+                    simulation1D.cyclePart.partTime += simulation1D.dt;
+                    GWT.log("partTime: " + String.valueOf(simulation1D.cyclePart.partTime));
                     if (simulation1D.cyclePartTime >= simulation1D.cyclePart.duration) {
                         /*if (simulation1D.cyclePart.partType == CyclePart.PartType.MAGNETIC_FIELD_CHANGE && simulation1D.cyclePart.duration > 0.0) {
                             for (ThermalControlElement tce : simulation1D.cyclePart.TCEs) {
@@ -1951,8 +2009,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             }
                         }*/
                         simulation1D.cyclePartTime = 0.0;
+                        GWT.log("1");
+                        simulation1D.cyclePart.partTime = 0.0;
+                        GWT.log("2");
                         simulation1D.cyclePartIndex = (simulation1D.cyclePartIndex + 1) % simulation1D.numCycleParts;
+                        GWT.log("3");
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);
+                        GWT.log("4");
                     }
                 }
             }
@@ -2235,7 +2298,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         }
         repaint();
     }
-
 
     void doEdit(Editable eable) {
         clearSelection();

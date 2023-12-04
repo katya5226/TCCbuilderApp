@@ -20,20 +20,20 @@ public class StartDialog2D extends Dialog {
     DoubleBox startTemperature;
 
     Label inletHeatFluxLabel;
-    Label leftTemperatureLabel;
-    Label leftConvectionCoefficientLabel;
+    Label westTemperatureLabel;
+    Label westConvectionCoefficientLabel;
     Label outletHeatFluxLabel;
-    Label rightTemperatureLabel;
-    Label rightConvectionCoefficientLabel;
+    Label eastTemperatureLabel;
+    Label eastConvectionCoefficientLabel;
 
     DoubleBox inletHeatFlux;
-    DoubleBox leftTemperature;
-    DoubleBox leftConvectionCoefficient;
+    DoubleBox westTemperature;
+    DoubleBox westConvectionCoefficient;
     DoubleBox outletHeatFlux;
-    DoubleBox rightTemperature;
-    DoubleBox rightConvectionCoefficient;
-    ListBox leftBoundary;
-    ListBox rightBoundary;
+    DoubleBox eastTemperature;
+    DoubleBox eastConvectionCoefficient;
+    ListBox westBoundary;
+    ListBox eastBoundary;
 
     ArrayList<Widget> leftToggleables = new ArrayList<Widget>();
     ArrayList<Widget> rightToggleables = new ArrayList<Widget>();
@@ -51,20 +51,20 @@ public class StartDialog2D extends Dialog {
                         "</iframe>");
 
         fp.add(getHelpButton(test));
-        leftBoundary = new ListBox();
+        westBoundary = new ListBox();
         /*
-        leftBoundary.addItem("Adiabatic");
-        leftBoundary.addItem("Constant Heat Flux");
-        leftBoundary.addItem("Constant Temperature");
+        westBoundary.addItem("Adiabatic");
+        westBoundary.addItem("Constant Heat Flux");
+        westBoundary.addItem("Constant Temperature");
         */
-        leftBoundary.addItem("Convective");
-        rightBoundary = new ListBox();
+        westBoundary.addItem("Convective");
+        eastBoundary = new ListBox();
         /*
-        rightBoundary.addItem("Adiabatic");
-        rightBoundary.addItem("Constant Heat Flux");
-        rightBoundary.addItem("Constant Temperature");
+        eastBoundary.addItem("Adiabatic");
+        eastBoundary.addItem("Constant Heat Flux");
+        eastBoundary.addItem("Constant Temperature");
         */
-        rightBoundary.addItem("Convective");
+        eastBoundary.addItem("Convective");
 
 
         timeStep = new DoubleBox();
@@ -74,63 +74,63 @@ public class StartDialog2D extends Dialog {
         startTemperature.setValue(sim.simulation2D.startTemp);
 
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
-        leftTemperatureLabel = new Label(Locale.LS("Left Temperature ( K )"));
-        leftConvectionCoefficientLabel = new Label(Locale.LS("Left Convection Coefficient ( W/(m²K) )"));
+        westTemperatureLabel = new Label(Locale.LS("West Temperature ( K )"));
+        westConvectionCoefficientLabel = new Label(Locale.LS("West Convection Coefficient ( W/(m²K) )"));
         inletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.simulation2D.qWest);
-        leftTemperature = new DoubleBox();
-        leftTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
-        leftConvectionCoefficient = new DoubleBox();
-        leftConvectionCoefficient.setValue(sim.simulation2D.hWest);
+        westTemperature = new DoubleBox();
+        westTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
+        westConvectionCoefficient = new DoubleBox();
+        westConvectionCoefficient.setValue(sim.simulation2D.hWest);
 
         outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m² )"));
-        rightTemperatureLabel = new Label(Locale.LS("Right Temperature ( K )"));
-        rightConvectionCoefficientLabel = new Label(Locale.LS("Right Convection Coefficient ( W/(m²K) )"));
+        eastTemperatureLabel = new Label(Locale.LS("East Temperature ( K )"));
+        eastConvectionCoefficientLabel = new Label(Locale.LS("East Convection Coefficient ( W/(m²K) )"));
         outletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.simulation2D.qEast);
-        rightTemperature = new DoubleBox();
-        rightTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
-        rightConvectionCoefficient = new DoubleBox();
-        rightConvectionCoefficient.setValue(sim.simulation2D.hEast);
+        eastTemperature = new DoubleBox();
+        eastTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
+        eastConvectionCoefficient = new DoubleBox();
+        eastConvectionCoefficient.setValue(sim.simulation2D.hEast);
 
         leftToggleables.add(inletHeatFluxLabel);
         leftToggleables.add(inletHeatFlux);
-        leftToggleables.add(leftTemperature);
-        leftToggleables.add(leftTemperatureLabel);
-        leftToggleables.add(leftConvectionCoefficient);
-        leftToggleables.add(leftConvectionCoefficientLabel);
+        leftToggleables.add(westTemperature);
+        leftToggleables.add(westTemperatureLabel);
+        leftToggleables.add(westConvectionCoefficient);
+        leftToggleables.add(westConvectionCoefficientLabel);
 
         rightToggleables.add(outletHeatFlux);
         rightToggleables.add(outletHeatFluxLabel);
-        rightToggleables.add(rightTemperature);
-        rightToggleables.add(rightTemperatureLabel);
-        rightToggleables.add(rightConvectionCoefficient);
-        rightToggleables.add(rightConvectionCoefficientLabel);
+        rightToggleables.add(eastTemperature);
+        rightToggleables.add(eastTemperatureLabel);
+        rightToggleables.add(eastConvectionCoefficient);
+        rightToggleables.add(eastConvectionCoefficientLabel);
         Label l;
         fp.add(new Label(Locale.LS("Enter Time Step (ms): ")));
         fp.add(timeStep);
         fp.add(new Label(Locale.LS("Enter starting temperature (K): ")));
         fp.add(startTemperature);
-        fp.add(l = new Label(Locale.LS("Left Boundary Condition: ")));
+        fp.add(l = new Label(Locale.LS("West Boundary Condition: ")));
         l.addStyleName("dialogHeading");
-        fp.add(leftBoundary);
+        fp.add(westBoundary);
         fp.add(inletHeatFluxLabel);
         fp.add(inletHeatFlux);
-        fp.add(leftTemperatureLabel);
-        fp.add(leftTemperature);
-        fp.add(leftConvectionCoefficientLabel);
-        fp.add(leftConvectionCoefficient);
+        fp.add(westTemperatureLabel);
+        fp.add(westTemperature);
+        fp.add(westConvectionCoefficientLabel);
+        fp.add(westConvectionCoefficient);
 
-        fp.add(l = new Label(Locale.LS("Right Boundary Condition: ")));
+        fp.add(l = new Label(Locale.LS("East Boundary Condition: ")));
         l.addStyleName("dialogHeading");
 
-        fp.add(rightBoundary);
+        fp.add(eastBoundary);
         fp.add(outletHeatFluxLabel);
         fp.add(outletHeatFlux);
-        fp.add(rightTemperatureLabel);
-        fp.add(rightTemperature);
-        fp.add(rightConvectionCoefficientLabel);
-        fp.add(rightConvectionCoefficient);
+        fp.add(eastTemperatureLabel);
+        fp.add(eastTemperature);
+        fp.add(eastConvectionCoefficientLabel);
+        fp.add(eastConvectionCoefficient);
 
 
         applyButton = new Button(Locale.LS("Apply"));
@@ -142,15 +142,15 @@ public class StartDialog2D extends Dialog {
         for (Widget w : leftToggleables) {
             w.setVisible(false);
         }
-        leftTemperatureLabel.setVisible(true);
-        leftTemperature.setVisible(true);
-        leftConvectionCoefficientLabel.setVisible(true);
-        leftConvectionCoefficient.setVisible(true);
+        westTemperatureLabel.setVisible(true);
+        westTemperature.setVisible(true);
+        westConvectionCoefficientLabel.setVisible(true);
+        westConvectionCoefficient.setVisible(true);
 
-        rightTemperatureLabel.setVisible(true);
-        rightTemperature.setVisible(true);
-        rightConvectionCoefficientLabel.setVisible(true);
-        rightConvectionCoefficient.setVisible(true);
+        eastTemperatureLabel.setVisible(true);
+        eastTemperature.setVisible(true);
+        eastConvectionCoefficientLabel.setVisible(true);
+        eastConvectionCoefficient.setVisible(true);
         applyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -164,37 +164,37 @@ public class StartDialog2D extends Dialog {
                     Window.alert("Temperature not between 0 K and 2000 K");
                     return;
                 }
-                if (leftTemperature.isVisible()) {
-                    double leftTempValue = leftTemperature.getValue();
-                    if (!(leftTempValue >= 0.0) || !(leftTempValue <= 2000)) {
+                if (westTemperature.isVisible()) {
+                    double westTempValue = westTemperature.getValue();
+                    if (!(westTempValue >= 0.0) || !(westTempValue <= 2000)) {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.simulation2D.twoDimBC.T[0] = leftTempValue;
+                    sim.simulation2D.twoDimBC.T[0] = westTempValue;
                 }
-                if (rightTemperature.isVisible()) {
-                    double rightTempValue = rightTemperature.getValue();
-                    if (!(rightTempValue >= 0.0) || !(rightTempValue <= 2000)) {
+                if (eastTemperature.isVisible()) {
+                    double eastTempValue = eastTemperature.getValue();
+                    if (!(eastTempValue >= 0.0) || !(eastTempValue <= 2000)) {
                         Window.alert("Temperature not between 0 K and 2000 K");
                         return;
                     }
-                    sim.simulation2D.twoDimBC.T[1] = rightTempValue;
+                    sim.simulation2D.twoDimBC.T[1] = eastTempValue;
                 }
-                if (leftConvectionCoefficient.isVisible()) {
-                    double leftConvCoeffValue = leftConvectionCoefficient.getValue();
-                    if (!(leftConvCoeffValue >= 0.0)) {
+                if (westConvectionCoefficient.isVisible()) {
+                    double westConvCoeffValue = westConvectionCoefficient.getValue();
+                    if (!(westConvCoeffValue >= 0.0)) {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.simulation2D.twoDimBC.h[0] = leftConvCoeffValue;
+                    sim.simulation2D.twoDimBC.h[0] = westConvCoeffValue;
                 }
-                if (rightConvectionCoefficient.isVisible()) {
-                    double rightConvCoeffValue = rightConvectionCoefficient.getValue();
-                    if (!(rightConvCoeffValue >= 0.0)) {
+                if (eastConvectionCoefficient.isVisible()) {
+                    double eastConvCoeffValue = eastConvectionCoefficient.getValue();
+                    if (!(eastConvCoeffValue >= 0.0)) {
                         Window.alert("Convection coefficient must be positive!");
                         return;
                     }
-                    sim.simulation2D.twoDimBC.h[1] = rightConvCoeffValue;
+                    sim.simulation2D.twoDimBC.h[1] = eastConvCoeffValue;
                 }
                 if (inletHeatFlux.isVisible()) {
                     double qInValue = inletHeatFlux.getValue();
@@ -214,18 +214,18 @@ public class StartDialog2D extends Dialog {
                 }
                 sim.simulation2D.dt = dtValue / 1e3;
                 sim.simulation2D.startTemp = startTempValue;
-                sim.simulation2D.eastBoundary = Simulation1D.BorderCondition.values()[rightBoundary.getSelectedIndex()];
-                sim.simulation2D.westBoundary = Simulation1D.BorderCondition.values()[leftBoundary.getSelectedIndex()];
+                sim.simulation2D.eastBoundary = Simulation1D.BorderCondition.values()[eastBoundary.getSelectedIndex()];
+                sim.simulation2D.westBoundary = Simulation1D.BorderCondition.values()[westBoundary.getSelectedIndex()];
 
                 sim.simulation2D.setTemperatureRange();
                 apply();
             }
         });
-        leftBoundary.addChangeHandler(new ChangeHandler() {
+        westBoundary.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                int selectedIndex = leftBoundary.getSelectedIndex();
-                String selectedItem = leftBoundary.getValue(selectedIndex);
+                int selectedIndex = westBoundary.getSelectedIndex();
+                String selectedItem = westBoundary.getValue(selectedIndex);
                 for (Widget w : leftToggleables) {
                     w.setVisible(false);
                     if (w instanceof DoubleBox)
@@ -237,16 +237,16 @@ public class StartDialog2D extends Dialog {
                         inletHeatFlux.setVisible(true);
                         break;
                     case "Constant Temperature":
-                        leftTemperatureLabel.setVisible(true);
-                        leftTemperature.setVisible(true);
+                        westTemperatureLabel.setVisible(true);
+                        westTemperature.setVisible(true);
                         break;
                     case "Convective":
-                        leftTemperatureLabel.setVisible(true);
-                        leftTemperature.setVisible(true);
-                        leftConvectionCoefficientLabel.setVisible(true);
-                        leftConvectionCoefficient.setVisible(true);
-                        leftTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
-                        leftConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[0]);
+                        westTemperatureLabel.setVisible(true);
+                        westTemperature.setVisible(true);
+                        westConvectionCoefficientLabel.setVisible(true);
+                        westConvectionCoefficient.setVisible(true);
+                        westTemperature.setValue(sim.simulation2D.twoDimBC.T[0]);
+                        westConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[0]);
 
                         break;
                     default:
@@ -256,11 +256,11 @@ public class StartDialog2D extends Dialog {
                 center();
             }
         });
-        rightBoundary.addChangeHandler(new ChangeHandler() {
+        eastBoundary.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                int selectedIndex = rightBoundary.getSelectedIndex();
-                String selectedItem = rightBoundary.getValue(selectedIndex);
+                int selectedIndex = eastBoundary.getSelectedIndex();
+                String selectedItem = eastBoundary.getValue(selectedIndex);
                 for (Widget w : rightToggleables) {
                     w.setVisible(false);
                     if (w instanceof DoubleBox)
@@ -272,16 +272,16 @@ public class StartDialog2D extends Dialog {
                         outletHeatFlux.setVisible(true);
                         break;
                     case "Constant Temperature":
-                        rightTemperatureLabel.setVisible(true);
-                        rightTemperature.setVisible(true);
+                        eastTemperatureLabel.setVisible(true);
+                        eastTemperature.setVisible(true);
                         break;
                     case "Convective":
-                        rightTemperatureLabel.setVisible(true);
-                        rightTemperature.setVisible(true);
-                        rightConvectionCoefficientLabel.setVisible(true);
-                        rightConvectionCoefficient.setVisible(true);
-                        rightTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
-                        rightConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[1]);
+                        eastTemperatureLabel.setVisible(true);
+                        eastTemperature.setVisible(true);
+                        eastConvectionCoefficientLabel.setVisible(true);
+                        eastConvectionCoefficient.setVisible(true);
+                        eastTemperature.setValue(sim.simulation2D.twoDimBC.T[1]);
+                        eastConvectionCoefficient.setValue(sim.simulation2D.twoDimBC.h[1]);
                         break;
                     default:
                         break;

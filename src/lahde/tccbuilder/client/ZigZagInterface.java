@@ -218,9 +218,9 @@ public class ZigZagInterface extends TwoDimComponent {
             case 9:
                 return new EditInfo("Height (" + sim.selectedLengthUnit.unitName + ")", height * sim.selectedLengthUnit.conversionFactor);
             case 10:
-                return new EditInfo("Left contact resistance (mK/W)", resistances[0]);
+                return new EditInfo("West contact resistance (m²K/W)", resistances[0]);
             case 11:
-                return new EditInfo("Right contact resistance (mK/W)", resistances[1]);
+                return new EditInfo("East contact resistance (m²K/W)", resistances[1]);
             case 12:
                 return new EditInfo("<div>Zigzag number&nbsp;<em>(must be a factor of y-discretization number)</em> </div>", zigzagNumber);
             default:
