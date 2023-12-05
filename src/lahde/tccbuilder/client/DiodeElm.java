@@ -103,7 +103,8 @@ class DiodeElm extends ThermalControlElement {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                EditInfo editInfo = new EditInfo("Length (mm)", length * 1e3);
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:

@@ -341,7 +341,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 5:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length (mm)", length * 1e3);
             case 6:
                 return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 7:
@@ -400,6 +400,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 break;
             case 5:
                 setNewLength(ei.value);
+                // length = ei.value / 1e3;
                 break;
             case 6:
                 westResistance = ei.value;
@@ -437,7 +438,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void setNewLength(Double value) {
-        double calculatedLength = (value / sim.selectedLengthUnit.conversionFactor);
+        // double calculatedLength = (value / sim.selectedLengthUnit.conversionFactor);
+        double calculatedLength = (value / 1e3);
         if (!resizable && calculatedLength != length) {
             Window.alert("Warning, element not resizeable!");
             return;
