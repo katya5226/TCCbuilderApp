@@ -4,6 +4,8 @@ import lahde.tccbuilder.client.math3.linear.RealMatrix;
 import lahde.tccbuilder.client.math3.linear.RealVector;
 import lahde.tccbuilder.client.math3.linear.Array2DRowRealMatrix;
 import lahde.tccbuilder.client.math3.linear.ArrayRealVector;
+import lahde.tccbuilder.client.math3.linear.OpenMapRealMatrix;
+import lahde.tccbuilder.client.math3.linear.OpenMapRealVector;
 
 import java.lang.Math;
 
@@ -33,9 +35,11 @@ public class TwoDimEqSys {
         // matrix = new double[n * m][n * m];
         // for (double[] row: matrix)
         //     Arrays.fill(row, 0.0);
-        matrix = new Array2DRowRealMatrix(numCvs, numCvs);
+        // matrix = new Array2DRowRealMatrix(numCvs, numCvs);
+        matrix = new OpenMapRealMatrix(numCvs, numCvs);
         // rhs = new double[n * m];
-        rhs = new ArrayRealVector(numCvs);
+        // rhs = new ArrayRealVector(numCvs);
+        rhs = new OpenMapRealVector(numCvs);
         resetMatrix();
         // Arrays.fill(rhs, 0.0);
         kd = new double[]{0.0, 0.0, 0.0, 0.0};
