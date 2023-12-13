@@ -66,12 +66,10 @@ public class ControlVolume {
     }
 
     double rho() {
-        //GWT.log("Calculating rho");
         double rho = 0.0;
         if (constRho != -1)
             rho = constRho;
         else {
-            // rho = ModelMethods.linInterp(temperature, material.interpTemps, material.rho);
             rho = material.rho.get((int) Math.round(temperature * 10));
         }
         if (parent instanceof RegulatorElm) {
@@ -84,29 +82,30 @@ public class ControlVolume {
     double cp() {
         double cp = 0.0;
         int fI = 0;
-        //GWT.log("Calculating cp");
         if (constCp != -1) {
             cp = constCp;
-        } else {
+        }
+        else if (!material.cpFields) {
+            if (material.cpThysteresis) {
+                if (mode == 1)
+                    cp = material.cpHeating.get(0).get((int) Math.round(temperature * 10));
+                else if (mode == -1)
+                    cp = material.cpCooling.get(0).get((int) Math.round(temperature * 10));                
+            } else {
+                cp = material.cp.get(0).get((int) Math.round(temperature * 10));
+            }
+        } 
+        else {
             if (parent.field) {
                 fI = parent.fieldIndex;
             }
             if (material.cpThysteresis) {
                 if (mode == 1)
-                    // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpHeating.get(fI));
                     cp = material.cpHeating.get(fI).get((int) Math.round(temperature * 10));
                 else if (mode == -1)
-                    // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cpCooling.get(fI));
                     cp = material.cpCooling.get(fI).get((int) Math.round(temperature * 10));
             } else {
-                // cp = ModelMethods.linInterp(temperature, material.interpTemps, material.cp.get(fI));
                 cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
-                // if (material.cp.size() == 1) {
-                //     cp = material.cp.get(0).get((int) Math.round(temperature * 10));
-                // }
-                // else {
-                //     cp = material.cp.get(fI).get((int) Math.round(temperature * 10));
-                // }
             }
         }
         if (parent instanceof RegulatorElm) {
@@ -118,12 +117,10 @@ public class ControlVolume {
 
     double k() {
         //TODO: update this method for kThysteresis
-        //GWT.log("Calculating k");
         double k = 1;
         if (constK != -1)
             k = constK;
         else {
-            // k = ModelMethods.linInterp(temperature, material.interpTemps, material.k.get(0));
             if(material.kThysteresis) {
                 if (mode == 1)
                     k = material.kHeating.get(0).get((int) Math.round(temperature * 10));
@@ -137,7 +134,6 @@ public class ControlVolume {
             RegulatorElm r = (RegulatorElm) parent;
             k = r.kValues.get((int) Math.round(temperature * 10));
         }
-        //GWT.log(String.valueOf(k));
         return k;
     }
 

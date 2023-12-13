@@ -27,6 +27,7 @@ public class Material {
     public boolean cpThysteresis;
     public boolean dTThysteresis;
     public boolean kThysteresis;
+    public boolean cpFields;
 
 
     private final CirSim sim;
@@ -114,6 +115,9 @@ public class Material {
             cpThysteresis = line[8].equals("1");
             dTThysteresis = line[9].equals("1");
             kThysteresis = line[10].equals("1");
+            // cpFields = line[11].equals("1");
+            //cpFields = false;
+            //GWT.log(String.valueOf(cpFields));
         } else
             GWT.log("No entry found in flag file for material \"" + materialName + "\"");
     }
@@ -154,18 +158,33 @@ public class Material {
                         fillVectorFromURL(url_rho, rho, 1000);
                     }
 
-                    if (invariant || thermoelectric || temperatureInducedPhaseChange) {
-                        String url_cp = baseURL + materialName + "/appInfo/cp.txt";
-                        if (!sim.awaitedResponses.contains(url_cp)) {
-                            sim.awaitedResponses.add(url_cp);
+                    if (!cpFields) {
+                        if (cpThysteresis) {
+                            String url_cp = baseURL + materialName + "/appInfo/cp_cooling.txt";
                             Vector<Double> vector = new Vector<Double>();
+
+                            sim.awaitedResponses.add(url_cp);
                             fillVectorFromURL(url_cp, vector, 200);
-                            cp.add(vector);
+                            cpCooling.add(vector);
+
+                            url_cp = baseURL + materialName + "/appInfo/cp_heating.txt";
+
+                            sim.awaitedResponses.add(url_cp);
+                            fillVectorFromURL(url_cp, vector, 200);
+                            cpHeating.add(vector);
                         }
-                    } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {
+                        else {
+                            String url_cp = baseURL + materialName + "/appInfo/cp.txt";
+                            if (!sim.awaitedResponses.contains(url_cp)) {
+                                sim.awaitedResponses.add(url_cp);
+                                Vector<Double> vector = new Vector<Double>();
+                                fillVectorFromURL(url_cp, vector, 200);
+                                cp.add(vector);
+                            }
+                        }
+                    } else {
                         String url_cp, url_dT;
                         for (double field : fields) {
-                            GWT.log("FIELD: " + String.valueOf(field));
                             String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
                             if (electrocaloric)
                                 fieldName = String.valueOf(field);
@@ -177,17 +196,21 @@ public class Material {
                                     url_cp += "T_cooling.txt";
                                 else if (electrocaloric)
                                     url_cp += "MVm_cooling.txt";
+                                else if (elastocaloric || barocaloric)
+                                    url_cp += "bar_cooling.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
                                 fillVectorFromURL(url_cp, vector, 200);
                                 cpCooling.add(vector);
 
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_heating.txt";
+                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
                                 if (magnetocaloric)
                                     url_cp += "T_heating.txt";
                                 else if (electrocaloric)
                                     url_cp += "MVm_heating.txt";
+                                else if (elastocaloric || barocaloric)
+                                    url_cp += "bar_heating.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
@@ -198,7 +221,9 @@ public class Material {
                                 if (magnetocaloric)
                                     url_cp += "T.txt";
                                 else if (electrocaloric)
-                                    url_cp = baseURL + materialName + "/appInfo/cp.txt";
+                                    url_cp += "MVm.txt";
+                                else if (elastocaloric || barocaloric)
+                                    url_cp += "bar.txt";
                                 vector = new Vector<Double>();
 
                                 sim.awaitedResponses.add(url_cp);
@@ -212,6 +237,8 @@ public class Material {
                                         url_dT += "T_cooling.txt";
                                     else if (electrocaloric)
                                         url_dT += "MVm_cooling.txt";
+                                    else if (elastocaloric || barocaloric)
+                                        url_dT += "bar_cooling.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
@@ -223,6 +250,8 @@ public class Material {
                                         url_dT += "T_heating.txt";
                                     else if (electrocaloric)
                                         url_dT += "MVm_heating.txt";
+                                    else if (elastocaloric || barocaloric)
+                                        url_dT += "bar_heating.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
@@ -234,6 +263,8 @@ public class Material {
                                         url_dT += "T.txt";
                                     else if (electrocaloric)
                                         url_dT += "MVm.txt";
+                                    else if (elastocaloric || barocaloric)
+                                        url_dT += "bar.txt";
                                     vector = new Vector<Double>();
 
                                     sim.awaitedResponses.add(url_dT);
@@ -320,7 +351,15 @@ public class Material {
 
 
     public void showTemperatureRanges(Choice choice) {
-        String message = "Temperature ranges: \n" +
+        String flag = "";
+        if (invariant) flag = "Invariant material";
+        if (thermoelectric) flag = "Thermoelectric material";
+        if (temperatureInducedPhaseChange) flag = "Material with a temperature-induced phase change";
+        if (magnetocaloric) flag = "Magnetocaloric material";
+        if (electrocaloric) flag = "Electrocaloric material";
+        if (elastocaloric) flag = "Elastocaloric material";
+        if (barocaloric) flag = "Barocaloric material";
+        String message = flag + "\nTemperature ranges: \n" +
                 "Density: " + (tRhoMin == -1 || tRhoMax == -1 ? "undefined" : (tRhoMin + " - " + tRhoMax + " K")) + "\n"
                 + "Specific Heat Capacity: " + (tCpMin == -1 || tCpMax == -1 ? "undefined" : (tCpMin + " - " + tCpMax + " K")) + "\n"
                 + "Thermal Conductivity: " + (tKMin == -1 || tKMax == -1 ? "undefined" : (tKMin + " - " + tKMax + " K")) + "\n"
@@ -361,14 +400,14 @@ public class Material {
                         emissRT = rtProperties != null && rtProperties.get("emissivity").isNumber() != null ? rtProperties.get("emissivity").isNumber().doubleValue() : -1;
 
                         JSONObject ranges = obj.get("ranges").isObject();
-                        tRhoMax = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tRhoMin = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tCpMax = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tCpMin = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tKMax = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tKMin = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tEmissMax = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tEmissMin = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tRhoMax = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tRhoMin = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tCpMax = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tCpMin = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tKMax = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tKMin = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tEmissMax = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tEmissMin = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
 
 /*                        GWT.log("id: " + id);
                         GWT.log("tMelt: " + tMelt);

@@ -992,9 +992,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         materialFlagText = response.getText();
                         String[] lines = materialFlagText.split("\n");
                         for (String s : Arrays.copyOfRange(lines, 1, lines.length)) {
+                            GWT.log(s);
                             String name = s.split(",")[0];
                             materialHashMap.put(name, new Material(name, theSim));
                             GWT.log(name);
+                            GWT.log(String.valueOf(s.split(",")[11]));
                             materialNames.add(name);
                         }
 
