@@ -1190,27 +1190,27 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
             mainMenuBar.addSeparator();
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "WireElm"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
-            // mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
-            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Switch"), "SwitchElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Regulator"), "RegulatorElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Diode"), "DiodeElm"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
+            // mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
 
             MenuBar sampleElements = new MenuBar(true);
 
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
-            menuItem.setTitle("Ideal operating range = 40-99 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
-            menuItem.setTitle("Ideal operating range = 290-450 K");
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
             menuItem.setTitle("Operating range = 254-353 K");
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
             menuItem.setTitle("Operating range = 254-353 K");
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
             menuItem.setTitle("Operating range = 254-353 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+            menuItem.setTitle("Ideal operating range = 40-99 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+            menuItem.setTitle("Ideal operating range = 290-450 K");
 
             mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
         }
@@ -1993,14 +1993,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
                     simulation1D.cyclePart.execute();  // executes cycle part for time dt at most
-                    GWT.log("FINISHED EXECUTION");
 
                     if (simulation1D.cyclePart.duration > 0.0) {  // maybe here should be > dt
                         simulation1D.time += simulation1D.dt;  // if the duration of current cycle part is 0.0 < duration, advance for dt
                     }
                     simulation1D.cyclePartTime += simulation1D.dt;
                     simulation1D.cyclePart.partTime += simulation1D.dt;
-                    GWT.log("partTime: " + String.valueOf(simulation1D.cyclePart.partTime));
                     if (simulation1D.cyclePartTime >= simulation1D.cyclePart.duration) {
                         /*if (simulation1D.cyclePart.partType == CyclePart.PartType.MAGNETIC_FIELD_CHANGE && simulation1D.cyclePart.duration > 0.0) {
                             for (ThermalControlElement tce : simulation1D.cyclePart.TCEs) {
@@ -2009,13 +2007,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                             }
                         }*/
                         simulation1D.cyclePartTime = 0.0;
-                        GWT.log("1");
                         simulation1D.cyclePart.partTime = 0.0;
-                        GWT.log("2");
                         simulation1D.cyclePartIndex = (simulation1D.cyclePartIndex + 1) % simulation1D.numCycleParts;
-                        GWT.log("3");
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);
-                        GWT.log("4");
                     }
                 }
             }
