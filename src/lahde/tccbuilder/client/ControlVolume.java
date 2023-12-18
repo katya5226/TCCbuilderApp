@@ -234,11 +234,14 @@ public class ControlVolume {
         double dT = 0.0;
         double T = 0.0;
         int fieldIndex = parent.fieldIndex - 1;
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        //GWT.log("Field = " + material.fields.get(parent.fieldIndex));
         if (fieldIndex < 0) return;
 
         Vector<Double> dTvec = material.dT.get(fieldIndex);
-        dT = dTvec.get((int) ((temperature * 10) + 0.5));
+        //GWT.log(String.valueOf(material.dT.size()));
+
+        if (dTvec.size() > 1) dT = dTvec.get((int) ((temperature * 10) + 0.5));
+        else dT = dTvec.get(0);
 
         if (!parent.field)
             T = temperature + dT;
