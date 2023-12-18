@@ -37,10 +37,11 @@ public class SwitchElm_MM2 extends SwitchElm {
         rhoOn = 1500;
         cpOff = 450;
         cpOn = 450;
-        responseTime = -1;
+        responseTime = 0.013;
         constCp = cpOff;
         constK = kOff;
         constRho = rhoOff;
+        inputPower = 800;
 
     }
 

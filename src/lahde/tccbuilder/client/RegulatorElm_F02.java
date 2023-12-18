@@ -1,8 +1,7 @@
 package lahde.tccbuilder.client;
 
-
 public class RegulatorElm_F02 extends RegulatorElm {
-
+s
     final double DEFINED_LENGTH = 0.053;
 
     public RegulatorElm_F02(int xx, int yy) {
@@ -44,6 +43,7 @@ public class RegulatorElm_F02 extends RegulatorElm {
         temperature1 = 319;
         temperature2 = 336;
         latentHeat = 200000;
+        inputPower = 0;
     }
 
 
@@ -94,6 +94,8 @@ public class RegulatorElm_F02 extends RegulatorElm {
                 return new EditInfo("Response time (s)", responseTime, false);
             case 17:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 18:
+                return new EditInfo("Actuation input power (W/m³)", inputPower, false);
             default:
                 return null;
         }

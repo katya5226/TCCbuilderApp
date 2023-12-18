@@ -35,6 +35,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double operatingMax;
     public double operatingMin;
     public boolean hasOperatingRange;
+    public double inputPower;
     public Vector<ControlVolume> cvs;
 
     public boolean isDisabled;
@@ -117,6 +118,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constCp = -1;
         constK = -1;
         startTemperature = -1;
+        inputPower = 0;
     }
 
     public void calculateLength() {
