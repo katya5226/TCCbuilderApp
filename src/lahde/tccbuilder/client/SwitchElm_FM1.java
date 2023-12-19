@@ -43,6 +43,7 @@ public class SwitchElm_FM1 extends SwitchElm {
         constK = kOff;
         constRho = rhoOff;
         inputPower = 2;
+        crossArea = 0.0002;
     }
 
 

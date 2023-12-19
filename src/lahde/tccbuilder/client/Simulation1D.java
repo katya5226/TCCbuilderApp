@@ -276,6 +276,26 @@ public class Simulation1D extends Simulation {
         return dump;
     }
 
+    String assessment() {
+        String as = "";
+        as += "AVERAGE THERMAL DIFFUSIVITIES OF TCEs:\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            as += tce.name + "\t" + tce.calculateDiffusivity() + " m²/s\n";
+        }
+        as += "LARGEST TEMPERATURE DIFFERENCE BETWEEN CVs:\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            as += tce.name + "\t" + tce.calculateLargestDeltaT() + "\n";
+        }
+        as += "HEAT FLUX AT WEST BOUNDARY: " + heatCircuit.fluxes.get(0) + " W/m²\n";
+        as += "HEAT FLUX AT EAST BOUNDARY: " + heatCircuit.fluxes.get(heatCircuit.fluxes.size() - 1) + " W/m²\n";
+        as += "TCE ACTUATION POWER INPUTS (divided by TCE cross area):\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.crossArea == -1) as += tce.name + "\tCross area unknown, input power " + tce.inputPower + " W\n";
+            else as += tce.name + "\t Input power " + tce.inputPower / tce.crossArea + " W/m²\n";
+        } 
+        return as;
+    }
+
     @Override
     String printTCEs() {
         String tces = "";

@@ -89,7 +89,7 @@ public class SwitchElm_MM1 extends SwitchElm {
             case 14:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 15:
-                return new EditInfo("Actuation input power (W/m³)", inputPower, false);
+                return new EditInfo("Actuation input power (W)", inputPower, false);
             default:
                 return null;
         }
