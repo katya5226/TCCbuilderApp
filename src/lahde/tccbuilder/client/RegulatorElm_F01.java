@@ -1,10 +1,10 @@
 package lahde.tccbuilder.client;
 
-public class RegulatorElm_F02 extends RegulatorElm {
+public class RegulatorElm_F01 extends RegulatorElm {
 
     final double DEFINED_LENGTH = 0.053;
 
-    public RegulatorElm_F02(int xx, int yy) {
+    public RegulatorElm_F01(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
@@ -17,11 +17,11 @@ public class RegulatorElm_F02 extends RegulatorElm {
         drag(newX, yy);
     }
 
-    // RegulatorElm_F02(int xx, int yy, boolean mm) {
+    // RegulatorElm_F01(int xx, int yy, boolean mm) {
     //     super(xx, yy, mm);
     // }
 
-    public RegulatorElm_F02(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
+    public RegulatorElm_F01(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
 
