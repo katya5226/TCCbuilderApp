@@ -195,18 +195,28 @@ public class Simulation1D extends Simulation {
         if (customTempRange == true) return;
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
-            if (c.material.magnetocaloric) {
-                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
-                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
+            if (c.material.magnetocaloric || c.material.electrocaloric || c.material.elastocaloric || c.material.barocaloric) {
+                if (c.material.dTThysteresis) {
+                    for (Vector<Double> dTFRVector : c.material.dTFieldRemove) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRVector));
+                    }
+                    for (Vector<Double> dTFAVector : c.material.dTFieldApply) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFAVector));
+                    }
                 }
-
-                for (Vector<Double> dTheatingVector : c.material.dTheating) {
-                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
-                }
-            }
-            if (c.material.electrocaloric) {
-                for (Vector<Double> dTVector : c.material.dT) {
-                    maxValue = Math.max(maxValue, Math.abs(Collections.max(dTVector)));
+                else {
+                    for (Vector<Double> dTFRHVector : c.material.dTFieldRemoveHeating) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRHVector));
+                    }
+                    for (Vector<Double> dTFAHVector : c.material.dTFieldApplyHeating) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFAHVector));
+                    }
+                    for (Vector<Double> dTFRCVector : c.material.dTFieldRemoveCooling) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRCVector));
+                    }
+                    for (Vector<Double> dTFACVector : c.material.dTFieldApplyCooling) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFACVector));
+                    }                    
                 }
             }
         }

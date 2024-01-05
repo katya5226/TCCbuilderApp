@@ -201,58 +201,86 @@ public class ControlVolume {
         calculateKEast();
     }
 
-    public void magnetize() {
+    public void toggleField() {
         // TODO: inform user
+        Vector<Double> dTs = new Vector<>();
 
-        Vector<Double> dTheatcool = new Vector<>();
         double dT = 0.0;
         double T = 0.0;
         int fieldIndex = parent.fieldIndex - 1;
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        // GWT.log("Field = " + material.fields.get(parent.fieldIndex));
         if (fieldIndex < 0) return;
 
         if (!parent.field) {
-            dTheatcool = material.dTheating.get(fieldIndex);
-            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
-            T = temperature + dT;
+            if (!material.dTThysteresis) {
+                dTs = material.dTFieldApply.get(fieldIndex);
+                dT = dTs.get((int) ((temperature * 10) + 0.5));
+                T = temperature + dT;
+            }
+            else {
+                if (mode == 1) {
+                    dTs = material.dTFieldApplyHeating.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+                if (mode == -1) {
+                    dTs = material.dTFieldApplyCooling.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+            }
         } else {
-            dTheatcool = material.dTcooling.get(fieldIndex);
-            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
-            T = temperature - dT;
+            if (!material.dTThysteresis) {
+                dTs = material.dTFieldRemove.get(fieldIndex);
+                dT = dTs.get((int) ((temperature * 10) + 0.5));
+                T = temperature + dT;
+            }
+            else {
+                if (mode == 1) {
+                    dTs = material.dTFieldRemoveHeating.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+                if (mode == -1) {
+                    dTs = material.dTFieldRemoveCooling.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+            }
         }
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        GWT.log("Temperature = " + temperature);
-        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+        // GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        // GWT.log("Temperature = " + temperature);
+        // GWT.log("dT = " + (parent.field ? "-" : "") + dT);
         temperature = T;
         temperatureOld = T;
     }
 
     
-    public void ePolarize() {
-        // TODO: inform user
+    // public void ePolarize() {
+    //     // TODO: inform user
 
-        double dT = 0.0;
-        double T = 0.0;
-        int fieldIndex = parent.fieldIndex - 1;
-        //GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        if (fieldIndex < 0) return;
+    //     double dT = 0.0;
+    //     double T = 0.0;
+    //     int fieldIndex = parent.fieldIndex - 1;
+    //     //GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+    //     if (fieldIndex < 0) return;
 
-        Vector<Double> dTvec = material.dT.get(fieldIndex);
-        //GWT.log(String.valueOf(material.dT.size()));
+    //     Vector<Double> dTvec = material.dT.get(fieldIndex);
+    //     //GWT.log(String.valueOf(material.dT.size()));
 
-        if (dTvec.size() > 1) dT = dTvec.get((int) ((temperature * 10) + 0.5));
-        else dT = dTvec.get(0);
+    //     if (dTvec.size() > 1) dT = dTvec.get((int) ((temperature * 10) + 0.5));
+    //     else dT = dTvec.get(0);
 
-        if (!parent.field)
-            T = temperature + dT;
-        else
-            T = temperature - dT;
+    //     if (!parent.field)
+    //         T = temperature + dT;
+    //     else
+    //         T = temperature - dT;
 
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        GWT.log("Temperature = " + temperature);
-        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
-        temperature = T;
-        temperatureOld = T;
-    }
+    //     // GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+    //     // GWT.log("Temperature = " + temperature);
+    //     // GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+    //     temperature = T;
+    //     temperatureOld = T;
+    // }
 
 }

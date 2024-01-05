@@ -137,28 +137,28 @@ public class TwoDimCV {
         return qGen;
     }
 
-    void magnetize() {
+    void toggleField() {  // TODO: correct
         // TODO: inform user
-        Vector<Double> dTheatcool = new Vector<Double>();
-        double dT = 0.0;
-        double T = 0.0;
-        TwoDimComponent p = (TwoDimComponent) parent;
-        if (!p.field) {
-            dTheatcool = material.dTheating.get(p.fieldIndex - 1);
-            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
-            dT = dTheatcool.get((int)Math.round(temperature * 10));
-            T = temperature + dT;
-            temperature = T;
-            temperatureOld = T;
-        }
-        if (p.field) {
-            dTheatcool = material.dTcooling.get(p.fieldIndex - 1);
-            // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
-            dT = dTheatcool.get((int)Math.round(temperature * 10));
-            T = temperature - dT;
-            temperature = T;
-            temperatureOld = T;
-        }
+        // Vector<Double> dTheatcool = new Vector<Double>();
+        // double dT = 0.0;
+        // double T = 0.0;
+        // TwoDimComponent p = (TwoDimComponent) parent;
+        // if (!p.field) {
+        //     dTheatcool = material.dTheating.get(p.fieldIndex - 1);
+        //     // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+        //     dT = dTheatcool.get((int)Math.round(temperature * 10));
+        //     T = temperature + dT;
+        //     temperature = T;
+        //     temperatureOld = T;
+        // }
+        // if (p.field) {
+        //     dTheatcool = material.dTcooling.get(p.fieldIndex - 1);
+        //     // dT = ModelMethods.linInterp(temperature, material.interpTemps, dTheatcool);
+        //     dT = dTheatcool.get((int)Math.round(temperature * 10));
+        //     T = temperature - dT;
+        //     temperature = T;
+        //     temperatureOld = T;
+        // }
     }
 
 }
