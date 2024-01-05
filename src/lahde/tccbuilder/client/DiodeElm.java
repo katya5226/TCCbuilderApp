@@ -123,6 +123,8 @@ class DiodeElm extends ThermalControlElement {
                 return new EditInfo("Response time (s)", responseTime);
             case 12:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 13:
+                return new EditInfo("Actuation input power (W/m³)", inputPower);
             default:
                 return null;
         }
@@ -169,6 +171,9 @@ class DiodeElm extends ThermalControlElement {
                 break;
             case 12:
                 hTransv = ei.value;      
+                break;
+            case 13:
+                inputPower = ei.value;      
                 break;
         }
 

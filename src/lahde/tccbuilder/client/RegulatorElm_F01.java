@@ -1,48 +1,49 @@
 package lahde.tccbuilder.client;
 
-public class SwitchElm_MM2 extends SwitchElm {
-    final double DEFINED_LENGTH = 0.0023;
+public class RegulatorElm_F01 extends RegulatorElm {
 
-    public SwitchElm_MM2(int xx, int yy) {
+    final double DEFINED_LENGTH = 0.053;
+
+    public RegulatorElm_F01(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
         length = DEFINED_LENGTH;
         // sim.scale.setSelectedIndex(CirSim.LengthUnit.MILLIMETER.ordinal());
+
         sim.calculateElementsLengths();
 
         int newX = sim.snapGrid((int) (xx + length * sim.selectedLengthUnit.conversionFactor * sim.gridSize));
         drag(newX, yy);
     }
 
-    SwitchElm_MM2(int xx, int yy, boolean mm) {
-        super(xx, yy, mm);
-    }
+    // RegulatorElm_F01(int xx, int yy, boolean mm) {
+    //     super(xx, yy, mm);
+    // }
 
-    public SwitchElm_MM2(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
+    public RegulatorElm_F01(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
 
     @Override
     public void initializeThermalControlElement() {
         super.initializeThermalControlElement();
-        hasOperatingRange = true;
+        hasOperatingRange = false;
         operatingMin = 254;
         operatingMax = 353;
         resizable = false;
         length = DEFINED_LENGTH;
-        kOff = 1.217;
-        kOn = 32.6;
-        rhoOff = 1500;
-        rhoOn = 1500;
-        cpOff = 450;
-        cpOn = 450;
-        responseTime = 0.013;
-        constCp = cpOff;
-        constK = kOff;
-        constRho = rhoOff;
-        inputPower = 20;
-        crossArea = 0.0225;
+        k1 = 0.132;
+        k2 = 16.2;
+        rho1 = 4125;
+        rho2 = 4125;
+        cp1 = 2200;
+        cp2 = 2200;
+        responseTime = 180;
+        temperature1 = 319;
+        temperature2 = 336;
+        latentHeat = 200000;
+        inputPower = 0;
     }
 
 
@@ -72,22 +73,28 @@ public class SwitchElm_MM2 extends SwitchElm {
             case 6:
                 return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 7:
-                return new EditInfo("Thermal Conductivity (W/m/K) - ON", kOn, false);
+                return new EditInfo("Thermal Conductivity 1 (W/mK)", k1, false);
             case 8:
-                return new EditInfo("Thermal Conductivity (W/m/K) - OFF", kOff, false);
+                return new EditInfo("Thermal Conductivity 2 (W/mK)", k2, false);
             case 9:
-                return new EditInfo("Specific Heat Capacity (J/kg/K) - ON", cpOn, false);
+                return new EditInfo("Specific Heat Capacity 1 (J/kgK)", cp1, false);
             case 10:
-                return new EditInfo("Specific Heat Capacity (J/kg/K) - OFF", cpOff, false);
+                return new EditInfo("Specific Heat Capacity 2 (J/kgK)", cp2, false);
             case 11:
-                return new EditInfo("Density (kg/m³) - ON", rhoOn, false);
+                return new EditInfo("Density 1 (kg/m³)", rho1, false);
             case 12:
-                return new EditInfo("Density (kg/m³) - OFF", rhoOff, false);
+                return new EditInfo("Density 2 (kg/m³)", rho2, false);
             case 13:
-                return new EditInfo("Response Time (s)", responseTime, false);
+                return new EditInfo("Temperature 1 (K)", temperature1, false);
             case 14:
-                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+                return new EditInfo("Temperature 2 (K)", temperature2, false);
             case 15:
+                return new EditInfo("Latent heat (J/kg)", latentHeat, false);
+            case 16:
+                return new EditInfo("Response time (s)", responseTime, false);
+            case 17:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 18:
                 return new EditInfo("Actuation input power (W)", inputPower, false);
             default:
                 return null;
@@ -96,7 +103,6 @@ public class SwitchElm_MM2 extends SwitchElm {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -119,15 +125,14 @@ public class SwitchElm_MM2 extends SwitchElm {
             case 6:
                 eastResistance = ei.value;
                 break;
-            case 14:
+            case 17:
                 hTransv = ei.value;
-                break;
-            default:
                 break;
         }
 
 
         updateElement();
+
     }
 
     @Override
@@ -137,8 +142,9 @@ public class SwitchElm_MM2 extends SwitchElm {
 
     @Override
     int getDumpType() {
-        return 612;
+        return 620;
     }
+
 
 
 }

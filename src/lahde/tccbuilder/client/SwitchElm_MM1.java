@@ -42,6 +42,7 @@ public class SwitchElm_MM1 extends SwitchElm {
         constCp = cpOff;
         constK = kOff;
         constRho = rhoOff;
+        inputPower = 0;
 
     }
 
@@ -87,6 +88,8 @@ public class SwitchElm_MM1 extends SwitchElm {
                 return new EditInfo("Response Time (s)", responseTime, false);
             case 14:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 15:
+                return new EditInfo("Actuation input power (W)", inputPower, false);
             default:
                 return null;
         }
