@@ -196,7 +196,7 @@ public class Simulation1D extends Simulation {
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
             if (c.material.magnetocaloric || c.material.electrocaloric || c.material.elastocaloric || c.material.barocaloric) {
-                if (c.material.dTThysteresis) {
+                if (!c.material.dTThysteresis) {
                     for (Vector<Double> dTFRVector : c.material.dTFieldRemove) {
                         maxValue = Math.max(maxValue, Collections.max(dTFRVector));
                     }
