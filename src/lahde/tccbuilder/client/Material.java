@@ -19,7 +19,7 @@ public class Material {
     public boolean name;
     public boolean invariant;
     public boolean thermoelectric;
-    public boolean temperatureInducedPhaseChange;
+    public boolean phaseChangeMaterial;
     public boolean electrocaloric;
     public boolean magnetocaloric;
     public boolean barocaloric;
@@ -110,7 +110,7 @@ public class Material {
             String[] line = matcher.getGroup(0).split(",", -1);
             invariant = line[1].equals("1");
             thermoelectric = line[2].equals("1");
-            temperatureInducedPhaseChange = line[3].equals("1");
+            phaseChangeMaterial = line[3].equals("1");
             electrocaloric = line[4].equals("1");
             magnetocaloric = line[5].equals("1");
             barocaloric = line[6].equals("1");
@@ -402,7 +402,7 @@ public class Material {
         String flag = "";
         if (invariant) flag = "Invariant material";
         if (thermoelectric) flag = "Thermoelectric material";
-        if (temperatureInducedPhaseChange) flag = "Material with a temperature-induced phase change";
+        if (phaseChangeMaterial) flag = "Phase change material";
         if (magnetocaloric) flag = "Magnetocaloric material";
         if (electrocaloric) flag = "Electrocaloric material";
         if (elastocaloric) flag = "Elastocaloric material";
@@ -539,7 +539,7 @@ public class Material {
         jsonStyleLog.append("\"Name\": " + name + ",\n");
         jsonStyleLog.append("\"Invariant\": " + invariant + ",\n");
         jsonStyleLog.append("\"Thermoelectric\": " + thermoelectric + ",\n");
-        jsonStyleLog.append("\"Temperature Induced Phase Change\": " + temperatureInducedPhaseChange + ",\n");
+        jsonStyleLog.append("\"Phase Change Material\": " + phaseChangeMaterial + ",\n");
         jsonStyleLog.append("\"Electrocaloric\": " + electrocaloric + ",\n");
         jsonStyleLog.append("\"Magnetocaloric\": " + magnetocaloric + ",\n");
         jsonStyleLog.append("\"Barocaloric\": " + barocaloric + ",\n");
