@@ -33,11 +33,11 @@ public class Simulation1D extends Simulation {
         eastBoundary = BorderCondition.CONVECTIVE;
         hWest = 10000.0;
         hEast = 10000.0;
-        tempWest = 291.0;
-        tempEast = 290.0;
+        tempWest = 293.0;
+        tempEast = 293.0;
         qWest = 0.0;
         qEast = 0.0;
-        startTemp = 290.0;
+        startTemp = 293.0;
         ambientTemperature = 293.0;
         // start_temperatures = new double[num_cvs];
         times = new ArrayList<Double>();

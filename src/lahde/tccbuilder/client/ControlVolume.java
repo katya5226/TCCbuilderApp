@@ -29,6 +29,7 @@ public class ControlVolume {
     public double constRho;
     public double constCp;
     public double constK;
+    public double constSeeb;
     public double eps;
     public int mode;
 
@@ -55,6 +56,7 @@ public class ControlVolume {
         constRho = -1;
         constCp = -1;
         constK = -1;
+        constSeeb = -7e-4;
         constQgen = 0.0;
         eps = 1.0;
         mode = 1;
@@ -135,6 +137,26 @@ public class ControlVolume {
             k = r.kValues.get((int) Math.round(temperature * 10));
         }
         return k;
+    }
+
+    double seeb(double T) {
+        double seeb = 1;
+        if (constSeeb != -1)
+            seeb = constSeeb;
+        else {
+            seeb = material.seebeck.get((int) Math.round(temperature * 10));
+        }
+        return seeb;
+    }
+
+    double seebeckGradient() {
+        double seebGrad = 0;
+        if (constSeeb != -1)
+            seebGrad = 0;
+        else {
+            seebGrad = material.dSeebdT.get((int) Math.round(temperature * 10));
+        }
+        return seebGrad;
     }
 
     double qGen() {

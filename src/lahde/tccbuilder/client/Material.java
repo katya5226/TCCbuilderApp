@@ -34,6 +34,8 @@ public class Material {
     public Vector<Double> interpTemps;
 
     public Vector<Double> rho;
+    public Vector<Double> seebeck;
+    public Vector<Double> dSeebdT;
     public Vector<Vector<Double>> k;
     public Vector<Vector<Double>> kHeating;
     public Vector<Vector<Double>> kCooling;
@@ -125,6 +127,8 @@ public class Material {
 
     void readFiles() {
         this.rho = new Vector<Double>();
+        this.seebeck = new Vector<Double>();
+        this.dSeebdT = new Vector<Double>();
         this.k = new Vector<Vector<Double>>();
         this.kHeating = new Vector<Vector<Double>>();
         this.kCooling = new Vector<Vector<Double>>();

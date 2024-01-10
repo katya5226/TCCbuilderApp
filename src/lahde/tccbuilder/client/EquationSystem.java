@@ -1,6 +1,8 @@
 package lahde.tccbuilder.client;
 
 import java.lang.Math;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.core.client.GWT;
 
 
 public class EquationSystem {
@@ -69,5 +71,30 @@ public class EquationSystem {
             circuit.diag[i] += cv.hTransv * Math.pow(cv.dx, 2) * dt;
             circuit.rhs[i] += cv.hTransv * Math.pow(cv.dx, 2) * dt * circuit.ambientTemperature;
         }
+        for (ThermalControlElement tce : circuit.TCEs) {
+            if (tce.index == 1) {
+                ModelMethods.CVinterface cvInter = new ModelMethods.CVinterface();
+                int teStartIndex = tce.cvs.get(0).globalIndex;
+                if (teStartIndex == 0) Window.alert("Thermoelectric element start index invalid!");
+                int teEndIndex = tce.cvs.get(tce.cvs.size() - 1).globalIndex;
+                if (teEndIndex >= circuit.cvs.size() - 1) Window.alert("Thermoelectric element end index invalid!");
+                for (int i = teStartIndex; i < teEndIndex + 1; i++) {
+                    // circuit.rhs[i] += cv.el_res() * (s.el_c / s.A) ** 2 * cv.dx ** 2 * dt  // Joule heating
+                    circuit.rhs[i] += 12e-6 * Math.pow(0.2 / 1.0e-6, 2) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;  // Joule heating
+                    double grad = cvInter.temperatureGradient(circuit.cvs.get(i));
+                    // circuit.diag[i] -= cv.seebeckGradient() * grad * (s.el_c / s.A) * Math.pow(cv.dx, 2) * dt;
+                    circuit.diag[i] -= circuit.cvs.get(i).seebeckGradient() * grad * (0.2 / 1.0e-6) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;
+                }
+                cvInter.calculateCoefficients(circuit.cvs.get(teStartIndex - 1), circuit.cvs.get(teStartIndex));
+                double peltier = tce.cvs.get(0).seeb(cvInter.T2) * (0.2 / 1.0e-6)* dt;
+                circuit.diag[teStartIndex] -= cvInter.b2 * peltier * circuit.cvs.get(teStartIndex).dx;
+                circuit.diag[teStartIndex - 1] -= cvInter.a2 * peltier * circuit.cvs.get(teStartIndex - 1).dx;
+                cvInter.calculateCoefficients(circuit.cvs.get(teEndIndex), circuit.cvs.get(teEndIndex + 1));
+                peltier = tce.cvs.get(tce.cvs.size() - 1).seeb(cvInter.T1) * (0.2 / 1.0e-6) * dt;
+                circuit.diag[teEndIndex] += cvInter.b1 * peltier * circuit.cvs.get(teEndIndex).dx;
+                circuit.diag[teEndIndex + 1] += cvInter.c1 * peltier * circuit.cvs.get(teEndIndex + 1).dx;
+            }
+        }
+
     }
 }
