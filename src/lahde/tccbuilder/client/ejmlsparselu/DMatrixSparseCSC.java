@@ -130,7 +130,7 @@ public class DMatrixSparseCSC implements DMatrixSparse {
                 int row = nz_rows[i];
                 double value = nz_values[i];
 
-                System.out.printf(format, row, col, value);
+                //System.out.printf(format, row, col, value);
             }
         }
     }
@@ -417,7 +417,7 @@ public class DMatrixSparseCSC implements DMatrixSparse {
     }
 
     @Override public Iterator<CoordinateRealValue> createCoordinateIterator() {
-        return new Iterator<>() {
+        return new Iterator<CoordinateRealValue>() {
             final CoordinateRealValue coordinate = new CoordinateRealValue();
             int nz_index = 0; // the index of the non-zero value and row
             int column = 0; // which column it's in

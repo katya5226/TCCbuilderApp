@@ -20,7 +20,7 @@ public class FillReductionFactory_DSCC {
                 return null;
 
             case RANDOM:
-                return new ComputePermutation<>(true, true) {
+                return new ComputePermutation<DMatrixSparseCSC>(true, true) {
                     @Override
                     @SuppressWarnings("NullAway") // constructor parameters ensures these are not null
                     public void process(DMatrixSparseCSC m) {
@@ -38,7 +38,7 @@ public class FillReductionFactory_DSCC {
                 };
 
             case IDENTITY:
-                return new ComputePermutation<>(true,true) {
+                return new ComputePermutation<DMatrixSparseCSC>(true,true) {
                     @Override
                     @SuppressWarnings("NullAway") // constructor parameters ensures these are not null
                     public void process(DMatrixSparseCSC m) {

@@ -6,9 +6,8 @@ import lahde.tccbuilder.client.math3.linear.Array2DRowRealMatrix;
 import lahde.tccbuilder.client.math3.linear.ArrayRealVector;
 import lahde.tccbuilder.client.math3.linear.OpenMapRealMatrix;
 import lahde.tccbuilder.client.math3.linear.OpenMapRealVector;
-// import lahde.tccbuilder.client.ejmlsparselu.DMatrixSparseCSC;
-// import lahde.tccbuilder.client.ejmlsparselu.DMatrixRMaj;
-// import lahde.tccbuilder.client.ejmlsparselu.CommonOps_DSCC;
+import lahde.tccbuilder.client.ejmlsparselu.DMatrixSparseCSC;
+import lahde.tccbuilder.client.ejmlsparselu.DMatrixRMaj;
 
 import java.lang.Math;
 
@@ -40,13 +39,13 @@ public class TwoDimEqSys {
         // matrix = new double[n * m][n * m];
         // for (double[] row: matrix)
         //     Arrays.fill(row, 0.0);
-        // matrix = new Array2DRowRealMatrix(numCvs, numCvs);
-        matrix = new OpenMapRealMatrix(numCvs, numCvs);
+        matrix = new Array2DRowRealMatrix(numCvs, numCvs);
+        // matrix = new OpenMapRealMatrix(numCvs, numCvs);
         // matrixEjml = new DMatrixSparseCSC(numCvs, numCvs);
         // rhs = new double[n * m];
-        // rhs = new ArrayRealVector(numCvs);
-        rhs = new OpenMapRealVector(numCvs);
-        // rhs = new DMatrixRMaj(numCvs, 1);
+        rhs = new ArrayRealVector(numCvs);
+        // rhs = new OpenMapRealVector(numCvs);
+        // rhsEjml = new DMatrixRMaj(numCvs, 1);
         resetMatrix();
         // Arrays.fill(rhs, 0.0);
         kd = new double[]{0.0, 0.0, 0.0, 0.0};
@@ -101,6 +100,12 @@ public class TwoDimEqSys {
         matrix.setEntry(0, 0, ad[1] + ad[3] + rcp + 1.5 * hd[0]);
         matrix.setEntry(0, n, - ad[3]);
         rhs.setEntry(0, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
+        // matrixEjml.set(0, 1, - ad[1] - 0.5 * hd[0]);
+        // matrixEjml.set(0, 0, ad[1] + ad[3] + rcp + 1.5 * hd[0]);
+        // matrixEjml.set(0, n, - ad[3]);
+        // rhsEjml.set(0, 0, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
         // first (south, bottom) row
         for(int j = 1; j < n-1; j++) {
             currCV = aTCE.cvs.get(j);
@@ -115,6 +120,13 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j + 1, - ad[1]);
             matrix.setEntry(j, j + n, - ad[3]);
             rhs.setEntry(j, rcp * tempOld + gen);
+
+            // matrixEjml.set(j, j - 1, - ad[0]);
+            // matrixEjml.set(j, j, ad[0] + ad[1] + ad[3] + rcp);
+            // matrixEjml.set(j, j + 1, - ad[1]);
+            // matrixEjml.set(j, j + n, - ad[3]);
+            // rhsEjml.set(j, 0, rcp * tempOld + gen);
+
         }
         // south-east corner
         currCV = aTCE.cvs.get(n - 1);
@@ -127,6 +139,12 @@ public class TwoDimEqSys {
         matrix.setEntry(n - 1, n - 1, ad[0] + ad[3] + rcp + 1.5 * hd[1]);
         matrix.setEntry(n - 1, 2 * n - 1, - ad[3]);
         rhs.setEntry(n - 1, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
+        // matrixEjml.set(n - 1, n - 2, - ad[0] - 0.5 * hd[1]);
+        // matrixEjml.set(n - 1, n - 1, ad[0] + ad[3] + rcp + 1.5 * hd[1]);
+        // matrixEjml.set(n - 1, 2 * n - 1, - ad[3]);
+        // rhsEjml.set(n - 1, 0, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
         // first (west) column
         for(int j = n; j < (m - 1) * n; j += n) {
             currCV = aTCE.cvs.get(j);
@@ -141,6 +159,13 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j + n, -ad[3]);
             matrix.setEntry(j, j + 1, -ad[1] - 0.5 * hd[0]);
             rhs.setEntry(j, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
+            // matrixEjml.set(j, j, ad[1] + ad[2] + ad[3] + rcp + 1.5 * hd[0]);
+            // matrixEjml.set(j, j - n, -ad[2]);
+            // matrixEjml.set(j, j + n, -ad[3]);
+            // matrixEjml.set(j, j + 1, -ad[1] - 0.5 * hd[0]);
+            // rhsEjml.set(j, 0, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
         }
         // north-west corner
         int ind = (m - 1) * n;
@@ -156,6 +181,12 @@ public class TwoDimEqSys {
         matrix.setEntry(ind, ind, ad[1] + ad[2] + rcp + 1.5 * hd[0]);
         matrix.setEntry(ind, ind_e, - ad[1] - 0.5 * hd[0]);
         rhs.setEntry(ind, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
+        // matrixEjml.set(ind, ind_s, - ad[2]);
+        // matrixEjml.set(ind, ind, ad[1] + ad[2] + rcp + 1.5 * hd[0]);
+        // matrixEjml.set(ind, ind_e, - ad[1] - 0.5 * hd[0]);
+        // rhsEjml.set(ind, 0, rcp * tempOld + hd[0] * boundCond.T[0] + gen);
+
         // last (top, north) row
         for(int j = (m - 1) * n + 1; j <  m * n - 1; j ++) {
             currCV = aTCE.cvs.get(j);
@@ -170,6 +201,13 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j + 1, -ad[1]);
             matrix.setEntry(j, j - n, -ad[2]);
             rhs.setEntry(j, rcp * tempOld + gen);
+
+            // matrixEjml.set(j, j - 1, -ad[0]);
+            // matrixEjml.set(j, j, ad[0] + ad[1] + ad[2] + rcp);
+            // matrixEjml.set(j, j + 1, -ad[1]);
+            // matrixEjml.set(j, j - n, -ad[2]);
+            // rhsEjml.set(j, rcp * tempOld + gen);
+
         }
         // north-east corner
         ind = m * n - 1;
@@ -185,6 +223,12 @@ public class TwoDimEqSys {
         matrix.setEntry(ind, ind, ad[0] + ad[2] + rcp + 1.5 * hd[1]);
         matrix.setEntry(ind, ind_s, - ad[2]);
         rhs.setEntry(ind, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
+        // matrixEjml.set(ind, ind_w, - ad[0] - 0.5 * hd[1]);
+        // matrixEjml.set(ind, ind, ad[0] + ad[2] + rcp + 1.5 * hd[1]);
+        // matrixEjml.set(ind, ind_s, - ad[2]);
+        // rhsEjml.set(ind, 0, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
         // last (east) column
         for(int j = 2 * n - 1; j < (m - 1) * n; j += n) {
             currCV = aTCE.cvs.get(j);
@@ -199,6 +243,13 @@ public class TwoDimEqSys {
             matrix.setEntry(j, j + n, -ad[3]);
             matrix.setEntry(j, j - 1, -ad[0] - 0.5 * hd[1]);
             rhs.setEntry(j, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
+            // matrixEjml.set(j, j, ad[0] + ad[2] + ad[3] + rcp + 1.5 * hd[1]);
+            // matrixEjml.set(j, j - n, -ad[2]);
+            // matrixEjml.set(j, j + n, -ad[3]);
+            // matrixEjml.set(j, j - 1, -ad[0] - 0.5 * hd[1]);
+            // rhsEjml.set(j, 0, rcp * tempOld + hd[1] * boundCond.T[1] + gen);
+
         }
         // core
         for(int k = 1; k < m - 1; k++) {
@@ -217,6 +268,14 @@ public class TwoDimEqSys {
                 matrix.setEntry(j, j - n, -ad[2]);
                 matrix.setEntry(j, j + n, -ad[3]);
                 rhs.setEntry(j, rcp * tempOld + gen);
+
+                // matrixEjml.set(j, j - 1, -ad[0]);
+                // matrixEjml.set(j, j, ad[0] + ad[1] + ad[2] + ad[3] + rcp);
+                // matrixEjml.set(j, j + 1, -ad[1]);
+                // matrixEjml.set(j, j - n, -ad[2]);
+                // matrixEjml.set(j, j + n, -ad[3]);
+                // rhsEjml.set(j, rcp * tempOld + gen);
+
             }
         }
         // GWT.log("MATRIX");

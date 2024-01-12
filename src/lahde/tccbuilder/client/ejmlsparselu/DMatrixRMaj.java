@@ -52,8 +52,10 @@ public class DMatrixRMaj extends DMatrix1Row {
      *
      * @param data elements in vector. copied
      */
-    public DMatrixRMaj( double data[] ) {
-        this.data = data.clone();
+    public DMatrixRMaj( double thedata[] ) {
+        // this.data = data.clone();
+        this.data= new double[thedata.length];
+        System.arraycopy(thedata, 0, this.data, 0, thedata.length);
         this.numRows = this.data.length;
         this.numCols = 1;
     }
@@ -123,7 +125,8 @@ public class DMatrixRMaj extends DMatrix1Row {
      * @return A matrix which references the provided data internally.
      */
     public static DMatrixRMaj wrap( int numRows, int numCols, double[] data ) {
-        var s = new DMatrixRMaj();
+        // var s = new DMatrixRMaj();
+        DMatrixRMaj s = new DMatrixRMaj();
         s.assignShape(numRows, numCols);
         s.data = data;
 
@@ -134,7 +137,8 @@ public class DMatrixRMaj extends DMatrix1Row {
         int numElements = getNumElements();
         assignShape(numRows, numCols);
         if (data.length < numRows*numCols) {
-            var d = new double[numRows*numCols];
+            // var d = new double[numRows*numCols];
+            double[] d = new double[numRows*numCols];
 
             if (saveValues) {
                 System.arraycopy(data, 0, d, 0, numElements);
