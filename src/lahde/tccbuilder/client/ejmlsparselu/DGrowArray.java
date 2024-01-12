@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public class DGrowArray {
     public double[] data;
     public int length;

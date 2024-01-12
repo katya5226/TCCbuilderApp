@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface LinearSolverSparse<S extends Matrix, D extends Matrix> extends LinearSolver<S, D> {
 
     /**

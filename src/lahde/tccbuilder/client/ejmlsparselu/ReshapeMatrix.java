@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface ReshapeMatrix extends Matrix{
     /**
      * Equivalent to invoking reshape(numRows,numCols,false);

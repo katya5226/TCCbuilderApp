@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface CholeskyDecomposition<MatrixType extends Matrix>
         extends DecompositionInterface<MatrixType> {
 

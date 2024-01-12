@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public abstract class ComputePermutation<T extends Matrix> {
 
     protected @Nullable IGrowArray prow;

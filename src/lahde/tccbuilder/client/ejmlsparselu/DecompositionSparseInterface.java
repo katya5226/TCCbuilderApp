@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface DecompositionSparseInterface<T extends Matrix> extends
         DecompositionInterface<T>
 {

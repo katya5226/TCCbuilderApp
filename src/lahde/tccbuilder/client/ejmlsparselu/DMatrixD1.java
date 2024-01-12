@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public abstract class DMatrixD1 implements ReshapeMatrix, DMatrix {
     /**
      * Where the raw data for the matrix is stored. The format is type dependent.

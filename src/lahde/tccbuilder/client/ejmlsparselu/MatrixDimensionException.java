@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-
+package lahde.tccbuilder.client.ejmlsparselu;
 /**
  * If two matrices did not have compatible dimensions for the operation this exception
  * is thrown.

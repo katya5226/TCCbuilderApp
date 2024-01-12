@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public class QuickSort_S32 {
     private int M = 7;
     private final int NSTACK;

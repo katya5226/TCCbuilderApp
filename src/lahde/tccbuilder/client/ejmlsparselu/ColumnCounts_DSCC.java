@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 import java.util.Arrays;
 
 @SuppressWarnings("NullAway.Init")

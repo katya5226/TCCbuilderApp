@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public class SortCoupledArray_F64 {
     int[] tmp = new int[0];
 

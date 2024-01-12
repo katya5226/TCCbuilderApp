@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface MatrixSparse extends ReshapeMatrix {
     /**
      * Prints to standard out the non-zero elements only.

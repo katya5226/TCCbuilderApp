@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public enum FillReducing {
     /**
      * No fill reduction permutation will be applied

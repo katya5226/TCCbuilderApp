@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public class CholeskyUpLooking_DSCC implements
         CholeskySparseDecomposition_F64<DMatrixSparseCSC> {
     private int N;

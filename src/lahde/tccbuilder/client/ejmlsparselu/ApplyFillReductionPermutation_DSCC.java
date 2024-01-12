@@ -23,6 +23,9 @@
  *
  * @author Peter Abeles
  */
+
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public class ApplyFillReductionPermutation_DSCC {
     // fill reduction permutation
     private @Nullable ComputePermutation<DMatrixSparseCSC> fillReduce;

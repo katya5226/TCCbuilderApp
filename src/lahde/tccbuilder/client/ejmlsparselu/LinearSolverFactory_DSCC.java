@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 /**
  * Factory for sparse linear solvers
  *

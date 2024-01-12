@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public enum MatrixType {
 
     DDRM(true,true,64,DMatrixRMaj.class),

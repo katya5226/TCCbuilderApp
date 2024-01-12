@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 public interface DMatrixFixed extends DMatrix {
     @Override
     default <T extends Matrix> T create(int numRows, int numCols) {

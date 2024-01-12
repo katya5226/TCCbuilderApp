@@ -1,4 +1,6 @@
-import lombok.Data;
+package lahde.tccbuilder.client.ejmlsparselu;
+
+// import lombok.Data;
 
 /**
  * <p>
@@ -9,7 +11,7 @@ import lombok.Data;
  *
  * @author Peter Abeles
  */
-@Data
+// @Data
 public class ComplexPolar_F64 {
     public double r;
     public double theta;

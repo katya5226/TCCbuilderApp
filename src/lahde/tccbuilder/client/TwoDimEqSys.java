@@ -6,6 +6,9 @@ import lahde.tccbuilder.client.math3.linear.Array2DRowRealMatrix;
 import lahde.tccbuilder.client.math3.linear.ArrayRealVector;
 import lahde.tccbuilder.client.math3.linear.OpenMapRealMatrix;
 import lahde.tccbuilder.client.math3.linear.OpenMapRealVector;
+// import lahde.tccbuilder.client.ejmlsparselu.DMatrixSparseCSC;
+// import lahde.tccbuilder.client.ejmlsparselu.DMatrixRMaj;
+// import lahde.tccbuilder.client.ejmlsparselu.CommonOps_DSCC;
 
 import java.lang.Math;
 
@@ -23,7 +26,9 @@ public class TwoDimEqSys {
     int numCvs;
     double tempOld;
     RealMatrix matrix;
+    // DMatrixSparseCSC matrixEjml;
     RealVector rhs;
+    // DMatrixRMaj rhsEjml;
 
     public TwoDimEqSys(TwoDimTCE obj, TwoDimBC bc) {
         aTCE = obj;
@@ -37,9 +42,11 @@ public class TwoDimEqSys {
         //     Arrays.fill(row, 0.0);
         // matrix = new Array2DRowRealMatrix(numCvs, numCvs);
         matrix = new OpenMapRealMatrix(numCvs, numCvs);
+        // matrixEjml = new DMatrixSparseCSC(numCvs, numCvs);
         // rhs = new double[n * m];
         // rhs = new ArrayRealVector(numCvs);
         rhs = new OpenMapRealVector(numCvs);
+        // rhs = new DMatrixRMaj(numCvs, 1);
         resetMatrix();
         // Arrays.fill(rhs, 0.0);
         kd = new double[]{0.0, 0.0, 0.0, 0.0};
@@ -51,10 +58,12 @@ public class TwoDimEqSys {
         for (int i = 0; i < numCvs; i ++) {
             for (int j = 0; j < numCvs; j ++) {
                 matrix.setEntry(i, j, 0.0);
+                // matrixEjml.set(i, j, 0.0);
             }
         }
         for (int i = 0; i < numCvs; i ++) {
             rhs.setEntry(i, 0.0);
+            // rhsEjml.set(i, 0, 0.0);
         }
     }
 

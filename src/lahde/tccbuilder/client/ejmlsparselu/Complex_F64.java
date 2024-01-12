@@ -1,4 +1,6 @@
-import lombok.Data;
+package lahde.tccbuilder.client.ejmlsparselu;
+
+// import lombok.Data;
 
 /**
  * <p>
@@ -6,7 +8,7 @@ import lombok.Data;
  * real and imaginary components.
  * </p>
  */
-@Data
+// @Data
 public class Complex_F64 {
     public double real;
     public double imaginary;

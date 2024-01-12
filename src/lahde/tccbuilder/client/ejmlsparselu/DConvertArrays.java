@@ -1,3 +1,5 @@
+package lahde.tccbuilder.client.ejmlsparselu;
+
 /**
  * Converts 1D and 2D arrays to and from EJML data types
  *
