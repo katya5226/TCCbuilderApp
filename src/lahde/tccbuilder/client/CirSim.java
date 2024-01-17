@@ -636,6 +636,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         quickResetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 resetAction();
+                setSimRunning(false);
             }
         });
         testButton.addClickHandler(new ClickHandler() {
