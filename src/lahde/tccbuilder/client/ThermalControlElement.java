@@ -488,7 +488,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         for (ControlVolume cv : cvs) {
             averageDiffusivityReciprocal += cv.rho() * cv.cp() / cv.k();
         }
-        double averageDiffusivity = 1 / averageDiffusivityReciprocal;
+        double averageDiffusivity = 1e6 / averageDiffusivityReciprocal;
         return averageDiffusivity;
     }
 
@@ -501,11 +501,11 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 if( deltaT >= largestDeltaT) largestDeltaT = deltaT;
             }
         }
-        String s2;
-        if (largestDeltaT < 0.1) s2 = "\tDiscretisation sufficient";
+        String s2 = "";
+        if (largestDeltaT <= 0.1) s2 = "\tDiscretisation sufficient";
         if (largestDeltaT > 0.5) s2 = "\tDiscretisation may not be sufficient";
         String s = String.valueOf(Math.round(largestDeltaT * 1000) / 1000.0) + " K";
-        return s;
+        return s + s2;
         // return s + s2;
     }
 

@@ -283,6 +283,8 @@ public class Simulation1D extends Simulation {
         heatCircuit.calculateHeatFluxes();
         for (Double f : heatCircuit.fluxes)
             dump += f + "\t";
+        
+        dump += "\n\n" + assessment();
         return dump;
     }
 
@@ -290,7 +292,7 @@ public class Simulation1D extends Simulation {
         String as = "";
         as += "AVERAGE THERMAL DIFFUSIVITIES OF TCEs:\n";
         for (ThermalControlElement tce : heatCircuit.TCEs) {
-            as += tce.name + "\t" + tce.calculateDiffusivity() + " m²/s\n";
+            as += tce.name + "\t" + NumberFormat.getFormat("0.00").format(tce.calculateDiffusivity()) + "x10\u207B⁶ m²/s\n";
         }
         as += "LARGEST TEMPERATURE DIFFERENCE BETWEEN CVs:\n";
         for (ThermalControlElement tce : heatCircuit.TCEs) {
@@ -298,10 +300,12 @@ public class Simulation1D extends Simulation {
         }
         as += "HEAT FLUX AT WEST BOUNDARY: " + heatCircuit.fluxes.get(0) + " W/m²\n";
         as += "HEAT FLUX AT EAST BOUNDARY: " + heatCircuit.fluxes.get(heatCircuit.fluxes.size() - 1) + " W/m²\n";
-        as += "TCE ACTUATION POWER INPUTS (divided by TCE cross area):\n";
+        // as += "TCE ACTUATION POWER INPUTS (divided by TCE cross area):\n";
+        as += "TCE ACTUATION POWER INPUTS:\n";
         for (ThermalControlElement tce : heatCircuit.TCEs) {
-            if (tce.crossArea == -1) as += tce.name + "\tCross area unknown, input power " + tce.inputPower + " W\n";
-            else as += tce.name + "\t Input power " + tce.inputPower / tce.crossArea + " W/m²\n";
+            as += tce.name + "\tInput power " + tce.inputPower + " W\n";
+            // if (tce.crossArea == -1) as += tce.name + "\tCross area unknown\n";  // TO DO IF THERE'S TIME
+            // else as += tce.name + "\t Input power " + tce.inputPower / tce.crossArea + " W/m²\n";
         } 
         return as;
     }
