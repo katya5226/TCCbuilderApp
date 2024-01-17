@@ -51,10 +51,10 @@ class SwitchElm extends ThermalControlElement {
                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
         material = sim.materialHashMap.get("000000-Constant properties");
-        position = Integer.parseInt(st.nextToken());
-        momentary = st.nextToken().equals("true");
-        kOn = Double.parseDouble(st.nextToken());
-        kOff = Double.parseDouble(st.nextToken());
+        // position = Integer.parseInt(st.nextToken());
+        // momentary = st.nextToken().equals("true");
+        // kOn = Double.parseDouble(st.nextToken());
+        // kOff = Double.parseDouble(st.nextToken());
         posCount = 2;
     }
 
