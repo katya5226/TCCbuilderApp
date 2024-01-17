@@ -33,7 +33,7 @@ class SwitchElm extends ThermalControlElement {
 
     public SwitchElm(int xx, int yy) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         momentary = false;
         position = 1;
         posCount = 2;
@@ -41,7 +41,7 @@ class SwitchElm extends ThermalControlElement {
 
     SwitchElm(int xx, int yy, boolean mm) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         position = (mm) ? 1 : 0;
         momentary = mm;
         posCount = 2;
@@ -50,7 +50,7 @@ class SwitchElm extends ThermalControlElement {
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
         kOn = Double.parseDouble(st.nextToken());

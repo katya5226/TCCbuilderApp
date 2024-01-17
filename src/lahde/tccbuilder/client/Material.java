@@ -84,7 +84,7 @@ public class Material {
             double temp = Math.round(0.1 * i * 10.0) / 10.0;
             interpTemps.add(temp);
         }
-        if (materialName.equals("000000-Custom")) {
+        if (materialName.equals("000000-Constant properties")) {
             this.rho = new Vector<Double>();
             this.k = new Vector<Vector<Double>>();
             this.cp = new Vector<Vector<Double>>();

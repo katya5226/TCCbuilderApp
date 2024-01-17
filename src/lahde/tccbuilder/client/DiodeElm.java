@@ -32,7 +32,7 @@ class DiodeElm extends ThermalControlElement {
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
     }
 
     public DiodeElm(int xa, int ya, int xb, int yb, int f,
@@ -40,7 +40,7 @@ class DiodeElm extends ThermalControlElement {
         super(xa, ya, xb, yb, f, st);
         kForward = Double.parseDouble(st.nextToken());
         kBackward = Double.parseDouble(st.nextToken());
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
     }
 
 

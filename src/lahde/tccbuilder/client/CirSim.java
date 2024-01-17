@@ -842,9 +842,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         materialNames = new Vector<String>();
-        materialNames.add("000000-Custom");
+        materialNames.add("000000-Constant properties");
         materialHashMap = new HashMap<String, Material>();
-        materialHashMap.put("000000-Custom", new Material("000000-Custom", theSim));
+        materialHashMap.put("000000-Constant properties", new Material("000000-Constant properties", theSim));
         colorChoices = new Vector<String>();
         setSimRunning(running);
         colorChoices.add("white");  // I will fix this later.
