@@ -488,6 +488,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         for (ControlVolume cv : cvs) {
             averageDiffusivityReciprocal += cv.rho() * cv.cp() / cv.k();
         }
+        averageDiffusivityReciprocal = averageDiffusivityReciprocal / cvs.size();
         double averageDiffusivity = 1e6 / averageDiffusivityReciprocal;
         return averageDiffusivity;
     }

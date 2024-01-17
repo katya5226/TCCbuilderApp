@@ -9,6 +9,8 @@ public class EquationSystem {
 
     public static void conductionTridag(TCC circuit, double dt) {
         //double dt = circuit.parent_sim.dt;
+        double a = 1.5;
+        double b = 0.5;
         int n = circuit.cvs.size();
         for (int i = 0; i < n; i++) {
             ControlVolume cv = circuit.cvs.get(i);
@@ -35,10 +37,12 @@ public class EquationSystem {
                 }
 
                 if (circuit.westBoundary == Simulation.BorderCondition.CONVECTIVE) {  // left resistance is approximated with the resistance of the first cv
+                    a = (2 * cv.dx + cv.eastNeighbour.dx) / (cv.dx + cv.eastNeighbour.dx);
+                    b = cv.dx / (cv.dx + cv.eastNeighbour.dx);
                     circuit.diag[0] = cv.kEast * dt;
                     circuit.diag[0] += cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
-                    circuit.diag[0] += 1.5 * circuit.hWest * cv.dx * dt;
-                    circuit.upperdiag[0] = -cv.kEast * dt - 0.5 * circuit.hWest * cv.dx * dt;
+                    circuit.diag[0] += a * circuit.hWest * cv.dx * dt;
+                    circuit.upperdiag[0] = -cv.kEast * dt - b * circuit.hWest * cv.dx * dt;
                     circuit.rhs[0] = cv.rho() * cv.cp() * Math.pow(cv.dx, 2) * cv.temperatureOld;
                     circuit.rhs[0] += circuit.hWest * cv.dx * dt * circuit.temperatureWest;
                     circuit.rhs[0] += cv.qGen() * dt * Math.pow(cv.dx, 2);
@@ -60,9 +64,11 @@ public class EquationSystem {
                     circuit.rhs[n - 1] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
                 if (circuit.eastBoundary == Simulation.BorderCondition.CONVECTIVE) { // left resistance is approximated with the resistance of the first cv
+                    a = (2 * cv.dx + cv.westNeighbour.dx) / (cv.dx + cv.westNeighbour.dx);
+                    b = cv.dx / (cv.dx + cv.westNeighbour.dx);
                     circuit.diag[n - 1] = cv.kWest * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
-                    circuit.diag[n - 1] += 1.5 * circuit.hEast * cv.dx * dt;
-                    circuit.underdiag[n - 1] = -cv.kWest * dt - 0.5 * circuit.hEast * cv.dx * dt;
+                    circuit.diag[n - 1] += a * circuit.hEast * cv.dx * dt;
+                    circuit.underdiag[n - 1] = -cv.kWest * dt - b * circuit.hEast * cv.dx * dt;
                     circuit.rhs[n - 1] = cv.rho() * cv.cp() * Math.pow(cv.dx, 2) * cv.temperatureOld;
                     circuit.rhs[n - 1] += circuit.hEast * cv.dx * dt * circuit.temperatureEast;
                     circuit.rhs[n - 1] += cv.qGen() * dt * Math.pow(cv.dx, 2);
