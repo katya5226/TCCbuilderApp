@@ -24,7 +24,7 @@ import com.google.gwt.user.client.Window;
 
 class DiodeElm extends ThermalControlElement {
 
-    double kForward, kBackward;
+    double kForward, kReverse;
     // double cp;
     // double rho;
     double responseTime;
@@ -39,7 +39,7 @@ class DiodeElm extends ThermalControlElement {
                     StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
         kForward = Double.parseDouble(st.nextToken());
-        kBackward = Double.parseDouble(st.nextToken());
+        kReverse = Double.parseDouble(st.nextToken());
         material = sim.materialHashMap.get("000000-Constant properties");
     }
 
@@ -51,7 +51,7 @@ class DiodeElm extends ThermalControlElement {
 
     @Override
     String dump() {
-        return super.dump() + kForward + " " + kBackward;
+        return super.dump() + kForward + " " + kReverse;
     }
 
 
@@ -114,7 +114,7 @@ class DiodeElm extends ThermalControlElement {
             case 7:
                 return new EditInfo("Thermal Conductivity (W/mK) - forward", kForward);
             case 8:
-                return new EditInfo("Thermal Conductivity (W/mK) - backward", kBackward);
+                return new EditInfo("Thermal Conductivity (W/mK) - backward", kReverse);
             case 9:
                 return new EditInfo("Specific Heat Capacity (J/kgK)", constCp);
             case 10:
@@ -158,7 +158,7 @@ class DiodeElm extends ThermalControlElement {
                 kForward = ei.value;
                 break;
             case 8:
-                kBackward = ei.value;
+                kReverse = ei.value;
                 break;
             case 9:
                 constCp = ei.value;
@@ -198,10 +198,10 @@ class DiodeElm extends ThermalControlElement {
             setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kForward);
         }
         if (direction == CircuitElm.Direction.RIGHT && dT < 0) {
-            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kReverse);
         }
         if (direction == CircuitElm.Direction.LEFT && dT > 0) {
-            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kBackward);
+            setConstProperty(Simulation.Property.THERMAL_CONDUCTIVITY, kReverse);
         }
     }
 
