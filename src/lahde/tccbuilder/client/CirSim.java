@@ -4214,15 +4214,15 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             //Samples
             case "DiodeElm_SS_01":
                 return new DiodeElm_SS_01(x1, y1);
-            case "DiodeElm_NiTiGraphite":
+            case "DiodeElm_SS_02":
                 return new DiodeElm_SS_02(x1, y1);
-            case "SwitchElm_FM1":
+            case "SwitchElm_FM_01":
                 return new SwitchElm_FM_01(x1, y1);
-            case "SwitchElm_MM1":
+            case "SwitchElm_MM_01":
                 return new SwitchElm_MM_01(x1, y1);
-            case "SwitchElm_MM2":
+            case "SwitchElm_MM_02":
                 return new SwitchElm_MM_02(x1, y1);
-            case "RegulatorElm_F01":
+            case "RegulatorElm_F_01":
                 return new RegulatorElm_F_01(x1, y1);
 
             //2D
