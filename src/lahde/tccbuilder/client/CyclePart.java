@@ -293,9 +293,23 @@ public class CyclePart {
     }
 
     void pressureChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
+                tce.toggleField();
+            }
+        }
     }
 
     void shearStressChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
+                tce.toggleField();
+            }
+        }
     }
 
     void propertiesChange() {
