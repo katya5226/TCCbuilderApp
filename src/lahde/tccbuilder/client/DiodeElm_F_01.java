@@ -98,9 +98,9 @@ public class DiodeElm_F_01 extends DiodeElm {
             case 6:
                 eastResistance = ei.value;
                 break;
-            // case 8:
-            //     hTransv = ei.value;
-            //     break;
+            case 8:
+                hTransv = ei.value;
+                break;
             default:
                 break;
 

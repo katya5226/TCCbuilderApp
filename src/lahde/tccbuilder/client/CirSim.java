@@ -1216,6 +1216,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             menuItem.setTitle("Ideal operating range = 290-450 K");
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_F_01"), "DiodeElm_F_01"));
             menuItem.setTitle("Ideal operating range = 303-318 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_F_02"), "DiodeElm_F_02"));
+            menuItem.setTitle("Ideal operating range = 283-333 K");
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Regulator-F_01"), "RegulatorElm_F_01"));
             menuItem.setTitle("Ideal operating range = 300-350 K");
             mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
@@ -4172,6 +4174,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new DiodeElm_SS_02(x1, y1);
             case 602:
                 return new DiodeElm_F_01(x1, y1);
+            case 603:
+                return new DiodeElm_F_02(x1, y1);
             case 610:
                 return new SwitchElm_FM_01(x1, y1);
             case 611:
@@ -4222,6 +4226,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new DiodeElm_SS_02(x1, y1);
             case "DiodeElm_F_01":
                 return new DiodeElm_F_01(x1, y1);
+            case "DiodeElm_F_02":
+                return new DiodeElm_F_02(x1, y1);
             case "SwitchElm_FM_01":
                 return new SwitchElm_FM_01(x1, y1);
             case "SwitchElm_MM_01":
