@@ -104,10 +104,7 @@ public class DiodeElm_F_01 extends DiodeElm {
             default:
                 break;
 
-
         }
-
-
 
         updateElement();
     }

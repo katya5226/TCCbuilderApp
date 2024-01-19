@@ -104,17 +104,9 @@ public class DiodeElm_F_02 extends DiodeElm {
             default:
                 break;
 
-
         }
-
-
-
         updateElement();
     }
-/*                case 12:
-    EditInfo operatingRange = new EditInfo("Operating range", operatingMin + "K - " + operatingMax + "K");
-    operatingRange.editable = false;
-                return operatingRange;*/
 
     @Override
     public void initializeThermalControlElement() {
