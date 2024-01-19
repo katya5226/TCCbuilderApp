@@ -1204,17 +1204,17 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             MenuBar sampleElements = new MenuBar(true);
 
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM_01"), "SwitchElm_FM_01"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM_01"), "SwitchElm_MM_01"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM_02"), "SwitchElm_MM_02"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_SS_01"), "DiodeElm_SS_01"));
             menuItem.setTitle("Ideal operating range = 40-99 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_SS_02"), "DiodeElm_SS_02"));
             menuItem.setTitle("Ideal operating range = 290-450 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Regulator-F01"), "RegulatorElm_F01"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Regulator-F_01"), "RegulatorElm_F_01"));
             menuItem.setTitle("Ideal operating range = 300-350 K");
             mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
         }
@@ -4165,9 +4165,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new ConduitElm(x1, y1, x2, y2, f, st);
             //Samples
             case 600:
-                return new DiodeElm_LSCO_LCO(x1, y1);
+                return new DiodeElm_SS_01(x1, y1);
             case 601:
-                return new DiodeElm_NiTi_Graphite(x1, y1);
+                return new DiodeElm_SS_02(x1, y1);
             case 610:
                 return new SwitchElm_FM1(x1, y1);
             case 611:
@@ -4212,18 +4212,18 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case "WireElm":
                 return new ConduitElm(x1, y1);
             //Samples
-            case "DiodeElm_LSCOLCO":
-                return new DiodeElm_LSCO_LCO(x1, y1);
+            case "DiodeElm_SS_01":
+                return new DiodeElm_SS_01(x1, y1);
             case "DiodeElm_NiTiGraphite":
-                return new DiodeElm_NiTi_Graphite(x1, y1);
+                return new DiodeElm_SS_02(x1, y1);
             case "SwitchElm_FM1":
-                return new SwitchElm_FM1(x1, y1);
+                return new SwitchElm_FM_01(x1, y1);
             case "SwitchElm_MM1":
-                return new SwitchElm_MM1(x1, y1);
+                return new SwitchElm_MM_01(x1, y1);
             case "SwitchElm_MM2":
-                return new SwitchElm_MM2(x1, y1);
+                return new SwitchElm_MM_02(x1, y1);
             case "RegulatorElm_F01":
-                return new RegulatorElm_F01(x1, y1);
+                return new RegulatorElm_F_01(x1, y1);
 
             //2D
             case "2DComponent":

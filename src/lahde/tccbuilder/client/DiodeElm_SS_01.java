@@ -3,10 +3,10 @@ package lahde.tccbuilder.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 
-public class DiodeElm_LSCO_LCO extends DiodeElm {
+public class DiodeElm_SS_01 extends DiodeElm {
     final double DEFINED_LENGTH = 0.0124;
 
-    public DiodeElm_LSCO_LCO(int xx, int yy) {
+    public DiodeElm_SS_01(int xx, int yy) {
         super(xx, yy);
         // DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
@@ -19,7 +19,7 @@ public class DiodeElm_LSCO_LCO extends DiodeElm {
     }
 
 
-    public DiodeElm_LSCO_LCO(int xa, int ya, int xb, int yb, int f,
+    public DiodeElm_SS_01(int xa, int ya, int xb, int yb, int f,
                              StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }

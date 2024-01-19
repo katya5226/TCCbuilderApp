@@ -1,9 +1,9 @@
 package lahde.tccbuilder.client;
 
-public class SwitchElm_MM1 extends SwitchElm {
-    final double DEFINED_LENGTH = 0.011;
+public class SwitchElm_FM_01 extends SwitchElm {
+    final double DEFINED_LENGTH = 0.05;
 
-    public SwitchElm_MM1(int xx, int yy) {
+    public SwitchElm_FM_01(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
@@ -16,11 +16,11 @@ public class SwitchElm_MM1 extends SwitchElm {
         drag(newX, yy);
     }
 
-    SwitchElm_MM1(int xx, int yy, boolean mm) {
+    SwitchElm_FM_01(int xx, int yy, boolean mm) {
         super(xx, yy, mm);
     }
 
-    public SwitchElm_MM1(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
+    public SwitchElm_FM_01(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
     }
 
@@ -32,18 +32,18 @@ public class SwitchElm_MM1 extends SwitchElm {
         operatingMax = 353;
         resizable = false;
         length = DEFINED_LENGTH;
-        kOff = 5.09;
-        kOn = 184.54;
-        rhoOff = 1600;
-        rhoOn = 1600;
-        cpOff = 450;
-        cpOn = 450;
-        responseTime = -1;
+        kOff = 0.126;
+        kOn = 10.52;
+        rhoOff = 1000;
+        rhoOn = 6440;
+        cpOff = 4184;
+        cpOn = 296;
+        responseTime = 0.1;
         constCp = cpOff;
         constK = kOff;
         constRho = rhoOff;
-        inputPower = 0;
-
+        inputPower = 2;
+        crossArea = 0.0002;
     }
 
 
@@ -89,7 +89,7 @@ public class SwitchElm_MM1 extends SwitchElm {
             case 14:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 15:
-                return new EditInfo("Actuation input power (W) unknown", inputPower, false);
+                return new EditInfo("Actuation input power (W)", inputPower, false);
             default:
                 return null;
         }
@@ -97,7 +97,7 @@ public class SwitchElm_MM1 extends SwitchElm {
 
     @Override
     public void setEditValue(int n, EditInfo ei) {
-        Material m = null;
+        Material m  = null;
         switch (n) {
             case 0:
                 name = ei.textf.getText();
@@ -126,9 +126,6 @@ public class SwitchElm_MM1 extends SwitchElm {
             default:
                 break;
         }
-
-
-
         updateElement();
     }
 
@@ -139,8 +136,9 @@ public class SwitchElm_MM1 extends SwitchElm {
 
     @Override
     int getDumpType() {
-        return 611;
+        return 610;
     }
+
 
 
 }

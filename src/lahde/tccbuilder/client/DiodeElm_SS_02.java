@@ -1,9 +1,9 @@
 package lahde.tccbuilder.client;
 
-public class DiodeElm_NiTi_Graphite extends DiodeElm {
+public class DiodeElm_SS_02 extends DiodeElm {
     final double DEFINED_LENGTH = 0.004;
 
-    public DiodeElm_NiTi_Graphite(int xx, int yy) {
+    public DiodeElm_SS_02(int xx, int yy) {
         super(xx, yy);
         DEFINED_LENGTH_UNIT = CirSim.LengthUnit.MILLIMETER;
         // sim.selectedLengthUnit = DEFINED_LENGTH_UNIT;
@@ -15,7 +15,7 @@ public class DiodeElm_NiTi_Graphite extends DiodeElm {
         drag(newX, yy);
     }
 
-    public DiodeElm_NiTi_Graphite(int xa, int ya, int xb, int yb, int f,
+    public DiodeElm_SS_02(int xa, int ya, int xb, int yb, int f,
                                   StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
 
