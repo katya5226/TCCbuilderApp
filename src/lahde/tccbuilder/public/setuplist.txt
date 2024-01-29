@@ -3,3 +3,4 @@ mc_with_fluidic_switch.txt MCWithFluidicSwitch
 thermal_switch_capacitor.txt ThermalSwitchCapacitor
 ec_double_unit_cooling.txt ECDoubleUnitCoolingDevice
 gan_device_cooling.txt GaNDeviceOnPCB
+mc_with_switches_validation.txt MCdeviceForValidation
