@@ -162,10 +162,10 @@ public class ControlVolume {
     double qGen() {
         double q = 0.0;
         if (constQgen != -1)
-            q = constQgen * dx;
-        else {
-            q = parent.sim.simulation1D.time * 0.0001 + temperature * 100000;
-        }
+            q = constQgen;
+        // else {
+        //     q = parent.sim.simulation1D.time * 0.0001 + temperature * 100000;
+        // }
         return q;
     }
 

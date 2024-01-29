@@ -79,6 +79,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constK = Double.parseDouble(st.nextToken());
         westResistance = Double.parseDouble(st.nextToken());
         eastResistance = Double.parseDouble(st.nextToken());
+        // volumeHeatGeneration = Double.parseDouble(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
