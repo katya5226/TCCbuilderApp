@@ -1,3 +1,4 @@
 ### setuplist.txt first line must be a comments; last line should be empty
 mc_with_fluidic_switch.txt MCWithFluidicSwitch
 thermal_switch_capacitor.txt ThermalSwitchCapacitor
+ec_double_unit_cooling.txt ECDoubleUnitCoolingDevice
