@@ -37,6 +37,10 @@ public class Simulation1D extends Simulation {
         tempEast = 293.0;
         qWest = 0.0;
         qEast = 0.0;
+        westFrequency = 0.0;
+        eastFrequency = 0.0;
+        westAmplitude = 0.0;
+        eastAmplitude = 0.0;
         startTemp = 293.0;
         ambientTemperature = 293.0;
         // start_temperatures = new double[num_cvs];
@@ -147,7 +151,7 @@ public class Simulation1D extends Simulation {
             }
         }
 
-        heatCircuit = new TCC("Heat circuit", simTCEs);
+        heatCircuit = new TCC(this, "Heat circuit", simTCEs);
         heatCircuit.westBoundary = westBoundary;
         heatCircuit.eastBoundary = eastBoundary;
         heatCircuit.hWest = hWest;
@@ -157,6 +161,10 @@ public class Simulation1D extends Simulation {
         heatCircuit.qWest = qWest;
         heatCircuit.qEast = qEast;
         heatCircuit.ambientTemperature = ambientTemperature;
+        heatCircuit.amplitudeEast = eastAmplitude;
+        heatCircuit.amplitudeWest = westAmplitude;
+        heatCircuit.frequencyEast = eastFrequency;
+        heatCircuit.frequencyWest = westFrequency;
 
         heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();

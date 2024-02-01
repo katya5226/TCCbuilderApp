@@ -11,6 +11,10 @@ public abstract class Simulation {
     double tempEast;
     double qWest;
     double qEast;
+    double westFrequency;
+    double eastFrequency;
+    double westAmplitude;
+    double eastAmplitude;
     double startTemp;
     double ambientTemperature;
     ArrayList<Double> times;
@@ -27,7 +31,8 @@ public abstract class Simulation {
         ADIABATIC,
         CONSTANT_HEAT_FLUX,
         CONSTANT_TEMPERATURE,
-        CONVECTIVE
+        CONVECTIVE,
+        PERIODIC
     }
     public static enum Property {
         DENSITY,

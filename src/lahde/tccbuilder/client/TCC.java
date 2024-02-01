@@ -7,6 +7,7 @@ import java.util.Collections;
 
 
 public class TCC {
+    public Simulation1D sim;
     public String name;
     public Vector<ThermalControlElement> TCEs;
     public Vector<ControlVolume> cvs;
@@ -20,11 +21,13 @@ public class TCC {
     public double qWest, qEast;
     public double temperatureWest, temperatureEast, ambientTemperature;
     public double hWest, hEast;
+    public double amplitudeWest, amplitudeEast;
+    public double frequencyWest, frequencyEast;
 
     public Vector<Double> fluxes;
 
-    public TCC(String name, Vector<ThermalControlElement> TCEs) {
-        //parent_sim = null;
+    public TCC(Simulation1D sim, String name, Vector<ThermalControlElement> TCEs) {
+        this.sim = sim;
         this.name = name;
         this.TCEs = TCEs;
         int numCvs = 0;

@@ -11,6 +11,8 @@ public class EquationSystem {
         //double dt = circuit.parent_sim.dt;
         double a = 1.5;
         double b = 0.5;
+        double wT = circuit.temperatureWest;
+        double eT = circuit.temperatureEast;
         int n = circuit.cvs.size();
         for (int i = 0; i < n; i++) {
             ControlVolume cv = circuit.cvs.get(i);
@@ -48,6 +50,14 @@ public class EquationSystem {
                     circuit.rhs[0] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
 
+                if (circuit.westBoundary == Simulation.BorderCondition.PERIODIC) {  // left resistance is approximated with the resistance of the first cv
+                    wT = circuit.temperatureWest + circuit.amplitudeWest * Math.sin(circuit.frequencyWest * circuit.sim.time);
+                    circuit.diag[0] = (2 * cv.k() + cv.kEast) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
+                    circuit.rhs[0] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
+                    circuit.rhs[0] += 2 * cv.k() * dt * wT;
+                    circuit.rhs[0] += cv.qGen() * dt * Math.pow(cv.dx, 2);
+                }
+
             }
             if (i == n - 1 && circuit.eastBoundary != null) {
                 circuit.diag[n - 1] = cv.kWest * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
@@ -71,6 +81,13 @@ public class EquationSystem {
                     circuit.underdiag[n - 1] = -cv.kWest * dt - b * circuit.hEast * cv.dx * dt;
                     circuit.rhs[n - 1] = cv.rho() * cv.cp() * Math.pow(cv.dx, 2) * cv.temperatureOld;
                     circuit.rhs[n - 1] += circuit.hEast * cv.dx * dt * circuit.temperatureEast;
+                    circuit.rhs[n - 1] += cv.qGen() * dt * Math.pow(cv.dx, 2);
+                }
+                if (circuit.eastBoundary == Simulation.BorderCondition.PERIODIC) { // left resistance is approximated with the resistance of the first cv
+                    eT = circuit.temperatureEast + circuit.amplitudeEast * Math.sin(circuit.frequencyEast * circuit.sim.time);
+                    circuit.diag[n - 1] = (2 * cv.k() + cv.kWest) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
+                    circuit.rhs[n - 1] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
+                    circuit.rhs[n - 1] += 2 * cv.k() * dt * eT;
                     circuit.rhs[n - 1] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
             }
