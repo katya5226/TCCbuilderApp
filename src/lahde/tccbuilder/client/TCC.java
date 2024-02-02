@@ -23,6 +23,7 @@ public class TCC {
     public double hWest, hEast;
     public double amplitudeWest, amplitudeEast;
     public double frequencyWest, frequencyEast;
+    boolean containsTEEngines;
 
     public Vector<Double> fluxes;
 
@@ -51,6 +52,13 @@ public class TCC {
         hEast = 500.0;
 
         fluxes = new Vector<Double>();
+
+        containsTEEngines = false;
+        for (ThermalControlElement tce : TCEs) {
+            if (tce instanceof TEHeatEngine) {
+                containsTEEngines = true;
+            }
+        }
     }
 
     public void setNeighbours() {

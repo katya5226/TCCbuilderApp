@@ -1202,7 +1202,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
             mainMenuBar.addSeparator();
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Heat Engine"), "TEHeatEngine"));
-
+            mainMenuBar.addSeparator();
+            
             MenuBar sampleElements = new MenuBar(true);
 
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM_01"), "SwitchElm_FM_01"));

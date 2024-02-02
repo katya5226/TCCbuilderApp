@@ -19,6 +19,7 @@ public abstract class Simulation {
     double ambientTemperature;
     ArrayList<Double> times;
     ArrayList<Double[]> temperatures;
+    ArrayList<ArrayList<Double>> TEpowerOutputs;  // Double arraylist because there may be more than one TE engine in a curcuit, but each has only one power value.
     double dt;
     double totalTime;
     double time;

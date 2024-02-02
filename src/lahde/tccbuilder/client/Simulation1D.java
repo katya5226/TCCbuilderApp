@@ -46,6 +46,7 @@ public class Simulation1D extends Simulation {
         // start_temperatures = new double[num_cvs];
         times = new ArrayList<Double>();
         temperatures = new ArrayList<Double[]>();
+        TEpowerOutputs = new ArrayList<ArrayList<Double>>();
         dt = 5e-3;
         totalTime = 0.0;
 
@@ -76,13 +77,24 @@ public class Simulation1D extends Simulation {
         cycleParts.clear();
     }
 
-    public void append_new_temps() {
+    public void appendNewTemps() {
         Double[] ttemps = new Double[heatCircuit.cvs.size()];
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {
             ttemps[i] = heatCircuit.cvs.get(i).temperature;
         }
         this.temperatures.add(ttemps);
         this.times.add(this.time);
+    }
+
+    void logPowerOutput() {
+        ArrayList<Double> ar = new ArrayList<>();
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce instanceof TEHeatEngine) {
+                TEHeatEngine TE = (TEHeatEngine) tce;
+                ar.add(TE.outputPower());
+            }
+        }
+        TEpowerOutputs.add(ar);
     }
 
     void checkDiodes() {
@@ -135,7 +147,8 @@ public class Simulation1D extends Simulation {
         // this.PCMs[i].update_temperatures()
         // this.PCMs[i].raise_latent_heat(pa.dt)
         heatCircuit.replaceTemperatures();
-        this.append_new_temps();
+        this.appendNewTemps();
+        if (heatCircuit.containsTEEngines) logPowerOutput();
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
     }
@@ -273,9 +286,9 @@ public class Simulation1D extends Simulation {
             }
         }
         dump += "\nTemperatures:\n";
-        dump += "Time\t";
+        dump += "Time (s)\t";
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-            dump += "CV# " + i + "\t";
+            dump += "CV# " + i + " T (K)\t";
         }
         dump += "\n";
         for (int i = 0; i < temperatures.size(); i+= outputInterval) {
@@ -291,6 +304,22 @@ public class Simulation1D extends Simulation {
         heatCircuit.calculateHeatFluxes();
         for (Double f : heatCircuit.fluxes)
             dump += f + "\t";
+
+        dump += "\n\nPower outputs of TE heat engines:\n";
+        dump += "Time (s)\t";
+        for (int i = 0; i < TEpowerOutputs.get(0).size(); i++) {
+            dump += "TEengine#" + i + " P (W)\t";
+        }
+        dump += "\n";
+        for (int i = 0; i < TEpowerOutputs.size(); i+= outputInterval) {
+            ArrayList<Double> powers = TEpowerOutputs.get(i);
+            Double time = times.get(i);
+            dump += NumberFormat.getFormat("0.000").format(time) + "\t";
+            for (double p : powers) {
+                dump += NumberFormat.getFormat("0.00").format(p) + "\t";
+            }
+            dump += "\n";
+        }
         
         dump += "\n\n" + assessment();
         return dump;
