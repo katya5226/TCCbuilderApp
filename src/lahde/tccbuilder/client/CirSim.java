@@ -1200,6 +1200,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
             // mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
+            mainMenuBar.addSeparator();
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Heat Engine"), "TEHeatEngine"));
 
             MenuBar sampleElements = new MenuBar(true);
 
@@ -4174,6 +4176,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new ConduitElm(x1, y1, x2, y2, f, st);
+            case 700:
+                return new TEHeatEngine(x1, y1, x2, y2, f, st);
             //Samples
             case 600:
                 return new DiodeElm_SS_01(x1, y1);
@@ -4234,6 +4238,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1);
             case "WireElm":
                 return new ConduitElm(x1, y1);
+            case "TEHeatEngine":
+                return new TEHeatEngine(x1, y1);
             //Samples
             case "DiodeElm_SS_01":
                 return new DiodeElm_SS_01(x1, y1);
