@@ -539,7 +539,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
     }
 
-    public void set_q_gen(double qGen) {
+    public void setQgen(double qGen) {
         for (ControlVolume cv : cvs) {
             cv.qGenerated = qGen;
         }

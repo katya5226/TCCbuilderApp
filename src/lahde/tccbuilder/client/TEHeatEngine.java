@@ -15,11 +15,13 @@ public class TEHeatEngine extends ThermalControlElement {
     public TEHeatEngine(int xx, int yy) {
         super(xx, yy);
         lineThickness = 50;
+        crossArea = 0.001;
     }
 
     public TEHeatEngine(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
         lineThickness = 50;
+        crossArea = 0.001;
     }
 
     double[] coldHotTemperatures() {
@@ -46,7 +48,8 @@ public class TEHeatEngine extends ThermalControlElement {
         double[] temps = coldHotTemperatures();
         double Tc = temps[0];
         double Th = temps[1];
-        double p = Math.abs(Th - Tc) * cvs.get(0).k() * length * efficiency();
+        double p = Math.abs(Th - Tc) * cvs.get(0).k() * length * efficiency() / crossArea;
+        setQgen(-1 * p / length);
         return p;
     }
 
