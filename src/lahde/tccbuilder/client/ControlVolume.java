@@ -136,6 +136,30 @@ public class ControlVolume {
             RegulatorElm r = (RegulatorElm) parent;
             k = r.kValues.get((int) Math.round(temperature * 10));
         }
+        if (parent instanceof DiodeElm_T_01) {
+            DiodeElm_T_01 diode = (DiodeElm_T_01) parent;
+            double Twest, Teast;
+            if (westNeighbour != null && westNeighbour != this)
+                Twest = westNeighbour.temperature;
+            else {
+                Twest = parent.sim.simulation1D.heatCircuit.temperatureWest;
+                if (parent.sim.simulation1D.heatCircuit.westBoundary == Simulation.BorderCondition.PERIODIC)
+                    Twest = parent.sim.simulation1D.heatCircuit.temperatureWest +
+                    parent.sim.simulation1D.heatCircuit.amplitudeWest * Math.sin(parent.sim.simulation1D.heatCircuit.frequencyWest * parent.sim.simulation1D.time);
+                }
+            if (westNeighbour != null && westNeighbour != this)
+                Teast = eastNeighbour.temperature;
+            else {
+                Teast = parent.sim.simulation1D.heatCircuit.temperatureEast;
+                if (parent.sim.simulation1D.heatCircuit.eastBoundary == Simulation.BorderCondition.PERIODIC)
+                    Teast = parent.sim.simulation1D.heatCircuit.temperatureEast +
+                    parent.sim.simulation1D.heatCircuit.amplitudeEast * Math.sin(parent.sim.simulation1D.heatCircuit.frequencyEast * parent.sim.simulation1D.time);
+            }
+            if (diode.direction == CircuitElm.Direction.RIGHT)
+                k = diode.k0 * (1 + 2 * (diode.beta / Math.PI) * Math.atan(diode.gamma * (Twest - Teast)));
+            if (diode.direction == CircuitElm.Direction.LEFT)
+                k = diode.k0 * (1 + 2 * (diode.beta / Math.PI) * Math.atan(diode.gamma * (Teast - Twest)));
+        }
         return k;
     }
 

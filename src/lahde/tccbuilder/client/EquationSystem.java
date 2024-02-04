@@ -30,7 +30,7 @@ public class EquationSystem {
                     circuit.rhs[0] += circuit.qWest * cv.dx * dt;
                     circuit.rhs[0] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
-                if (circuit.westBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE) {
+                if (circuit.westBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE) {//} || circuit.westBoundary == Simulation.BorderCondition.PERIODIC) {
                     // left resistance is approximated with the resistance of the first cv
                     circuit.diag[0] = (2 * cv.k() + cv.kEast) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
                     circuit.rhs[0] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
@@ -67,7 +67,7 @@ public class EquationSystem {
                     circuit.rhs[n - 1] -= circuit.qEast * cv.dx * dt;
                     circuit.rhs[0] += cv.qGen() * dt * Math.pow(cv.dx, 2);
                 }
-                if (circuit.eastBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE) { // right resistance is approximated with the resistance of the last cv
+                if (circuit.eastBoundary == Simulation.BorderCondition.CONSTANT_TEMPERATURE){//} || circuit.eastBoundary == Simulation.BorderCondition.PERIODIC) { // right resistance is approximated with the resistance of the last cv
                     circuit.diag[n - 1] = (2 * cv.k() + cv.kWest) * dt + cv.rho() * cv.cp() * Math.pow(cv.dx, 2);
                     circuit.rhs[n - 1] = (cv.rho() * cv.cp() * Math.pow(cv.dx, 2)) * cv.temperatureOld;
                     circuit.rhs[n - 1] += 2 * cv.k() * dt * circuit.temperatureEast;

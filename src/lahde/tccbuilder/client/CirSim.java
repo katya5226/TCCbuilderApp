@@ -2010,7 +2010,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 } else {
                     if (simulation1D.cycleParts.isEmpty()) Window.alert("Sim set to cyclic but cycle parts undefined");
 
-
                     simulation1D.cyclePart.execute();  // executes cycle part for time dt at most
 
                     if (simulation1D.cyclePart.duration > 0.0) {  // maybe here should be > dt
@@ -2031,6 +2030,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);
                     }
                 }
+                // if (simulation1D.westBoundary == Simulation.BorderCondition.PERIODIC)
+                //     simulation1D.heatCircuit.temperatureWest = simulation1D.heatCircuit.temperatureWest +
+                //         simulation1D.heatCircuit.amplitudeWest * Math.sin(simulation1D.heatCircuit.frequencyWest * simulation1D.time);
+                // if (simulation1D.eastBoundary == Simulation.BorderCondition.PERIODIC)
+                //     simulation1D.heatCircuit.temperatureEast = simulation1D.heatCircuit.temperatureEast +
+                //         simulation1D.heatCircuit.amplitudeEast * Math.sin(simulation1D.heatCircuit.frequencyEast * simulation1D.time);
             }
             if (simDimensionality == 2) {
                 simulation2D.heatTransferStep();

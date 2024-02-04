@@ -19,7 +19,7 @@ public class DiodeElm_T_01 extends DiodeElm {
     @Override
     public void initializeThermalControlElement() {
         super.initializeThermalControlElement();
-        k_0 = 1.0;
+        k0 = 1.0;
         beta = 0.0;
         gamma = 1.0;
     }
@@ -43,8 +43,7 @@ public class DiodeElm_T_01 extends DiodeElm {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                // EditInfo editInfo = new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
-                EditInfo editInfo = new EditInfo("Length", CirSim.formatLength(length));
+                EditInfo editInfo = new EditInfo("Length (mm)", length * 1e3);
                 editInfo.editable = resizable;
                 return editInfo;
             case 5:
@@ -57,6 +56,10 @@ public class DiodeElm_T_01 extends DiodeElm {
                 return new EditInfo("Level of thermal rectification β (/)", beta);
             case 9:
                 return new EditInfo("Steepness of thermal rectification γ (1/K)", gamma);
+            case 10:
+                return new EditInfo("Specific Heat Capacity (J/kgK)", constCp);
+            case 11:
+                return new EditInfo("Density (kg/m³)", constRho);
             // case 10:
             //     return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
@@ -96,6 +99,12 @@ public class DiodeElm_T_01 extends DiodeElm {
                 break;
             case 9:
                 gamma = ei.value;
+                break;
+            case 10:
+                constRho = ei.value;
+                break;
+            case 11:
+                responseTime = ei.value;
                 break;
             // case 10:
             //     hTransv = ei.value;   
