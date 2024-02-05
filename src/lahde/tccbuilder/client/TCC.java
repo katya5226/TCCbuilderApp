@@ -205,7 +205,7 @@ public class TCC {
                 fluxes.add(qEast);
                 break;
             case CONSTANT_TEMPERATURE:
-                fluxes.add((double) Math.round(2 * cvs.get(cvs.size() - 1).k() * (cvs.get(cvs.size() - 1).temperature - temperatureEast) / cvs.get(cvs.size() - 1).dx ));
+                fluxes.add((double) Math.round(2 * cvs.get(cvs.size() - 1).k() * (cvs.get(cvs.size() - 1).temperature - temperatureEast) / cvs.get(cvs.size() - 1).dx));
                 break;
             case CONVECTIVE:
                 ControlVolume cv2 = cvs.get(cvs.size() - 1);
