@@ -10,10 +10,15 @@ public class DiodeElm_T_01 extends DiodeElm {
 
     public DiodeElm_T_01(int xx, int yy) {
         super(xx, yy);
+        kForward = 1;
+        kReverse = 1;
     }
 
     public DiodeElm_T_01(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
+        // k0 = Double.parseDouble(st.nextToken());
+        // beta = Double.parseDouble(st.nextToken());
+        // gamma = Double.parseDouble(st.nextToken());
     }
 
     @Override
@@ -101,10 +106,10 @@ public class DiodeElm_T_01 extends DiodeElm {
                 gamma = ei.value;
                 break;
             case 10:
-                constRho = ei.value;
+                constCp = ei.value;
                 break;
             case 11:
-                responseTime = ei.value;
+                constRho = ei.value;
                 break;
             // case 10:
             //     hTransv = ei.value;   
@@ -114,30 +119,7 @@ public class DiodeElm_T_01 extends DiodeElm {
 
         }
 
-
         updateElement();
-    }
-
-    @Override
-    public void buildThermalControlElement() {
-        super.buildThermalControlElement();
-        Material NiTi = sim.materialHashMap.get("100004-NiTi");
-        Material Graphite = sim.materialHashMap.get("500006-Graphite");
-        if (!NiTi.isLoaded())
-            NiTi.readFiles();
-        if (!Graphite.isLoaded())
-            Graphite.readFiles();
-        int ratioIndex = (int) (0.5 * numCvs);
-        if (direction == CircuitElm.Direction.RIGHT) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).material = i < ratioIndex ? NiTi : Graphite;
-            }
-        }
-        if (direction == CircuitElm.Direction.LEFT) {
-            for (int i = 0; i < numCvs; i++) {
-                cvs.get(i).material = i < (numCvs - ratioIndex) ? Graphite : NiTi;
-            }
-        }
     }
 
     @Override
@@ -149,4 +131,9 @@ public class DiodeElm_T_01 extends DiodeElm {
     int getDumpType() {
         return 604;
     }
+
+    // @Override
+    // String dump() {
+    //    return super.dump() + " " + k0 + " " + beta + " " + gamma;
+    // }
 }
