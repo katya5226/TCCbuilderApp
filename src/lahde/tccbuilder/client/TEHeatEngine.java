@@ -27,9 +27,11 @@ public class TEHeatEngine extends ThermalControlElement {
     double[] coldHotTemperatures() {
         ModelMethods.CVinterface cvInter = new ModelMethods.CVinterface();
         cvInter.calculateCoefficients(cvs.get(0).westNeighbour, cvs.get(0));
-        double T1 = cvInter.T2;
+        double T1 = cvInter.T1;
+        // double T1 = cvInter.T2;
         cvInter.calculateCoefficients(cvs.get(cvs.size() - 1), cvs.get(cvs.size() - 1). eastNeighbour);
-        double T2 = cvInter.T1;
+        // double T2 = cvInter.T1;
+        double T2 = cvInter.T2;
         double Tc = T1 > T2 ? T2 : T1;
         double Th = T1 > T2 ? T1 : T2;
         double[] temps = {Tc, Th};
@@ -50,7 +52,9 @@ public class TEHeatEngine extends ThermalControlElement {
         double Th = temps[1];
         double p = Math.abs(Th - Tc) * cvs.get(0).k() * length * efficiency() / crossArea;
         setQgen(-1 * p / length);
-        return p;
+        double p1 = Math.pow((Th - Tc), 2) / 4;
+        //double p1 = Math.abs(Th - Tc) * efficiency() / 0.008;
+        return p1;
     }
 
     @Override
