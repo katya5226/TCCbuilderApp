@@ -190,7 +190,7 @@ public class Material {
                     }
                     if (!cpThysteresis && cpFields) {
                         for (double field : fields) {
-                            String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
+                            String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.00").format(field);
                             if (electrocaloric)
                                 fieldName = String.valueOf(field);  // When the field in the file name is written as an integer. 
                             Vector<Double> vector = new Vector<Double>();
