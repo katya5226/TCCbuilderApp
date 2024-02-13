@@ -1,0 +1,40 @@
+It is a white solid with a density of 3.02 g/cm3. Its melting point is 2507 °C, its boiling point is 3905 °C and its band gap (electronic) is 10.6 eV.
+(Google search, 19th August 2023)
+
+Specific heat capacity from https://webbook.nist.gov/cgi/inchi?ID=C1304569&Mask=2&Type=JANAFS&Plot=on#JANAFS (19th August 2023)
+
+Thermal conductivity taken from
+@inbook{doi:10.1201/9781315371962-7,
+ author = "Yoseph Bar-Cohen",
+ title = "Refrigeration Systems for Achieving Cryogenic Temperatures",
+ chapter = chapter6,
+ volume = ,
+ booktitle = "Low Temperature Materials and Mechanisms",
+ publisher = "CRC Press",
+ year = 2016,
+ doi = {10.1201/9781315371962-7},
+ URL = https://www.routledgehandbooks.com/doi/10.1201/9781315371962-7 
+ }
+ 
+ And at higher temperatures from
+ David A. Ditmars and Defoe C . Ginnings Thermal Conductivity of Beryllium Oxide From 40° to 750° C
+ Journal of Research of the National Bureau of Standards Vol. 59, No.2, August 1957 Research Paper 2775
+ 
+ 
+ Emissivity is given only at high temperature around 1000 °C and is around 0.4.
+ @article{PhysRev.73.1181,
+   title = {The Spectral Emissivity and Total Emissivity of Beryllium Oxide},
+   author = {Seifert, Ralph L.},
+   journal = {Phys. Rev.},
+   volume = {73},
+   issue = {10},
+   pages = {1181--1187},
+   numpages = {0},
+   year = {1948},
+   month = {May},
+   publisher = {American Physical Society},
+   doi = {10.1103/PhysRev.73.1181},
+   url = {https://link.aps.org/doi/10.1103/PhysRev.73.1181}
+ }
+
+ 

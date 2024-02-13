@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 6440.0,
+		"specificHeatCapacity": 296.0,
+		"thermalConductivity": 16.5,
+		"emissivity": 0.04
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 100006,
+	"short_name": "Galinstan",
+	"long_name": "Galinstan",
+	"melting_point": 254.0
+}

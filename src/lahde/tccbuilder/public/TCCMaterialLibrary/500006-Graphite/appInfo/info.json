@@ -1,0 +1,21 @@
+{
+	"rt_properties": {
+		"density": 1862.14,
+		"specificHeatCapacity": 691.28,
+		"thermalConductivity": 131.95,
+		"emissivity": 0.59
+	},
+	"ranges": {
+		"density": "295-1274",
+		"specificHeatCapacity": "12-2000",
+		"thermalConductivity": "291-1275",
+		"thermalConductivityIP": "19-2000",
+		"thermalConductivityOP": "11-2000",
+		"emissivity": "270-860"
+	},
+	"fields": [],
+	"id": 500006,
+	"short_name": "Graphite",
+	"long_name": "Bulk graphite",
+	"melting_point": 3870.0
+}

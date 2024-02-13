@@ -1,0 +1,5 @@
+Data from Warzoha 2020 (10.1016/j.ijheatmasstransfer.2020.119760)
+Phase transition region: 227 - 275 K
+
+227
+275

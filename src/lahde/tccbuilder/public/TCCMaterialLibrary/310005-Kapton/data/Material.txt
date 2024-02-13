@@ -1,0 +1,15 @@
+Kapton tape (polyimide thin film) of thickness 125 micron.
+
+Melting point is said to not exist. See, for example
+https://www.dupont.com/content/dam/dupont/amer/us/en/ei-transformation/public/documents/en/EI-10157-Kapton-Safety-in-Handling-and-Use.pdf (18/10/2023)
+where it is stated that "Kapton® Type HN and Type HPP-ST exhibit no melting point or softening point.
+A 25µm thick film has a zero-strength temperature of 815°C. Zero-strength is measured as the
+maximum temperature at which the film will sustain a load of 0,14 N/mm2 for 5 seconds."
+
+Data for density and specific heat capacity at RT are obtained from:
+https://www.matweb.com/search/datasheet_print.aspx?matguid=338573ad1bdf4586aa17fab95f3a57d7 (18/10/2023).
+
+Thermal conductivity is estimated from graph in Figure 2 in D. Benford et al./ Cryogenics 39 (1999) 93–95, doi: 10.1016/S0011-2275(98)00125-8.
+
+Emissivity at RT is taken from Okada,Analysis of Thermal Radiation Properties of Polyimide and Polymeric Materials Based on ATR-IR spectroscopy,
+https://doi.org/10.2494/photopolymer.29.251.

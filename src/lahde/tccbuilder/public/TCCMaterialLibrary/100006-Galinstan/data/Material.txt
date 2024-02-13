@@ -1,0 +1,11 @@
+Galinstan (R) is a brand name for an alloy composed of gallium, indium, and tin
+which melts at -19 °C (-2 °F) and is thus liquid at room temperature. (Wikipedia, 21st August 2023)
+rho = 6440 kg/m3, cp = 296 J/kg/K
+Thermal conductivity: 16.5 W·m-1·K-1
+
+Boiling point: > 1300 °C
+
+Some info on emissivity was found in 
+Rev. Sci. Instrum. 88, 013501 (2017)
+https://doi.org/10.1063/1.4973421
+where they state it is around 0.04.

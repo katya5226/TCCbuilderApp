@@ -1,0 +1,13 @@
+Data From: PhD Thesis with the title "INVESTIGATIONS OF STRUCTURE-PROPERTY RELATIONSHIPS TO ENHANCE THE MULTIFUNCTIONAL PROPERTIES OF PVDF-BASED POLYMERS". Bret P. Neese, May 2009. The Pennsylvania State University, The Graduate School, Department of Materials Science and Engineering.  Fig 4-11 (a) Entropy change (A) at temperatures from 80°C to 110°C and different electric fields for P(VDF-TrFE) (55/45 mol.%).
+
+NOTE: the first and last data points for all other electric field of this material in the thesis is slightly different from those published in nature and Integrated Ferroelectrics and this set of data is not shown in either of the papers
+
+@ 94 MV/m Electric Field
+
+		
+T (degrees C)	ds(J/(kgK))				
+					
+80.0172	14.75					
+90.0862	11.70					
+100.1114	9.77					
+110.0841	8.36					

@@ -1,0 +1,36 @@
+From the different crystal structures and forms of SiO2, I selected Quartz, which is perhaps the most typical one.
+After reviewing the literature, I decided to extract the values (from different materials) from one source as much as possible so that the error between the different materials is minimum (all or most coming from one source)
+I went through different sources (listed below) but I found CRC handbook of chemistry and physics, 97th edition 2016-2017 the most comprehensive and the most recent source that has most of the information at one place. 
+The values in the handbook come from combination of multiple sources, so they are typically fit values that might be better representatives of the material. Further references are cited in the handbook if more info is needed. 
+
+Source: CRC handbook 
+Material: SiO2 (Quartz) - CAS: 14808-60-7 
+Density: 2648.5 Kg/m3 (original value: 2.6485 g cm-3 from CRC page 4-48
+Molar weight 60.085 (used for Cp conversion later on)
+
+Note: different crystal structures of SiO2 can have significantly different densities
+
+
+
+
+
+other references that I have selected from the literature:
+
+American Institute of Physics Handbook, 3rd Ed., Coordinating editor: Dwight E. Gray, ISBN: 07-001485-X.
+ 
+CODATA Key Values For Thermodynamics, Final Report of the CODATA Task Group on Key Values for Thermodynamics, ISBN: 0-89116-758-7.
+
+Smithsonian Physical Tables, 9th revised Ed, prepared by William Elmer Forsythe.
+
+NIST-JANAF Thermomechanical Tables, 4th Ed., Malcolm W. Chase, Jr.
+
+Themodynamic Properties of Minerals and Related Substances , U.S. Geological Survey Bulletin 1452.
+
+Thermomechanical Data of Pure Substances, Ihsan Barin, 3rd Ed., ISBN: 3-527-28745-0.
+
+Thermomechanical Properties of Inorganic Substances, Ihsn Barin et al, Supplement, ISBN: 978-3-662-02295-5, DOI: 10.1007/978-3-662-02293-1.
+
+
+
+
+

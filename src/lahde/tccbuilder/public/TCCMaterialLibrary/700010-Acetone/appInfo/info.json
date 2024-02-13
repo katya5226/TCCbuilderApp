@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 790.4,
+		"specificHeatCapacity": 2130.8,
+		"thermalConductivity": 0.18,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "180-1000",
+		"specificHeatCapacity": "180-1000",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700010,
+	"short_name": "Acetone",
+	"long_name": "Acetone",
+	"melting_point": 177.8
+}

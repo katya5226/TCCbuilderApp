@@ -1,0 +1,4 @@
+We couldn't find any data on thermal conductivity, so we assume a low value.
+Thermal conductivity (W/m/K)
+
+0.1

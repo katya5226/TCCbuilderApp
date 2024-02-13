@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7290.0,
+		"specificHeatCapacity": 523.2,
+		"thermalConductivity": 12.6,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "229-317",
+		"thermalConductivity": "107-338",
+		"emissivity": ""
+	},
+	"fields": [0.00, 0.50, 1.25],
+	"id": 100035,
+	"short_name": "LaFeCosi",
+	"long_name": "LaFe11.05Co0.94Si1.01",
+	"melting_point": ""
+}

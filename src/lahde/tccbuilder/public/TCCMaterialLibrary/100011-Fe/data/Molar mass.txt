@@ -1,0 +1,5 @@
+Data from https://webbook.nist.gov/cgi/cbook.cgi?ID=7439-89-6
+
+Molar mass (g/mol)
+
+55.845

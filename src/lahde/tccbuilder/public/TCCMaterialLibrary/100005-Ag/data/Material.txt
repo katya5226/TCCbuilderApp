@@ -1,0 +1,46 @@
+
+Thermal conductivity taken from
+@inbook{doi:10.1201/9781315371962-7,
+ author = "Yoseph Bar-Cohen",
+ title = "Refrigeration Systems for Achieving Cryogenic Temperatures",
+ chapter = chapter6,
+ volume = ,
+ booktitle = "Low Temperature Materials and Mechanisms",
+ publisher = "CRC Press",
+ year = 2016,
+ doi = {10.1201/9781315371962-7},
+ URL = https://www.routledgehandbooks.com/doi/10.1201/9781315371962-7 
+}
+ 
+Data for density and specific heat capacity is averaged from all the data from NIST web application (https://trc.nist.gov/MetalsAlloyUI/).
+ 
+Melting point (1234 K) data from https://www.onlinemetals.com/en/melting-points.
+
+Emissivity taken from (averaged values)
+@article{WOODS201444,
+title = {Emissivity of silver and stainless steel from 80K to 300K: Application to ITER thermal shields},
+journal = {Cryogenics},
+volume = {60},
+pages = {44-48},
+year = {2014},
+issn = {0011-2275},
+doi = {https://doi.org/10.1016/j.cryogenics.2014.01.002},
+url = {https://www.sciencedirect.com/science/article/pii/S0011227514000101},
+author = {S.I. Woods and T.M. Jung and D.R. Sears and J. Yu}
+}
+
+And for higher temperatures from
+@article{Ramanathan:77,
+author = {K. G. Ramanathan and S. H. Yen},
+journal = {J. Opt. Soc. Am.},
+keywords = {Absorbing coatings; Optical properties; Surface measurements; Surfaces; Temperature; Wave propagation},
+number = {1},
+pages = {32--38},
+publisher = {Optica Publishing Group},
+title = {High-temperature emissivities of copper, aluminum, and silver},
+volume = {67},
+month = {Jan},
+year = {1977},
+url = {https://opg.optica.org/abstract.cfm?URI=josa-67-1-32},
+doi = {10.1364/JOSA.67.000032}
+}

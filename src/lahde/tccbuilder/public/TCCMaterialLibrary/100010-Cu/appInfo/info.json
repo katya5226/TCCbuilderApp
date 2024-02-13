@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 8971.2,
+		"specificHeatCapacity": 385.8,
+		"thermalConductivity": 358.3,
+		"emissivity": 0.014
+	},
+	"ranges": {
+		"density": "271-2000",
+		"specificHeatCapacity": "0-2000",
+		"thermalConductivity": "0-2000",
+		"emissivity": "75-292"
+	},
+	"fields": [],
+	"id": 100010,
+	"short_name": "Cu",
+	"long_name": "Copper",
+	"melting_point": 1357.0
+}

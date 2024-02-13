@@ -1,0 +1,46 @@
+Polycrystalline magnesium oxide 
+
+
+
+Thermal conductivity source:
+
+Publication Title: Thermal Conductivity of Selected Materials
+Series Title: NBS National Standard Reference Data Series (NSRDS)
+Personal Author: Powell, R. W.
+Publication Number: 8
+Date Issued: 1966
+Government Author: Commerce Department, National Institute of Standards and Technology (NIST) .
+Category: Executive Agency Publications
+SuDoc Class Number: C 13.48:
+https://www.govinfo.gov/app/details/GOVPUB-C13-8864f8c90e1152502d9fde2e4679a6b2 (14/12/2023)
+
+Thermal conductivity of MgO Ceramics depends on the grain size:
+@article{ITATANI2006639,
+title = {Thermal and optical properties of transparent magnesium oxide ceramics fabricated by post hot-isostatic pressing},
+journal = {Journal of the European Ceramic Society},
+volume = {26},
+number = {4},
+pages = {639-645},
+year = {2006},
+note = {Proceedings of the International Symposium on Inorganic and Environmental Materials, Eindhoven, NL, October 2004},
+issn = {0955-2219},
+doi = {https://doi.org/10.1016/j.jeurceramsoc.2005.06.011},
+url = {https://www.sciencedirect.com/science/article/pii/S0955221905005674},
+author = {Kiyoshi Itatani and Takuma Tsujimoto and Akira Kishimoto},
+}
+
+
+Melting point (3073 K) data source:
+https://www.crystran.co.uk/optical-materials/magnesium-oxide-mgo (14/12/2023)
+
+
+Specific heat capacity data sources:
+https://webbook.nist.gov/cgi/inchi?ID=C1309484&Type=JANAFS&Plot=on (14/12/2023)
+https://trc.nist.gov/MetalsAlloyUI/ (14/12/2023)
+
+Density and melting point source:
+https://www.chemicalbook.com/ChemicalProductProperty_EN_CB8853024.htm#:~:text=Properties%2CUses%2CProduction-,Chemical%20Properties,of%203.58%20(25%20%E2%84%83). (14/12/2023)
+
+
+Emissivity data source:
+\cite{article} doi = {10.1134/S0018151X16040027}

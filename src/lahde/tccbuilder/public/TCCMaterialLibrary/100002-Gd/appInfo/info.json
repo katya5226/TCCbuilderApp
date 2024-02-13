@@ -1,0 +1,20 @@
+{
+	"rt_properties": {
+		"density": 7886.1,
+		"specificHeatCapacity": 197.3,
+		"thermalConductivity": 10.8,
+		"emissivity": 0.35
+	},
+	"ranges": {
+		"density": "0-326",
+		"specificHeatCapacity": "0-326",
+		"thermalConductivity": "0-326",
+		"adiabaticTemperatureChange": "0-326",
+		"emissivity": "242-344"
+	},
+	"fields": [0.00,0.50,1.00,1.50,2.00],
+	"id": 100002,
+	"short_name": "Gadolinium",
+	"long_name": "Gadolinium",
+	"melting_point": 1586.0
+}

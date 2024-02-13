@@ -1,0 +1,5 @@
+Data from Dong-fei 2013 (https://doi.org/10.1016/j.solmat.2013.02.009)
+Transition temperature (K)
+
+310.64
+315.17

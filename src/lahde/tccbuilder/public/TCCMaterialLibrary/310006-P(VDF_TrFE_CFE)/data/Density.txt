@@ -1,0 +1,5 @@
+Data from 10.1016/j.jmat.2019.04.001
+An estimated value of density - it is for a similar material.
+Density (kg/m3)
+
+1800

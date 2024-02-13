@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 0.71,
+		"specificHeatCapacity": 2162.7,
+		"thermalConductivity": 0.024,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "196-1000",
+		"specificHeatCapacity": "200-1000",
+		"thermalConductivity": "200-1000",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700007,
+	"short_name": "NH3",
+	"long_name": "Ammonia",
+	"melting_point": 195.4
+}

@@ -1,0 +1,10 @@
+Poly(methyl methacrylate) - PMMA
+We try to find the properties of PMMA, similar to those they used in 10.1039/c7cp02445b.
+In the paper, only thermal conductivity is given.
+
+Conductivity is taken as a constant, from https://doi.org/10.1007/s40940-016-0004-7
+we see that it does not change much between 170 and 420 K.
+
+Density and melting point are taken from https://en.wikipedia.org/wiki/Poly(methyl_methacrylate) (07.08.23)
+Specific heat capacity is taken from https://doi.org/10.1007/s40940-016-0004-7
+Emissivity: https://doi.org/10.1007/s40940-016-0004-7

@@ -1,0 +1,6 @@
+Data from Budavari, S. (ed.). The Merck Index -
+An Encyclopedia of Chemicals, Drugs, and Biologicals. Whitehouse Station, NJ: Merck and Co., Inc., 1996., p. 446
+Density at 287 K
+Density(kg/m3)
+
+6315.0

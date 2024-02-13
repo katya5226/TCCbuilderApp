@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 11372.3,
+		"specificHeatCapacity": 126.7,
+		"thermalConductivity": 35.6,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "293-1967",
+		"specificHeatCapacity": "0-2000",
+		"thermalConductivity": "0-1376",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 100009,
+	"short_name": "Pb",
+	"long_name": "Lead",
+	"melting_point": 601.0 
+}

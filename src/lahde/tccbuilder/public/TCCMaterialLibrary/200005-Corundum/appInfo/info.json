@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 3900.0,
+		"specificHeatCapacity": 749.7,
+		"thermalConductivity": 29.38,
+		"emissivity": 0.86
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "253-353",
+		"thermalConductivity": "253-353",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 200005,
+	"short_name": "Corundum",
+	"long_name": "Al2O3 Corundum",
+	"melting_point": 2300.0
+}

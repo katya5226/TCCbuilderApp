@@ -295,7 +295,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public LengthUnit selectedLengthUnit = LengthUnit.MILLIMETER;
 
-
+    public String baseURL;
     static native float devicePixelRatio() /*-{
         return window.devicePixelRatio;
     }-*/;
@@ -546,8 +546,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         tempsDialog.closeDialog();
                         simulation1D.setTemperatureRange();
                     }
-                }                  
-                else if (theSim.simDimensionality == 2) {
+                } else if (theSim.simDimensionality == 2) {
                     simulation2D.customTempRange = !simulation2D.customTempRange;
                     if (simulation2D.customTempRange == false) {
                         tempsDialog.closeDialog();
@@ -860,10 +859,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         colorChoices.add("blue");
 
 
-        String CORSproxy = "https://corsproxy.io/?";
-        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-/*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        baseURL = "http://127.0.0.1:8888/";*/
+//        String CORSproxy = "https://corsproxy.io/?";
+//        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+        baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
         //TODO: Add a callback to setSimRunning()
         readMaterialFlags(baseURL + "materials_flags.csv");
 
@@ -1203,7 +1201,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addSeparator();
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Heat Engine"), "TEHeatEngine"));
             mainMenuBar.addSeparator();
-            
+
             MenuBar sampleElements = new MenuBar(true);
 
             sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM_01"), "SwitchElm_FM_01"));

@@ -1,0 +1,7 @@
+Elementary Tantalum (Ta)
+
+Melting point 3290 K, source:
+https://en.wikipedia.org/wiki/Tantalum#:~:text=Tantalum's%20high%20melting%20point%20of,crystalline%20phases%2C%20alpha%20and%20beta. (14/12/23)
+
+Emissivity data source:
+\cite{D Giulietti_1981} doi = {10.1088/0022-3727/14/5/019}

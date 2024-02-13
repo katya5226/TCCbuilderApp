@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 2170.0,
+		"specificHeatCapacity": 855.9,
+		"thermalConductivity": 6.1,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "200-600",
+		"thermalConductivity": "4-373",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700013,
+	"short_name": "NaCl",
+	"long_name": "Sodium chloride",
+	"melting_point": 1073.8 
+}

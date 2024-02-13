@@ -1,0 +1,5 @@
+Data from https://geology.com/minerals/diamond.shtml (23. 1. 2022)
+Density is taken as an average value stated online.
+Density (kg/m3)
+
+3500.0

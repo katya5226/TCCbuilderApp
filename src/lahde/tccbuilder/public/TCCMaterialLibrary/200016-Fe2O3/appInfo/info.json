@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 5250.0,
+		"specificHeatCapacity": 649.3,
+		"thermalConductivity": 17.7,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "649-931",
+		"thermalConductivity": "290-586",
+		"emissivity": "1278-1681"
+	},
+	"fields": [],
+	"id": 200016,
+	"short_name": "Fe2O3",
+	"long_name": "Ferric oxide",
+	"melting_point": 1812.0
+}

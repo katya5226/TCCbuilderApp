@@ -1,0 +1,7 @@
+Graphene
+Estimated properties, averaged from different papers and sources
+
+Emissivity data source: Krishna et al., Nano Lett. 2019, 19, 8, 5086–5092, doi:10.1021/acs.nanolett.9b01358
+
+Melting point > 3925 K (Google search on 29/12/23)
+ 

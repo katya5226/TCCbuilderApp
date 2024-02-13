@@ -1,0 +1,5 @@
+Data from Gottschall 2019 (10.1002/aenm.201901322)
+Data is for a similar material, LaFe11.84Mn0.34Si1.30Hx
+Thermal conductivity (W/mK)
+
+7.2

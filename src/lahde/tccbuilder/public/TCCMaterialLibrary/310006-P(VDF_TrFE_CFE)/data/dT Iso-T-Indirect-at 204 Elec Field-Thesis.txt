@@ -1,0 +1,16 @@
+Data From: PhD Thesis with the title "INVESTIGATIONS OF STRUCTURE-PROPERTY RELATIONSHIPS TO ENHANCE THE MULTIFUNCTIONAL PROPERTIES OF PVDF-BASED POLYMERS". Bret P. Neese, May 2009. The Pennsylvania State University, The Graduate School, Department of Materials Science and Engineering. Fig 4-20-(b): Delta T vs temperature for P(VDF-TrFE-CFE) (59.2/33.6/7.2 mol.%) at different electric fields.
+
+@204 MV/m
+
+Note: in the science paper, @ 149 MV/m is not shown. 
+
+
+T (degrees C)	dT(degrees C)
+
+30.0966	3.4659
+35.0771	4.4886
+40.0965	5.2362
+45.0770	5.8523
+50.0964	6.7600
+55.0303	7.4624
+60.0963	8.3907

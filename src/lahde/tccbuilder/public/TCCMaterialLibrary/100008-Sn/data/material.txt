@@ -1,0 +1,3 @@
+Elementary tin (Sn)
+
+Emissivity taken from https://www.flukeprocessinstruments.com/en-us/service-and-support/knowledge-center/infrared-technology/emissivity-metals (02/01/24)

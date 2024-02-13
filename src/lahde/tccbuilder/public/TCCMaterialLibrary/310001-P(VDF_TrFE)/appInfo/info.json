@@ -1,0 +1,20 @@
+{
+	"rt_properties": {
+		"density": 2067.0,
+		"specificHeatCapacity": 1412.76,
+		"thermalConductivity": 0.3193,
+		"emissivity": 0.5
+	},
+	"ranges": {
+		"density": "290-300",
+		"specificHeatCapacity": "313-392",
+		"thermalConductivity": "290-300",
+		"adiabaticTemperatureChange": "301-384",
+		"emissivity": ""
+	},
+	"fields": [0,41,83,94,120,134,150,163,290],
+	"id": 310001,
+	"short_name": "P(VDF_TrFE)",
+	"long_name": "P(VDF_TrFE)",
+	"melting_point": 435.0
+}

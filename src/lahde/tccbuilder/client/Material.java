@@ -142,9 +142,12 @@ public class Material {
         this.cpHeating = new Vector<Vector<Double>>();
         this.cpCooling = new Vector<Vector<Double>>();
         this.fields = new Vector<Double>();
-        String CORSproxy = "https://corsproxy.io/?";
+//        String CORSproxy = "https://corsproxy.io/?";
         //String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-        String baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary";
+//        String baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
+        String baseURL = sim.baseURL;
+
+
         //String baseURL = " http://127.0.0.1:5555/";
         String url_info = baseURL + materialName + "/appInfo/info.json";
         String url_rho = baseURL + materialName + "/appInfo/rho.txt";

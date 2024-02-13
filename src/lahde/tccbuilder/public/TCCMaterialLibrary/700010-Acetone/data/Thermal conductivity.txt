@@ -1,0 +1,5 @@
+Data from https://www.engineeringtoolbox.com/acetone-2-propanone-dimethyl-ketone-properties-d_2036.html.
+Thermal conductivity at RT and atmospheric pressure.
+Thermal conductivity (W/m/K)
+
+0.18

@@ -1,0 +1,5 @@
+Anatase TiO2
+Estimated properties, averaged from different papers and sources
+
+Melting point 2116 K, source:
+https://en.wikipedia.org/wiki/Titanium_dioxide (14/12/2023)
