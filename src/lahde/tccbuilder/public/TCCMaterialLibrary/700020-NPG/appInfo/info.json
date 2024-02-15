@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1064.0,
+		"specificHeatCapacity": 3784.0,
+		"thermalConductivity": 0.24,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "250-360",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [0.00, 0.09, 0.25, 0.35, 0.57],
+	"id": 700020,
+	"short_name": "NPG",
+	"long_name": "Neopentyl glycol plastic crystal",
+	"melting_point": 402.2
+}

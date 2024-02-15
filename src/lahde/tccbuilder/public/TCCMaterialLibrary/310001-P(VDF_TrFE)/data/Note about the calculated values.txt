@@ -1,0 +1,2 @@
+According to my discussion with Prof. Kitanovski on Feb 17th, considering the fact the calulated values in the 
+Integrated Ferroelectrics reference are far off the indirect and direct measurements, they were disregarded here

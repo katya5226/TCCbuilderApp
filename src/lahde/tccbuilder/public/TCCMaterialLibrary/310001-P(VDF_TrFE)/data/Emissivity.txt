@@ -1,0 +1,2 @@
+As I didn't find any data on emissivity of P(VDF-TrFE),
+I wrote the value 0.5 as RT value.

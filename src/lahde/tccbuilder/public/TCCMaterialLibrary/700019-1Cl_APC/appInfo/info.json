@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1064.0,
+		"specificHeatCapacity": 1386.9,
+		"thermalConductivity": 0.12,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "150-380",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [0.00, 0.50, 1.00, 1.50, 2.00, 2.40],
+	"id": 700019,
+	"short_name": "1Cl-APC",
+	"long_name": "1-Cl-adamantane plastic crystal",
+	"melting_point": ""
+}

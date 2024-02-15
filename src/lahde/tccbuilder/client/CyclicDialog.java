@@ -22,6 +22,8 @@ public class CyclicDialog extends Dialog {
     ListBox componentsListBox;
     ListBox magneticFieldListBox;
     ListBox electricFieldListBox;
+    ListBox pressureFieldListBox;
+    ListBox shearStressFieldListBox;
     DoubleBox duration;
     DoubleBox newRho;
     DoubleBox newCp;
@@ -91,8 +93,8 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
         cyclePartListBox.addItem("Electric Field Change");
-//        cyclePartListBox.addItem("Pressure Change");
-//        cyclePartListBox.addItem("Shear Stress Change");
+        cyclePartListBox.addItem("Pressure Change");
+        cyclePartListBox.addItem("Shear Stress Change");
         cyclePartListBox.addItem("Properties Change");
         cyclePartListBox.addItem("Temperature Change");
         cyclePartListBox.addItem("Toggle TCE");
@@ -181,15 +183,19 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(electricFieldListBox);
 
 
-        pressureFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (Bar): "));
+        pressureFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (kbar): "));
         pressureFieldStrength = new DoubleBox();
+        pressureFieldListBox = new ListBox();
         inputWidgets.add(pressureFieldStrengthLabel);
-        inputWidgets.add(pressureFieldStrength);
+        // inputWidgets.add(pressureFieldStrength);
+        inputWidgets.add(pressureFieldListBox);
 
-        shearStressFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (Bar): "));
+        shearStressFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (kbar): "));
         shearStressFieldStrength = new DoubleBox();
+        shearStressFieldListBox = new ListBox();
         inputWidgets.add(shearStressFieldStrengthLabel);
-        inputWidgets.add(shearStressFieldStrength);
+        // inputWidgets.add(shearStressFieldStrength);
+        inputWidgets.add(shearStressFieldListBox);
 
 
         newTemperatureLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Temperature (K): "));
@@ -289,8 +295,14 @@ public class CyclicDialog extends Dialog {
                             cyclePart.fieldIndexes.add(electricFieldListBox.getSelectedIndex());
                             break;
                         case PRESSURE_CHANGE:
+                            cyclePart.TCEs.add(chosenComponent);
+                            chosenComponent.fieldIndex = pressureFieldListBox.getSelectedIndex();
+                            cyclePart.fieldIndexes.add(pressureFieldListBox.getSelectedIndex());
                             break;
                         case SHEAR_STRESS_CHANGE:
+                            cyclePart.TCEs.add(chosenComponent);
+                            chosenComponent.fieldIndex = shearStressFieldListBox.getSelectedIndex();
+                            cyclePart.fieldIndexes.add(shearStressFieldListBox.getSelectedIndex());
                             break;
                         case PROPERTIES_CHANGE:
                             cyclePart.TCEs.add(chosenComponent);
@@ -428,14 +440,18 @@ public class CyclicDialog extends Dialog {
                         cyclePart.partType = CyclePart.PartType.ELECTRIC_FIELD_CHANGE;
                         break;
                     case "Pressure Change":
-                        pressureFieldStrengthLabel.setVisible(true);
-                        pressureFieldStrength.setVisible(true);
+                        // pressureFieldStrengthLabel.setVisible(true);
+                        // pressureFieldStrength.setVisible(true);
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.PRESSURE_CHANGE;
                         break;
                     case "Shear Stress Change":
-                        shearStressFieldStrengthLabel.setVisible(true);
-                        shearStressFieldStrength.setVisible(true);
+                        // shearStressFieldStrengthLabel.setVisible(true);
+                        // shearStressFieldStrength.setVisible(true);
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.SHEAR_STRESS_CHANGE;
                         break;
@@ -491,6 +507,10 @@ public class CyclicDialog extends Dialog {
                     magneticFieldListBox.setVisible(false);
                     electricFieldStrengthLabel.setVisible(false);
                     electricFieldListBox.setVisible(false);
+                    pressureFieldStrengthLabel.setVisible(false);
+                    pressureFieldListBox.setVisible(false);
+                    shearStressFieldStrengthLabel.setVisible(false);
+                    shearStressFieldListBox.setVisible(false);
                     rhoLabel.setVisible(false);
                     newRho.setVisible(false);
                     cpLabel.setVisible(false);
@@ -538,8 +558,22 @@ public class CyclicDialog extends Dialog {
                         addComponentButton.setVisible(true);
                         break;
                     case PRESSURE_CHANGE:
+                        pressureFieldListBox.clear();
+                        for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
+                            pressureFieldListBox.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
+                        }
+                        pressureFieldStrengthLabel.setVisible(true);
+                        pressureFieldListBox.setVisible(true);
+                        addComponentButton.setVisible(true);
                         break;
                     case SHEAR_STRESS_CHANGE:
+                        shearStressFieldListBox.clear();
+                        for (int fi = 0; fi < chosenComponent.material.fields.size(); fi++) {
+                            shearStressFieldListBox.addItem(String.valueOf(chosenComponent.material.fields.get(fi)));
+                        }
+                        shearStressFieldStrengthLabel.setVisible(true);
+                        shearStressFieldListBox.setVisible(true);
+                        addComponentButton.setVisible(true);
                         break;
                     case PROPERTIES_CHANGE:
                         rhoCheckBox.setVisible(true);
@@ -595,8 +629,10 @@ public class CyclicDialog extends Dialog {
                     add = tce.material.electrocaloric;
                     break;
                 case PRESSURE_CHANGE:
+                    add = tce.material.barocaloric;
                     break;
                 case SHEAR_STRESS_CHANGE:
+                    add = tce.material.elastocaloric;
                     break;
                 case PROPERTIES_CHANGE:
                     break;

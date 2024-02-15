@@ -1,0 +1,4 @@
+Data from https://en.wikipedia.org/wiki/Indium
+Melting point (K)
+
+429.7

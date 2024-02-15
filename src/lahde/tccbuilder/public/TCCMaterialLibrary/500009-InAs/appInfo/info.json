@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 5670.0,
+		"specificHeatCapacity": 251.8,
+		"thermalConductivity": 32.8,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "298-1215",
+		"thermalConductivity": "2-997",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 500009,
+	"short_name": "InAs",
+	"long_name": "Indium arsenide",
+	"melting_point": 1215.0 
+}

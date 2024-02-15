@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 4571.0,
+		"specificHeatCapacity": 1952.4,
+		"thermalConductivity": 6.4,
+		"emissivity": 0.23
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "293-353",
+		"thermalConductivity": "283-353",
+		"emissivity": "303-373"
+	},
+	"fields": [],
+	"id": 100028,
+	"short_name": "VO2",
+	"long_name": "Vanadium(IV) oxide",
+	"melting_point": 2240.0
+}

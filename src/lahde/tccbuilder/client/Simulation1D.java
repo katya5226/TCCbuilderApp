@@ -33,15 +33,20 @@ public class Simulation1D extends Simulation {
         eastBoundary = BorderCondition.CONVECTIVE;
         hWest = 10000.0;
         hEast = 10000.0;
-        tempWest = 291.0;
-        tempEast = 290.0;
+        tempWest = 293.0;
+        tempEast = 293.0;
         qWest = 0.0;
         qEast = 0.0;
-        startTemp = 290.0;
+        westFrequency = 0.0;
+        eastFrequency = 0.0;
+        westAmplitude = 0.0;
+        eastAmplitude = 0.0;
+        startTemp = 293.0;
         ambientTemperature = 293.0;
         // start_temperatures = new double[num_cvs];
         times = new ArrayList<Double>();
         temperatures = new ArrayList<Double[]>();
+        TEpowerOutputs = new ArrayList<ArrayList<Double[]>>();
         dt = 5e-3;
         totalTime = 0.0;
 
@@ -72,13 +77,24 @@ public class Simulation1D extends Simulation {
         cycleParts.clear();
     }
 
-    public void append_new_temps() {
+    public void appendNewTemps() {
         Double[] ttemps = new Double[heatCircuit.cvs.size()];
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {
             ttemps[i] = heatCircuit.cvs.get(i).temperature;
         }
         this.temperatures.add(ttemps);
         this.times.add(this.time);
+    }
+
+    void logPowerOutput() {
+        ArrayList<Double[]> ar = new ArrayList<>();
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce instanceof TEHeatEngine) {
+                TEHeatEngine TE = (TEHeatEngine) tce;
+                ar.add(TE.outputPower());
+            }
+        }
+        TEpowerOutputs.add(ar);
     }
 
     void checkDiodes() {
@@ -131,7 +147,8 @@ public class Simulation1D extends Simulation {
         // this.PCMs[i].update_temperatures()
         // this.PCMs[i].raise_latent_heat(pa.dt)
         heatCircuit.replaceTemperatures();
-        this.append_new_temps();
+        this.appendNewTemps();
+        if (heatCircuit.containsTEEngines) logPowerOutput();
         // hf.print_darray_row(this.temperatures[-1], this.temperatures_file, 4)
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
     }
@@ -147,7 +164,7 @@ public class Simulation1D extends Simulation {
             }
         }
 
-        heatCircuit = new TCC("Heat circuit", simTCEs);
+        heatCircuit = new TCC(this, "Heat circuit", simTCEs);
         heatCircuit.westBoundary = westBoundary;
         heatCircuit.eastBoundary = eastBoundary;
         heatCircuit.hWest = hWest;
@@ -157,6 +174,10 @@ public class Simulation1D extends Simulation {
         heatCircuit.qWest = qWest;
         heatCircuit.qEast = qEast;
         heatCircuit.ambientTemperature = ambientTemperature;
+        heatCircuit.amplitudeEast = eastAmplitude;
+        heatCircuit.amplitudeWest = westAmplitude;
+        heatCircuit.frequencyEast = eastFrequency;
+        heatCircuit.frequencyWest = westFrequency;
 
         heatCircuit.buildTCC();
         heatCircuit.initializeMatrix();
@@ -195,18 +216,28 @@ public class Simulation1D extends Simulation {
         if (customTempRange == true) return;
         double maxValue = 0, minValue = 0;
         for (ThermalControlElement c : simTCEs) {
-            if (c.material.magnetocaloric) {
-                for (Vector<Double> dTcoolingVector : c.material.dTcooling) {
-                    maxValue = Math.max(maxValue, Collections.max(dTcoolingVector));
+            if (c.material.magnetocaloric || c.material.electrocaloric || c.material.elastocaloric || c.material.barocaloric) {
+                if (!c.material.dTThysteresis) {
+                    for (Vector<Double> dTFRVector : c.material.dTFieldRemove) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRVector));
+                    }
+                    for (Vector<Double> dTFAVector : c.material.dTFieldApply) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFAVector));
+                    }
                 }
-
-                for (Vector<Double> dTheatingVector : c.material.dTheating) {
-                    maxValue = Math.max(maxValue, Collections.max(dTheatingVector));
-                }
-            }
-            if (c.material.electrocaloric) {
-                for (Vector<Double> dTVector : c.material.dT) {
-                    maxValue = Math.max(maxValue, Math.abs(Collections.max(dTVector)));
+                else {
+                    for (Vector<Double> dTFRHVector : c.material.dTFieldRemoveHeating) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRHVector));
+                    }
+                    for (Vector<Double> dTFAHVector : c.material.dTFieldApplyHeating) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFAHVector));
+                    }
+                    for (Vector<Double> dTFRCVector : c.material.dTFieldRemoveCooling) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFRCVector));
+                    }
+                    for (Vector<Double> dTFACVector : c.material.dTFieldApplyCooling) {
+                        maxValue = Math.max(maxValue, Collections.max(dTFACVector));
+                    }                    
                 }
             }
         }
@@ -255,9 +286,9 @@ public class Simulation1D extends Simulation {
             }
         }
         dump += "\nTemperatures:\n";
-        dump += "Time\t";
+        dump += "Time (s)\t";
         for (int i = 0; i < heatCircuit.cvs.size(); i++) {
-            dump += "CV# " + i + "\t";
+            dump += "CV# " + i + " T (K)\t";
         }
         dump += "\n";
         for (int i = 0; i < temperatures.size(); i+= outputInterval) {
@@ -269,11 +300,51 @@ public class Simulation1D extends Simulation {
             }
             dump += "\n";
         }
-        dump += "\nFluxes:\n";
+        dump += "\nFluxes (W/m²):\n";
         heatCircuit.calculateHeatFluxes();
         for (Double f : heatCircuit.fluxes)
             dump += f + "\t";
+        if(TEpowerOutputs.size() > 0) {
+            dump += "\n\nPower outputs of TE heat engines:\n";
+            dump += "Time (s)\t";
+            for (int i = 0; i < TEpowerOutputs.get(0).size(); i++) {
+                dump += "TEengine#" + i + ": Average dT² (K)\t P (W)\t";
+            }
+            dump += "\n";
+            for (int i = 0; i < TEpowerOutputs.size(); i+= outputInterval) {
+                ArrayList<Double[]> powers = TEpowerOutputs.get(i);
+                Double time = times.get(i);
+                dump += NumberFormat.getFormat("0.000").format(time) + "\t";
+                for (Double[] p : powers) {
+                    dump += NumberFormat.getFormat("0.00").format(p[0]) + "\t" + NumberFormat.getFormat("0.00").format(p[1]) + "\t";
+                }
+                dump += "\n";
+            }
+        }
+        dump += "\n\n" + assessment();
         return dump;
+    }
+
+    String assessment() {
+        String as = "";
+        as += "AVERAGE THERMAL DIFFUSIVITIES OF TCEs:\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            as += tce.name + "\t" + NumberFormat.getFormat("0.00").format(tce.calculateDiffusivity()) + "x10\u207B⁶ m²/s\n";
+        }
+        as += "LARGEST TEMPERATURE DIFFERENCE BETWEEN CVs:\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            as += tce.name + "\t" + tce.calculateLargestDeltaT() + "\n";
+        }
+        as += "HEAT FLUX AT WEST BOUNDARY: " + heatCircuit.fluxes.get(0) + " W/m²\n";
+        as += "HEAT FLUX AT EAST BOUNDARY: " + heatCircuit.fluxes.get(heatCircuit.fluxes.size() - 1) + " W/m²\n";
+        // as += "TCE ACTUATION POWER INPUTS (divided by TCE cross area):\n";
+        as += "TCE ACTUATION POWER INPUTS:\n";
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            as += tce.name + "\tInput power " + tce.inputPower + " W\n";
+            // if (tce.crossArea == -1) as += tce.name + "\tCross area unknown\n";  // TO DO IF THERE'S TIME
+            // else as += tce.name + "\t Input power " + tce.inputPower / tce.crossArea + " W/m²\n";
+        } 
+        return as;
     }
 
     @Override

@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 9909.3,
+		"specificHeatCapacity": 122.0,
+		"thermalConductivity": 8.23,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "294-1725",
+		"specificHeatCapacity": "0-952",
+		"thermalConductivity": "2-1108",
+		"emissivity": "394-423"
+	},
+	"fields": [],
+	"id": 100017,
+	"short_name": "Bi",
+	"long_name": "Bismuth",
+	"melting_point": 545.0 
+}

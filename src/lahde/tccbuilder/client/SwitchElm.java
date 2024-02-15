@@ -33,7 +33,7 @@ class SwitchElm extends ThermalControlElement {
 
     public SwitchElm(int xx, int yy) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         momentary = false;
         position = 1;
         posCount = 2;
@@ -41,7 +41,7 @@ class SwitchElm extends ThermalControlElement {
 
     SwitchElm(int xx, int yy, boolean mm) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         position = (mm) ? 1 : 0;
         momentary = mm;
         posCount = 2;
@@ -50,7 +50,7 @@ class SwitchElm extends ThermalControlElement {
     public SwitchElm(int xa, int ya, int xb, int yb, int f,
                      StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         position = Integer.parseInt(st.nextToken());
         momentary = st.nextToken().equals("true");
         kOn = Double.parseDouble(st.nextToken());
@@ -121,7 +121,8 @@ class SwitchElm extends ThermalControlElement {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length (mm)", length * 1e3);
             case 5:
                 return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
@@ -136,6 +137,10 @@ class SwitchElm extends ThermalControlElement {
                 return new EditInfo("Density (kg/m³)", constRho);
             case 11:
                 return new EditInfo("Response time (s)", responseTime);
+            case 12:
+                return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 13:
+                return new EditInfo("Actuation input power (W/m³)", inputPower);
             default:
                 return null;
         }
@@ -179,6 +184,12 @@ class SwitchElm extends ThermalControlElement {
                 break;
             case 11:
                 responseTime = ei.value;
+                break;
+            case 12:
+                hTransv = ei.value;
+                break;
+            case 13:
+                inputPower = ei.value;
                 break;
         }
 

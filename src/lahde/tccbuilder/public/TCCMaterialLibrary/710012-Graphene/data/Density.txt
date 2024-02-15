@@ -1,0 +1,7 @@
+In the Quantachrome Brochure (https://www.quantachrome.com/general_pdf/graphene.pdf) it is
+stated that "Perfectly stacked and aligned graphene sheets have a density close to that of crystalline graphite (2.267 g/cm 3 ). However, heteroatoms, 
+stacking imperfections and defects tend to lower the density to a value that depends on heteroatom nature and content, and on pore characteristics."
+Density(kg/m3)
+
+2267.0
+

@@ -42,7 +42,7 @@ class RegulatorElm extends ThermalControlElement {
 
     public RegulatorElm(int xx, int yy) {
         super(xx, yy);
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         cpCurve = new Vector<Double>();
     }
 
@@ -58,7 +58,7 @@ class RegulatorElm extends ThermalControlElement {
         temperature1 = Double.parseDouble(st.nextToken());
         temperature2 = Double.parseDouble(st.nextToken());
         latentHeat = Double.parseDouble(st.nextToken());
-        material = sim.materialHashMap.get("000000-Custom");
+        material = sim.materialHashMap.get("000000-Constant properties");
         cpCurve = new Vector<Double>();
     }
 
@@ -191,7 +191,8 @@ class RegulatorElm extends ThermalControlElement {
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 4:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                // return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length (mm)", length * 1e3);
             case 5:
                 return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 6:
@@ -218,6 +219,8 @@ class RegulatorElm extends ThermalControlElement {
                 return new EditInfo("Response time (s)", responseTime);
             case 17:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
+            case 18:
+                return new EditInfo("Actuation input power (W/m³)", inputPower);
             default:
                 return null;
         }
@@ -278,6 +281,9 @@ class RegulatorElm extends ThermalControlElement {
                 break;
             case 17:
                 hTransv = ei.value;
+                break;
+            case 18:
+                inputPower = ei.value;
                 break;
         }
 

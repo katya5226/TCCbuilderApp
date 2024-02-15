@@ -1,0 +1,5 @@
+Data from Pisoni 2014 (https://doi.org/10.1021/jz5012109)
+Data is for a similar material, CH3NH3PbI3
+Thermal conductivity (W/mK)
+
+0.5

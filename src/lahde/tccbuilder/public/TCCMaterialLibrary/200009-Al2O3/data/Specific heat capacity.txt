@@ -1,0 +1,17 @@
+Nouari Saheb - 2017- Ceramics International - DOI: 10.1016/j.ceramint.2017.01.112
+There are other data as I mentioned before, if needed you can check the references I have put in the material's text file
+
+Original temperature was in degrees C, these are original+274.15 = K, also Cp in (J/gK) has been multiplied by 1000 to get (J/kgK), as you wanted it to be
+
+X	Y
+Temperaure	Specific Heat
+K	J/(kgK)
+	
+	
+	
+299.1226	1240.17
+323.8967	1280.54
+374.4651	1378.81
+424.0134	1399.4
+474.1446	1500.11
+524.3244	1571.06

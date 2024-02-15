@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 3210.0,
+		"specificHeatCapacity": 652.8,
+		"thermalConductivity": 854.7,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "298-2000",
+		"thermalConductivity": "2-777",
+		"emissivity": "676-1885"
+	},
+	"fields": [],
+	"id": 200017,
+	"short_name": "SiC",
+	"long_name": "Silicon carbide",
+	"melting_point": 3003.0
+}

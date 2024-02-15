@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 5680.0,
+		"specificHeatCapacity": 458.9,
+		"thermalConductivity": 2.5,
+		"emissivity": 0.87
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "303-2000",
+		"thermalConductivity": "",
+		"emissivity": "377-1681"
+	},
+	"fields": [],
+	"id": 200012,
+	"short_name": "ZrO2",
+	"long_name": "Zirconium dioxide",
+	"melting_point": 2988.0
+}

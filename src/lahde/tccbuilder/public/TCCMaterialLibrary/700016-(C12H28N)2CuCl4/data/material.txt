@@ -1,0 +1,2 @@
+(C12H28N)2CuCl4
+Data from Dong-Hua 2010 (https://doi.org/10.1021/je100699g)

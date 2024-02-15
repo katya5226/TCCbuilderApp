@@ -19,7 +19,7 @@ public class Material {
     public boolean name;
     public boolean invariant;
     public boolean thermoelectric;
-    public boolean temperatureInducedPhaseChange;
+    public boolean phaseChangeMaterial;
     public boolean electrocaloric;
     public boolean magnetocaloric;
     public boolean barocaloric;
@@ -27,18 +27,24 @@ public class Material {
     public boolean cpThysteresis;
     public boolean dTThysteresis;
     public boolean kThysteresis;
+    public boolean cpFields;
 
 
     private final CirSim sim;
     public Vector<Double> interpTemps;
 
     public Vector<Double> rho;
+    public Vector<Double> seebeck;
+    public Vector<Double> dSeebdT;
     public Vector<Vector<Double>> k;
     public Vector<Vector<Double>> kHeating;
     public Vector<Vector<Double>> kCooling;
-    public Vector<Vector<Double>> dT;
-    public Vector<Vector<Double>> dTheating;
-    public Vector<Vector<Double>> dTcooling;
+    public Vector<Vector<Double>> dTFieldApply;
+    public Vector<Vector<Double>> dTFieldRemove;
+    public Vector<Vector<Double>> dTFieldApplyHeating;
+    public Vector<Vector<Double>> dTFieldApplyCooling;
+    public Vector<Vector<Double>> dTFieldRemoveHeating;
+    public Vector<Vector<Double>> dTFieldRemoveCooling;
 
     public Vector<Vector<Double>> cp;
     public Vector<Vector<Double>> cpHeating;
@@ -78,7 +84,7 @@ public class Material {
             double temp = Math.round(0.1 * i * 10.0) / 10.0;
             interpTemps.add(temp);
         }
-        if (materialName.equals("000000-Custom")) {
+        if (materialName.equals("000000-Constant properties")) {
             this.rho = new Vector<Double>();
             this.k = new Vector<Vector<Double>>();
             this.cp = new Vector<Vector<Double>>();
@@ -106,7 +112,7 @@ public class Material {
             String[] line = matcher.getGroup(0).split(",", -1);
             invariant = line[1].equals("1");
             thermoelectric = line[2].equals("1");
-            temperatureInducedPhaseChange = line[3].equals("1");
+            phaseChangeMaterial = line[3].equals("1");
             electrocaloric = line[4].equals("1");
             magnetocaloric = line[5].equals("1");
             barocaloric = line[6].equals("1");
@@ -114,26 +120,35 @@ public class Material {
             cpThysteresis = line[8].equals("1");
             dTThysteresis = line[9].equals("1");
             kThysteresis = line[10].equals("1");
+            cpFields = line[11].equals("1");
         } else
             GWT.log("No entry found in flag file for material \"" + materialName + "\"");
     }
 
     void readFiles() {
         this.rho = new Vector<Double>();
+        this.seebeck = new Vector<Double>();
+        this.dSeebdT = new Vector<Double>();
         this.k = new Vector<Vector<Double>>();
         this.kHeating = new Vector<Vector<Double>>();
         this.kCooling = new Vector<Vector<Double>>();
-        this.dT = new Vector<Vector<Double>>();
-        this.dTheating = new Vector<Vector<Double>>();
-        this.dTcooling = new Vector<Vector<Double>>();
+        this.dTFieldApply = new Vector<Vector<Double>>();
+        this.dTFieldRemove = new Vector<Vector<Double>>();
+        this.dTFieldApplyHeating = new Vector<Vector<Double>>();
+        this.dTFieldApplyCooling = new Vector<Vector<Double>>();
+        this.dTFieldRemoveHeating = new Vector<Vector<Double>>();
+        this.dTFieldRemoveCooling = new Vector<Vector<Double>>();
         this.cp = new Vector<Vector<Double>>();
         this.cpHeating = new Vector<Vector<Double>>();
         this.cpCooling = new Vector<Vector<Double>>();
         this.fields = new Vector<Double>();
-        String CORSproxy = "https://corsproxy.io/?";
-        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-        //String baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        //String baseURL = "http://127.0.0.1:8888/";
+//        String CORSproxy = "https://corsproxy.io/?";
+        //String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+//        String baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
+        String baseURL = sim.baseURL;
+
+
+        //String baseURL = " http://127.0.0.1:5555/";
         String url_info = baseURL + materialName + "/appInfo/info.json";
         String url_rho = baseURL + materialName + "/appInfo/rho.txt";
 
@@ -147,104 +162,173 @@ public class Material {
 
                 @Override
                 public void onSuccess(Object result) {
-                    String url_k = baseURL + materialName + "/appInfo/k.txt";
 
                     if (!sim.awaitedResponses.contains(url_rho)) {
                         sim.awaitedResponses.add(url_rho);
                         fillVectorFromURL(url_rho, rho, 1000);
                     }
+                    String url_cp;
+                    if (cpThysteresis && !cpFields) {
+                        url_cp = baseURL + materialName + "/appInfo/cp_cooling.txt";
+                        Vector<Double> vector = new Vector<Double>();
 
-                    if (invariant || thermoelectric || temperatureInducedPhaseChange) {
-                        String url_cp = baseURL + materialName + "/appInfo/cp.txt";
+                        sim.awaitedResponses.add(url_cp);
+                        fillVectorFromURL(url_cp, vector, 200);
+                        cpCooling.add(vector);
+
+                        url_cp = baseURL + materialName + "/appInfo/cp_heating.txt";
+
+                        sim.awaitedResponses.add(url_cp);
+                        fillVectorFromURL(url_cp, vector, 200);
+                        cpHeating.add(vector);
+                    }
+                    if (!cpThysteresis && !cpFields)  {
+                        url_cp = baseURL + materialName + "/appInfo/cp.txt";
                         if (!sim.awaitedResponses.contains(url_cp)) {
                             sim.awaitedResponses.add(url_cp);
                             Vector<Double> vector = new Vector<Double>();
                             fillVectorFromURL(url_cp, vector, 200);
                             cp.add(vector);
                         }
-                    } else if (magnetocaloric || barocaloric || elastocaloric || electrocaloric) {
-                        String url_cp, url_dT;
+                    }
+                    if (!cpThysteresis && cpFields) {
                         for (double field : fields) {
-                            GWT.log("FIELD: " + String.valueOf(field));
-                            String fieldName = (field == 0) ? "0.0" : field < 0.1 ? String.valueOf(field) : NumberFormat.getFormat("#0.0").format(field);
+                            String fieldName = NumberFormat.getFormat("#0.00").format(field);
+                            if (electrocaloric)
+                                fieldName = String.valueOf(field);  // When the field in the file name is written as an integer. 
+                            Vector<Double> vector = new Vector<Double>();
+                            url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
+                            if (magnetocaloric)
+                                url_cp += "T.txt";
+                            else if (electrocaloric)
+                                url_cp += "MVm.txt";
+                            else if (elastocaloric || barocaloric)
+                                url_cp += "kbar.txt";
+                            
+                            sim.awaitedResponses.add(url_cp);
+                            fillVectorFromURL(url_cp, vector, 200);
+                            cp.add(vector);
+                        }
+                    }
+                    if (cpThysteresis && cpFields) {
+                        for (double field : fields) {
+                            String fieldName = NumberFormat.getFormat("#0.00").format(field);
                             if (electrocaloric)
                                 fieldName = String.valueOf(field);
-
-                            Vector<Double> vector;
-                            if (cpThysteresis) {
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
-                                if (magnetocaloric)
-                                    url_cp += "T_cooling.txt";
-                                else if (electrocaloric)
-                                    url_cp += "MVm_cooling.txt";
-                                vector = new Vector<Double>();
-
-                                sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector, 200);
-                                cpCooling.add(vector);
-
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName + "T_heating.txt";
-                                if (magnetocaloric)
-                                    url_cp += "T_heating.txt";
-                                else if (electrocaloric)
-                                    url_cp += "MVm_heating.txt";
-                                vector = new Vector<Double>();
-
-                                sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector, 200);
-                                cpHeating.add(vector);
-                            } else {
-                                url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
-                                if (magnetocaloric)
-                                    url_cp += "T.txt";
-                                else if (electrocaloric)
-                                    url_cp = baseURL + materialName + "/appInfo/cp.txt";
-                                vector = new Vector<Double>();
-
-                                sim.awaitedResponses.add(url_cp);
-                                fillVectorFromURL(url_cp, vector, 200);
-                                cp.add(vector);
-                            }
-                            if (field != 0) {
-                                if (dTThysteresis) {
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
-                                    if (magnetocaloric)
-                                        url_dT += "T_cooling.txt";
-                                    else if (electrocaloric)
-                                        url_dT += "MVm_cooling.txt";
-                                    vector = new Vector<Double>();
-
-                                    sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector, 0);
-                                    dTcooling.add(vector);
-
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
-                                    if (magnetocaloric)
-                                        url_dT += "T_heating.txt";
-                                    else if (electrocaloric)
-                                        url_dT += "MVm_heating.txt";
-                                    vector = new Vector<Double>();
-
-                                    sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector, 0);
-                                    dTheating.add(vector);
-                                } else {
-                                    url_dT = baseURL + materialName + "/appInfo/dT_" + fieldName;
-                                    if (magnetocaloric)
-                                        url_dT += "T.txt";
-                                    else if (electrocaloric)
-                                        url_dT += "MVm.txt";
-                                    vector = new Vector<Double>();
-
-                                    sim.awaitedResponses.add(url_dT);
-                                    fillVectorFromURL(url_dT, vector, 0);
-                                    dT.add(vector);
-                                }
-                            }
-
+                            Vector<Double> vector = new Vector<Double>();
+                            url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
+                            if (magnetocaloric)
+                                url_cp += "T_cooling.txt";
+                            else if (electrocaloric)
+                                url_cp += "MVm_cooling.txt";
+                            else if (elastocaloric || barocaloric)
+                                url_cp += "kbar_cooling.txt";
+                            
+                            sim.awaitedResponses.add(url_cp);
+                            fillVectorFromURL(url_cp, vector, 200);
+                            cpCooling.add(vector);
+                            
+                            url_cp = baseURL + materialName + "/appInfo/cp_" + fieldName;
+                            if (magnetocaloric)
+                                url_cp += "T_heating.txt";
+                            else if (electrocaloric)
+                                url_cp += "MVm_heating.txt";
+                            else if (elastocaloric || barocaloric)
+                                url_cp += "kbar_heating.txt";
+                            
+                            sim.awaitedResponses.add(url_cp);
+                            fillVectorFromURL(url_cp, vector, 200);
+                            cpHeating.add(vector);
                         }
-
                     }
+                    String url_dT_apply;
+                    String url_dT_remove;
+                    if (fields.size() > 0 && !dTThysteresis) {
+                        for (double field : fields) {
+                            String fieldName = NumberFormat.getFormat("#0.00").format(field);
+                            if (electrocaloric)
+                                fieldName = String.valueOf(field);
+                            Vector<Double> vectorA = new Vector<Double>();
+                            Vector<Double> vectorR = new Vector<Double>();
+                            if (field != 0) {
+                                url_dT_apply = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                url_dT_remove = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                if (magnetocaloric) {
+                                    url_dT_apply += "T_apply.txt";
+                                    url_dT_remove += "T_remove.txt";
+                                }
+                                else if (electrocaloric) {
+                                    url_dT_apply += "MVm_apply.txt";
+                                    url_dT_remove += "MVm_remove.txt";
+                                }
+                                else if (elastocaloric || barocaloric) {
+                                    url_dT_apply += "kbar_apply.txt";
+                                    url_dT_remove += "kbar_remove.txt";
+                                }
+
+                                sim.awaitedResponses.add(url_dT_apply);
+                                fillVectorFromURL(url_dT_apply, vectorA, 0);
+                                dTFieldApply.add(vectorA);
+                                sim.awaitedResponses.add(url_dT_remove);
+                                fillVectorFromURL(url_dT_remove, vectorR, 0);
+                                dTFieldRemove.add(vectorR);
+                            }
+                        }
+                    }
+                    String url_dT_apply_heating;
+                    String url_dT_apply_cooling;
+                    String url_dT_remove_heating;
+                    String url_dT_remove_cooling;
+                    if (fields.size() > 0 && dTThysteresis) {
+                        for (double field : fields) {
+                            String fieldName = NumberFormat.getFormat("#0.00").format(field);
+                            if (electrocaloric)
+                                fieldName = String.valueOf(field);
+                            Vector<Double> vectorAH = new Vector<Double>();
+                            Vector<Double> vectorAC = new Vector<Double>();
+                            Vector<Double> vectorRH = new Vector<Double>();
+                            Vector<Double> vectorRC = new Vector<Double>();
+                            if (field != 0) {
+                                url_dT_apply_cooling = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                url_dT_apply_heating = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                url_dT_remove_cooling = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                url_dT_remove_heating = baseURL + materialName + "/appInfo/dT_" + fieldName;
+                                if (magnetocaloric) {
+                                    url_dT_apply_cooling += "T_apply_cooling.txt";
+                                    url_dT_apply_heating += "T_apply_heating.txt";
+                                    url_dT_remove_cooling += "T_remove_cooling.txt";
+                                    url_dT_remove_heating += "T_remove_heating.txt";
+                                }
+                                else if (electrocaloric) {
+                                    url_dT_apply_cooling += "MVm_apply_cooling.txt";
+                                    url_dT_apply_heating += "MVm_apply_heating.txt";
+                                    url_dT_remove_cooling += "MVm_remove_cooling.txt";
+                                    url_dT_remove_heating += "MVm_remove_heating.txt";
+                                }
+                                else if (elastocaloric || barocaloric) {
+                                    url_dT_apply_cooling += "kbar_apply_cooling.txt";
+                                    url_dT_apply_heating += "kbar_apply_heating.txt";
+                                    url_dT_remove_cooling += "kbar_remove_cooling.txt";
+                                    url_dT_remove_heating += "kbar_remove_heating.txt";
+                                }
+
+                                sim.awaitedResponses.add(url_dT_apply_cooling);
+                                fillVectorFromURL(url_dT_apply_cooling, vectorAC, 0);
+                                dTFieldApplyCooling.add(vectorAC);
+                                sim.awaitedResponses.add(url_dT_apply_heating);
+                                fillVectorFromURL(url_dT_apply_heating, vectorAH, 0);
+                                dTFieldApplyHeating.add(vectorAH);
+                                sim.awaitedResponses.add(url_dT_remove_heating);
+                                fillVectorFromURL(url_dT_remove_heating, vectorRH, 0);
+                                dTFieldRemoveHeating.add(vectorRH);
+                                sim.awaitedResponses.add(url_dT_remove_cooling);
+                                fillVectorFromURL(url_dT_remove_cooling, vectorRC, 0);
+                                dTFieldRemoveCooling.add(vectorRC);
+                            }
+                        }
+                    }
+                    
+                    String url_k;
                     Vector vector;
                     if (kThysteresis) {
                         vector = new Vector<Double>();
@@ -268,7 +352,6 @@ public class Material {
                         fillVectorFromURL(url_k, vector, 1);
                         k.add(vector);
                     }
-
                 }
             });
         }
@@ -286,10 +369,13 @@ public class Material {
         } else if (magnetocaloric || barocaloric || electrocaloric || elastocaloric) {
             isLoaded = isLoaded && fields != null && !fields.isEmpty();
             if (dTThysteresis) {
-                isLoaded = isLoaded && dTcooling != null && !dTcooling.isEmpty();
-                isLoaded = isLoaded && dTheating != null && !dTheating.isEmpty();
+                isLoaded = isLoaded && dTFieldApplyCooling != null && !dTFieldApplyCooling.isEmpty();
+                isLoaded = isLoaded && dTFieldRemoveCooling != null && !dTFieldRemoveCooling.isEmpty();
+                isLoaded = isLoaded && dTFieldApplyHeating != null && !dTFieldApplyHeating.isEmpty();
+                isLoaded = isLoaded && dTFieldRemoveHeating != null && !dTFieldRemoveHeating.isEmpty();
             } else {
-                isLoaded = isLoaded && !dT.isEmpty();
+                isLoaded = isLoaded && !dTFieldApply.isEmpty();
+                isLoaded = isLoaded && !dTFieldRemove.isEmpty();
             }
 
             if (cpThysteresis) {
@@ -320,7 +406,15 @@ public class Material {
 
 
     public void showTemperatureRanges(Choice choice) {
-        String message = "Temperature ranges: \n" +
+        String flag = "";
+        if (invariant) flag = "Invariant material";
+        if (thermoelectric) flag = "Thermoelectric material";
+        if (phaseChangeMaterial) flag = "Phase change material";
+        if (magnetocaloric) flag = "Magnetocaloric material";
+        if (electrocaloric) flag = "Electrocaloric material";
+        if (elastocaloric) flag = "Elastocaloric material";
+        if (barocaloric) flag = "Barocaloric material";
+        String message = flag + "\nTemperature ranges: \n" +
                 "Density: " + (tRhoMin == -1 || tRhoMax == -1 ? "undefined" : (tRhoMin + " - " + tRhoMax + " K")) + "\n"
                 + "Specific Heat Capacity: " + (tCpMin == -1 || tCpMax == -1 ? "undefined" : (tCpMin + " - " + tCpMax + " K")) + "\n"
                 + "Thermal Conductivity: " + (tKMin == -1 || tKMax == -1 ? "undefined" : (tKMin + " - " + tKMax + " K")) + "\n"
@@ -361,14 +455,14 @@ public class Material {
                         emissRT = rtProperties != null && rtProperties.get("emissivity").isNumber() != null ? rtProperties.get("emissivity").isNumber().doubleValue() : -1;
 
                         JSONObject ranges = obj.get("ranges").isObject();
-                        tRhoMax = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tRhoMin = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tCpMax = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tCpMin = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tKMax = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tKMin = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
-                        tEmissMax = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
-                        tEmissMin = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tRhoMax = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tRhoMin = !ranges.get("density").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("density").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tCpMax = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tCpMin = !ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("specificHeatCapacity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tKMax = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tKMin = !ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("thermalConductivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
+                        tEmissMax = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[1]) : -1;
+                        tEmissMin = !ranges.get("emissivity").toString().replaceAll("[\"']", "").isEmpty() ? Double.parseDouble(ranges.get("emissivity").toString().replaceAll("[\"']", "").split("-")[0]) : -1;
 
 /*                        GWT.log("id: " + id);
                         GWT.log("tMelt: " + tMelt);
@@ -452,7 +546,7 @@ public class Material {
         jsonStyleLog.append("\"Name\": " + name + ",\n");
         jsonStyleLog.append("\"Invariant\": " + invariant + ",\n");
         jsonStyleLog.append("\"Thermoelectric\": " + thermoelectric + ",\n");
-        jsonStyleLog.append("\"Temperature Induced Phase Change\": " + temperatureInducedPhaseChange + ",\n");
+        jsonStyleLog.append("\"Phase Change Material\": " + phaseChangeMaterial + ",\n");
         jsonStyleLog.append("\"Electrocaloric\": " + electrocaloric + ",\n");
         jsonStyleLog.append("\"Magnetocaloric\": " + magnetocaloric + ",\n");
         jsonStyleLog.append("\"Barocaloric\": " + barocaloric + ",\n");
@@ -465,9 +559,12 @@ public class Material {
         jsonStyleLog.append("\"K\": " + k + ",\n");
         jsonStyleLog.append("\"K Heating\": " + kHeating + ",\n");
         jsonStyleLog.append("\"K Cooling\": " + kCooling + ",\n");
-        jsonStyleLog.append("\"dT\": " + dT + ",\n");
-        jsonStyleLog.append("\"dT Heating\": " + dTheating + ",\n");
-        jsonStyleLog.append("\"dT Cooling\": " + dTcooling + ",\n");
+        jsonStyleLog.append("\"dT Heating\": " + dTFieldApply + ",\n");
+        jsonStyleLog.append("\"dT Cooling\": " + dTFieldRemove + ",\n");
+        jsonStyleLog.append("\"dT Heating\": " + dTFieldApplyCooling + ",\n");
+        jsonStyleLog.append("\"dT Cooling\": " + dTFieldRemoveHeating + ",\n");
+        jsonStyleLog.append("\"dT Heating\": " + dTFieldApplyHeating + ",\n");
+        jsonStyleLog.append("\"dT Cooling\": " + dTFieldRemoveCooling + ",\n");
         jsonStyleLog.append("\"Cp\": " + cp + ",\n");
         jsonStyleLog.append("\"Cp Heating\": " + cpHeating + ",\n");
         jsonStyleLog.append("\"Cp Cooling\": " + cpCooling + ",\n");

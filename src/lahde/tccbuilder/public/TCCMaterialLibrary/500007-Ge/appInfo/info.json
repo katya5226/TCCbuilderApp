@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 5312.8,
+		"specificHeatCapacity": 317.7,
+		"thermalConductivity": 60.0,
+		"emissivity": 0.79
+	},
+	"ranges": {
+		"density": "295-1836",
+		"specificHeatCapacity": "0-1500",
+		"thermalConductivity": "1-1433",
+		"emissivity": "303-353"
+	},
+	"fields": [],
+	"id": 500007,
+	"short_name": "Ge",
+	"long_name": "Germanium",
+	"melting_point": 1211.4 
+}

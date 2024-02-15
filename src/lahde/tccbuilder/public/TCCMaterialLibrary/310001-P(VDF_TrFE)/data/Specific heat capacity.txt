@@ -1,0 +1,51 @@
+Data form: Supporting Online Material for "Large Electrocaloric Effect in Ferroelectric Polymers Near Room Temperature". Bret Neese, Baojin Chu, Sheng-Guo Lu, Yong Wang, E. Furman, Q. M. Zhang. Science 321, 821 (2008). DOI: 10.1126/science.1159655. Figure S2. Specific heat for (A) the P(VDF-TrFE) 55/45 mol% copolymer.
+
+Importnat note: I digitized this one and the one in the thesis and they are perfect matches, here in the science paper it is not mentioned anything, but in the thesis they say data of DSC and dielectric measurements come from samples of different thickness that are fabricated with a different method
+		In the paper for the terpolymer they sho a linear curve but in the thesis, the complete DSC exists
+A (X)			B (Y)	
+	
+T (K)			Cp (J/(kgK))	
+			
+313.49	1413.76
+315.39	1425.66
+321.92	1518.5
+326.19	1597.05
+329.5	1675.61
+332.35	1808.91
+333.21	1873.19
+334.06	1939.84
+334.72	2006.49
+335.38	2070.76
+336.24	2137.42
+336.91	2163.6
+337.37	2189.79
+337.85	2215.97
+338.32	2189.79
+338.98	2123.13
+338.98	2123.13
+339.46	2058.86
+339.93	2032.68
+340.41	2006.49
+340.89	1939.84
+341.54	1913.65
+342.02	1887.47
+342.69	1861.28
+343.15	1835.1
+343.82	1808.91
+344.49	1808.91
+345.14	1782.73
+346.29	1756.54
+348.55	1730.36
+348.55	1730.36
+351.02	1701.79
+354.35	1675.61
+358.33	1649.42
+362.59	1649.42
+365.23	1649.42
+368.18	1649.42
+370.45	1649.42
+372.44	1649.42
+374.91	1649.42
+377.19	1649.42
+383.26	1675.61
+391.5	1701.79

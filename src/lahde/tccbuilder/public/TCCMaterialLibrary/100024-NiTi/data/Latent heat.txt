@@ -1,0 +1,6 @@
+Data from Warzoha 2020 (10.1016/j.ijheatmasstransfer.2020.119760)
+Approximated as average of DSC and PPMS methods
+Latent heat (J/g), endothermic and exothermic
+
+11.3015873
+8.5079365

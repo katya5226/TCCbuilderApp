@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7900.0,
+		"specificHeatCapacity": 344.4,
+		"thermalConductivity": 5.1,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "298-1559",
+		"thermalConductivity": "2-378",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 200013,
+	"short_name": "PbTiO3",
+	"long_name": "Lead titanate",
+	"melting_point": 1559.0 
+}

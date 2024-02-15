@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7280.0,
+		"specificHeatCapacity": 428.5,
+		"thermalConductivity": 8.0,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "238-316",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [0.00, 1.25],
+	"id": 100032,
+	"short_name": "LaFeCoSi",
+	"long_name": "LaFeCoSi",
+	"melting_point": ""
+}

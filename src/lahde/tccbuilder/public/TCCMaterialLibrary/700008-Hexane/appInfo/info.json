@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 659.5,
+		"specificHeatCapacity": 2251.6,
+		"thermalConductivity": 0.12,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "180-1000",
+		"specificHeatCapacity": "180-1000",
+		"thermalConductivity": "180-1000",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700008,
+	"short_name": "C6H14",
+	"long_name": "n-Hexane",
+	"melting_point": 178.0 
+}

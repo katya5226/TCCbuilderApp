@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 16690.0,
+		"specificHeatCapacity": 129.2,
+		"thermalConductivity": 54.7,
+		"emissivity": 0.035
+	},
+	"ranges": {
+		"density": "35-2000",
+		"specificHeatCapacity": "26-2000",
+		"thermalConductivity": "0-2000",
+		"emissivity": "78-340"
+	},
+	"fields": [],
+	"id": 100018,
+	"short_name": "Ta",
+	"long_name": "Tantalum",
+	"melting_point": 3290.0
+}

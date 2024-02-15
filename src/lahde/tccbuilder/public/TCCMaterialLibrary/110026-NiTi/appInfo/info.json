@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 6450.0,
+		"specificHeatCapacity": 360.5,
+		"thermalConductivity": 5.5,
+		"emissivity": 0.2
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "243-304",
+		"thermalConductivity": "239-304",
+		"emissivity": "293-373"
+	},
+	"fields": [],
+	"id": 110026,
+	"short_name": "NiTi",
+	"long_name": "Nitinol thin film",
+	"melting_point": 1573.0
+}

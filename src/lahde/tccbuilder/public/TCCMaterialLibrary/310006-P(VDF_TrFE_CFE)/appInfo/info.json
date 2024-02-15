@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1800.0,
+		"specificHeatCapacity": 1517.7,
+		"thermalConductivity": 0.1,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "234-463",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [40, 50, 60, 70, 100],
+	"id": 310006,
+	"short_name": "P(VDF-TrFE-CFE)",
+	"long_name": "Poly(vinylidenefluoride-trifluoroethylene-chlorofluoroethylene)",
+	"melting_point": 413.0
+}

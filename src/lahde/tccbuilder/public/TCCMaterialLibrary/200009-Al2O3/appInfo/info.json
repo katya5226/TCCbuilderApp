@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 3970.0,
+		"specificHeatCapacity": 1240.0,
+		"thermalConductivity": 34.4,
+		"emissivity": 0.74
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "299-525",
+		"thermalConductivity": "299-525",
+		"emissivity": "377-1880"
+	},
+	"fields": [],
+	"id": 200009,
+	"short_name": "Al2O3",
+	"long_name": "Alpha-alumina",
+	"melting_point": 2300.0
+}

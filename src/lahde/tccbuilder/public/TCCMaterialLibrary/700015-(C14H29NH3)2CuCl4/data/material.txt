@@ -1,0 +1,4 @@
+(C14H29NH3)2CuCl4
+Data from Dong-Hua 2010 (https://doi.org/10.1016/j.solmat.2011.06.014)
+
+Melting point is not given but is estimated to 500 K.

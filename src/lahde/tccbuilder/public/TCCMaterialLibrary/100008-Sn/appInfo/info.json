@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7309.1,
+		"specificHeatCapacity": 227.1,
+		"thermalConductivity": 62.7,
+		"emissivity": 0.2
+	},
+	"ranges": {
+		"density": "276-2000",
+		"specificHeatCapacity": "0-1984",
+		"thermalConductivity": "0-2000",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 100008,
+	"short_name": "Sn",
+	"long_name": "Tin",
+	"melting_point": 505.0 
+}

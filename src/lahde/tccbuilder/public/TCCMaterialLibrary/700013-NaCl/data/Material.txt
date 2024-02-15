@@ -1,0 +1,25 @@
+Source: CRC handbook of Chemistry and Physics page 4-85
+
+Material: NaCl - CAS: 7647-14-5
+Density: 2170 Kg/m3 (original value: 2.17 g cm-3) 
+Molecular weight 58.443 g/mol (used for Cp conversion later on)
+Melting point: 1073.8 K (Wikipedia 01/01/24)
+
+
+
+
+other references we have selected from the literature:
+
+American Institute of Physics Handbook, 3rd Ed., Coordinating editor: Dwight E. Gray, ISBN: 07-001485-X.
+ 
+CODATA Key Values For Thermodynamics, Final Report of the CODATA Task Group on Key Values for Thermodynamics, ISBN: 0-89116-758-7.
+
+Smithsonian Physical Tables, 9th revised Ed, prepared by William Elmer Forsythe.
+
+NIST-JANAF Thermomechanical Tables, 4th Ed., Malcolm W. Chase, Jr.
+
+Themodynamic Properties of Minerals and Related Substances , U.S. Geological Survey Bulletin 1452.
+
+Thermomechanical Data of Pure Substances, Ihsan Barin, 3rd Ed., ISBN: 3-527-28745-0.
+
+Thermomechanical Properties of Inorganic Substances, Ihsn Barin et al, Supplement, ISBN: 978-3-662-02295-5, DOI: 10.1007/978-3-662-02293-1.

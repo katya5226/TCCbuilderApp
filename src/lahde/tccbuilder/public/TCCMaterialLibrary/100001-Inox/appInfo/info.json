@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7830.0,
+		"specificHeatCapacity": 482.43,
+		"thermalConductivity": 13.2,
+		"emissivity": 0.1
+	},
+	"ranges": {
+		"density": "155-1274",
+		"specificHeatCapacity": "150-1262",
+		"thermalConductivity": "5-1273",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 100001,
+	"short_name": "Inox",
+	"long_name": "Stainless steel 310",
+	"melting_point": 1450.0
+}

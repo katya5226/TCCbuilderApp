@@ -1,0 +1,20 @@
+Data from "Tunable temperature dependence of electrocaloric effect in ferroelectric relaxor poly(vinylidene fluoride-trifluoroethylene-chlorofluoroethylene terpolymer" Xinyu Li, Xiao-shi Qian, S. G. Lu, Jiping Cheng, Zhao Fang, and Q. M. Zhang. APPLIED PHYSICS LETTERS 99, 052907 (2011). doi: 10.1063/1.3624533. View online: http://dx.doi.org/10.1063/1.3624533.
+figure 1 (b) Adiabatic temperature changes as a function of sample temperature in non-stretched P(VDF-TrFE-CFE) 59.2/33.6/7.2 mol. % terpolymer under different constant electric field of 50 MV/m–100 MV/m 
+
+material: 30 microns thicknesss - suspension polymerization process by Piezotech (France) + solution cast on glass plate + anneal 105 degrees C for >10 hours (this is different from their other papers)
+
+40 MV/m Electric Field
+
+	
+T(deg C)	dT (deg C)
+
+5.3469	0.50
+10.2847	0.72
+15.1972	0.72
+20.1096	0.72
+25.0474	0.72
+29.9598	0.72
+34.8723	0.66
+40.2174	0.72
+45.1298	0.66
+50.0676	0.72

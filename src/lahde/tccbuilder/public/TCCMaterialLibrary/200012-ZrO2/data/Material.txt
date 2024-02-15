@@ -1,0 +1,12 @@
+Zirconium dioxide ZrO2
+
+Density, melting point data source:
+https://en.wikipedia.org/wiki/Zirconium_dioxide#:~:text=Zirconium%20dioxide%20(ZrO,structure%2C%20is%20the%20mineral%20baddeleyite. (14/12/2023)
+
+Emissivity data source:
+\cite{article} doi = {10.1134/S0018151X16040027}
+
+Specific heat capacity data source:
+https://webbook.nist.gov/cgi/cbook.cgi?ID=C1314234&Mask=2&Type=JANAFS&Plot=on (14/12/2023)
+
+We couldn't find any measurements of thermal conductivity with repect to temperature, so a RT value is used, which is estimated according to diiferent online sources.

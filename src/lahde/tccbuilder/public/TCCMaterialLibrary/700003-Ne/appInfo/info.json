@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 0.83,
+		"specificHeatCapacity": 1030.4,
+		"thermalConductivity": 0.05,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "100-1000",
+		"specificHeatCapacity": "100-1000",
+		"thermalConductivity": "100-600",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700003,
+	"short_name": "Ne",
+	"long_name": "Neon",
+	"melting_point": 24.6 
+}

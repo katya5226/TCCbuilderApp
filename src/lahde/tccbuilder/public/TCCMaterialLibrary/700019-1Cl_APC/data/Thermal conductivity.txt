@@ -1,0 +1,4 @@
+Data from https://doi.org/10.1063/5.0046416
+Thermal conductivity(W/m/K)
+
+0.12

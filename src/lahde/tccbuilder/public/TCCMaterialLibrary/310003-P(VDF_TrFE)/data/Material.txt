@@ -1,0 +1,5 @@
+P(VDF_TrFE) thin film thickness 50 microns, from
+Bo - Electrostatic Actuating Double-Unit Electrocaloric Cooling Device with High Efficiency
+
+All data is the same as for the P(VDF_TrFE) with ID 310001, except for the adiabatic temperature changes
+at different electric fields.

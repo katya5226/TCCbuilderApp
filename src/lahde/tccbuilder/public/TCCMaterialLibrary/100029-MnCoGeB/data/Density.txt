@@ -1,0 +1,4 @@
+Data from https://doi.org/10.1002/adma.201903577
+Density(kg/m3)
+
+8000

@@ -1,0 +1,28 @@
+
+J/mol K is converted to J/KgK using 58.443 g/mol molacular Wt. from CRC handbook. PLease double check the conversion. 
+Cp data is from CRC page 12-215
+
+
+Original data
+Temperature	Specific heat capacity
+K	J/mol K
+200	46.89
+250	48.85
+300	50.21
+350	51.25
+400	52.14
+500	53.96
+600	55.81
+
+
+Converted data
+
+Temperature	Specific heat capacity
+K	J/Kg K
+200	802.3202094
+250	835.85716
+300	859.1276971
+350	876.9228137
+400	892.1513269
+500	923.292781
+600	954.9475557

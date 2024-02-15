@@ -1,0 +1,8 @@
+Copper(II) oxide CuO
+Properties extracted and estimated from different sources
+
+Emissivity data from G.G Welegergs et al. 2021, doi: 10.1016/j.matpr.2020.05.298.
+
+Melting point	1,326 °C (2,419 °F; 1,599 K)
+Boiling point	2,000 °C (3,630 °F; 2,270 K)
+Source: https://en.wikipedia.org/wiki/Copper(II)_oxide (26/12/23)

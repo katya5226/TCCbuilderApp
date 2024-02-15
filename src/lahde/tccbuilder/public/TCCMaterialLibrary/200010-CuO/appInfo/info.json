@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 6315.0,
+		"specificHeatCapacity": 535.8,
+		"thermalConductivity": 70.0,
+		"emissivity": 0.96
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "300-1127",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 200010,
+	"short_name": "CuO",
+	"long_name": "Copper(II) oxide",
+	"melting_point": 1599.0
+}

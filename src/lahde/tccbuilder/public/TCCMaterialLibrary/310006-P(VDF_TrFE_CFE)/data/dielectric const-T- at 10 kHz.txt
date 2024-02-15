@@ -1,0 +1,52 @@
+Data From: Large Electrocaloric Effect in Ferroelectric Polymers Near Room Temperature. Bret Neese, Baojin Chu, Sheng-Guo Lu, Yong Wang, E. Furman, Q. M. Zhang. SCIENCE VOL 321 8 AUGUST 2008. DOI: 10.1126/science.1159655. Fig 3 (a) The dielectric constant (K) of P(VDF-TrFE-CFE) 59.2/33.6/7.2 mol % terpolymer films as a function of temperature measured at frequencies of 1, 10, and 100 kHz.
+
+at 10 kHz
+
+IMPORTNAT NOTE: In this paper they dont mention it, but in the thesis on Neese, it says that a totaly different sample, thickness of 10 microns made by solution casting from DMF at 70-80 degrees C with simillar annealing, has been used for DSC and determinning the 
+		Owing to the nature of the graph and the overlaps in it, it was not possible to exactly pin point all the data points, therefore, small errors should be expected. The data in the thesis was not much better.
+
+
+T (degrees C)
+
+-30.7503	6.94
+-24.4882	6.79
+-21.5588	7.08
+-18.5445	7.57
+-16.5704	7.95
+-14.4264	8.44
+-10.2233	9.29
+-7.9732	10.59
+-5.9991	11.6
+-3.94	13.04
+-1.6262	14.54
+0.1781	16.48
+2.2372	18.85
+4.3811	21.37
+6.3765	24.39
+8.5205	27.62
+10.5796	31.41
+12.7235	35.01
+14.6128	38.17
+16.8417	41.11
+18.7309	43.33
+21.0659	45.63
+22.7854	47.07
+24.9293	48.01
+26.7337	48.65
+28.1134	49.22
+29.9178	49.52
+31.6372	49.52
+33.5264	49.52
+35.9251	48.86
+38.5786	48.51
+40.8287	47.87
+43.4821	47
+45.711	46.27
+48.1309	45.63
+50.2749	44.92
+52.5038	44.34
+54.7327	43.56
+56.813	42.9
+59.1268	41.89
+63.4147	40.1
+99.1617	27.4

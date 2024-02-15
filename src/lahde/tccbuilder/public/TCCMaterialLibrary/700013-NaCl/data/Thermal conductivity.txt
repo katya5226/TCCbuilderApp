@@ -1,0 +1,9 @@
+From CRC handbook of Chemistry and Physics, page 12-223 
+Temperature (K)	Thermal conductivity (W/m/K)
+
+4.2	440
+20	300
+77	30
+273	6.4
+323	5.6
+373	5.4

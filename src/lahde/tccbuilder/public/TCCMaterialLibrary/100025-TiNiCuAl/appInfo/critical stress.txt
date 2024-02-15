@@ -1,0 +1,9 @@
+Data from Chen 2019 (10.1016/j.actamat.2019.07.033)
+Temperature dependence of critical stress inducing martensite transformation.
+Temperature(K)	Critical stress(MPa)
+
+234.6938776	303.1395349
+281.6326531	313.255814
+319.3877551	323.372093
+383.6734694	333.1395349
+453.0612245	343.255814

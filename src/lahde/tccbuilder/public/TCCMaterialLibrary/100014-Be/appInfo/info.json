@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1850.0,
+		"specificHeatCapacity": 1969.8,
+		"thermalConductivity": 192.6,
+		"emissivity": 0.05
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "2-1500",
+		"thermalConductivity": "0-1256",
+		"emissivity": "300-1400"
+	},
+	"fields": [],
+	"id": 100014,
+	"short_name": "Be",
+	"long_name": "Beryllium",
+	"melting_point": 1560.0 
+}

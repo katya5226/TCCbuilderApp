@@ -1,0 +1,18 @@
+Data from: Electrocaloric Effect in Ferroelectric P(VDF-TrFE) Copolymers.Fig 5 (a) Isothermal entropy change as a function of ambient temperature at different electric fields for P(VDF-TrFE) 55/45 mol% copolymers.
+
+S. G. LU, B. ROZIC, Z. KUTNJIAK and Q. M. ZHANG
+Integrated Ferroelectrics, 125:176–185, 2011
+DOI: 10.1080/10584587.2011.574491
+@163 Electric Field
+
+IMPORTANT NOTE:
+1- Although not clearly mentioned here, but since Maxwell relations have been used, this data should be the indirect method and the material should be: Polymer films prepared using a spincasting method on metalized glass substrates. Thickness in the range of 0.4 µm to 1 µm. 
+2- Unit of the electric field is not mentioned clearly, most probably it is MV / m.
+
+
+T (deg C)	ds (J/kgK)			
+															
+ 80.0475	43.41			
+ 89.9453	34.19			
+ 99.9780	29.35				
+109.9985	28.43			

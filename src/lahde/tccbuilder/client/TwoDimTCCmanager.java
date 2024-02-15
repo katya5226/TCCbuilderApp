@@ -120,11 +120,11 @@ public class TwoDimTCCmanager {
         }
     }
 
-    static void magnetize(Vector<TwoDimCV> cvs) {
+    static void toggleField(Vector<TwoDimCV> cvs) {
         // Check if given component's' material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
         for (TwoDimCV cv : cvs) {
-            cv.magnetize();
+            cv.toggleField();
         }
         // obj.field = !obj.field; DO THIS OUTSIDE THE METHOD
     }

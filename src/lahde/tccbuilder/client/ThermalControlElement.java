@@ -35,6 +35,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     public double operatingMax;
     public double operatingMin;
     public boolean hasOperatingRange;
+    public double inputPower;
+    public double crossArea;
     public Vector<ControlVolume> cvs;
 
     public boolean isDisabled;
@@ -77,6 +79,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constK = Double.parseDouble(st.nextToken());
         westResistance = Double.parseDouble(st.nextToken());
         eastResistance = Double.parseDouble(st.nextToken());
+        volumeHeatGeneration = Double.parseDouble(st.nextToken());
+        hTransv = Double.parseDouble(st.nextToken());
         numCvs = Integer.parseInt(st.nextToken());
         color = Color.translateColorIndex(Integer.parseInt(st.nextToken()));
         isDisabled = false;
@@ -117,6 +121,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         constCp = -1;
         constK = -1;
         startTemperature = -1;
+        inputPower = 0;
+        crossArea = -1;
     }
 
     public void calculateLength() {
@@ -202,6 +208,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         sb.append(constK).append(' ');
         sb.append(westResistance).append(' ');
         sb.append(eastResistance).append(' ');
+        sb.append(volumeHeatGeneration).append(' ');
+        sb.append(hTransv).append(' ');
         sb.append(numCvs).append(' ');
         sb.append(Color.colorToIndex(color)).append(' ');
         sb.append(fieldIndex).append(' ');
@@ -341,7 +349,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 ei2.choice.select(Color.colorToIndex(color));
                 return ei2;
             case 5:
-                return new EditInfo("Length (" + sim.selectedLengthUnit.unitName + ")", length * CircuitElm.sim.selectedLengthUnit.conversionFactor);
+                return new EditInfo("Length (mm)", length * 1e3);
             case 6:
                 return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 7:
@@ -400,6 +408,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 break;
             case 5:
                 setNewLength(ei.value);
+                // length = ei.value / 1e3;
                 break;
             case 6:
                 westResistance = ei.value;
@@ -437,7 +446,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void setNewLength(Double value) {
-        double calculatedLength = (value / sim.selectedLengthUnit.conversionFactor);
+        // double calculatedLength = (value / sim.selectedLengthUnit.conversionFactor);
+        double calculatedLength = (value / 1e3);
         if (!resizable && calculatedLength != length) {
             Window.alert("Warning, element not resizeable!");
             return;
@@ -477,6 +487,35 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             return null;
     }
 
+    public double calculateDiffusivity() {
+        double averageDiffusivityReciprocal = 0.0;
+        for (ControlVolume cv : cvs) {
+            averageDiffusivityReciprocal += cv.rho() * cv.cp() / cv.k();
+        }
+        averageDiffusivityReciprocal = averageDiffusivityReciprocal / cvs.size();
+        double averageDiffusivity = 1e6 / averageDiffusivityReciprocal;
+        return averageDiffusivity;
+    }
+
+    public String calculateLargestDeltaT() {
+        double largestDeltaT = 0.0;
+        double deltaT = 0.0;
+        for (ControlVolume cv : cvs) {
+            if (cv.eastNeighbour != null) {
+                deltaT = Math.abs(cv.temperature - cv.eastNeighbour.temperature);
+                if( deltaT >= largestDeltaT) largestDeltaT = deltaT;
+            }
+        }
+        String s2 = "";
+        if (largestDeltaT <= 0.1) s2 = "\tDiscretisation sufficient";
+        if (largestDeltaT > 0.5) s2 = "\tDiscretisation may not be sufficient";
+        String s = String.valueOf(Math.round(largestDeltaT * 1000) / 1000.0) + " K";
+        return s + s2;
+        // return s + s2;
+    }
+
+
+
     public void setConstProperty(Simulation.Property property, double value) {
         switch (property) {
             case DENSITY:
@@ -500,7 +539,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
     }
 
-    public void set_q_gen(double qGen) {
+    public void setQgen(double qGen) {
         for (ControlVolume cv : cvs) {
             cv.qGenerated = qGen;
         }
@@ -517,25 +556,14 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
     }
 
-    public void magnetize() {
+    public void toggleField() {
         // Check if given TCE's material's magnetocaloric flag is TRUE;
         // if not, abort and inform the user.
         for (int i = 0; i < cvs.size(); i++) {
-            cvs.get(i).magnetize();
+            cvs.get(i).toggleField();
         }
         // GWT.log("Finished (de)magnetization.");
         field = !field;
     }
-
-    public void ePolarize() {
-        // Check if given TCE's material's electrocaloric flag is TRUE;
-        // if not, abort and inform the user.
-        for (int i = 0; i < cvs.size(); i++) {
-            cvs.get(i).ePolarize();
-        }
-        // GWT.log("Finished (de)polarization.");
-        field = !field;
-    }
-
 
 }

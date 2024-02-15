@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 3580.0,
+		"specificHeatCapacity": 885.8,
+		"thermalConductivity": 48.9,
+		"emissivity": 0.72
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "82-2000",
+		"thermalConductivity": "164-2000",
+		"emissivity": "377-1882"
+	},
+	"fields": [],
+	"id": 200011,
+	"short_name": "MgO",
+	"long_name": "Magnesium oxide",
+	"melting_point": 3125.0
+}

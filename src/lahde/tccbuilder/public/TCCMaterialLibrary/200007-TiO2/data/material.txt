@@ -1,0 +1,8 @@
+Rutile TiO2
+Estimated properties, averaged from different papers and sources
+
+Emissivity data source:
+\cite{article} doi = {10.1134/S0018151X16040027}
+
+Melting point 2116 K, source:
+https://en.wikipedia.org/wiki/Titanium_dioxide (14/12/2023)
