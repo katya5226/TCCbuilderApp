@@ -6,7 +6,6 @@ import com.google.gwt.i18n.client.NumberFormat;
 import lahde.tccbuilder.client.math3.linear.LUDecomposition;
 import lahde.tccbuilder.client.math3.linear.RealVector;
 import lahde.tccbuilder.client.ejmlsparselu.DMatrixRMaj;
-import lahde.tccbuilder.client.ejmlsparselu.CommonOps_DSCC;
 import lahde.tccbuilder.client.math3.linear.OpenMapRealVector;
 
 import java.util.ArrayList;
