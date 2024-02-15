@@ -1,0 +1,5 @@
+Elementary aluminum (Al)
+
+Emissivity data sources:
+\cite{D Giulietti_1981} doi = {10.1088/0022-3727/14/5/019}
+\cite{article} doi = {10.1134/S0018151X16040027}

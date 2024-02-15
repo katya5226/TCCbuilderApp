@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 6000.0,
+		"specificHeatCapacity": 300.0,
+		"thermalConductivity": 3.5,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "0-2000",
+		"specificHeatCapacity": "0-2000",
+		"thermalConductivity": "0-200",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 200002,
+	"short_name": "LaSrCoO",
+	"long_name": "Perovskite Oxide La0.7Sr0.3CoO3",
+	"melting_point": 1990
+}

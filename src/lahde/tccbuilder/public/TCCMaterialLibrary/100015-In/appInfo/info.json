@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7335.5,
+		"specificHeatCapacity": 234.7,
+		"thermalConductivity": 81.7,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "268-2000",
+		"specificHeatCapacity": "0-819",
+		"thermalConductivity": "0-986",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 100015,
+	"short_name": "In",
+	"long_name": "Indium",
+	"melting_point": 429.7 
+}

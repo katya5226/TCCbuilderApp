@@ -1,0 +1,5 @@
+Data from https://vacuumschmelze.com/products/Further-Technologies/Magnetocaloric-Material--CALORIVAC on 26th January 2022.
+In Bjoerk 2010 (10.1016/j.jmmm.2010.08.013) it is stated in the paper that density is in general not a strong function of temperature and magnetic field.
+Thermal conductivity(W/m/K)
+
+8.0

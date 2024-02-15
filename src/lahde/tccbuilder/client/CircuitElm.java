@@ -93,7 +93,6 @@ public abstract class CircuitElm implements Editable {
         sim = s;
         ps1 = new Point();
         ps2 = new Point();
-
     }
 
     // create new element with one post at xx,yy, to be dragged out by user

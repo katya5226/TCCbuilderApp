@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 8320.0,
+		"specificHeatCapacity": 245.43,
+		"thermalConductivity": 1.07,
+		"emissivity": "" 
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "280-600",
+		"thermalConductivity": "280-600",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 500002,
+	"short_name": "AgTe",
+	"long_name": "Ag2Te",
+	"melting_point": 1228.0
+}

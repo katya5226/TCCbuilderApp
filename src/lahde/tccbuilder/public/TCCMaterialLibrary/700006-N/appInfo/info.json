@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1.15,
+		"specificHeatCapacity": 1041.3,
+		"thermalConductivity": 0.025,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "100-1000",
+		"specificHeatCapacity": "100-1000",
+		"thermalConductivity": "100-1000",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700006,
+	"short_name": "N",
+	"long_name": "Nitrogen",
+	"melting_point": 63.2
+}

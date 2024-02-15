@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 6240.0,
+		"specificHeatCapacity": 634.5,
+		"thermalConductivity": 17.5,
+		"emissivity": 0.2
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "273-343",
+		"thermalConductivity": "",
+		"emissivity": "293-373"
+	},
+	"fields": [],
+	"id": 120027,
+	"short_name": "NiTi",
+	"long_name": "Nitinol nanowire",
+	"melting_point": 1573.0 
+}

@@ -1,0 +1,5 @@
+A paraffin-polystyrene foam hybrid (PFH) made with octadecane, from 10.1039/c7cp02445b.
+In the paper, only conductivities above and below the transition point are stated, and the density.
+The other data is estimated with the help of DOI:10.3390/ma12182974 (Review of Thermophysical Property Data of Octadecane for Phase-Change Studies).
+
+The n-octadecane melts at 28.12 °C with a latent heat of 236.09 kJ/kg and solidifies at 25.10 °C with a latent heat of 233.27 kJ/kg.

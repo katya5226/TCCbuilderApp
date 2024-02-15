@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1180.0,
+		"specificHeatCapacity": 1433.0,
+		"thermalConductivity": 0.192,
+		"emissivity": 0.92
+	},
+	"ranges": {
+		"density": "290-300",
+		"specificHeatCapacity": "171-422",
+		"thermalConductivity": "171-422",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 300002,
+	"short_name": "PMMA",
+	"long_name": "Polymethyl methacrylate",
+	"melting_point": 433
+}

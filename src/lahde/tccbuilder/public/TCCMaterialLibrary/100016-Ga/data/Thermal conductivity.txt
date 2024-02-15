@@ -1,0 +1,21 @@
+Data is averaged from all the data from NIST web application (https://trc.nist.gov/MetalsAlloyUI/).
+Temperature (K)	Thermal conductivity (W/m/K)
+
+0.13	11.7
+0.42	53.77
+0.66	115.48
+0.89	236.09
+1.37	292.18
+2.25	356.7
+3.48	126.7
+303.73	40.69
+402.49	39.82
+511.99	38.52
+595.72	39.82
+694.48	38.52
+782.5	38.09
+866.23	37.22
+971.43	36.78
+1046.58	37.65
+1141.04	39.39
+1246.24	40.26

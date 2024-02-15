@@ -1,0 +1,3 @@
+Although we did not find a direct information on the emissivity of ethanol surface,
+one should be careful as it might be as high as 0.98 according to
+Brutin, D. et al., Microgravity Sci. Technol. 22, 387–395 (2010). https://doi.org/10.1007/s12217-010-9200-2

@@ -1,0 +1,9 @@
+Titanium nitride (TiN)
+
+https://en.wikipedia.org/wiki/Titanium_nitride (17/01/24)
+Density: 5210 kg/m^3
+Melting point: 3220 K
+Thermal conductivity: 29 W/(mK) @323 K
+Specific heat capacity: 24 J/(Kmol) @500 K  = 387.9 J/kg/K
+Molar mass: 61.874 g/mol
+

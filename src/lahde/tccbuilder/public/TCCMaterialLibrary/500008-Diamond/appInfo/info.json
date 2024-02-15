@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 3500.0,
+		"specificHeatCapacity": 491.3,
+		"thermalConductivity": 2256.3,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "25-1100",
+		"thermalConductivity": "2-448",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 500008,
+	"short_name": "Diamond",
+	"long_name": "Diamond",
+	"melting_point": "" 
+}

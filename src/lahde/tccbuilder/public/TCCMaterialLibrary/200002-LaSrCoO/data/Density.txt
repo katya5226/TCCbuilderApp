@@ -1,0 +1,2 @@
+Density estimated according to https://materials.springer.com/isp/crystallographic/docs/sd_1004651 (03/08/2023).
+6000.0 kg/m^3 

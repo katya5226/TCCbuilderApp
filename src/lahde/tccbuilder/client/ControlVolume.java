@@ -29,6 +29,7 @@ public class ControlVolume {
     public double constRho;
     public double constCp;
     public double constK;
+    public double constSeeb;
     public double eps;
     public int mode;
 
@@ -55,6 +56,7 @@ public class ControlVolume {
         constRho = -1;
         constCp = -1;
         constK = -1;
+        constSeeb = -7e-4;
         constQgen = 0.0;
         eps = 1.0;
         mode = 1;
@@ -134,16 +136,60 @@ public class ControlVolume {
             RegulatorElm r = (RegulatorElm) parent;
             k = r.kValues.get((int) Math.round(temperature * 10));
         }
+        if (parent instanceof DiodeElm_T_01) {
+            DiodeElm_T_01 diode = (DiodeElm_T_01) parent;
+            double Twest, Teast;
+            if (westNeighbour != null && westNeighbour != this)
+                Twest = westNeighbour.temperature;
+            else {
+                Twest = parent.sim.simulation1D.heatCircuit.temperatureWest;
+                if (parent.sim.simulation1D.heatCircuit.westBoundary == Simulation.BorderCondition.PERIODIC)
+                    Twest = parent.sim.simulation1D.heatCircuit.temperatureWest +
+                    parent.sim.simulation1D.heatCircuit.amplitudeWest * Math.sin(parent.sim.simulation1D.heatCircuit.frequencyWest * parent.sim.simulation1D.time);
+                }
+            if (westNeighbour != null && westNeighbour != this)
+                Teast = eastNeighbour.temperature;
+            else {
+                Teast = parent.sim.simulation1D.heatCircuit.temperatureEast;
+                if (parent.sim.simulation1D.heatCircuit.eastBoundary == Simulation.BorderCondition.PERIODIC)
+                    Teast = parent.sim.simulation1D.heatCircuit.temperatureEast +
+                    parent.sim.simulation1D.heatCircuit.amplitudeEast * Math.sin(parent.sim.simulation1D.heatCircuit.frequencyEast * parent.sim.simulation1D.time);
+            }
+            if (diode.direction == CircuitElm.Direction.RIGHT)
+                k = diode.k0 * (1 + 2 * (diode.beta / Math.PI) * Math.atan(diode.gamma * (Twest - Teast)));
+            if (diode.direction == CircuitElm.Direction.LEFT)
+                k = diode.k0 * (1 + 2 * (diode.beta / Math.PI) * Math.atan(diode.gamma * (Teast - Twest)));
+        }
         return k;
+    }
+
+    double seeb(double T) {
+        double seeb = 1;
+        if (constSeeb != -1)
+            seeb = constSeeb;
+        else {
+            seeb = material.seebeck.get((int) Math.round(temperature * 10));
+        }
+        return seeb;
+    }
+
+    double seebeckGradient() {
+        double seebGrad = 0;
+        if (constSeeb != -1)
+            seebGrad = 0;
+        else {
+            seebGrad = material.dSeebdT.get((int) Math.round(temperature * 10));
+        }
+        return seebGrad;
     }
 
     double qGen() {
         double q = 0.0;
         if (constQgen != -1)
-            q = constQgen * dx;
-        else {
-            q = parent.sim.simulation1D.time * 0.0001 + temperature * 100000;
-        }
+            q = constQgen;
+        // else {
+        //     q = parent.sim.simulation1D.time * 0.0001 + temperature * 100000;
+        // }
         return q;
     }
 
@@ -201,56 +247,56 @@ public class ControlVolume {
         calculateKEast();
     }
 
-    public void magnetize() {
+    public void toggleField() {
         // TODO: inform user
+        Vector<Double> dTs = new Vector<>();
 
-        Vector<Double> dTheatcool = new Vector<>();
         double dT = 0.0;
         double T = 0.0;
         int fieldIndex = parent.fieldIndex - 1;
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        // GWT.log("Field = " + material.fields.get(parent.fieldIndex));
         if (fieldIndex < 0) return;
 
         if (!parent.field) {
-            dTheatcool = material.dTheating.get(fieldIndex);
-            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
-            T = temperature + dT;
+            if (!material.dTThysteresis) {
+                dTs = material.dTFieldApply.get(fieldIndex);
+                dT = dTs.get((int) ((temperature * 10) + 0.5));
+                T = temperature + dT;
+            }
+            else {
+                if (mode == 1) {
+                    dTs = material.dTFieldApplyHeating.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+                if (mode == -1) {
+                    dTs = material.dTFieldApplyCooling.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+            }
         } else {
-            dTheatcool = material.dTcooling.get(fieldIndex);
-            dT = dTheatcool.get((int) ((temperature * 10) + 0.5));
-            T = temperature - dT;
+            if (!material.dTThysteresis) {
+                dTs = material.dTFieldRemove.get(fieldIndex);
+                dT = dTs.get((int) ((temperature * 10) + 0.5));
+                T = temperature + dT;
+            }
+            else {
+                if (mode == 1) {
+                    dTs = material.dTFieldRemoveHeating.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+                if (mode == -1) {
+                    dTs = material.dTFieldRemoveCooling.get(fieldIndex);
+                    dT = dTs.get((int) ((temperature * 10) + 0.5));
+                    T = temperature + dT;
+                }
+            }
         }
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        GWT.log("Temperature = " + temperature);
-        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
-        temperature = T;
-        temperatureOld = T;
-    }
-
-    
-    public void ePolarize() {
-        // TODO: inform user
-
-        double dT = 0.0;
-        double T = 0.0;
-        int fieldIndex = parent.fieldIndex - 1;
-        //GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        if (fieldIndex < 0) return;
-
-        Vector<Double> dTvec = material.dT.get(fieldIndex);
-        //GWT.log(String.valueOf(material.dT.size()));
-
-        if (dTvec.size() > 1) dT = dTvec.get((int) ((temperature * 10) + 0.5));
-        else dT = dTvec.get(0);
-
-        if (!parent.field)
-            T = temperature + dT;
-        else
-            T = temperature - dT;
-
-        GWT.log("Field = " + material.fields.get(parent.fieldIndex));
-        GWT.log("Temperature = " + temperature);
-        GWT.log("dT = " + (parent.field ? "-" : "") + dT);
+        // GWT.log("Field = " + material.fields.get(parent.fieldIndex));
+        // GWT.log("Temperature = " + temperature);
+        // GWT.log("dT = " + (parent.field ? "-" : "") + dT);
         temperature = T;
         temperatureOld = T;
     }

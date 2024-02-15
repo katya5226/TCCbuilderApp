@@ -1,0 +1,16 @@
+Data from: Electrocaloric Effect in Ferroelectric P(VDF-TrFE) Copolymers. S. G. LU, B. ROZIC, Z. KUTNJIAK and Q. M. ZHANG. Integrated Ferroelectrics, 125:176–185, 2011. DOI: 10.1080/10584587.2011.574491. Fig 6 (b) Directly measured delta T as a function of temperature under several electric fields for unstretched P(VDF-TrFE) 55/45 mol% copolymers.
+@ 83.2 MV/m Electric Field
+
+IMPORTANT NOTE: 
+1-The material is probably the free-standing films fabricated using a solution cast method. Thickness in the range of 4 µm to 6 µm. 
+
+T (deg C) dT (deg C)
+
+28.5269	0.93
+39.4305	1.36
+46.4772	1.93
+56.4092	2.54
+69.8792	5.51
+79.8982	4.31
+83.5086	3.29
+90.6423	2.73

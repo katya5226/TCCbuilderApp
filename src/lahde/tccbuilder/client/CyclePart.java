@@ -258,24 +258,27 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement tce = TCEs.get(i);
                 tce.fieldIndex = fieldIndexes.get(i);
-                tce.magnetize();
+                tce.toggleField();
             }
         } else if (duration > 0.0) {  // TODO: FIX THIS
-            int steps = (int) (duration / sim.simulation1D.dt); // one execution will have length dt at most
-            for (int i = 0; i < TCEs.size(); i++) {
-                ThermalControlElement tce = TCEs.get(i);
-                int fieldIndex = fieldIndexes.get(i);
-                Vector<Double> dTheatcool = tce.field ? tce.material.dTcooling.get(fieldIndex) : tce.material.dTheating.get(fieldIndex);
-                for (ControlVolume cv : tce.cvs) {
-                    // Check if given cv's material's magnetocaloric flag is TRUE;
-                    // if not, abort and inform the user.
-                    int pos = (int) Math.round(cv.temperature * 10);
-                    double dT = dTheatcool.get(pos);
-                    double changeInStep = dT / steps;  // This is not correct.
-                    cv.temperature = tce.field ? cv.temperature - changeInStep : cv.temperature + changeInStep;
-                    cv.temperatureOld = cv.temperature;
-                }
-            }
+            // int steps = (int) (duration / sim.simulation1D.dt); // one execution will have length dt at most
+            // for (int i = 0; i < TCEs.size(); i++) {
+            //     ThermalControlElement tce = TCEs.get(i);
+            //     int fieldIndex = fieldIndexes.get(i);
+            //     if (!tce.material.dTThysteresis)
+            //         Vector<Double> dTs = tce.field ? tce.material.dTFieldRemove.get(fieldIndex) : tce.material.dTFieldApply.get(fieldIndex);
+            //     // else
+            //     //     Vector<Double> dTs = tce.field ? tce.material.dTFieldRemove.get(fieldIndex) : tce.material.dTFieldApply.get(fieldIndex);
+            //     for (ControlVolume cv : tce.cvs) {
+            //         // Check if given cv's material's magnetocaloric flag is TRUE;
+            //         // if not, abort and inform the user.
+            //         int pos = (int) Math.round(cv.temperature * 10);
+            //         double dT = dTs.get(pos);
+            //         double changeInStep = dT / steps;  // This is not correct.
+            //         cv.temperature = tce.field ? cv.temperature - changeInStep : cv.temperature + changeInStep;
+            //         cv.temperatureOld = cv.temperature;
+            //     }
+            // }
         }
     }
 
@@ -284,15 +287,29 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 ThermalControlElement tce = TCEs.get(i);
                 tce.fieldIndex = fieldIndexes.get(i);
-                tce.ePolarize();
+                tce.toggleField();
             }
         }
     }
 
     void pressureChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
+                tce.toggleField();
+            }
+        }
     }
 
     void shearStressChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                ThermalControlElement tce = TCEs.get(i);
+                tce.fieldIndex = fieldIndexes.get(i);
+                tce.toggleField();
+            }
+        }
     }
 
     void propertiesChange() {
@@ -375,12 +392,22 @@ public class CyclePart {
                 for (ThermalControlElement tce : TCEs) {
                     int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
                     report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
-                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " T\n";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " MV/m\n";
                 }
                 break;
             case PRESSURE_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " kbar\n";
+                }
                 break;
             case SHEAR_STRESS_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " kbar\n";
+                }
                 break;
             case PROPERTIES_CHANGE:
                 for (ThermalControlElement tce : TCEs) {

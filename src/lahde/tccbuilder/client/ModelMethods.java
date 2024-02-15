@@ -92,4 +92,38 @@ public class ModelMethods {
         return bcName;
     }
 
+    public static class CVinterface {
+
+        public double b1;
+        public double c1;
+        public double b2;
+        public double a2;
+        public double T1;
+        public double T2;
+
+        public void calculateCoefficients(ControlVolume westCV, ControlVolume eastCV) {
+            // From 1D conduction(2013), eq. 37
+            double rr = westCV.eastResistance;
+            double lr = eastCV.westResistance;
+            double u1 = westCV.k() / westCV.dx + eastCV.k() / eastCV.dx + rr * (westCV.k() / westCV.dx) * (eastCV.k() / eastCV.dx);
+            double u2 = westCV.k() / westCV.dx + eastCV.k() / eastCV.dx + lr * (westCV.k() / westCV.dx) * (eastCV.k() / eastCV.dx);
+            b1 = (westCV.k() / westCV.dx + rr * (westCV.k() / westCV.dx) * (eastCV.k() / eastCV.dx)) / u1;
+            c1 = (eastCV.k() / eastCV.dx) / u1;
+            b2 = (eastCV.k() / eastCV.dx + lr * (westCV.k() / westCV.dx) * (eastCV.k() / eastCV.dx)) / u2;
+            a2 = (westCV.k() / westCV.dx) / u2;
+            T1 = b1 * westCV.temperature + c1 * eastCV.temperature;  // This is temperature on the west side of interface, in cv_w
+            T2 = b2 * eastCV.temperature + a2 * westCV.temperature;  // This is temperature on the east side of interface, in cv_e
+        }
+
+        public double temperatureGradient(ControlVolume cv) {
+            calculateCoefficients(cv.westNeighbour, cv);
+            double Tw = T1;
+            calculateCoefficients(cv, cv.eastNeighbour);
+            double Te = T2;
+            double der = (T2 - T1) / cv.dx;
+            return der;
+        }
+
+    }
+
 }

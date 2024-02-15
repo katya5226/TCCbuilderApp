@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 0.164,
+		"specificHeatCapacity": 5193.2,
+		"thermalConductivity": 0.15,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "100-1000",
+		"specificHeatCapacity": "100-1000",
+		"thermalConductivity": "100-1000",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700002,
+	"short_name": "He",
+	"long_name": "Helium",
+	"melting_point": ""
+}

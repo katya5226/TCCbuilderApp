@@ -1,0 +1,5 @@
+Data from Dong-Hua 2010 (https://doi.org/10.1021/je100699g)
+Transition temperature (K)
+
+329.03
+336.98

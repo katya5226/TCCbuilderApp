@@ -1,0 +1,12 @@
+Poly(ethylene terephthalate) (PET)
+
+Data obtained from Lopes, Thermal conductivity of PET/(LDPE/AI) composites determined by MDSC, Polymer Testing 23 (2004) 637–643:
+The heat capacity of PET at 25 °C is dependent on the degree of crystallinity, varying between 1.103 J/g°C for crystalline
+and 1.146 J/g°C for amorphous PET. The value found for post-consumer PET was 1.144 J/g°C. Also temperature dependence from table 1.
+Thermal conductivity from table 1.
+
+Density: Google (18/10/23).
+
+Melting point 260 °C: Google (18/10/23).
+
+Emissivity at RT is estimated to be low, see for example: https://ennologic.com/wp-content/uploads/2018/07/Ultimate-Emissivity-Table.pdf (18/10/2023).

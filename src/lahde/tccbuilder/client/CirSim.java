@@ -295,7 +295,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
     public LengthUnit selectedLengthUnit = LengthUnit.MILLIMETER;
 
-
+    public String baseURL;
     static native float devicePixelRatio() /*-{
         return window.devicePixelRatio;
     }-*/;
@@ -546,8 +546,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         tempsDialog.closeDialog();
                         simulation1D.setTemperatureRange();
                     }
-                }                  
-                else if (theSim.simDimensionality == 2) {
+                } else if (theSim.simDimensionality == 2) {
                     simulation2D.customTempRange = !simulation2D.customTempRange;
                     if (simulation2D.customTempRange == false) {
                         tempsDialog.closeDialog();
@@ -636,6 +635,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         quickResetButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 resetAction();
+                setSimRunning(false);
             }
         });
         testButton.addClickHandler(new ClickHandler() {
@@ -736,7 +736,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         break;
 
                 }
-
                 calculateElementsLengths();
             }
         });
@@ -842,9 +841,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 
         materialNames = new Vector<String>();
-        materialNames.add("000000-Custom");
+        materialNames.add("000000-Constant properties");
         materialHashMap = new HashMap<String, Material>();
-        materialHashMap.put("000000-Custom", new Material("000000-Custom", theSim));
+        materialHashMap.put("000000-Constant properties", new Material("000000-Constant properties", theSim));
         colorChoices = new Vector<String>();
         setSimRunning(running);
         colorChoices.add("white");  // I will fix this later.
@@ -860,10 +859,9 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         colorChoices.add("blue");
 
 
-        String CORSproxy = "https://corsproxy.io/?";
-        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-/*        baseURL = GWT.getModuleBaseURL() + "material_data/materials_library/";
-        baseURL = "http://127.0.0.1:8888/";*/
+//        String CORSproxy = "https://corsproxy.io/?";
+//        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
+        baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
         //TODO: Add a callback to setSimRunning()
         readMaterialFlags(baseURL + "materials_flags.csv");
 
@@ -1200,20 +1198,36 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Capacitor"), "CapacitorElm"));
             // mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Ground"), "GroundElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Heat Source/Sink"), "HeatSourceSinkElm"));
+            mainMenuBar.addSeparator();
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Heat Engine"), "TEHeatEngine"));
+            mainMenuBar.addSeparator();
 
             MenuBar sampleElements = new MenuBar(true);
 
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM1"), "SwitchElm_FM1"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-FM_01"), "SwitchElm_FM_01"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM1"), "SwitchElm_MM1"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM_01"), "SwitchElm_MM_01"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM2"), "SwitchElm_MM2"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM_02"), "SwitchElm_MM_02"));
             menuItem.setTitle("Operating range = 254-353 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_LSCO-LCO"), "DiodeElm_LSCOLCO"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-MM_03"), "SwitchElm_MM_03"));
+            menuItem.setTitle("Operating range = 273-373 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-ME_01"), "SwitchElm_ME_01"));
+            menuItem.setTitle("Operating range unknown");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-SSE_01"), "SwitchElm_SSE_01"));
+            menuItem.setTitle("Operating range = 300-500 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Switch-SSM_01"), "SwitchElm_SSM_01"));
+            menuItem.setTitle("Operating range = 2-4 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_SS_01"), "DiodeElm_SS_01"));
             menuItem.setTitle("Ideal operating range = 40-99 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_NiTi-Graphite"), "DiodeElm_NiTiGraphite"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_SS_02"), "DiodeElm_SS_02"));
             menuItem.setTitle("Ideal operating range = 290-450 K");
-            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Regulator-F01"), "RegulatorElm_F01"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_F_01"), "DiodeElm_F_01"));
+            menuItem.setTitle("Ideal operating range = 303-318 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_F_02"), "DiodeElm_F_02"));
+            menuItem.setTitle("Ideal operating range = 283-333 K");
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Diode_T_01"), "DiodeElm_T_01"));
+            sampleElements.addItem(menuItem = getClassCheckItem(Locale.LS("Add Regulator-F_01"), "RegulatorElm_F_01"));
             menuItem.setTitle("Ideal operating range = 300-350 K");
             mainMenuBar.addItem(SafeHtmlUtils.fromTrustedString(CheckboxMenuItem.checkBoxHtml + Locale.LS("&nbsp;</div>Samples")), sampleElements);
         }
@@ -1994,7 +2008,6 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 } else {
                     if (simulation1D.cycleParts.isEmpty()) Window.alert("Sim set to cyclic but cycle parts undefined");
 
-
                     simulation1D.cyclePart.execute();  // executes cycle part for time dt at most
 
                     if (simulation1D.cyclePart.duration > 0.0) {  // maybe here should be > dt
@@ -2015,6 +2028,12 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                         simulation1D.cyclePart = simulation1D.cycleParts.get(simulation1D.cyclePartIndex);
                     }
                 }
+                // if (simulation1D.westBoundary == Simulation.BorderCondition.PERIODIC)
+                //     simulation1D.heatCircuit.temperatureWest = simulation1D.heatCircuit.temperatureWest +
+                //         simulation1D.heatCircuit.amplitudeWest * Math.sin(simulation1D.heatCircuit.frequencyWest * simulation1D.time);
+                // if (simulation1D.eastBoundary == Simulation.BorderCondition.PERIODIC)
+                //     simulation1D.heatCircuit.temperatureEast = simulation1D.heatCircuit.temperatureEast +
+                //         simulation1D.heatCircuit.amplitudeEast * Math.sin(simulation1D.heatCircuit.frequencyEast * simulation1D.time);
             }
             if (simDimensionality == 2) {
                 simulation2D.heatTransferStep();
@@ -4162,19 +4181,35 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1, x2, y2, f, st);
             case 'w':
                 return new ConduitElm(x1, y1, x2, y2, f, st);
+            case 700:
+                return new TEHeatEngine(x1, y1, x2, y2, f, st);
             //Samples
             case 600:
-                return new DiodeElm_LSCO_LCO(x1, y1);
+                return new DiodeElm_SS_01(x1, y1);
             case 601:
-                return new DiodeElm_NiTi_Graphite(x1, y1);
+                return new DiodeElm_SS_02(x1, y1);
+            case 602:
+                return new DiodeElm_F_01(x1, y1);
+            case 603:
+                return new DiodeElm_F_02(x1, y1);
+            case 604:
+                return new DiodeElm_T_01(x1, y1);
             case 610:
-                return new SwitchElm_FM1(x1, y1);
+                return new SwitchElm_FM_01(x1, y1);
             case 611:
-                return new SwitchElm_MM1(x1, y1);
+                return new SwitchElm_MM_01(x1, y1);
             case 612:
-                return new SwitchElm_MM2(x1, y1);
+                return new SwitchElm_MM_02(x1, y1);
+            case 613:
+                return new SwitchElm_ME_01(x1, y1);
+            case 614:
+                return new SwitchElm_MM_03(x1, y1);
+            case 615:
+                return new SwitchElm_SSE_01(x1, y1);
+            case 616:
+                return new SwitchElm_SSM_01(x1, y1);
             case 620:
-                return new RegulatorElm_F01(x1, y1);
+                return new RegulatorElm_F_01(x1, y1);
 
             //2D
             case 521:
@@ -4210,19 +4245,35 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 return new SwitchElm(x1, y1);
             case "WireElm":
                 return new ConduitElm(x1, y1);
+            case "TEHeatEngine":
+                return new TEHeatEngine(x1, y1);
             //Samples
-            case "DiodeElm_LSCOLCO":
-                return new DiodeElm_LSCO_LCO(x1, y1);
-            case "DiodeElm_NiTiGraphite":
-                return new DiodeElm_NiTi_Graphite(x1, y1);
-            case "SwitchElm_FM1":
-                return new SwitchElm_FM1(x1, y1);
-            case "SwitchElm_MM1":
-                return new SwitchElm_MM1(x1, y1);
-            case "SwitchElm_MM2":
-                return new SwitchElm_MM2(x1, y1);
-            case "RegulatorElm_F01":
-                return new RegulatorElm_F01(x1, y1);
+            case "DiodeElm_SS_01":
+                return new DiodeElm_SS_01(x1, y1);
+            case "DiodeElm_SS_02":
+                return new DiodeElm_SS_02(x1, y1);
+            case "DiodeElm_F_01":
+                return new DiodeElm_F_01(x1, y1);
+            case "DiodeElm_F_02":
+                return new DiodeElm_F_02(x1, y1);
+            case "DiodeElm_T_01":
+                return new DiodeElm_T_01(x1, y1);
+            case "SwitchElm_FM_01":
+                return new SwitchElm_FM_01(x1, y1);
+            case "SwitchElm_MM_01":
+                return new SwitchElm_MM_01(x1, y1);
+            case "SwitchElm_MM_02":
+                return new SwitchElm_MM_02(x1, y1);
+            case "SwitchElm_MM_03":
+                return new SwitchElm_MM_03(x1, y1);
+            case "SwitchElm_ME_01":
+                return new SwitchElm_ME_01(x1, y1);
+            case "SwitchElm_SSE_01":
+                return new SwitchElm_SSE_01(x1, y1);
+            case "SwitchElm_SSM_01":
+                return new SwitchElm_SSM_01(x1, y1);
+            case "RegulatorElm_F_01":
+                return new RegulatorElm_F_01(x1, y1);
 
             //2D
             case "2DComponent":

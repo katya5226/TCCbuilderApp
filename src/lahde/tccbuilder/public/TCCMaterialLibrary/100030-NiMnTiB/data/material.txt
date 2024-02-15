@@ -1,0 +1,5 @@
+NiMnTiB
+
+Aznar et al. (2019), doi: 10.1103/PhysRevMaterials.3.044406
+
+Adiabatic temperature change reversible range: 245-260 K

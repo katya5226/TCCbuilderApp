@@ -11,10 +11,15 @@ public abstract class Simulation {
     double tempEast;
     double qWest;
     double qEast;
+    double westFrequency;
+    double eastFrequency;
+    double westAmplitude;
+    double eastAmplitude;
     double startTemp;
     double ambientTemperature;
     ArrayList<Double> times;
     ArrayList<Double[]> temperatures;
+    ArrayList<ArrayList<Double[]>> TEpowerOutputs;  // Double arraylist because there may be more than one TE engine in a curcuit, each has two power values.
     double dt;
     double totalTime;
     double time;
@@ -27,7 +32,8 @@ public abstract class Simulation {
         ADIABATIC,
         CONSTANT_HEAT_FLUX,
         CONSTANT_TEMPERATURE,
-        CONVECTIVE
+        CONVECTIVE,
+        PERIODIC
     }
     public static enum Property {
         DENSITY,

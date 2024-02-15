@@ -1,0 +1,32 @@
+Data from @misc{etde_5447788,
+title = {Anomaly of the emissivity and of the absorptivity of gadolinium metal at the Curie temperature}
+author = {Giulietti, D, Lucchesi, M, Del Frate, R, and Consiglio Nazionale delle Ricerche, Pisa (Italy). Lab. di Fisica Atomica e Moleculare)}
+abstractNote = {In the present work we investigate the integral emissivity and the spectral absorptivity, of gadolinium metal near its Curie temperature with the aim of obtaining formation about the process of anelastic scattering of conduction electrons by magnetization fluctuations.}
+doi = {10.1007/BF02815980}
+journal = []
+volume = {38:6}
+journal type = {AC}
+place = {Italy}
+year = {1983}
+month = {Oct}
+}
+
+Temperature (K)	Emissivity (/)
+242.7500	0.2204
+260.0139	0.2234
+279.1111	0.232
+284.3056	0.2457
+288.1250	0.2715
+289.1944	0.2932
+289.8056	0.3084
+290.4167	0.314
+290.7222	0.3293
+291.9444	0.3474
+292.2500	0.3117
+293.6250	0.2836
+294.8472	0.2579
+297.9028	0.2419
+303.4028	0.2307
+321.2778	0.2341
+343.2778	0.2207
+

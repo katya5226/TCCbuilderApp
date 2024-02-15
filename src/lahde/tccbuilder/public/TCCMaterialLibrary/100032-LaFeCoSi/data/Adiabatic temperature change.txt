@@ -1,0 +1,58 @@
+Data from https://vacuumschmelze.com/products/Further-Technologies/Magnetocaloric-Material--CALORIVAC datasheet on 27th April 2012.
+Adiabatic temperature change in magnetic field B = 1.25 T.
+Temperature(K)	Temperature change(K)
+
+267.46	0.76
+268.45	0.85
+269.59	0.92
+271.1	1.07
+272.03	1.16
+273.12	1.28
+274.32	1.41
+275.72	1.56
+276.23	1.65
+276.96	1.77
+277.94	1.88
+278.72	1.96
+279.71	2.05
+280.49	2.06
+281.23	2.02
+282.07	1.95
+282.92	1.85
+283.61	1.73
+284.35	1.64
+285.14	1.55
+285.83	1.46
+286.62	1.34
+287.31	1.26
+288.31	1.15
+288.94	1.06
+289.89	0.98
+290.58	0.88
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

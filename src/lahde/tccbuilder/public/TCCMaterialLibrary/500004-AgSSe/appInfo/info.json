@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": "",
+		"specificHeatCapacity": 224.14,
+		"thermalConductivity": 0.448,
+		"emissivity": "" 
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "280-600",
+		"thermalConductivity": "280-600",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 500004,
+	"short_name": "AgSSe",
+	"long_name": "Ag2S0.8Se0.2",
+	"melting_point": ""
+}

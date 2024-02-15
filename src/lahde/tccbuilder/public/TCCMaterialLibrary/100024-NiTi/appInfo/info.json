@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 7504.0,
+		"specificHeatCapacity": 470.3,
+		"thermalConductivity": 17.8,
+		"emissivity": 0.2
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "151-302",
+		"thermalConductivity": "207-354",
+		"emissivity": "293-373"
+	},
+	"fields": [],
+	"id": 100024,
+	"short_name": "NiTi",
+	"long_name": "Nitinol, grainy",
+	"melting_point": 1573.0 
+}

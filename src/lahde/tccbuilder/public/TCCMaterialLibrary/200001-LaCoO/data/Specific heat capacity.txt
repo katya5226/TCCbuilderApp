@@ -1,0 +1,6 @@
+Specific heat capacity taken from
+AIP Conference Proceedings 1447, 989 (2012); doi: 10.1063/1.4710337.
+In this reference, Cv is given, and I used molar mass of 245.836 g/mol
+to convert to Cp. The molar mass is taken from https://www.webqc.org/molecular-weight-of-LaCoO3.html (26/07/2023).
+
+

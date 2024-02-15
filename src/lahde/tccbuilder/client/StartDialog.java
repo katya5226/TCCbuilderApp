@@ -31,6 +31,10 @@ public class StartDialog extends Dialog {
     Label outletHeatFluxLabel;
     Label eastTemperatureLabel;
     Label eastConvectionCoefficientLabel;
+    Label westFrequencyLabel;
+    Label eastFrequencyLabel;
+    Label westAmplitudeLabel;
+    Label eastAmplitudeLabel;
 
     DoubleBox inletHeatFlux;
     DoubleBox westTemperature;
@@ -38,6 +42,10 @@ public class StartDialog extends Dialog {
     DoubleBox outletHeatFlux;
     DoubleBox eastTemperature;
     DoubleBox eastConvectionCoefficient;
+    DoubleBox westFrequency;
+    DoubleBox eastFrequency;
+    DoubleBox westAmplitude;
+    DoubleBox eastAmplitude;
     ListBox westBoundary;
     ListBox eastBoundary;
 
@@ -76,12 +84,14 @@ public class StartDialog extends Dialog {
         westBoundary.addItem("Constant Heat Flux");
         westBoundary.addItem("Constant Temperature");
         westBoundary.addItem("Convective");
+        westBoundary.addItem("Time-periodic Temperature");
         westBoundary.setSelectedIndex(sim.simulation1D.westBoundary.ordinal());
         eastBoundary = new ListBox();
         eastBoundary.addItem("Adiabatic");
         eastBoundary.addItem("Constant Heat Flux");
         eastBoundary.addItem("Constant Temperature");
         eastBoundary.addItem("Convective");
+        eastBoundary.addItem("Time-periodic Temperature");
         eastBoundary.setSelectedIndex(sim.simulation1D.eastBoundary.ordinal());
         cyclic = new Checkbox("Cyclic");
         cyclic.setState(sim.simulation1D.cyclic);
@@ -124,22 +134,34 @@ public class StartDialog extends Dialog {
         inletHeatFluxLabel = new Label(Locale.LS("Inlet Heat Flux ( W/m² )"));
         westTemperatureLabel = new Label(Locale.LS("West Temperature ( K )"));
         westConvectionCoefficientLabel = new Label(Locale.LS("West Convection Coefficient ( W/(m²K) )"));
+        westFrequencyLabel = new Label(Locale.LS("West Temperature Changing Frequency ( 1/s )"));
+        westAmplitudeLabel = new Label(Locale.LS("West Temperature Changing Amplitude ( K )"));
         inletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.simulation1D.qWest);
         westTemperature = new DoubleBox();
         westTemperature.setValue(sim.simulation1D.tempWest);
         westConvectionCoefficient = new DoubleBox();
         westConvectionCoefficient.setValue(sim.simulation1D.hWest);
+        westFrequency = new DoubleBox();
+        westFrequency.setValue(sim.simulation1D.westFrequency);
+        westAmplitude = new DoubleBox();
+        westAmplitude.setValue(sim.simulation1D.westAmplitude);
 
         outletHeatFluxLabel = new Label(Locale.LS("Outlet Heat Flux ( W/m² )"));
         eastTemperatureLabel = new Label(Locale.LS("East Temperature ( K )"));
         eastConvectionCoefficientLabel = new Label(Locale.LS("East Convection Coefficient ( W/(m²K) )"));
+        eastFrequencyLabel = new Label(Locale.LS("East Temperature Changing Frequency ( 1/s )"));
+        eastAmplitudeLabel = new Label(Locale.LS("East Temperature Changing Amplitude ( K )"));
         outletHeatFlux = new DoubleBox();
         inletHeatFlux.setValue(sim.simulation1D.qEast);
         eastTemperature = new DoubleBox();
         eastTemperature.setValue(sim.simulation1D.tempEast);
         eastConvectionCoefficient = new DoubleBox();
         eastConvectionCoefficient.setValue(sim.simulation1D.hEast);
+        eastFrequency = new DoubleBox();
+        eastFrequency.setValue(sim.simulation1D.eastFrequency);
+        eastAmplitude = new DoubleBox();
+        eastAmplitude.setValue(sim.simulation1D.eastAmplitude);
 
         leftToggleables.add(inletHeatFluxLabel);
         leftToggleables.add(inletHeatFlux);
@@ -147,6 +169,10 @@ public class StartDialog extends Dialog {
         leftToggleables.add(westTemperatureLabel);
         leftToggleables.add(westConvectionCoefficient);
         leftToggleables.add(westConvectionCoefficientLabel);
+        leftToggleables.add(westFrequencyLabel);
+        leftToggleables.add(westFrequency);
+        leftToggleables.add(westAmplitudeLabel);
+        leftToggleables.add(westAmplitude);
 
         rightToggleables.add(outletHeatFlux);
         rightToggleables.add(outletHeatFluxLabel);
@@ -154,6 +180,10 @@ public class StartDialog extends Dialog {
         rightToggleables.add(eastTemperatureLabel);
         rightToggleables.add(eastConvectionCoefficient);
         rightToggleables.add(eastConvectionCoefficientLabel);
+        rightToggleables.add(eastFrequencyLabel);
+        rightToggleables.add(eastFrequency);
+        rightToggleables.add(eastAmplitudeLabel);
+        rightToggleables.add(eastAmplitude);
         Label l;
         flowPanel.add(new Label(Locale.LS("Enter Time Step (ms): ")));
         flowPanel.add(timeStep);
@@ -172,6 +202,11 @@ public class StartDialog extends Dialog {
         flowPanel.add(westTemperature);
         flowPanel.add(westConvectionCoefficientLabel);
         flowPanel.add(westConvectionCoefficient);
+        flowPanel.add(westFrequencyLabel);
+        flowPanel.add(westFrequency);
+        flowPanel.add(westAmplitudeLabel);
+        flowPanel.add(westAmplitude);
+
 
         flowPanel.add(l = new Label(Locale.LS("East Boundary Condition: ")));
         l.addStyleName("dialogHeading");
@@ -183,10 +218,13 @@ public class StartDialog extends Dialog {
         flowPanel.add(eastTemperature);
         flowPanel.add(eastConvectionCoefficientLabel);
         flowPanel.add(eastConvectionCoefficient);
+        flowPanel.add(eastFrequencyLabel);
+        flowPanel.add(eastFrequency);
+        flowPanel.add(eastAmplitudeLabel);
+        flowPanel.add(eastAmplitude);
         flowPanel.add(cyclicContainer);
 
         //vp.add(includingRadiaton);
-
 
         applyButton = new Button(Locale.LS("Apply"));
         cancelButton = new Button(Locale.LS("Cancel"));
@@ -254,6 +292,42 @@ public class StartDialog extends Dialog {
                         return;
                     }
                     sim.simulation1D.hEast = eastConvCoeffValue;
+
+                }
+                if (westFrequency.isVisible()) {
+                    double westFrequencyValue = westFrequency.getValue();
+                    if (!(westFrequencyValue >= 0.0)) {
+                        Window.alert("Frequency must be positive!");
+                        return;
+                    }
+                    sim.simulation1D.westFrequency = westFrequencyValue;
+
+                }
+                if (eastFrequency.isVisible()) {
+                    double eastFrequencyValue = eastFrequency.getValue();
+                    if (!(eastFrequencyValue >= 0.0)) {
+                        Window.alert("Frequency must be positive!");
+                        return;
+                    }
+                    sim.simulation1D.eastFrequency = eastFrequencyValue;
+
+                }
+                if (westAmplitude.isVisible()) {
+                    double westAmplitudeValue = westAmplitude.getValue();
+                    if (!(westAmplitudeValue >= 0.0)) {
+                        Window.alert("Amplitude must be positive!");
+                        return;
+                    }
+                    sim.simulation1D.westAmplitude = westAmplitudeValue;
+
+                }
+                if (eastAmplitude.isVisible()) {
+                    double eastAmplitudeValue = eastAmplitude.getValue();
+                    if (!(eastAmplitudeValue >= 0.0)) {
+                        Window.alert("Amplitude must be positive!");
+                        return;
+                    }
+                    sim.simulation1D.eastAmplitude = eastAmplitudeValue;
 
                 }
                 if (inletHeatFlux.isVisible()) {
@@ -375,6 +449,18 @@ public class StartDialog extends Dialog {
                 eastConvectionCoefficient.setVisible(true);
                 eastConvectionCoefficient.setValue(sim.simulation1D.hEast);
                 break;
+            case "Time-periodic Temperature":
+                sim.simulation1D.eastBoundary = Simulation.BorderCondition.PERIODIC;
+                eastTemperatureLabel.setVisible(true);
+                eastTemperature.setVisible(true);
+                eastTemperature.setValue(sim.simulation1D.tempEast);
+                eastFrequencyLabel.setVisible(true);
+                eastFrequency.setVisible(true);
+                eastFrequency.setValue(sim.simulation1D.eastFrequency);
+                eastAmplitudeLabel.setVisible(true);
+                eastAmplitude.setVisible(true);
+                eastAmplitude.setValue(sim.simulation1D.eastAmplitude);
+                break;
             default:
                 break;
         }
@@ -413,6 +499,18 @@ public class StartDialog extends Dialog {
                 westConvectionCoefficientLabel.setVisible(true);
                 westConvectionCoefficient.setVisible(true);
                 westConvectionCoefficient.setValue(sim.simulation1D.hWest);
+                break;
+            case "Time-periodic Temperature":
+                sim.simulation1D.westBoundary = Simulation.BorderCondition.PERIODIC;
+                westTemperatureLabel.setVisible(true);
+                westTemperature.setVisible(true);
+                westTemperature.setValue(sim.simulation1D.tempWest);
+                westFrequencyLabel.setVisible(true);
+                westFrequency.setVisible(true);
+                westFrequency.setValue(sim.simulation1D.westFrequency);
+                westAmplitudeLabel.setVisible(true);
+                westAmplitude.setVisible(true);
+                westAmplitude.setValue(sim.simulation1D.westAmplitude);
                 break;
             default:
                 break;

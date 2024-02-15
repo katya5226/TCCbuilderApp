@@ -1,0 +1,5 @@
+Data from https://doi.org/10.1038/s41467-019-09730-9
+Density at 320 K
+Density(kg/m3)
+
+1064

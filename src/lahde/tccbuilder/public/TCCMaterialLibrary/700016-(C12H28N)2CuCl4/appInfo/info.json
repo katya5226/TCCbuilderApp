@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 1111,
+		"specificHeatCapacity": 506.4,
+		"thermalConductivity": 0.5,
+		"emissivity": ""
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "79-389",
+		"thermalConductivity": "",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 700016,
+	"short_name": "(C12H28N)2CuCl4",
+	"long_name": "Bis-(dodecylammonium) tetrachlorocuprate",
+	"melting_point": 509.0
+}

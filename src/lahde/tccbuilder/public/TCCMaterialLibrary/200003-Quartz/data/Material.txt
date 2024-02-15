@@ -1,0 +1,14 @@
+Silicon dioxide SiO2 - Quartz form, CAS: 14808-60-7
+
+Density data from CRC handbook of chemistry and physics, 97th edition 2016-2017
+
+Specific heat capacity data from CCRC handbook of chemistry and physics, 97th edition 2016-2017, page 12-215
+Converted to J/kg/K with using molar weight of 60.085 g/mol.
+
+Thermal conductivity data from CCRC handbook of chemistry and physics, 97th edition 2016-2017, page 12-223 
+Data is for alpha quartz parallel and prependicular to the c axis.
+We also made a set of data that is an average of those for use in simulations. At 50 K we use data from Jezowski and Rafalowicz https://doi.org/10.1002/pssa.2210470126
+
+Emissivity: Petrov - Measurement of the emissivity of quartz glass,
+https://www.transmetra.ch/images/transmetra_pdf/publikationen_literatur/pyrometrie-thermografie/emissivity_table.pdf (08.08.23)
+According to the data, emissivity is estimated to be 0.5 around RT.

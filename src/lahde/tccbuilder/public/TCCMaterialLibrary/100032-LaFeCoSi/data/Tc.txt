@@ -1,0 +1,4 @@
+Data from https://vacuumschmelze.com/products/Further-Technologies/Magnetocaloric-Material--CALORIVAC datasheet on 27th April 2012.
+Curie temperature (K)
+
+278.0

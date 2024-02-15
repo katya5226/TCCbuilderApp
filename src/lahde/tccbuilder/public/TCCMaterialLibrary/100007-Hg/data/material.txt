@@ -1,0 +1,4 @@
+Elementary mercury (Hg)
+
+Emissivity data source:
+https://www.transmetra.ch/images/transmetra_pdf/publikationen_literatur/pyrometrie-thermografie/emissivity_table.pdf (01/01/24)

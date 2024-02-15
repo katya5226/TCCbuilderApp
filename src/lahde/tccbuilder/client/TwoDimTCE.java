@@ -10,7 +10,6 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
     String name;
     int index;
     Vector <TwoDimComponent> components;
-    int numComponents;
     int numCvs, n, m; // total # of CVs and # of CVs in x and y directions
     TwoDimTCE [] neighbours;
     Vector<TwoDimCV> cvs;
@@ -73,9 +72,8 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
 
     void buildTCE() {
 //        for comp in components:
-//        if comp.m != components.get(0].m:
+//        if comp.m != components.get(0).m:
 //        raise ValueError("Components must be of the same height and have the same y-discretisation!")
-        numComponents = components.size();
         numCvs = n = 0;
         length = 0.0;
         m = components.get(0).m;  // TODO: check if all are of the same height and m
@@ -108,7 +106,7 @@ public class TwoDimTCE implements Comparable<TwoDimTCE> {
         int cvTCEind = 0;
         cvs.clear();
         for (int j = 0; j < m; j++) {
-            for (int k = 0; k < numComponents; k++) {
+            for (int k = 0; k < components.size(); k++) {
                 TwoDimComponent cmp = components.get(k);
                 for (int i = 0; i < cmp.n; i++) {
                     cmp.cvs.get(j * cmp.n + i).TCEindex = cvTCEind;

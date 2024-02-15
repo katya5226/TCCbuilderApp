@@ -1,0 +1,4 @@
+Cu-Al-Ni
+ASM metals Handbook Volume 2 for Cu-Al-Ni: Ms(°C) = 2020 - 134 (wt% Al) - 45 (wt% Ni)
+
+cp cooling and heating values are very different at RT, and we took the mean value as the RT value of cp

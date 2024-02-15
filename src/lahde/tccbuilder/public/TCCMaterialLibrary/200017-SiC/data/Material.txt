@@ -1,0 +1,17 @@
+Silicon Carbide (SiC) from differnet references.
+I only looked at alpha polytypes.
+
+Molar mass: 40.0962 g/mol
+Source: https://webbook.nist.gov/cgi/cbook.cgi?ID=C409212&Units=SI&Mask=FFFF&Type=JANAFS&Table=on (17/01/24)
+This is also source for specific heat capacity.
+
+Melting point: 2730 °C = 3003 K
+Density: 3210.0 kg/m^3
+Source: https://byjus.com/chemistry/silicon-carbide/ (17/01/24)
+
+Thermal conductivity is combined from different sources:
+Slack, J. Appl. Phys. 35, 3460–3466 (1964), doi: 10.1063/1.1713251
+https://www.matweb.com/search/datasheet_print.aspx?matguid=dd2598e783ba4457845586b58c8ea9fb (17/01/24)
+Cheng, Nature Communications volume 13, Article number: 7201 (2022) doi: 10.1038/s41467-022-34943-w
+
+Emissivity source: doi: 10.1134/S0018151X16040027

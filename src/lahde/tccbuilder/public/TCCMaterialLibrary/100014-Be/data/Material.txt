@@ -1,0 +1,5 @@
+Elementary Berilium (Be)
+
+Emissivity data from https://ilrs.gsfc.nasa.gov/docs/2005/thermal_study_arnold.pdf (26/12/23)
+
+Melting point 1560 K from https://en.wikipedia.org/wiki/Beryllium (26/12/23)

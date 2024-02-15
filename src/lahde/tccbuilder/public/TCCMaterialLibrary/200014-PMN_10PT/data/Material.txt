@@ -1,0 +1,23 @@
+(1-x)Pb(Mg1/3Nb2/3)O3–xPbTiO3 with x = 10
+short: PMN-10PT
+
+Melting point: 1360.0 K
+Zhenrong Li zhrli@mail.xjtu.edu.cn, Zengzhe Xi, Zhuo Xu, Hong Wang & Xi Yao (2005)
+High Temperature Phase Diagram of PMN-PT Binary System, Ferroelectrics, 326:1, 31-35, DOI: 10.1080/00150190500318198
+
+Data for density:
+Data from H. Uršic et al; Informacije Midem, Vol. 45, No. 4 (2015), 260 – 265
+The theoretical density of PMN, i.e., 8.13 g/cm3  (JCPDS 81-0861).
+
+Data for specific heat was estimated from combining HT and LT measurements:
+Data from H. Uršic et al; Informacije Midem, Vol. 45, No. 4 (2015), 260 – 265
+And their own measurements, not publicly available.
+
+Data for thermal conductivity was estimated from combining from
+Data from H. Uršic et al; Informacije Midem, Vol. 45, No. 4 (2015), 260 – 265
+and their own measurements, not publicly available,
+and our own measurements (LAHDE, FS, UNI-LJ), not publicly available.
+
+
+Electrocaloric effect temperature change from Fulanovic et al. (2020) J. Appl. Phys. 127, 184102 (2020); https://doi.org/10.1063/5.0002096S
+The range is from 280 to approx. 400 K

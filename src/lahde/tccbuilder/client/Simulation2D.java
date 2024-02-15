@@ -5,6 +5,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import lahde.tccbuilder.client.math3.linear.LUDecomposition;
 import lahde.tccbuilder.client.math3.linear.RealVector;
+import lahde.tccbuilder.client.ejmlsparselu.DMatrixRMaj;
+import lahde.tccbuilder.client.ejmlsparselu.CommonOps_DSCC;
+import lahde.tccbuilder.client.math3.linear.OpenMapRealVector;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -14,6 +17,9 @@ public class Simulation2D extends Simulation {
     TwoDimTCE twoDimTCE;
     TwoDimEqSys twoDimES;
     TwoDimBC twoDimBC;
+    RealVector solutionVector;
+    LUDecomposition solver;
+    // DMatrixRMaj x;
 
 
     public Simulation2D() {
@@ -50,6 +56,8 @@ public class Simulation2D extends Simulation {
         setTemperatureRange();
 
         time = 0;
+        solutionVector = new OpenMapRealVector(twoDimTCE.cvs.size());
+        // x = new DMatrixRMaj(twoDimTCE.cvs.size());
 
     }
 
@@ -121,11 +129,22 @@ public class Simulation2D extends Simulation {
         // GWT.log(String.valueOf(minTemp));
         // GWT.log(String.valueOf(maxTemp));
         twoDimES.conductionMatrix();
-        LUDecomposition solver = new LUDecomposition(twoDimES.matrix);
-        RealVector solutionVector = solver.getSolver().solve(twoDimES.rhs);
+
+        // Apache commons library
+        solver = new LUDecomposition(twoDimES.matrix);
+        solutionVector = solver.getSolver().solve(twoDimES.rhs);
         for (int i = 0; i < twoDimTCE.cvs.size(); i++) {
             twoDimTCE.cvs.get(i).temperature = solutionVector.getEntry(i);
         }
+
+        //Ejml Library
+        // DMatrixRMaj x = new DMatrixRMaj(twoDimTCE.cvs.size());
+        // boolean solved = CommonOps_DSCC.solve(twoDimES.matrixEjml, twoDimES.rhsEjml, x);
+        // for (int i = 0; i < twoDimTCE.cvs.size(); i++) {
+        //     twoDimTCE.cvs.get(i).temperature = x.get(i);
+        // }
+
+
         time+=dt;
         // TwoDimTCCmanager.printTemps(twoDimTCE.cvs);
         // update modes

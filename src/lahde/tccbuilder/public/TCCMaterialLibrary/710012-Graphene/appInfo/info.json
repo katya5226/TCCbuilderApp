@@ -1,0 +1,19 @@
+{
+	"rt_properties": {
+		"density": 2267.0,
+		"specificHeatCapacity": 691.3,
+		"thermalConductivity": 1743.8,
+		"emissivity": "0.025"
+	},
+	"ranges": {
+		"density": "",
+		"specificHeatCapacity": "2-2000",
+		"thermalConductivity": "97-802",
+		"emissivity": ""
+	},
+	"fields": [],
+	"id": 710012,
+	"short_name": "Graphene",
+	"long_name": "Graphene",
+	"melting_point": 3925.0 
+}

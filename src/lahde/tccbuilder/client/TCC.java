@@ -7,6 +7,7 @@ import java.util.Collections;
 
 
 public class TCC {
+    public Simulation1D sim;
     public String name;
     public Vector<ThermalControlElement> TCEs;
     public Vector<ControlVolume> cvs;
@@ -20,11 +21,14 @@ public class TCC {
     public double qWest, qEast;
     public double temperatureWest, temperatureEast, ambientTemperature;
     public double hWest, hEast;
+    public double amplitudeWest, amplitudeEast;
+    public double frequencyWest, frequencyEast;
+    boolean containsTEEngines;
 
     public Vector<Double> fluxes;
 
-    public TCC(String name, Vector<ThermalControlElement> TCEs) {
-        //parent_sim = null;
+    public TCC(Simulation1D sim, String name, Vector<ThermalControlElement> TCEs) {
+        this.sim = sim;
         this.name = name;
         this.TCEs = TCEs;
         int numCvs = 0;
@@ -48,6 +52,13 @@ public class TCC {
         hEast = 500.0;
 
         fluxes = new Vector<Double>();
+
+        containsTEEngines = false;
+        for (ThermalControlElement tce : TCEs) {
+            if (tce instanceof TEHeatEngine) {
+                containsTEEngines = true;
+            }
+        }
     }
 
     public void setNeighbours() {
@@ -157,19 +168,62 @@ public class TCC {
         return txt;
     }
 
-    // This is a temporary method that needs to be modified in the future
+
     public void calculateHeatFluxes() {
         fluxes.clear();
-        ControlVolume cv1 = cvs.get(0);
-        ControlVolume cv1r = cvs.get(1);
-        ControlVolume cv2 = cvs.get(cvs.size() - 1);
-        ControlVolume cv2l = cvs.get(cvs.size() - 2);
-        double Tw = cv1.temperature + 2 * ((cv1.temperature - cv1r.temperature) / (cv1.dx + cv1r.dx)) * (0.5 * cv1.dx);
-        double Te = cv2.temperature - 2 * ((cv2l.temperature - cv2.temperature) / (cv2.dx + cv2l.dx)) * (0.5 * cv2.dx);
+        switch(westBoundary) {
+            case ADIABATIC:
+                fluxes.add(0.0);
+                break;
+            case CONSTANT_HEAT_FLUX:
+                fluxes.add(qWest);
+                break;
+            case CONSTANT_TEMPERATURE:
+                fluxes.add((double) Math.round(2 * cvs.get(0).k() * (temperatureWest - cvs.get(0).temperature) / cvs.get(0).dx ));
+                break;
+            case CONVECTIVE:
+                ControlVolume cv1 = cvs.get(0);
+                ControlVolume cv1r = cvs.get(1);
+                double al = (2 * cv1.dx + cv1r.dx) / (cv1.dx + cv1r.dx);
+                double bl = cv1.dx / (cv1.dx + cv1r.dx);
+                double Tw = al * cv1.temperature - bl * cv1r.temperature;
+                fluxes.add((double) Math.round((temperatureWest - Tw) * hWest));
+                break;
+            // case PERIODIC:
+            //     double wT = temperatureWest + amplitudeWest * Math.sin(frequencyWest * sim.time);
+            //     fluxes.add((double) Math.round(2 * cvs.get(0).k() * (wT - cvs.get(0).temperature) / cvs.get(0).dx ));
+            //     break;
+        }
+
         for (int i = 0; i < cvs.size() - 1; i++) {
             ControlVolume cv = cvs.get(i);
             ControlVolume cvR = cvs.get(i).eastNeighbour;
             fluxes.add((double) Math.round(2 * cv.kEastFace * (cv.temperature - cvR.temperature) / (cv.dx + cvR.dx)));
         }
+
+        switch(eastBoundary) {
+            case ADIABATIC:
+                fluxes.add(0.0);
+                break;
+            case CONSTANT_HEAT_FLUX:
+                fluxes.add(qEast);
+                break;
+            case CONSTANT_TEMPERATURE:
+                fluxes.add((double) Math.round(2 * cvs.get(cvs.size() - 1).k() * (cvs.get(cvs.size() - 1).temperature - temperatureEast) / cvs.get(cvs.size() - 1).dx));
+                break;
+            case CONVECTIVE:
+                ControlVolume cv2 = cvs.get(cvs.size() - 1);
+                ControlVolume cv2l = cvs.get(cvs.size() - 2);
+                double ar = (2 * cv2.dx + cv2l.dx) / (cv2.dx + cv2l.dx);
+                double br = cv2.dx / (cv2.dx + cv2l.dx);
+                double Te = ar * cv2.temperature - br * cv2l.temperature;
+                fluxes.add((double) Math.round((Te - temperatureEast) * hEast));
+                break;
+            // case PERIODIC:
+            //     double eT = temperatureEast + amplitudeEast * Math.sin(frequencyEast * sim.time);
+            //     fluxes.add((double) Math.round(2 * cvs.get(cvs.size() - 1).k() * (cvs.get(cvs.size() - 1).temperature - eT) / cvs.get(cvs.size() - 1).dx));
+            //     break;
+        }
+
     }
 }
