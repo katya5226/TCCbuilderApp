@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Window;
 public class TEHeatEngine extends ThermalControlElement {
 
     public double ZT;
+    public double thermalResistance;
 
     public TEHeatEngine(int xx, int yy) {
         super(xx, yy);
@@ -46,15 +47,18 @@ public class TEHeatEngine extends ThermalControlElement {
         return eta;
     }
 
-    public double outputPower() {
+    public Double[] outputPower() {
         double[] temps = coldHotTemperatures();
         double Tc = temps[0];
         double Th = temps[1];
-        double p = Math.abs(Th - Tc) * cvs.get(0).k() * length * efficiency() / crossArea;
-        setQgen(-1 * p / length);
         double p1 = Math.pow((Th - Tc), 2) / 4;
-        //double p1 = Math.abs(Th - Tc) * efficiency() / 0.008;
-        return p1;
+        double p = Math.abs(Th - Tc) * cvs.get(0).k() * length * efficiency() / crossArea;
+        if(constK != -1){
+            p = Math.abs(Th - Tc) * efficiency() / (constK * length / crossArea);            
+        }
+        setQgen(-1 * p / length);
+        Double[] pp = {p1, p};
+        return pp;
     }
 
     @Override
@@ -78,22 +82,24 @@ public class TEHeatEngine extends ThermalControlElement {
             case 4:
                 return new EditInfo("Length (mm)", length * 1e3);
             case 5:
-                return new EditInfo("West contact resistance (m²K/W)", westResistance);
+                return new EditInfo("Cross area (m²)", crossArea);
             case 6:
-                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
+                return new EditInfo("West contact resistance (m²K/W)", westResistance);
             case 7:
-                return new EditInfo("ZT value (/)", ZT);
+                return new EditInfo("East contact resistance (m²K/W)", eastResistance);
             case 8:
-                return new EditInfo("Heat generation (W/m³)", volumeHeatGeneration);
+                return new EditInfo("ZT value (/)", ZT);
             case 9:
-                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
+                return new EditInfo("Heat generation (W/m³)", volumeHeatGeneration);
             case 10:
-                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
+                return EditInfo.createCheckboxWithField("Constant Density (kg/m³)", !(constRho == -1), constRho);
             case 11:
-                return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
+                return EditInfo.createCheckboxWithField("Constant Specific Heat Capacity (J/kgK)", !(constCp == -1), constCp);
             case 12:
-                return new EditInfo("Initial Temperature (K)", startTemperature);
+                return EditInfo.createCheckboxWithField("Constant Thermal Conductivity (W/mK)", !(constK == -1), constK);
             case 13:
+                return new EditInfo("Initial Temperature (K)", startTemperature);
+            case 14:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             default:
                 return null;
@@ -120,34 +126,37 @@ public class TEHeatEngine extends ThermalControlElement {
                 // length = ei.value / 1e3;
                 break;
             case 5:
-                westResistance = ei.value;
+                crossArea = ei.value;
                 break;
             case 6:
-                eastResistance = ei.value;
+                westResistance = ei.value;
                 break;
             case 7:
+                eastResistance = ei.value;
+                break;
+            case 8:
                 ZT = ei.value;
                 break;                
-            case 8:
+            case 9:
                 volumeHeatGeneration = ei.value;
                 break;
-            case 9:
+            case 10:
                 constRho = ei.value;
                 break;
-            case 10:
+            case 11:
                 constCp = ei.value;
                 break;
-            case 11:
+            case 12:
                 constK = ei.value;
                 break;
-            case 12:
+            case 13:
                 startTemperature = (double) ei.value;
                 if (startTemperature >= 0) {
                     setTemperatures(startTemperature);
                     // GWT.log(String.valueOf(cvs.get(0).temperature));
                 }
                 break;
-            case 13:
+            case 14:
                 hTransv = (double) ei.value;
                 break;
         }

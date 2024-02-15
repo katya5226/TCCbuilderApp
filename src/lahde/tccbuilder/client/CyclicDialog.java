@@ -183,14 +183,14 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(electricFieldListBox);
 
 
-        pressureFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (kBar): "));
+        pressureFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (kbar): "));
         pressureFieldStrength = new DoubleBox();
         pressureFieldListBox = new ListBox();
         inputWidgets.add(pressureFieldStrengthLabel);
         // inputWidgets.add(pressureFieldStrength);
         inputWidgets.add(pressureFieldListBox);
 
-        shearStressFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (Bar): "));
+        shearStressFieldStrengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Field Strength (kbar): "));
         shearStressFieldStrength = new DoubleBox();
         shearStressFieldListBox = new ListBox();
         inputWidgets.add(shearStressFieldStrengthLabel);

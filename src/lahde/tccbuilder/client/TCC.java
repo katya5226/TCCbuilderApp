@@ -168,7 +168,7 @@ public class TCC {
         return txt;
     }
 
-    // This is a temporary method that needs to be modified in the future
+
     public void calculateHeatFluxes() {
         fluxes.clear();
         switch(westBoundary) {
@@ -189,6 +189,10 @@ public class TCC {
                 double Tw = al * cv1.temperature - bl * cv1r.temperature;
                 fluxes.add((double) Math.round((temperatureWest - Tw) * hWest));
                 break;
+            // case PERIODIC:
+            //     double wT = temperatureWest + amplitudeWest * Math.sin(frequencyWest * sim.time);
+            //     fluxes.add((double) Math.round(2 * cvs.get(0).k() * (wT - cvs.get(0).temperature) / cvs.get(0).dx ));
+            //     break;
         }
 
         for (int i = 0; i < cvs.size() - 1; i++) {
@@ -215,6 +219,10 @@ public class TCC {
                 double Te = ar * cv2.temperature - br * cv2l.temperature;
                 fluxes.add((double) Math.round((Te - temperatureEast) * hEast));
                 break;
+            // case PERIODIC:
+            //     double eT = temperatureEast + amplitudeEast * Math.sin(frequencyEast * sim.time);
+            //     fluxes.add((double) Math.round(2 * cvs.get(cvs.size() - 1).k() * (cvs.get(cvs.size() - 1).temperature - eT) / cvs.get(cvs.size() - 1).dx));
+            //     break;
         }
 
     }

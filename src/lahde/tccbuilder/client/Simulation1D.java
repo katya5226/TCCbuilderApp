@@ -46,7 +46,7 @@ public class Simulation1D extends Simulation {
         // start_temperatures = new double[num_cvs];
         times = new ArrayList<Double>();
         temperatures = new ArrayList<Double[]>();
-        TEpowerOutputs = new ArrayList<ArrayList<Double>>();
+        TEpowerOutputs = new ArrayList<ArrayList<Double[]>>();
         dt = 5e-3;
         totalTime = 0.0;
 
@@ -87,7 +87,7 @@ public class Simulation1D extends Simulation {
     }
 
     void logPowerOutput() {
-        ArrayList<Double> ar = new ArrayList<>();
+        ArrayList<Double[]> ar = new ArrayList<>();
         for (ThermalControlElement tce : heatCircuit.TCEs) {
             if (tce instanceof TEHeatEngine) {
                 TEHeatEngine TE = (TEHeatEngine) tce;
@@ -300,27 +300,27 @@ public class Simulation1D extends Simulation {
             }
             dump += "\n";
         }
-        dump += "\nFluxes:\n";
+        dump += "\nFluxes (W/m²):\n";
         heatCircuit.calculateHeatFluxes();
         for (Double f : heatCircuit.fluxes)
             dump += f + "\t";
-
-        dump += "\n\nPower outputs of TE heat engines:\n";
-        dump += "Time (s)\t";
-        for (int i = 0; i < TEpowerOutputs.get(0).size(); i++) {
-            dump += "TEengine#" + i + " P (W)\t";
-        }
-        dump += "\n";
-        for (int i = 0; i < TEpowerOutputs.size(); i+= outputInterval) {
-            ArrayList<Double> powers = TEpowerOutputs.get(i);
-            Double time = times.get(i);
-            dump += NumberFormat.getFormat("0.000").format(time) + "\t";
-            for (double p : powers) {
-                dump += NumberFormat.getFormat("0.00").format(p) + "\t";
+        if(TEpowerOutputs.size() > 0) {
+            dump += "\n\nPower outputs of TE heat engines:\n";
+            dump += "Time (s)\t";
+            for (int i = 0; i < TEpowerOutputs.get(0).size(); i++) {
+                dump += "TEengine#" + i + ": Average dT² (K)\t P (W)\t";
             }
             dump += "\n";
+            for (int i = 0; i < TEpowerOutputs.size(); i+= outputInterval) {
+                ArrayList<Double[]> powers = TEpowerOutputs.get(i);
+                Double time = times.get(i);
+                dump += NumberFormat.getFormat("0.000").format(time) + "\t";
+                for (Double[] p : powers) {
+                    dump += NumberFormat.getFormat("0.00").format(p[0]) + "\t" + NumberFormat.getFormat("0.00").format(p[1]) + "\t";
+                }
+                dump += "\n";
+            }
         }
-        
         dump += "\n\n" + assessment();
         return dump;
     }

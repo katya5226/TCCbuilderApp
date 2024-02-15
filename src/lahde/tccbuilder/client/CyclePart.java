@@ -392,12 +392,22 @@ public class CyclePart {
                 for (ThermalControlElement tce : TCEs) {
                     int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
                     report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
-                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " T\n";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " MV/m\n";
                 }
                 break;
             case PRESSURE_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " kbar\n";
+                }
                 break;
             case SHEAR_STRESS_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    int fieldIndexE = fieldIndexes.get(TCEs.indexOf(tce));
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Fields: ";
+                    report += String.valueOf(tce.material.fields.get(fieldIndexE)) + " kbar\n";
+                }
                 break;
             case PROPERTIES_CHANGE:
                 for (ThermalControlElement tce : TCEs) {
