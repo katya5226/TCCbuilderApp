@@ -4196,7 +4196,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case 603:
                 return new DiodeElm_F_02(x1, y1);
             case 604:
-                return new DiodeElm_T_01(x1, y1);
+                return new DiodeElm_T_01(x1, y1, x2, y2, f, st);
             case 610:
                 return new SwitchElm_FM_01(x1, y1);
             case 611:
@@ -4233,7 +4233,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case "Component":
                 return new Component(x1, y1);
             case "TEComponent":
-                return new Component(x1, y1);
+                return new TEComponent(x1, y1);
             case "CapacitorElm":
                 return new CapacitorElm(x1, y1);
             case "DiodeElm":

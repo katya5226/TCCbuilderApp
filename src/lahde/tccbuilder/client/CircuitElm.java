@@ -95,6 +95,8 @@ public abstract class CircuitElm implements Editable {
         ps2 = new Point();
     }
 
+    public CircuitElm() {}
+
     // create new element with one post at xx,yy, to be dragged out by user
     CircuitElm(int xx, int yy) {
         x = x2 = xx;
