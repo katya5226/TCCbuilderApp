@@ -1189,6 +1189,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add CircularInterface"), "CircularInterface"));
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Component"), "TEComponent"));
             mainMenuBar.addSeparator();
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "WireElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
@@ -1918,7 +1919,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (simDimensionality == 1) {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
-                info[2] = Locale.LS("components = " + simulation1D.printTCEs());
+                info[2] = Locale.LS("TCEs = " + simulation1D.printTCEs());
             } else {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation2D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
@@ -4165,6 +4166,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
+            case 530:
+                return new TEComponent(x1, y1, x2, y2, f, st);
             case 'c':
                 return new CapacitorElm(x1, y1, x2, y2, f, st);
             case 'd':
@@ -4228,6 +4231,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         switch (n) {
 
             case "Component":
+                return new Component(x1, y1);
+            case "TEComponent":
                 return new Component(x1, y1);
             case "CapacitorElm":
                 return new CapacitorElm(x1, y1);
