@@ -1,3 +1,0 @@
-Fe2+
-
-Emissivity data source: Atabaev, I.G. et al., High Temp 54, 503–509 (2016), doi: 10.1134/S0018151X16040027

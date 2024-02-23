@@ -1,2 +1,0 @@
-Ni 50.75 - Ti 49.25 (probably at.%) grain size 58.76 +- 14 micron
-From Warzoha 2020 (10.1016/j.ijheatmasstransfer.2020.119760)

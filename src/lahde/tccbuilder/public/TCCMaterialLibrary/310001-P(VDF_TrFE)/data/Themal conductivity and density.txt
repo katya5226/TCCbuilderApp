@@ -1,2 +1,0 @@
-material and fabrication method are different, moreover we only have one reference for thermal conductivity and the data points are not enough for 
-interpolating anything meaningful, at least I would not suggest doing that 

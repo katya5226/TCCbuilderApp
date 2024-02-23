@@ -1,5 +1,0 @@
-Data from Dong-Hua 2010 (https://doi.org/10.1016/j.solmat.2011.06.014)
-Transition temperature (K)
-
-345.40
-360.98

@@ -1,4 +1,0 @@
-Data from Gottschall 2019 (10.1002/aenm.201901322)
-Specific heat capacity(J/kg/K)
-
-350.0

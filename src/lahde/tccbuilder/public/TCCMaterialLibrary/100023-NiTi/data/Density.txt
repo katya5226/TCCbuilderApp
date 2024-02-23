@@ -1,7 +1,0 @@
-Data from Warzoha 2020 (10.1016/j.ijheatmasstransfer.2020.119760)
-An approximated value of density is given by
-dividing the FOM by the latent heat and by the average value of thermal conductivity.
-Density(kg/m3), endothermic and exothermic
-
-10594.68
-10340.49

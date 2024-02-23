@@ -1,6 +1,0 @@
-In the paper the density is not specified; however as one sample is fully dense, we can estimate its density by taking a value for nitinol in general.
-For the porous sample, we calculate the density as corresponding percentage of the full density.
-From https://matthey.com/en/products-and-services/medical-components/resource-library/nitinol-technical-properties on 24th January, 2022.
-Density(kg/m3)
-
-2064.0

@@ -1,2 +1,0 @@
-(C10H21NH3)2CuCl4
-Data from Dong-fei 2013 (https://doi.org/10.1016/j.solmat.2013.02.009)

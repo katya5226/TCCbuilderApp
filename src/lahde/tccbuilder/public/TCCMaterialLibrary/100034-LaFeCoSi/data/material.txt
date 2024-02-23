@@ -1,2 +1,0 @@
-LaFe13-x-yCoxSiy with x = 0.86, y = 1.08 from Bjoerk 2010 (10.1016/j.jmmm.2010.08.013)
-LaFe11.06Co0.86Si1.08

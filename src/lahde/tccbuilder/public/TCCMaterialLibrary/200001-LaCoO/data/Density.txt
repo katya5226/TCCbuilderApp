@@ -1,1 +1,0 @@
-Density of this material is taken from https://next-gen.materialsproject.org/materials/mp-573180/ (26/07/2023).

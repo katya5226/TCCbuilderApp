@@ -1,4 +1,0 @@
-Elementary lead (Pb)
-
-Emissivity of lead taken from https://www.omega.co.uk/literature/transactions/volume1/emissivitya.html (02/01/24)
-Emissivity depends strongly on the finishing. Polished lead has emissivity <0.1 and rough surface has emissivity of ~0.4

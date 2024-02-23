@@ -1,5 +1,0 @@
-Data from C.Y. Iguchi et al. / Polymer Testing 26 (2007) 788–792 (10.1016/j.polymertesting.2007.04.009)
-This is an estimation - the thermal conductivity is for a similar material.
-Thermal conductivity (W/m/K)
-
-0.3193

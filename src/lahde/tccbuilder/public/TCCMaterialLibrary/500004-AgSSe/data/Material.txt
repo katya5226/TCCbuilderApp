@@ -1,6 +1,0 @@
-Phase-change material Ag2S0.8Se0.2
-Data for thermal conductivity and specific heat capacity is taken from
-https://doi.org/10.1007/s11664-020-07964-8
-
-Specific heat capacity is coverted from molar values using molar mass 298.62 g/mol,
-calculated using this site: https://www.webqc.org/ (08.08.23)

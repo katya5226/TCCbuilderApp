@@ -1,5 +1,0 @@
-Data from ASM Handbook Volume 2: Properties and Selection: Nonferrous Alloys and Special-Purpose Materials
-Thermal conductivity is between 30 and 43 W/m/K
-Thermal conductivity(W/m/K)
-
-36.5
