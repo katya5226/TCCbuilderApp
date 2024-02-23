@@ -861,7 +861,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 //        String CORSproxy = "https://corsproxy.io/?";
 //        String baseURL = CORSproxy + "http://materials.tccbuilder.org/";
-        baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
+//        baseURL = GWT.getModuleBaseURL() + "TCCMaterialLibrary/";
+        baseURL = "https://materials.tccbuilder.org/";
         //TODO: Add a callback to setSimRunning()
         readMaterialFlags(baseURL + "materials_flags.csv");
 
