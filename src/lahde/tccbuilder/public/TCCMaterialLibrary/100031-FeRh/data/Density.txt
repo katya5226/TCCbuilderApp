@@ -1,4 +1,0 @@
-Data from from Gottschall 2019 (10.1002/aenm.201901322)
-Density(kg/m3)
-
-10000.0

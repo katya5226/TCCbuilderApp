@@ -1,5 +1,0 @@
-Elementary argon (Ar)
-
-Melting point	83.81 K ?(-189.34 °C, ?-308.81 °F)
-Boiling point	87.302 K ?(-185.848 °C, ?-302.526 °F)
-Source: https://en.wikipedia.org/wiki/Argon (26/12/23)

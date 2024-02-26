@@ -1,4 +1,0 @@
-Data from Basso 2015 (http://dx.doi.org/10.1063/1.4928086)
-Transition temperature (K)
-
-270.0

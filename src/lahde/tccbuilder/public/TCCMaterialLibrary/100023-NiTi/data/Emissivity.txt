@@ -1,4 +1,0 @@
-Source: Emissivity Measurements on Shape Memory Alloys
-by Tadeu C. da Silva*, Marcus V. Costa Sá*, Edson P. da Silva* and Francisca C. da Silva**, doi: 10.21611/qirt.2016.018
-
-Emissivity is around 0.2 in the range of 293 - 373 K.

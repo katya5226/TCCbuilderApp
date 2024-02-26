@@ -1,7 +1,0 @@
-Elementary nickel (Ni)
-
-Melting point 1726 K, source:
-https://www.lesker.com/newweb/deposition_materials/deposition-materials-notes.cfm?pgid=ni4#:~:text=Nickel%20is%20a%20hard%2C%20lustrous,Torr%20at%201%2C180%C2%B0C. (13/12/2023)
-
-Emissivity source:
-\cite{article} doi = {10.1134/S0018151X16040027}

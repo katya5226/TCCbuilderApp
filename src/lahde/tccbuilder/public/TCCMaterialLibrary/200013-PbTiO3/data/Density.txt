@@ -1,4 +1,0 @@
-Source: CRC handbook of Chemistry and Physics, page 4-69
-Density (kg/m3)
-
-7900

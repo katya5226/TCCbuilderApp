@@ -1,4 +1,0 @@
-Elementary germanium (Ge)
-
-Emissivity data from: S A Tretiakov et al 2021 J. Phys.: Conf. Ser. 2103 012230, DOI: 10.1088/1742-6596/2103/1/012230
-Emissivity is taken for type F800.

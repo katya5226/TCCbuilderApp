@@ -1,8 +1,0 @@
-Data from https://materion.com/-/media/files/beryllium/beryllium-materials/mb-003physicsandchemistryofberyllium.pdf, 15. 4. 2022
-Melting point 1560 K, from https://en.wikipedia.org/wiki/Beryllium.
-Density(kg/m^3)
-
-1850.0
-
-When liquid
-1690.0

@@ -1,5 +1,0 @@
-Data from Bjoerk 2010 (10.1016/j.jmmm.2010.08.013)
-It is stated in the paper that density is in general not a strong function of temperature and magnetic field.
-Density(kg/m3)
-
-7290

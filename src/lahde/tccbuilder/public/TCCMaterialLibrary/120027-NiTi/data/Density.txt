@@ -1,4 +1,0 @@
-Data from https://doi.org/10.1063/1.5087135
-Density(kg/m3)
-
-6240

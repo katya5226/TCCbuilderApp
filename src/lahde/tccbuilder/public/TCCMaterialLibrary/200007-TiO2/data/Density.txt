@@ -1,4 +1,0 @@
-Data from Hanaor 2011 (10.1007/s10853-010-5113-0)
-Density(kg/m3)
-
-4250.0

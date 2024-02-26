@@ -1,2 +1,0 @@
-Ti - Ni 44 -Cu 5 - Al 1 (at%) - nanograined, grain size 40 nm
-From Chen 2019 (10.1016/j.actamat.2019.07.033)

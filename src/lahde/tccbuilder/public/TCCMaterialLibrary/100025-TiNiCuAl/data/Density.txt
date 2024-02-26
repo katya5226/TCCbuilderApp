@@ -1,4 +1,0 @@
-Data from Chen 2019 (10.1016/j.actamat.2019.07.033)
-Density kg/m3
-
-6400

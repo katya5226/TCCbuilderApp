@@ -1,5 +1,0 @@
-Chen 2019 (10.1016/j.actamat.2019.07.033) referred to this paper:
-Kaya 2011 (10.1007/s10765-011-0919-9) to estimate the thermal conductivity.
-Thermal conductivity(W/m/K)
-
-12.0

@@ -1,3 +1,0 @@
-Elementary bismuth (Bi)
-
-Emissivity data from Draper, Rosenblatt (1977) doi:10.1016/0040-6031(77)85114-9

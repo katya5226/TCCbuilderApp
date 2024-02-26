@@ -1,6 +1,0 @@
-{
-  "density": 1862.14,
-  "specificHeatCapacity": 691.28,
-  "thermalConductivity": 131.95,
-  "emissivity": 0.59
-}

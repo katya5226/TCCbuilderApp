@@ -1,5 +1,0 @@
-In the paper the density is not specified; however as the material is fully dense, we can estimate the density by taking a value for nitinol in general.
-From https://matthey.com/en/products-and-services/medical-components/resource-library/nitinol-technical-properties on 24th January, 2022.
-Density(kg/m3)
-
-6450.0
