@@ -3,7 +3,6 @@
 Menu ***
 
 File
-
 New blank circuit: Clears the canvas and all settings.
 Import from text: Opens a textbox where one can paste the circuit that was previously saved.
 Save circuit as: Saves the circuit that is currently on the canvas, to one's computer, as text.
@@ -16,18 +15,15 @@ Print: Prints the circuit that is currently on the canvas.
 Toggle full screen: Opens the full screen view of the app.
 
 Edit
-
 Various edit options.
 
 Draw
-
 One should draw a circuit either with Components, or using TCEs and other elements. After selecting one of them, click on the canvas and drag to draw them.
 Some sample TCEs (Samples) can't be resized and will draw automatically with a click on the canvas.
 The Drag options offer different options for dragging the elements or their posts.
 Select/Drag Sel. selects the element that is clicked so it can be moved through the canvas.
 
 Options
-
 The user can toggle each of the available options.
 Show temperatures on graph gives a graphical representation of temperatures of all control volumes of the circuit in a graph in the lower part of the canvas.
 Show temperature overlay shows temperatures as colors where blue is low temperature and red is high temperature. The legend for the colors is shown in the lower part of the canvas.
@@ -35,7 +31,6 @@ Set custom temperature range gives the option to set the range for temperatures 
 Set custom output interval gives the option to specify the interval for exporting temperatures of control volumes in the simulation report. One can export the values of temperatures in each time step, or for example, every 100th time step.
 
 Circuits
-
 Here are some examples of thermal control circuits with preset simulation parameters. Running the simulation for any of these circuits shows their operation.
 
 
