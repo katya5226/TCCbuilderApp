@@ -126,16 +126,16 @@ public class CyclePart {
             }
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)
-                flexTable.setText(row, column++, temperature.toString());
+                flexTable.setText(row, column++, temperature.toString() + " K");
         } else if (!newLengths.isEmpty()) {
             for (Double length : newLengths)
-                flexTable.setText(row, column++, length.toString());
+                flexTable.setText(row, column++, length.toString() + " mm");
         } else if (!newIndexes.isEmpty()) {
             for (Integer i : newIndexes)
                 flexTable.setText(row, column++, i.toString());
         } else if (!heatInputs.isEmpty()) {
             for (Double heatInput : heatInputs)
-                flexTable.setText(row, column++, heatInput.toString());
+                flexTable.setText(row, column++, heatInput.toString() + " W/m³");
         } else if (!changedProperties.isEmpty()) {
             flexTable.removeAllRows();
             for (int i = 0; i < changedProperties.size(); i++) {
@@ -177,7 +177,6 @@ public class CyclePart {
         htmlPanel.add(flexTable);
 
         return htmlPanel;
-
 
     }
 
@@ -447,7 +446,7 @@ public class CyclePart {
             case LENGTH_CHANGE:
                 for (ThermalControlElement tce : TCEs) {
                     report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New length: ";
-                    report += String.valueOf(newLengths.get(TCEs.indexOf(tce))) + " m\n";
+                    report += String.valueOf(newLengths.get(TCEs.indexOf(tce))) + " mm\n";
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:

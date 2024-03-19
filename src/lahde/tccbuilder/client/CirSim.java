@@ -2272,6 +2272,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (item == "newblankcircuit") {
             pushUndo();
             readSetupFile("blank.txt", "Blank Circuit");
+            simulation1D.cycleParts.clear();
+            simulation1D.cyclic = false;
+            CirSim.theSim.fillCyclicPanel();
+            setCyclic(false);
         }
 
         // if (ac.indexOf("setup ") == 0) {
