@@ -102,6 +102,7 @@ public class TCC {
         for (int i = 0; i < TCEs.size(); i++) {
             TCEs.get(i).cvs.get(0).westResistance = TCEs.get(i).westResistance;
             TCEs.get(i).cvs.get(TCEs.get(i).cvs.size() - 1).eastResistance = TCEs.get(i).eastResistance;
+            TCEs.get(i).set_dx(TCEs.get(i).length / TCEs.get(i).cvs.size());
             for (int j = 0; j < TCEs.get(i).cvs.size(); j++) {
                 TCEs.get(i).cvs.get(j).globalIndex = globalIndex;
                 cvs.add(TCEs.get(i).cvs.get(j));

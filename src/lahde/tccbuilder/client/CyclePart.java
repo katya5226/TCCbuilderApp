@@ -36,7 +36,8 @@ public class CyclePart {
         PROPERTIES_CHANGE,
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
-        TIME_PASS;
+        TIME_PASS,
+        LENGTH_CHANGE;
 
 
         public String toSpacedCamelCase() {
@@ -57,6 +58,7 @@ public class CyclePart {
     int partIndex;
     PartType partType;
     Vector<Double> newTemperatures;
+    Vector<Double> newLengths;
     Vector<Integer> newIndexes;
     Vector<Integer> fieldIndexes;
     Vector<Double> heatInputs;
@@ -75,6 +77,7 @@ public class CyclePart {
         partType = PartType.HEAT_TRANSFER;
         TCEs = new Vector<ThermalControlElement>();
         newTemperatures = new Vector<Double>();
+        newLengths = new Vector<Double>();
         heatInputs = new Vector<Double>();
         newIndexes = new Vector<Integer>();
         fieldIndexes = new Vector<Integer>();
@@ -124,6 +127,9 @@ public class CyclePart {
         } else if (!newTemperatures.isEmpty()) {
             for (Double temperature : newTemperatures)
                 flexTable.setText(row, column++, temperature.toString());
+        } else if (!newLengths.isEmpty()) {
+            for (Double length : newLengths)
+                flexTable.setText(row, column++, length.toString());
         } else if (!newIndexes.isEmpty()) {
             for (Integer i : newIndexes)
                 flexTable.setText(row, column++, i.toString());
@@ -219,6 +225,9 @@ public class CyclePart {
                     sim.simulation1D.heatTransferStep();
                 break;
             case TIME_PASS:
+                break;
+            case LENGTH_CHANGE:
+                lengthChange();
                 break;
             default:
                 break;
@@ -356,6 +365,16 @@ public class CyclePart {
         }
     }
 
+    void lengthChange() {
+        if (duration == 0.0) {
+            for (int i = 0; i < TCEs.size(); i++) {
+                TCEs.get(i).setNewLength(newLengths.get(i));
+            }
+            sim.simulation1D.heatCircuit.buildTCC();
+            sim.reorderByIndex();
+        }
+    }
+
     void toggleThermalControlElement() {
         for (int i = 0; i < TCEs.size(); i++) {
             ThermalControlElement thermalControlElement = TCEs.get(i);
@@ -421,8 +440,14 @@ public class CyclePart {
                 break;
             case TEMPERATURE_CHANGE:
                 for (ThermalControlElement tce : TCEs) {
-                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New tempeature: ";
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New temperature: ";
                     report += String.valueOf(newTemperatures.get(TCEs.indexOf(tce))) + " K\n";
+                }
+                break;
+            case LENGTH_CHANGE:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "New length: ";
+                    report += String.valueOf(newLengths.get(TCEs.indexOf(tce))) + " m\n";
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
@@ -479,6 +504,12 @@ public class CyclePart {
                 dump += newTemperatures.size() + " ";
                 for (Double t : newTemperatures)
                     dump += t + " ";
+
+                break;
+            case LENGTH_CHANGE:
+                dump += newLengths.size() + " ";
+                for (Double l : newLengths)
+                    dump += l + " ";
 
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
@@ -556,6 +587,13 @@ public class CyclePart {
                 newTemperatures.clear();
                 for (int i = 0; i < numNewTemperatures; i++) {
                     newTemperatures.add(Double.parseDouble(st.nextToken()));
+                }
+                break;
+            case LENGTH_CHANGE:
+                int numNewLengths = Integer.parseInt(st.nextToken());
+                newLengths.clear();
+                for (int i = 0; i < numNewLengths; i++) {
+                    newLengths.add(Double.parseDouble(st.nextToken()));
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
