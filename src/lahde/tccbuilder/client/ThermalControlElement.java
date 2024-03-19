@@ -46,6 +46,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     CirSim.LengthUnit DEFINED_LENGTH_UNIT;
 
+    public ThermalControlElement() {
+        super();
+    }
 
     public ThermalControlElement(int xx, int yy) {
         super(xx, yy);
@@ -367,6 +370,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 13:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 14:
+                return new EditInfo("Cross Area (m²)", crossArea);
+            case 15:
                 //return EditInfo.createCheckbox("Turn on external field", field);
                 EditInfo ei3 = EditInfo.createButton("Toggle external field");
                 ei3.button.addClickHandler(new ClickHandler() {
@@ -439,6 +444,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 hTransv = (double) ei.value;
                 break;
             case 14:
+                crossArea = (double) ei.value;
+                break;
+            case 15:
                 break;
         }
         updateElement();

@@ -1,6 +1,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class ControlVolume {
     public double constCp;
     public double constK;
     public double constSeeb;
+    public double elResistivity;
     public double eps;
     public int mode;
 
@@ -57,6 +59,7 @@ public class ControlVolume {
         constCp = -1;
         constK = -1;
         constSeeb = -7e-4;
+        elResistivity = 12e-6;
         constQgen = 0.0;
         eps = 1.0;
         mode = 1;
@@ -178,6 +181,7 @@ public class ControlVolume {
         if (constSeeb != -1)
             seebGrad = 0;
         else {
+            Window.alert("Seebeck coefficient not constant, check that the material has data on temperature dependence of Seebeck coefficient.");
             seebGrad = material.dSeebdT.get((int) Math.round(temperature * 10));
         }
         return seebGrad;
