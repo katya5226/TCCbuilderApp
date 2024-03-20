@@ -1,7 +1,5 @@
 # TCCbuilderApp
 
-# TCCbuilderApp
-
 The original code was forked from the project CircuitJS1 (Copyright(C) Paul Falstad and Iain Sharp, https://github.com/pfalstad/circuitjs1).
 To build your own application, see the instructions available at https://github.com/pfalstad/circuitjs1 (README).
 
