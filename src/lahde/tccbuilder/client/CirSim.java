@@ -454,8 +454,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             reportAsLocalFileItem = menuItemWithShortcut("floppy", "Save Report As", "", new MyCommand("file", "reportaslocalfile"));
             fileMenuBar.addItem(reportAsLocalFileItem);
         }
-        exportAsUrlItem = iconMenuItem("export", "Export Circuit As Link", new MyCommand("file", "exportasurl"));
-        fileMenuBar.addItem(exportAsUrlItem);
+        // exportAsUrlItem = iconMenuItem("export", "Export Circuit As Link", new MyCommand("file", "exportasurl"));
+        // fileMenuBar.addItem(exportAsUrlItem);
         exportAsTextItem = iconMenuItem("export", "Export Circuit As Text", new MyCommand("file", "exportastext"));
         fileMenuBar.addItem(exportAsTextItem);
         reportAsTextItem = iconMenuItem("export", "Export Report As Text", new MyCommand("file", "reportastext"));
@@ -573,19 +573,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing"));
         noEditCheckItem.setState(noEditing);
 
-        m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"), new Command() {
-            public void execute() {
-                setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
-            }
-        }));
-        mouseWheelEditCheckItem.setState(mouseWheelEdit);
+        // m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"), new Command() {
+        //     public void execute() {
+        //         setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
+        //     }
+        // }));
+        // mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
         m.addItem(outputIntervalItem = new CheckboxMenuItem(Locale.LS("Set custom output interval"), new Command() {
             public void execute() {
                 intervalDialog = new IntervalDialog(theSim);
             }
         }));
-        mouseWheelEditCheckItem.setState(false);
+       // mouseWheelEditCheckItem.setState(false);
 
         new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts"));
         optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other"));
@@ -2167,10 +2167,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (item == "importfromdropbox") {
             dialogShowing = new ImportFromDropboxDialog(this);
         }
-        if (item == "exportasurl") {
-            doExportAsUrl();
-            unsavedChanges = false;
-        }
+        // if (item == "exportasurl") {
+        //     doExportAsUrl();
+        //     unsavedChanges = false;
+        // }
         if (item == "exportaslocalfile") {
             doExportAsLocalFile();
             unsavedChanges = false;
@@ -2341,11 +2341,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dialogShowing.show();
     }
 
-    void doExportAsUrl() {
-        String dump = dumpCircuit();
-        dialogShowing = new ExportAsUrlDialog(dump);
-        dialogShowing.show();
-    }
+    // void doExportAsUrl() {
+    //     String dump = dumpCircuit();
+    //     dialogShowing = new ExportAsUrlDialog(dump);
+    //     dialogShowing.show();
+    // }
 
     void doExportAsText() {
         // String dump = dumpCircuit();
