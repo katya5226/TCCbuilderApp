@@ -515,11 +515,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             }
         }
         String s2 = "";
-        if (largestDeltaT <= 0.1) s2 = "\tSpace discretisation sufficient";
+        if (largestDeltaT <= 0.1) s2 = "";  // "\tSpace discretisation sufficient";
         if (largestDeltaT > 0.5) s2 = "\tSpace discretisation may not be sufficient";
         String s = String.valueOf(Math.round(largestDeltaT * 1000) / 1000.0) + " K";
         return s + s2;
-        // return s + s2;
     }
 
 
