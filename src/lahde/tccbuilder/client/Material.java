@@ -34,8 +34,9 @@ public class Material {
     public Vector<Double> interpTemps;
 
     public Vector<Double> rho;
-    public Vector<Double> seebeck;
-    public Vector<Double> dSeebdT;
+    public Vector<Double> seebeckCoeff;
+    public Vector<Double> dSeebeckdT;
+    public Vector<Double> elRes;
     public Vector<Vector<Double>> k;
     public Vector<Vector<Double>> kHeating;
     public Vector<Vector<Double>> kCooling;
@@ -127,8 +128,9 @@ public class Material {
 
     void readFiles() {
         this.rho = new Vector<Double>();
-        this.seebeck = new Vector<Double>();
-        this.dSeebdT = new Vector<Double>();
+        this.seebeckCoeff = new Vector<Double>();
+        this.dSeebeckdT = new Vector<Double>();
+        this.elRes = new Vector<Double>();
         this.k = new Vector<Vector<Double>>();
         this.kHeating = new Vector<Vector<Double>>();
         this.kCooling = new Vector<Vector<Double>>();
@@ -352,6 +354,24 @@ public class Material {
                         fillVectorFromURL(url_k, vector, 1);
                         k.add(vector);
                     }
+
+                    if (thermoelectric) {
+                        String url_seebeck;
+                        url_seebeck = baseURL + materialName + "/appInfo/seebeck_coeff.txt";
+                        sim.awaitedResponses.add(url_seebeck);
+                        fillVectorFromURL(url_seebeck, seebeckCoeff, 1);
+
+                        String url_seeb_der;
+                        url_seeb_der = baseURL + materialName + "/appInfo/dSeebeck_dT.txt";
+                        sim.awaitedResponses.add(url_seeb_der);
+                        fillVectorFromURL(url_seeb_der, dSeebeckdT, 1);
+
+                        String url_el_res;
+                        url_el_res = baseURL + materialName + "/appInfo/el_res.txt";
+                        sim.awaitedResponses.add(url_el_res);
+                        fillVectorFromURL(url_el_res, elRes, 1);
+                    }
+
                 }
             });
         }
@@ -363,7 +383,7 @@ public class Material {
         if (rho == null) return false;
         boolean isLoaded = true;
         isLoaded = isLoaded && !rho.isEmpty();
-        if (invariant) {
+        if (invariant || thermoelectric) {
             isLoaded = isLoaded && !cp.isEmpty();
             isLoaded = isLoaded && !k.isEmpty();
         } else if (magnetocaloric || barocaloric || electrocaloric || elastocaloric) {

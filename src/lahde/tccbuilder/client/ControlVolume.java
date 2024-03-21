@@ -171,7 +171,7 @@ public class ControlVolume {
         if (constSeeb != -1)
             seeb = constSeeb;
         else {
-            seeb = material.seebeck.get((int) Math.round(temperature * 10));
+            seeb = material.seebeckCoeff.get((int) Math.round(temperature * 10));
         }
         return seeb;
     }
@@ -182,7 +182,7 @@ public class ControlVolume {
             seebGrad = 0;
         else {
             Window.alert("Seebeck coefficient not constant, check that the material has data on temperature dependence of Seebeck coefficient.");
-            seebGrad = material.dSeebdT.get((int) Math.round(temperature * 10));
+            seebGrad = material.dSeebeckdT.get((int) Math.round(temperature * 10));
         }
         return seebGrad;
     }
