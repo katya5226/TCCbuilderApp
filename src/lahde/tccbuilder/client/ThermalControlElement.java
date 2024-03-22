@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 
 public class ThermalControlElement extends CircuitElm implements Comparable<ThermalControlElement> {
+    public TCC parent;
     public double length;
     Color color;
     public String name;
@@ -108,6 +109,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void initializeThermalControlElement() {
+        parent = null;
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
@@ -160,7 +162,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
-
     }
 
     public void setTemperatures(double startTemp) {

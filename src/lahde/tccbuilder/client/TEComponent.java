@@ -14,9 +14,9 @@ import com.google.gwt.user.client.Window;
 
 public class TEComponent extends ThermalControlElement {
 
-    double elResistivity;
-    double elCurrent;
+    double constElResistivity;
     double constSeebeck;
+    double elCurrent;
 
     public TEComponent(int xx, int yy) {
         super(xx, yy);
@@ -50,7 +50,7 @@ public class TEComponent extends ThermalControlElement {
         field = false;
         fieldIndex = Integer.parseInt(st.nextToken());
         constSeebeck = Double.parseDouble(st.nextToken());
-        elResistivity = Double.parseDouble(st.nextToken());
+        constElResistivity = Double.parseDouble(st.nextToken());
         elCurrent = Double.parseDouble(st.nextToken());
         buildThermalControlElement();
         int counter = 0;
@@ -131,9 +131,9 @@ public class TEComponent extends ThermalControlElement {
             case 14:
                 return new EditInfo("Cross Area (mm²)", crossArea);
             case 15:
-                return EditInfo.createCheckboxWithField("Constant Seebeck Coefficient (\u03BCV/K)", !(constSeebeck == -1), constSeebeck * 1e6);
+                return EditInfo.createCheckboxWithField("Constant Seebeck Coefficient (\u03BCV/K)", !(constSeebeck == -1), constSeebeck);
             case 16:
-                return new EditInfo("Electrical resistivity (\u03BC\u03A9m)", elResistivity * 1e6);
+                return EditInfo.createCheckboxWithField("Constant electrical resistivity (\u03BC\u03A9m)", !(constElResistivity == -1), constElResistivity);
             case 17:
                 return new EditInfo("Electric current (A)", elCurrent);
             default:
@@ -195,13 +195,13 @@ public class TEComponent extends ThermalControlElement {
                 hTransv = (double) ei.value;
                 break;
             case 14:
-                crossArea = (double) ei.value * 1.0e-6;
+                crossArea = (double) ei.value;  // * 1.0e-6;
                 break;
             case 15:
-                constSeebeck = (double) ei.value * 1.0e-6;
+                constSeebeck = (double) ei.value;  // * 1.0e-6;
                 break;
             case 16:
-                elResistivity = (double) ei.value * 1.0e-6;
+                constElResistivity = (double) ei.value; // * 1.0e-6;
                 break;
             case 17:
                 elCurrent = (double) ei.value;
@@ -215,7 +215,7 @@ public class TEComponent extends ThermalControlElement {
     public void initializeThermalControlElement() {
         super.initializeThermalControlElement();
         constSeebeck = -1;
-        elResistivity = 1.0e-6;
+        constElResistivity = -1;
         elCurrent = 0.0;
     }
 
@@ -226,7 +226,9 @@ public class TEComponent extends ThermalControlElement {
             if (constSeebeck != -1) {
                 cv.constSeeb = constSeebeck;
             }
-            cv.elResistivity = elResistivity;
+            if (constElResistivity != -1) {
+                cv.constElResistivity = constElResistivity;
+            }
         }
     }
 
@@ -254,7 +256,7 @@ public class TEComponent extends ThermalControlElement {
         sb.append(Color.colorToIndex(color)).append(' ');
         sb.append(fieldIndex).append(' ');
         sb.append(constSeebeck).append(' ');
-        sb.append(elResistivity).append(' ');
+        sb.append(constElResistivity).append(' ');
         sb.append(elCurrent).append(' ');
 
         int counter = 0;

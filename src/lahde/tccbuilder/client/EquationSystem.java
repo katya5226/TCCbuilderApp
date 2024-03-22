@@ -100,7 +100,7 @@ public class EquationSystem {
                 TEComponent thermoelectric = (TEComponent) tce;
                 if (thermoelectric.crossArea == -1) {
                     Window.alert("Thermoelectric cross area invalid! Setting value to 1 mm²");
-                    thermoelectric.crossArea = 1.0e-6;
+                    thermoelectric.crossArea = 1.0;
                 }
                 ModelMethods.CVinterface cvInter = new ModelMethods.CVinterface();
                 int teStartIndex = thermoelectric.cvs.get(0).globalIndex;
@@ -108,16 +108,18 @@ public class EquationSystem {
                 int teEndIndex = thermoelectric.cvs.get(thermoelectric.cvs.size() - 1).globalIndex;
                 if (teEndIndex >= circuit.cvs.size() - 1) Window.alert("Thermoelectric element end index invalid!");
                 for (int i = teStartIndex; i < teEndIndex + 1; i++) {
-                    circuit.rhs[i] += circuit.cvs.get(i).elResistivity * Math.pow(thermoelectric.elCurrent / thermoelectric.crossArea, 2) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;  // Joule heating
+                    circuit.rhs[i] += circuit.cvs.get(i).elResistivity() * Math.pow(1.0e6 * thermoelectric.elCurrent / thermoelectric.crossArea, 2) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;  // Joule heating
                     double grad = cvInter.temperatureGradient(circuit.cvs.get(i));
-                    circuit.diag[i] -= circuit.cvs.get(i).seebeckGradient() * grad * (thermoelectric.elCurrent / thermoelectric.crossArea) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;
+                    circuit.diag[i] -= circuit.cvs.get(i).seebeckGradient() * grad * (1.0e6 * thermoelectric.elCurrent / thermoelectric.crossArea) * Math.pow(circuit.cvs.get(i).dx, 2) * dt;
                 }
                 cvInter.calculateCoefficients(circuit.cvs.get(teStartIndex - 1), circuit.cvs.get(teStartIndex));
-                double peltier = thermoelectric.cvs.get(0).seeb(cvInter.T2) * (thermoelectric.elCurrent / thermoelectric.crossArea)* dt;
+                // GWT.log(String.valueOf(thermoelectric.cvs.get(0).seeb(cvInter.T2)));
+                double peltier = thermoelectric.cvs.get(0).seeb(cvInter.T2) * (1.0e6 * thermoelectric.elCurrent / thermoelectric.crossArea) * dt;
                 circuit.diag[teStartIndex] -= cvInter.b2 * peltier * circuit.cvs.get(teStartIndex).dx;
                 circuit.diag[teStartIndex - 1] -= cvInter.a2 * peltier * circuit.cvs.get(teStartIndex - 1).dx;
                 cvInter.calculateCoefficients(circuit.cvs.get(teEndIndex), circuit.cvs.get(teEndIndex + 1));
-                peltier = thermoelectric.cvs.get(thermoelectric.cvs.size() - 1).seeb(cvInter.T1) * (thermoelectric.elCurrent / thermoelectric.crossArea) * dt;
+
+                peltier = thermoelectric.cvs.get(thermoelectric.cvs.size() - 1).seeb(cvInter.T1) * (1.0e6 * thermoelectric.elCurrent / thermoelectric.crossArea) * dt;
                 circuit.diag[teEndIndex] += cvInter.b1 * peltier * circuit.cvs.get(teEndIndex).dx;
                 circuit.diag[teEndIndex + 1] += cvInter.c1 * peltier * circuit.cvs.get(teEndIndex + 1).dx;
             }

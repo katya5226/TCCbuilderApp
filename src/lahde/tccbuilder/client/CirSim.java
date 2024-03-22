@@ -1655,6 +1655,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Collections.sort(simulation1D.simTCEs);
         Collections.sort(trackedTemperatures);
         redrawElements(simulation1D.simTCEs);
+        if (simulation1D.heatCircuit != null) {
+            simulation1D.heatCircuit.setGlobalIndeces();
+            simulation1D.heatCircuit.setNeighbours();
+        }
     }
 
     public void reorderByPosition() {
