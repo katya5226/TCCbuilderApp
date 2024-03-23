@@ -39,6 +39,7 @@ public class CyclicDialog extends Dialog {
     DoubleBox pressureFieldStrength;
     DoubleBox shearStressFieldStrength;
     DoubleBox newTemperature;
+    DoubleBox newLength;
     Label heatInputLabel;
     Label durationLabel;
     Label newIndexLabel;
@@ -47,6 +48,7 @@ public class CyclicDialog extends Dialog {
     Label pressureFieldStrengthLabel;
     Label shearStressFieldStrengthLabel;
     Label newTemperatureLabel;
+    Label newLengthLabel;
     Label componentsLabel;
     Label rhoLabel;
     Label cpLabel;
@@ -98,7 +100,8 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Properties Change");
         cyclePartListBox.addItem("Temperature Change");
         cyclePartListBox.addItem("Toggle TCE");
-        cyclePartListBox.addItem("Time pass");
+        cyclePartListBox.addItem("Time Pass");
+        cyclePartListBox.addItem("Length Change");
 
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
@@ -203,6 +206,11 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(newTemperatureLabel);
         inputWidgets.add(newTemperature);
 
+        newLengthLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Length (mm): "));
+        newLength = new DoubleBox();
+        inputWidgets.add(newLengthLabel);
+        inputWidgets.add(newLength);
+
         addComponentButton = new Button(Locale.LS("Add Component"));
         inputWidgets.add(addComponentButton);
 
@@ -248,6 +256,7 @@ public class CyclicDialog extends Dialog {
                     case TEMPERATURE_CHANGE:
                         cyclePart.duration = duration.getValue();
                         break;
+                    case LENGTH_CHANGE:
                     case HEAT_INPUT:
                         cyclePart.duration = duration.getValue();
                         break;
@@ -320,6 +329,10 @@ public class CyclicDialog extends Dialog {
                             cyclePart.TCEs.add(chosenComponent);
                             cyclePart.newTemperatures.add(newTemperature.getValue());
                             break;
+                        case LENGTH_CHANGE:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.newLengths.add(newLength.getValue());
+                            break;
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
                             cyclePart.TCEs.add(chosenComponent);
                             break;
@@ -361,6 +374,9 @@ public class CyclicDialog extends Dialog {
                         case TEMPERATURE_CHANGE:
                             cyclePart.newTemperatures.set(index, newTemperature.getValue());
                             sim.simulation1D.setTemperatureRange();
+                            break;
+                        case LENGTH_CHANGE:
+                            cyclePart.newLengths.set(index, newLength.getValue());
                             break;
                         case TOGGLE_THERMAL_CONTROL_ELEMENT:
                             break;
@@ -477,11 +493,19 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TOGGLE_THERMAL_CONTROL_ELEMENT;
                         break;
-                    case "Time pass":
+                    case "Time Pass":
                         durationLabel.setVisible(true);
                         duration.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.TIME_PASS;
+                        break;
+                    case "Length Change":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        // durationLabel.setVisible(true);
+                        // duration.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.LENGTH_CHANGE;
                         break;
                     default:
                         Window.alert("Please select a cycle part");
@@ -519,6 +543,8 @@ public class CyclicDialog extends Dialog {
                     newK.setVisible(false);
                     newTemperatureLabel.setVisible(false);
                     newTemperature.setVisible(false);
+                    newLengthLabel.setVisible(false);
+                    newLength.setVisible(false);
                     addComponentButton.setVisible(false);
                     return;
                 }
@@ -586,6 +612,11 @@ public class CyclicDialog extends Dialog {
                         newTemperature.setVisible(true);
                         addComponentButton.setVisible(true);
                         break;
+                    case LENGTH_CHANGE:
+                        newLengthLabel.setVisible(true);
+                        newLength.setVisible(true);
+                        addComponentButton.setVisible(true);
+                        break;
                     case TOGGLE_THERMAL_CONTROL_ELEMENT:
                         addComponentButton.setVisible(true);
                         break;
@@ -637,6 +668,8 @@ public class CyclicDialog extends Dialog {
                 case PROPERTIES_CHANGE:
                     break;
                 case TEMPERATURE_CHANGE:
+                    break;
+                case LENGTH_CHANGE:
                     break;
                 case TOGGLE_THERMAL_CONTROL_ELEMENT:
                     add = tce instanceof SwitchElm;
@@ -712,6 +745,8 @@ public class CyclicDialog extends Dialog {
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
                 break;
             case TEMPERATURE_CHANGE:
+                break;
+            case LENGTH_CHANGE:
                 break;
             case TIME_PASS:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");

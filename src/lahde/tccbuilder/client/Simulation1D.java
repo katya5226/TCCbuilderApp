@@ -300,7 +300,7 @@ public class Simulation1D extends Simulation {
             }
             dump += "\n";
         }
-        dump += "\nFluxes (W/m²):\n";
+        dump += "\nFluxes at CV faces (W/m²) at the time of report generation:\n";
         heatCircuit.calculateHeatFluxes();
         for (Double f : heatCircuit.fluxes)
             dump += f + "\t";
@@ -308,7 +308,7 @@ public class Simulation1D extends Simulation {
             dump += "\n\nPower outputs of TE heat engines:\n";
             dump += "Time (s)\t";
             for (int i = 0; i < TEpowerOutputs.get(0).size(); i++) {
-                dump += "TEengine#" + i + ": Average dT² (K)\t P (W)\t";
+                dump += "TEengine#" + i + ": Average dT² (K²)\t P (W)\t";
             }
             dump += "\n";
             for (int i = 0; i < TEpowerOutputs.size(); i+= outputInterval) {

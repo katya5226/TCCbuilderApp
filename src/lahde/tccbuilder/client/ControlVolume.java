@@ -1,6 +1,7 @@
 package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class ControlVolume {
     public double constCp;
     public double constK;
     public double constSeeb;
+    public double constElResistivity;
     public double eps;
     public int mode;
 
@@ -56,7 +58,8 @@ public class ControlVolume {
         constRho = -1;
         constCp = -1;
         constK = -1;
-        constSeeb = -7e-4;
+        constSeeb = -1;
+        constElResistivity = -1;
         constQgen = 0.0;
         eps = 1.0;
         mode = 1;
@@ -166,9 +169,9 @@ public class ControlVolume {
     double seeb(double T) {
         double seeb = 1;
         if (constSeeb != -1)
-            seeb = constSeeb;
+            seeb = constSeeb * 1.0e-6;
         else {
-            seeb = material.seebeck.get((int) Math.round(temperature * 10));
+            seeb = material.seebeckCoeff.get((int) Math.round(T * 10));
         }
         return seeb;
     }
@@ -178,9 +181,20 @@ public class ControlVolume {
         if (constSeeb != -1)
             seebGrad = 0;
         else {
-            seebGrad = material.dSeebdT.get((int) Math.round(temperature * 10));
+            // Window.alert("Seebeck coefficient not constant, check that the material has data on temperature dependence of Seebeck coefficient.");
+            seebGrad = material.dSeebeckdT.get((int) Math.round(temperature * 10));
         }
         return seebGrad;
+    }
+
+    double elResistivity() {
+        double elRes = 0;
+        if (constElResistivity != -1)
+            elRes = constElResistivity * 1.0e-6;
+        else {
+            elRes = material.elRes.get((int) Math.round(temperature * 10));
+        }
+        return elRes;
     }
 
     double qGen() {
