@@ -35,6 +35,7 @@ public class TEComponent extends ThermalControlElement {
         index = Integer.parseInt(st.nextToken());
         material = sim.materialHashMap.get("100001-Inox");
         length = Double.parseDouble(st.nextToken());
+        crossArea = Double.parseDouble(st.nextToken());
         name = st.nextToken().replaceAll("#", " ");
         resizable = Boolean.parseBoolean(st.nextToken());
         constRho = Double.parseDouble(st.nextToken());
@@ -243,6 +244,7 @@ public class TEComponent extends ThermalControlElement {
         sb.append(index).append(' ');
 
         sb.append(length).append(' ');
+        sb.append(crossArea).append(' ');
         sb.append(name.replaceAll(" ", "#")).append(' ');
         sb.append(resizable).append(' ');
         sb.append(constRho).append(' ');
