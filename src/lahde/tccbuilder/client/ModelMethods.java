@@ -3,6 +3,7 @@ package lahde.tccbuilder.client;
 import java.util.Vector;
 
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 
 public class ModelMethods {
 
@@ -34,6 +35,7 @@ public class ModelMethods {
             x[i] = d[i] - c[i] * x[i + 1];
         }
         for (int i = 0; i != x.length; i++) {
+            if (x[i] > 1999.0) Window.alert("Temperature too high, reload and change input data!");
             cvs.get(i).temperature = x[i];
         }
     }

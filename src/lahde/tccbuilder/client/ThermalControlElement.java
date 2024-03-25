@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 
 public class ThermalControlElement extends CircuitElm implements Comparable<ThermalControlElement> {
+    public TCC parent;
     public double length;
     Color color;
     public String name;
@@ -46,6 +47,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     CirSim.LengthUnit DEFINED_LENGTH_UNIT;
 
+    public ThermalControlElement() {
+        super();
+    }
 
     public ThermalControlElement(int xx, int yy) {
         super(xx, yy);
@@ -105,6 +109,7 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
     }
 
     public void initializeThermalControlElement() {
+        parent = null;
         color = Color.gray;
         calculateLength();
         name = this.getClass().getSimpleName().replace("Elm", "");
@@ -157,7 +162,6 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
         cvs.get(0).westResistance = westResistance;
         cvs.get(numCvs - 1).eastResistance = eastResistance;
-
     }
 
     public void setTemperatures(double startTemp) {
@@ -367,6 +371,8 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             case 13:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 14:
+                return new EditInfo("Cross Area (m²)", crossArea);
+            case 15:
                 //return EditInfo.createCheckbox("Turn on external field", field);
                 EditInfo ei3 = EditInfo.createButton("Toggle external field");
                 ei3.button.addClickHandler(new ClickHandler() {
@@ -439,6 +445,9 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
                 hTransv = (double) ei.value;
                 break;
             case 14:
+                crossArea = (double) ei.value;
+                break;
+            case 15:
                 break;
         }
         updateElement();
@@ -507,11 +516,10 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
             }
         }
         String s2 = "";
-        if (largestDeltaT <= 0.1) s2 = "\tDiscretisation sufficient";
-        if (largestDeltaT > 0.5) s2 = "\tDiscretisation may not be sufficient";
+        if (largestDeltaT <= 0.1) s2 = "";  // "\tSpace discretisation sufficient";
+        if (largestDeltaT > 0.5) s2 = "\tSpace discretisation may not be sufficient";
         String s = String.valueOf(Math.round(largestDeltaT * 1000) / 1000.0) + " K";
         return s + s2;
-        // return s + s2;
     }
 
 

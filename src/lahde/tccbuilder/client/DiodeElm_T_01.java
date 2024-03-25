@@ -16,9 +16,9 @@ public class DiodeElm_T_01 extends DiodeElm {
 
     public DiodeElm_T_01(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
-        // k0 = Double.parseDouble(st.nextToken());
-        // beta = Double.parseDouble(st.nextToken());
-        // gamma = Double.parseDouble(st.nextToken());
+        k0 = Double.parseDouble(st.nextToken());
+        beta = Double.parseDouble(st.nextToken());
+        gamma = Double.parseDouble(st.nextToken());
     }
 
     @Override
@@ -132,8 +132,8 @@ public class DiodeElm_T_01 extends DiodeElm {
         return 604;
     }
 
-    // @Override
-    // String dump() {
-    //    return super.dump() + " " + k0 + " " + beta + " " + gamma;
-    // }
+    @Override
+    String dump() {
+       return super.dump() + " " + k0 + " " + beta + " " + gamma + " ";
+    }
 }

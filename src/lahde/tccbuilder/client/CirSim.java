@@ -454,8 +454,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             reportAsLocalFileItem = menuItemWithShortcut("floppy", "Save Report As", "", new MyCommand("file", "reportaslocalfile"));
             fileMenuBar.addItem(reportAsLocalFileItem);
         }
-        exportAsUrlItem = iconMenuItem("export", "Export Circuit As Link", new MyCommand("file", "exportasurl"));
-        fileMenuBar.addItem(exportAsUrlItem);
+        // exportAsUrlItem = iconMenuItem("export", "Export Circuit As Link", new MyCommand("file", "exportasurl"));
+        // fileMenuBar.addItem(exportAsUrlItem);
         exportAsTextItem = iconMenuItem("export", "Export Circuit As Text", new MyCommand("file", "exportastext"));
         fileMenuBar.addItem(exportAsTextItem);
         reportAsTextItem = iconMenuItem("export", "Export Report As Text", new MyCommand("file", "reportastext"));
@@ -573,19 +573,19 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         noEditCheckItem = new CheckboxMenuItem(Locale.LS("Disable Editing"));
         noEditCheckItem.setState(noEditing);
 
-        m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"), new Command() {
-            public void execute() {
-                setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
-            }
-        }));
-        mouseWheelEditCheckItem.setState(mouseWheelEdit);
+        // m.addItem(mouseWheelEditCheckItem = new CheckboxMenuItem(Locale.LS("Edit Values With Mouse Wheel"), new Command() {
+        //     public void execute() {
+        //         setOptionInStorage("mouseWheelEdit", mouseWheelEditCheckItem.getState());
+        //     }
+        // }));
+        // mouseWheelEditCheckItem.setState(mouseWheelEdit);
 
         m.addItem(outputIntervalItem = new CheckboxMenuItem(Locale.LS("Set custom output interval"), new Command() {
             public void execute() {
                 intervalDialog = new IntervalDialog(theSim);
             }
         }));
-        mouseWheelEditCheckItem.setState(false);
+       // mouseWheelEditCheckItem.setState(false);
 
         new CheckboxAlignedMenuItem(Locale.LS("Shortcuts..."), new MyCommand("options", "shortcuts"));
         optionsItem = new CheckboxAlignedMenuItem(Locale.LS("Other Options..."), new MyCommand("options", "other"));
@@ -1190,6 +1190,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add CircularInterface"), "CircularInterface"));
         } else {
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Component"), "Component"));
+            mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add TE Component"), "TEComponent"));
             mainMenuBar.addSeparator();
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Conduit"), "WireElm"));
             mainMenuBar.addItem(getClassCheckItem(Locale.LS("Add Resistor"), "ResistorElm"));
@@ -1654,6 +1655,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         Collections.sort(simulation1D.simTCEs);
         Collections.sort(trackedTemperatures);
         redrawElements(simulation1D.simTCEs);
+        if (simulation1D.heatCircuit != null) {
+            simulation1D.heatCircuit.setGlobalIndeces();
+            simulation1D.heatCircuit.setNeighbours();
+        }
     }
 
     public void reorderByPosition() {
@@ -1919,7 +1924,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             if (simDimensionality == 1) {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation1D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation1D.dt + " s";
-                info[2] = Locale.LS("components = " + simulation1D.printTCEs());
+                info[2] = Locale.LS("TCEs = " + simulation1D.printTCEs());
             } else {
                 info[0] = Locale.LS("t = ") + NumberFormat.getFormat("0.000000").format(simulation2D.time) + " s";
                 info[1] = Locale.LS("time step = ") + simulation2D.dt + " s";
@@ -2166,10 +2171,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (item == "importfromdropbox") {
             dialogShowing = new ImportFromDropboxDialog(this);
         }
-        if (item == "exportasurl") {
-            doExportAsUrl();
-            unsavedChanges = false;
-        }
+        // if (item == "exportasurl") {
+        //     doExportAsUrl();
+        //     unsavedChanges = false;
+        // }
         if (item == "exportaslocalfile") {
             doExportAsLocalFile();
             unsavedChanges = false;
@@ -2271,6 +2276,10 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         if (item == "newblankcircuit") {
             pushUndo();
             readSetupFile("blank.txt", "Blank Circuit");
+            simulation1D.cycleParts.clear();
+            simulation1D.cyclic = false;
+            CirSim.theSim.fillCyclicPanel();
+            setCyclic(false);
         }
 
         // if (ac.indexOf("setup ") == 0) {
@@ -2336,11 +2345,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
         dialogShowing.show();
     }
 
-    void doExportAsUrl() {
-        String dump = dumpCircuit();
-        dialogShowing = new ExportAsUrlDialog(dump);
-        dialogShowing.show();
-    }
+    // void doExportAsUrl() {
+    //     String dump = dumpCircuit();
+    //     dialogShowing = new ExportAsUrlDialog(dump);
+    //     dialogShowing.show();
+    // }
 
     void doExportAsText() {
         // String dump = dumpCircuit();
@@ -4166,6 +4175,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             case 520:
                 return new Component(x1, y1, x2, y2, f, st);
+            case 530:
+                return new TEComponent(x1, y1, x2, y2, f, st);
             case 'c':
                 return new CapacitorElm(x1, y1, x2, y2, f, st);
             case 'd':
@@ -4194,7 +4205,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
             case 603:
                 return new DiodeElm_F_02(x1, y1);
             case 604:
-                return new DiodeElm_T_01(x1, y1);
+                return new DiodeElm_T_01(x1, y1, x2, y2, f, st);
             case 610:
                 return new SwitchElm_FM_01(x1, y1);
             case 611:
@@ -4230,6 +4241,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
             case "Component":
                 return new Component(x1, y1);
+            case "TEComponent":
+                return new TEComponent(x1, y1);
             case "CapacitorElm":
                 return new CapacitorElm(x1, y1);
             case "DiodeElm":

@@ -1,8 +1,8 @@
-*** TCCbuilder app ***
+# TCCbuilder app
 
-Menu ***
+## Menu
 
-File
+### File
 New blank circuit: Clears the canvas and all settings.
 Open file: Opens a file with a saved circuit and draws it on the canvas.
 Import from text: Opens a textbox where one can paste the circuit that was previously saved.
@@ -16,34 +16,34 @@ Recover Auto-Save: Recovers the last saved circuit.
 Print: Prints the circuit that is currently on the canvas.
 Toggle full screen: Opens the full screen view of the app.
 
-Edit
+### Edit
 Various edit options.
 
-Draw
+### Draw
 One should draw a circuit either with Components, or using TCEs and other elements. After selecting one of them, click on the canvas and drag to draw them.
 Some sample TCEs (Samples) can't be resized and will draw automatically with a click on the canvas.
 The Drag options offer different options for dragging the elements or their posts.
 Select/Drag Sel. selects the element that is clicked so it can be moved through the canvas.
 
-Options
+### Options
 The user can toggle each of the available options.
 Show temperatures on graph gives a graphical representation of temperatures of all control volumes of the circuit in a graph in the lower part of the canvas.
 Show temperature overlay shows temperatures as colors where blue is low temperature and red is high temperature. The legend for the colors is shown in the lower part of the canvas.
 Set custom temperature range gives the option to set the range for temperatures shown in the graph. This is necessary when the model itself cannot predict the temperature range of the whole simulation.
 Set custom output interval gives the option to specify the interval for exporting temperatures of control volumes in the simulation report. One can export the values of temperatures in each time step, or for example, every 100th time step.
 
-Circuits
+### Circuits
 Here are some examples of thermal control circuits with preset simulation parameters. Running the simulation for any of these circuits shows their operation.
 
 
-Editing components or TCEs ***
+## Editing components or TCEs
 
 By right clicking on any component or element, the editing dialog opens.
 The following properties can be set: Name of the TCE, TCE index within the TCC, material, number of control volumes, color, length, contact resistances, and thermal properties.
 Depending on the type of component or TCE, some properties may not be modifiable, or are not applicable, or there may be additional properties that need to be set.
 
 
-Right part of the canvas ***
+## Right-hand side of the canvas
 
 Build TCC - opens the starting dialog for setting the simulation parameters and running a simulation.
 Reset TCC - resets the circuit to initial values and sets the time to zero.
@@ -53,7 +53,7 @@ Scale - the space scale of the canvas. Each pixel on screen coresponds to some r
 Dimensionality - At the moment, the app works well only for 1D.
 
 
-Setting the simulation parameters ***
+## Setting the simulation parameters
 
 Clicking the "Build TCC" button opens the dialog where all the parameters relevant for a simulation can be set.
 Cyclic operation is set by checking the "Cyclic" checkbox, that can be unchecked at any time. Cycle parts can then be added.
@@ -62,7 +62,7 @@ For some cycle parts like heat transfer, no components need to be added as all a
 Clicking the "Apply" button starts the simulation.
 
 
-Workflow ***
+## Workflow
 
 First, the dimensionality should be set and the scale should be set in a way that the considered circuit will fit on the canvas. One can only draw either exclusively in horizontal or exclusively in vertical direction.
 The simulation speed should be set to low value at first and can be later increased.

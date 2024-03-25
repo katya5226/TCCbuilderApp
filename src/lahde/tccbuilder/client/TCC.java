@@ -34,6 +34,7 @@ public class TCC {
         int numCvs = 0;
         for (ThermalControlElement tce : TCEs) {
             numCvs += tce.cvs.size();
+            tce.parent = this;
         }
         cvs = new Vector<ControlVolume>();
         underdiag = new double[numCvs];
@@ -97,18 +98,29 @@ public class TCC {
             TCEs.get(i - 1).cvs.get(l - 1).eastNeighbour = TCEs.get(i).cvs.get(0);
             TCEs.get(i).cvs.get(0).westNeighbour = TCEs.get(i - 1).cvs.get(l - 1);
         }
-        cvs.clear();
-        int globalIndex = 0;
         for (int i = 0; i < TCEs.size(); i++) {
             TCEs.get(i).cvs.get(0).westResistance = TCEs.get(i).westResistance;
             TCEs.get(i).cvs.get(TCEs.get(i).cvs.size() - 1).eastResistance = TCEs.get(i).eastResistance;
+            TCEs.get(i).set_dx(TCEs.get(i).length / TCEs.get(i).cvs.size());
+        }
+        cvs.clear();
+        for (int i = 0; i < TCEs.size(); i++) {
+            for (int j = 0; j < TCEs.get(i).cvs.size(); j++) {
+                cvs.add(TCEs.get(i).cvs.get(j));
+            }
+        }
+        setGlobalIndeces();
+        setNeighbours();
+    }
+
+    public void setGlobalIndeces() {
+        int globalIndex = 0;
+        for (int i = 0; i < TCEs.size(); i++) {
             for (int j = 0; j < TCEs.get(i).cvs.size(); j++) {
                 TCEs.get(i).cvs.get(j).globalIndex = globalIndex;
-                cvs.add(TCEs.get(i).cvs.get(j));
                 globalIndex++;
             }
         }
-        setNeighbours();
     }
 
     public void calculateConductivities() {
