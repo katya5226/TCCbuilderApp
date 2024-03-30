@@ -44,6 +44,8 @@ class RegulatorElm extends ThermalControlElement {
         super(xx, yy);
         material = sim.materialHashMap.get("000000-Constant properties");
         cpCurve = new Vector<Double>();
+        kValues = new Vector<Double>();
+        rhoValues = new Vector<Double>();
     }
 
     public RegulatorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) {
@@ -60,6 +62,8 @@ class RegulatorElm extends ThermalControlElement {
         latentHeat = Double.parseDouble(st.nextToken());
         material = sim.materialHashMap.get("000000-Constant properties");
         cpCurve = new Vector<Double>();
+        kValues = new Vector<Double>();
+        rhoValues = new Vector<Double>();
     }
 
     public void setThermalProperties() {
