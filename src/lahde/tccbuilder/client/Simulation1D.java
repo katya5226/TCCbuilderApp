@@ -3,6 +3,7 @@ package lahde.tccbuilder.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,7 +116,7 @@ public class Simulation1D extends Simulation {
             x_mod.add(heatCircuit.cvs.get(i).temperatureOld);
         }
         //while (true) {
-        for (int k = 0; k < 3; k++) {
+        for (int k = 0; k < 15; k++) {
             // heatCircuit.neighbours()
             checkDiodes();
             heatCircuit.calculateConductivities();
@@ -125,8 +126,8 @@ public class Simulation1D extends Simulation {
             for (int i = 0; i < heatCircuit.cvs.size(); i++) {
                 x_mod.set(i, heatCircuit.cvs.get(i).temperature);
             }
-            // flag = hf.compare(x_mod, x_prev, pa.tolerance)
-            boolean flag = true;
+            boolean flag = ModelMethods.compareTemps(x_mod, x_prev, 0.5);
+            // boolean flag = true;
             for (int i = 0; i < heatCircuit.cvs.size(); i++) {
                 x_prev.set(i, x_mod.get(i));
             }
@@ -134,9 +135,10 @@ public class Simulation1D extends Simulation {
                 if (simTCEs.get(i).cvs.get(0).material.cpThysteresis == true)  // TODO-material
                     simTCEs.get(i).updateModes();
             }
-            // if (flag) {
-            //     break;
-            // }
+            if (flag && k >= 2) { break; }
+            if (!flag && k > 10) {
+                Window.alert("Not converged; change time step!");
+            }
         }
         checkDiodes();
         heatCircuit.calculateConductivities();
