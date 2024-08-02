@@ -128,4 +128,16 @@ public class ModelMethods {
 
     }
 
+    public static boolean compareTemps(Vector<Double> temps1, Vector<Double> temps2, double tol) {
+        double summed = 0.0;
+        if (temps1.size() != temps2.size()) {
+            return false;
+        }
+        for (int i = 0; i < temps1.size(); i++) {
+            summed += Math.pow(temps1.get(i) - temps2.get(i), 2);
+        }
+        if((Math.sqrt(summed) / temps1.size()) < tol) return true;
+        else return false;
+    } 
+
 }

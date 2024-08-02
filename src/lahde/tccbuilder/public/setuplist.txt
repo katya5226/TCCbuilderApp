@@ -5,3 +5,4 @@ ec_double_unit_cooling.txt ECDoubleUnitCoolingDevice
 gan_device_cooling.txt GaNDeviceOnPCB
 mc_with_switches_validation.txt MCDeviceForValidation
 ambient_energy_harvesting.txt AmbientEnergyHarvesting
+battery_temp_regulation.txt BatteryTempRegulation
