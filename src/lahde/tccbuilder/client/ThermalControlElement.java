@@ -141,9 +141,13 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     public void buildThermalControlElement() {
         double newDX = length / numCvs;
-        cvs.clear();
+        boolean newCVs = false;
+        if (numCvs != cvs.size()) {
+            newCVs = true;
+            cvs.clear();
+        }
         for (int i = 0; i < numCvs; i++) {
-            cvs.add(new ControlVolume(i));
+            if (newCVs) cvs.add(new ControlVolume(i));
             cvs.get(i).parent = this;
             cvs.get(i).material = material;
             cvs.get(i).dx = newDX;
