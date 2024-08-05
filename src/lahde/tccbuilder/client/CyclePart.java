@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
 
+import java.util.*;
 import java.util.Vector;
 import java.util.HashMap;
 import java.lang.Math;
@@ -369,6 +370,7 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).setNewLength(newLengths.get(i));
             }
+            sim.removeZeroLengthElements();
             sim.simulation1D.heatCircuit.buildTCC();
             sim.reorderByIndex();
         }

@@ -175,6 +175,13 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         }
     }
 
+    public void setTemperatures(Vector<Double> temps) {
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).temperature = temps.get(i);
+            cvs.get(i).temperatureOld = temps.get(i);
+        }
+    }
+
     public void setMaterial(Material m) {
         for (ControlVolume controlVolume : cvs) {
             controlVolume.material = m;
