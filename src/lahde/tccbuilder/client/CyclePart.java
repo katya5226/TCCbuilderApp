@@ -38,7 +38,8 @@ public class CyclePart {
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
         TIME_PASS,
-        LENGTH_CHANGE;
+        LENGTH_CHANGE,
+        AMB_TEMP_CHANGE;
 
 
         public String toSpacedCamelCase() {
@@ -70,6 +71,7 @@ public class CyclePart {
     CirSim sim;
     double duration;
     double partTime;
+    double newAmbTemp;
     CyclePart theCyclePart;
 
     public CyclePart(int index, CirSim sim) {
@@ -86,6 +88,7 @@ public class CyclePart {
         this.sim = sim;
         duration = 0.0;
         partTime = 0.0;
+        newAmbTemp = 0.0;
     }
 
     String shortenName(String name) {
@@ -161,7 +164,8 @@ public class CyclePart {
         titlePanel.addStyleName("justify-between");
         titlePanel.addStyleName("align-v-center");
         contentPanel.add(titlePanel);
-        contentPanel.add(new HTMLPanel(duration + "s"));
+        contentPanel.add(new HTMLPanel(duration + " s"));
+        if (partType == CyclePart.PartType.AMB_TEMP_CHANGE) contentPanel.add(new HTMLPanel("Ambient temperature: " + newAmbTemp + " K"));
         Button button = new Button("x");
         button.addClickHandler(new ClickHandler() {
             @Override
@@ -228,6 +232,9 @@ public class CyclePart {
                 break;
             case LENGTH_CHANGE:
                 lengthChange();
+                break;
+            case AMB_TEMP_CHANGE:
+                ambTempChange();
                 break;
             default:
                 break;
@@ -384,6 +391,10 @@ public class CyclePart {
         }
     }
 
+    void ambTempChange() {
+        sim.simulation1D.heatCircuit.ambientTemperature = newAmbTemp;
+    }
+
     public String toReport() {
         String report = partIndex + " " + partType + " Duration: " + duration + " s\n";
         switch (partType) {
@@ -453,6 +464,11 @@ public class CyclePart {
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                report += String.valueOf(newAmbTemp) + " K\n";
+                break;
         }
         report += "\n";
         return report;
@@ -514,6 +530,11 @@ public class CyclePart {
 
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                dump += newAmbTemp + " ";
                 break;
         }
         return dump;
@@ -598,6 +619,11 @@ public class CyclePart {
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                newAmbTemp = Double.parseDouble(st.nextToken());
                 break;
         }
     }

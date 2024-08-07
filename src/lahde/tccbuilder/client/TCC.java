@@ -84,6 +84,9 @@ public class TCC {
 
     //TODO: add condition to check if TCC has <3 control volumes 
     public void buildTCC() {  // DOPOLNITI!
+        // for (ThermalControlElement tce : TCEs) {
+        //     tce.buildThermalControlElement();
+        // }
         Collections.sort(TCEs);
         // TCEs.get(0).westBoundary = westBoundary;
         // TCEs.get(TCEs.size() - 1).eastBoundary = eastBoundary;

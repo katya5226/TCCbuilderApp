@@ -155,6 +155,18 @@ public class Simulation1D extends Simulation {
         // ModelMethods.printTemps(this.temperatures.get(this.temperatures.size()-1));
     }
 
+    void setStartTemps() {
+        for (ThermalControlElement tce : heatCircuit.TCEs) {
+            if (tce.startTemperature == -1) {
+                tce.setTemperatures(startTemp);
+            }
+            else {
+                tce.setTemperatures(tce.startTemperature);
+            }
+            // GWT.log(String.valueOf(tce.cvs.get(0).temperature));
+        }
+    }
+
     void makeTCC() {
         // simTCEs.clear();
         // simTCEs.add(new TCE("TCE1", 0, simComponents));
@@ -188,15 +200,7 @@ public class Simulation1D extends Simulation {
 
         Arrays.fill(temps, startTemp);
         //heatCircuit.setTemperatures(temps);
-        for (ThermalControlElement tce : heatCircuit.TCEs) {
-            if (tce.startTemperature == -1) {
-                tce.setTemperatures(startTemp);
-            }
-            else {
-                tce.setTemperatures(tce.startTemperature);
-            }
-            GWT.log(String.valueOf(tce.cvs.get(0).temperature));
-        }
+        setStartTemps();
 
         setTemperatureRange();
 
