@@ -33,6 +33,7 @@ public class CyclicDialog extends Dialog {
     Checkbox rhoCheckBox;
     Checkbox cpCheckBox;
     Checkbox kCheckBox;
+    Checkbox boundaryTempChange;
 
     DoubleBox heatInput;
     DoubleBox newIndex;
@@ -44,6 +45,7 @@ public class CyclicDialog extends Dialog {
     Label heatInputLabel;
     Label durationLabel;
     Label ambTempLabel;
+    Label boundaryTempLabel;
     Label newIndexLabel;
     Label magneticFieldStrengthLabel;
     Label electricFieldStrengthLabel;
@@ -95,6 +97,17 @@ public class CyclicDialog extends Dialog {
         ambTemp = new DoubleBox();
         inputWidgets.add(ambTempLabel);
         inputWidgets.add(ambTemp);
+        boundaryTempLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Change boundary temperatures?"));
+        boundaryTempChange = new Checkbox("Change boundary temperatures?");
+        inputWidgets.add(ambTempLabel);
+        inputWidgets.add(ambTemp);
+        inputWidgets.add(boundaryTempChange);
+        boundaryTempChange.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                cyclePart.boundaryTempChange = !cyclePart.boundaryTempChange;
+            }
+        });
 
         cyclePartListBox.addItem("< Choose Cycle Part >");
         cyclePartListBox.addItem("Heat Transfer");
@@ -537,6 +550,8 @@ public class CyclicDialog extends Dialog {
                     case "Ambient Temp. Change":
                         ambTempLabel.setVisible(true);
                         ambTemp.setVisible(true);
+                        boundaryTempLabel.setVisible(true);
+                        boundaryTempChange.setVisible(true);
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.AMB_TEMP_CHANGE;
                         break;
@@ -792,6 +807,7 @@ public class CyclicDialog extends Dialog {
             case AMB_TEMP_CHANGE:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Ambient temp.:</b>" + NumberFormat.getFormat("#0.0000").format(cp.newAmbTemp) + " s<br>");
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Boundary temp. set to ambient:</b>" + cp.boundaryTempChange + "<br>");
                 break;
         }
         center();

@@ -72,6 +72,7 @@ public class CyclePart {
     double duration;
     double partTime;
     double newAmbTemp;
+    boolean boundaryTempChange;
     CyclePart theCyclePart;
 
     public CyclePart(int index, CirSim sim) {
@@ -89,6 +90,7 @@ public class CyclePart {
         duration = 0.0;
         partTime = 0.0;
         newAmbTemp = 0.0;
+        boundaryTempChange = false;
     }
 
     String shortenName(String name) {
@@ -165,7 +167,10 @@ public class CyclePart {
         titlePanel.addStyleName("align-v-center");
         contentPanel.add(titlePanel);
         contentPanel.add(new HTMLPanel(duration + " s"));
-        if (partType == CyclePart.PartType.AMB_TEMP_CHANGE) contentPanel.add(new HTMLPanel("Ambient temperature: " + newAmbTemp + " K"));
+        if (partType == CyclePart.PartType.AMB_TEMP_CHANGE) {
+            contentPanel.add(new HTMLPanel("Ambient temperature: " + newAmbTemp + " K"));
+            contentPanel.add(new HTMLPanel("Boundary temperatures set to ambient: " + boundaryTempChange));
+        }
         Button button = new Button("x");
         button.addClickHandler(new ClickHandler() {
             @Override
@@ -393,6 +398,10 @@ public class CyclePart {
 
     void ambTempChange() {
         sim.simulation1D.heatCircuit.ambientTemperature = newAmbTemp;
+        if (boundaryTempChange) {
+            sim.simulation1D.heatCircuit.temperatureWest = newAmbTemp;
+            sim.simulation1D.heatCircuit.temperatureEast = newAmbTemp;
+        }
     }
 
     public String toReport() {
@@ -467,7 +476,9 @@ public class CyclePart {
             case TIME_PASS:
                 break;
             case AMB_TEMP_CHANGE:
-                report += String.valueOf(newAmbTemp) + " K\n";
+                report += String.valueOf(newAmbTemp) + " K\t";
+                report += String.valueOf(sim.simulation1D.heatCircuit.temperatureWest) + " K\t";
+                report += String.valueOf(sim.simulation1D.heatCircuit.temperatureEast) + " K\n";
                 break;
         }
         report += "\n";
@@ -534,7 +545,9 @@ public class CyclePart {
             case TIME_PASS:
                 break;
             case AMB_TEMP_CHANGE:
+                int bT = boundaryTempChange ? 1 : 0;
                 dump += newAmbTemp + " ";
+                dump += bT + " ";
                 break;
         }
         return dump;
@@ -624,6 +637,8 @@ public class CyclePart {
                 break;
             case AMB_TEMP_CHANGE:
                 newAmbTemp = Double.parseDouble(st.nextToken());
+                int bT = Integer.parseInt(st.nextToken());
+                boundaryTempChange = (bT == 1)? true : false;
                 break;
         }
     }
