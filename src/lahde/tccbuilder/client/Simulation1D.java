@@ -215,7 +215,6 @@ public class Simulation1D extends Simulation {
         for (ControlVolume cv : heatCircuit.cvs) {
             GWT.log("cvInd: " + String.valueOf(cv.globalIndex));
         }
-        time = 0;
     }
 
     void setTemperatureRange() {

@@ -382,9 +382,11 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).setNewLength(newLengths.get(i));
             }
+            double t = sim.simulation1D.time;
             sim.removeZeroLengthElements();
             sim.simulation1D.heatCircuit.buildTCC();
             sim.reorderByIndex();
+            sim.simulation1D.time = t;
         }
     }
 
