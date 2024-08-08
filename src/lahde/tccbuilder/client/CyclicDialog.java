@@ -36,6 +36,7 @@ public class CyclicDialog extends Dialog {
     Checkbox boundaryTempChange;
 
     DoubleBox heatInput;
+    DoubleBox heatLoss;
     DoubleBox newIndex;
     DoubleBox electricFieldStrength;
     DoubleBox pressureFieldStrength;
@@ -43,6 +44,7 @@ public class CyclicDialog extends Dialog {
     DoubleBox newTemperature;
     DoubleBox newLength;
     Label heatInputLabel;
+    Label heatLossLabel;
     Label durationLabel;
     Label ambTempLabel;
     Label boundaryTempLabel;
@@ -112,6 +114,7 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("< Choose Cycle Part >");
         cyclePartListBox.addItem("Heat Transfer");
         cyclePartListBox.addItem("Heat Input");
+        cyclePartListBox.addItem("Heat Loss to Ambient");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
         cyclePartListBox.addItem("Electric Field Change");
@@ -134,6 +137,11 @@ public class CyclicDialog extends Dialog {
         heatInput = new DoubleBox();
         inputWidgets.add(heatInputLabel);
         inputWidgets.add(heatInput);
+
+        heatLossLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Loss to Ambient (W/m³/K): "));
+        heatLoss = new DoubleBox();
+        inputWidgets.add(heatLossLabel);
+        inputWidgets.add(heatLoss);
 
         rhoCheckBox = new Checkbox("New density (kg/m³): ");
         inputWidgets.add(rhoCheckBox);
@@ -372,6 +380,10 @@ public class CyclicDialog extends Dialog {
                         case AMB_TEMP_CHANGE:
                             //cyclePart.newAmbTemp = ambTemp.getValue();
                             break;
+                        case HEAT_LOSS:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.heatLosses.add(heatLoss.getValue());
+                            break;
                     }
                 else {
                     int index = cyclePart.TCEs.indexOf(chosenComponent);
@@ -418,6 +430,9 @@ public class CyclicDialog extends Dialog {
                             break;
                         case AMB_TEMP_CHANGE:
                             //cyclePart.newAmbTemp = ambTemp.getValue();
+                            break;
+                        case HEAT_LOSS:
+                            cyclePart.heatLosses.set(index, heatLoss.getValue());
                             break;
                     }
                 }
@@ -555,6 +570,14 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.AMB_TEMP_CHANGE;
                         break;
+                    case "Heat Loss":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        // durationLabel.setVisible(true);
+                        // duration.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.HEAT_LOSS;
+                        break;
                     default:
                         Window.alert("Please select a cycle part");
                         return;
@@ -573,6 +596,8 @@ public class CyclicDialog extends Dialog {
                 if (chosen < 0) {
                     heatInput.setVisible(false);
                     heatInputLabel.setVisible(false);
+                    heatLoss.setVisible(false);
+                    heatLossLabel.setVisible(false);
                     newIndex.setVisible(false);
                     newIndexLabel.setVisible(false);
                     magneticFieldStrengthLabel.setVisible(false);
@@ -671,6 +696,11 @@ public class CyclicDialog extends Dialog {
                     case TIME_PASS:
                         break;
                     case AMB_TEMP_CHANGE:
+                        break;
+                    case HEAT_LOSS:
+                        heatLoss.setVisible(true);
+                        heatLossLabel.setVisible(true);
+                        addComponentButton.setVisible(true);
                         break;
                 }
 
