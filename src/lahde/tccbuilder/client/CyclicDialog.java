@@ -303,12 +303,11 @@ public class CyclicDialog extends Dialog {
                     case MAGNETIC_FIELD_CHANGE:
                     case MECHANIC_DISPLACEMENT:
                     case AMB_TEMP_CHANGE:
-                        cyclePart.newAmbTemp = ambTemp.getValue();
-                        break;
                     case TIME_PASS:
                         cyclePart.duration = duration.getValue();   
                         break;               
                 }
+                if (cyclePart.partType == CyclePart.PartType.AMB_TEMP_CHANGE) cyclePart.newAmbTemp = ambTemp.getValue();
                 sim.simulation1D.cycleParts.add(cyclePart);
                 sim.fillCyclicPanel();
 //                printCyclePart(cyclePart, sim.cyclicOperationLabel);
@@ -378,7 +377,6 @@ public class CyclicDialog extends Dialog {
                         case TIME_PASS:
                             break;
                         case AMB_TEMP_CHANGE:
-                            //cyclePart.newAmbTemp = ambTemp.getValue();
                             break;
                         case HEAT_LOSS:
                             cyclePart.TCEs.add(chosenComponent);
@@ -429,7 +427,6 @@ public class CyclicDialog extends Dialog {
                         case TIME_PASS:
                             break;
                         case AMB_TEMP_CHANGE:
-                            //cyclePart.newAmbTemp = ambTemp.getValue();
                             break;
                         case HEAT_LOSS:
                             cyclePart.heatLosses.set(index, heatLoss.getValue());

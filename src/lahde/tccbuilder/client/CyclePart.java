@@ -257,6 +257,7 @@ public class CyclePart {
 
     void heatInput() {
         for (int i = 0; i < TCEs.size(); i++) {
+            TCEs.get(i).volumeHeatGeneration = heatInputs.get(i);
             for (ControlVolume cv : TCEs.get(i).cvs) {
                 // cv.qGenerated = heatInputs.get(i);
                 cv.constQgen = heatInputs.get(i);
