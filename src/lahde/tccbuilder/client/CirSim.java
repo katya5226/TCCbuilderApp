@@ -3217,9 +3217,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
     void removeZeroLengthElements() {
         int i;
         boolean changed = false;
+        Vector<Double> temps = new Vector<Double>();
         for (i = elmList.size() - 1; i >= 0; i--) {
-            CircuitElm ce = getElm(i);
-            if (ce.x == ce.x2 && ce.y == ce.y2) {
+            // CircuitElm ce = getElm(i);
+            ThermalControlElement ce = (ThermalControlElement) getElm(i);
+            if ((ce.x == ce.x2 && ce.y == ce.y2) || ce.length == 0) {
                 elmList.remove(ce);
                 simulation1D.simTCEs.remove((ThermalControlElement) ce);
                 trackedTemperatures.remove((ThermalControlElement) ce);
@@ -3227,6 +3229,13 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
                 ce.delete();
                 changed = true;
             }
+            else {
+                for (ControlVolume cv : ce.cvs) temps.add(cv.temperature);
+            }
+        }
+        if (changed) {
+            simulation1D.makeTCC();
+            simulation1D.heatCircuit.setTemperatures(temps);
         }
         needAnalyze();
     }

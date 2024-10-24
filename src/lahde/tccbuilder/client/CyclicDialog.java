@@ -25,6 +25,7 @@ public class CyclicDialog extends Dialog {
     ListBox pressureFieldListBox;
     ListBox shearStressFieldListBox;
     DoubleBox duration;
+    DoubleBox ambTemp;
     DoubleBox newRho;
     DoubleBox newCp;
     DoubleBox newK;
@@ -32,8 +33,10 @@ public class CyclicDialog extends Dialog {
     Checkbox rhoCheckBox;
     Checkbox cpCheckBox;
     Checkbox kCheckBox;
+    Checkbox boundaryTempChange;
 
     DoubleBox heatInput;
+    DoubleBox heatLoss;
     DoubleBox newIndex;
     DoubleBox electricFieldStrength;
     DoubleBox pressureFieldStrength;
@@ -41,7 +44,10 @@ public class CyclicDialog extends Dialog {
     DoubleBox newTemperature;
     DoubleBox newLength;
     Label heatInputLabel;
+    Label heatLossLabel;
     Label durationLabel;
+    Label ambTempLabel;
+    Label boundaryTempLabel;
     Label newIndexLabel;
     Label magneticFieldStrengthLabel;
     Label electricFieldStrengthLabel;
@@ -89,9 +95,26 @@ public class CyclicDialog extends Dialog {
         inputWidgets.add(durationLabel);
         inputWidgets.add(duration);
 
+        ambTempLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Ambient Temperature (K): "));
+        ambTemp = new DoubleBox();
+        inputWidgets.add(ambTempLabel);
+        inputWidgets.add(ambTemp);
+        boundaryTempLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Change boundary temperatures?"));
+        boundaryTempChange = new Checkbox("Change boundary temperatures?");
+        inputWidgets.add(ambTempLabel);
+        inputWidgets.add(ambTemp);
+        inputWidgets.add(boundaryTempChange);
+        boundaryTempChange.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                cyclePart.boundaryTempChange = !cyclePart.boundaryTempChange;
+            }
+        });
+
         cyclePartListBox.addItem("< Choose Cycle Part >");
         cyclePartListBox.addItem("Heat Transfer");
         cyclePartListBox.addItem("Heat Input");
+        cyclePartListBox.addItem("Heat Loss to Ambient");
         cyclePartListBox.addItem("Mechanic Displacement");
         cyclePartListBox.addItem("Magnetic Field Change");
         cyclePartListBox.addItem("Electric Field Change");
@@ -102,6 +125,7 @@ public class CyclicDialog extends Dialog {
         cyclePartListBox.addItem("Toggle TCE");
         cyclePartListBox.addItem("Time Pass");
         cyclePartListBox.addItem("Length Change");
+        cyclePartListBox.addItem("Ambient Temp. Change");
 
 
         componentsLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Choose components: "));
@@ -113,6 +137,11 @@ public class CyclicDialog extends Dialog {
         heatInput = new DoubleBox();
         inputWidgets.add(heatInputLabel);
         inputWidgets.add(heatInput);
+
+        heatLossLabel = new Label(lahde.tccbuilder.client.util.Locale.LS("Heat Loss to Ambient (W/m³/K): "));
+        heatLoss = new DoubleBox();
+        inputWidgets.add(heatLossLabel);
+        inputWidgets.add(heatLoss);
 
         rhoCheckBox = new Checkbox("New density (kg/m³): ");
         inputWidgets.add(rhoCheckBox);
@@ -222,6 +251,13 @@ public class CyclicDialog extends Dialog {
             }
         });
 
+        ambTemp.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ambTemp.setText("");
+            }
+        });
+
 
         for (Widget widget : inputWidgets) {
             widget.setVisible(false);
@@ -266,10 +302,12 @@ public class CyclicDialog extends Dialog {
                     case TOGGLE_THERMAL_CONTROL_ELEMENT:
                     case MAGNETIC_FIELD_CHANGE:
                     case MECHANIC_DISPLACEMENT:
+                    case AMB_TEMP_CHANGE:
                     case TIME_PASS:
                         cyclePart.duration = duration.getValue();   
                         break;               
                 }
+                if (cyclePart.partType == CyclePart.PartType.AMB_TEMP_CHANGE) cyclePart.newAmbTemp = ambTemp.getValue();
                 sim.simulation1D.cycleParts.add(cyclePart);
                 sim.fillCyclicPanel();
 //                printCyclePart(cyclePart, sim.cyclicOperationLabel);
@@ -338,6 +376,12 @@ public class CyclicDialog extends Dialog {
                             break;
                         case TIME_PASS:
                             break;
+                        case AMB_TEMP_CHANGE:
+                            break;
+                        case HEAT_LOSS:
+                            cyclePart.TCEs.add(chosenComponent);
+                            cyclePart.heatLosses.add(heatLoss.getValue());
+                            break;
                     }
                 else {
                     int index = cyclePart.TCEs.indexOf(chosenComponent);
@@ -382,6 +426,11 @@ public class CyclicDialog extends Dialog {
                             break;
                         case TIME_PASS:
                             break;
+                        case AMB_TEMP_CHANGE:
+                            break;
+                        case HEAT_LOSS:
+                            cyclePart.heatLosses.set(index, heatLoss.getValue());
+                            break;
                     }
                 }
 
@@ -389,6 +438,9 @@ public class CyclicDialog extends Dialog {
                 //just for cycle part display, will be overridden when clicking apply
                 if (duration.isVisible()) {
                     cyclePart.duration = duration.getValue();
+                }
+                if (ambTemp.isVisible()) {
+                    cyclePart.newAmbTemp = ambTemp.getValue();
                 }
                 cyclePartLabel.clear();
                 cyclePartLabel.add(cyclePart.toWidget(false));
@@ -507,6 +559,22 @@ public class CyclicDialog extends Dialog {
                         cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
                         cyclePart.partType = CyclePart.PartType.LENGTH_CHANGE;
                         break;
+                    case "Ambient Temp. Change":
+                        ambTempLabel.setVisible(true);
+                        ambTemp.setVisible(true);
+                        boundaryTempLabel.setVisible(true);
+                        boundaryTempChange.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.AMB_TEMP_CHANGE;
+                        break;
+                    case "Heat Loss":
+                        componentsLabel.setVisible(true);
+                        componentsListBox.setVisible(true);
+                        // durationLabel.setVisible(true);
+                        // duration.setVisible(true);
+                        cyclePart = new CyclePart(sim.simulation1D.cycleParts.size(), sim);
+                        cyclePart.partType = CyclePart.PartType.HEAT_LOSS;
+                        break;
                     default:
                         Window.alert("Please select a cycle part");
                         return;
@@ -525,6 +593,8 @@ public class CyclicDialog extends Dialog {
                 if (chosen < 0) {
                     heatInput.setVisible(false);
                     heatInputLabel.setVisible(false);
+                    heatLoss.setVisible(false);
+                    heatLossLabel.setVisible(false);
                     newIndex.setVisible(false);
                     newIndexLabel.setVisible(false);
                     magneticFieldStrengthLabel.setVisible(false);
@@ -622,6 +692,13 @@ public class CyclicDialog extends Dialog {
                         break;
                     case TIME_PASS:
                         break;
+                    case AMB_TEMP_CHANGE:
+                        break;
+                    case HEAT_LOSS:
+                        heatLoss.setVisible(true);
+                        heatLossLabel.setVisible(true);
+                        addComponentButton.setVisible(true);
+                        break;
                 }
 
 
@@ -675,6 +752,8 @@ public class CyclicDialog extends Dialog {
                     add = tce instanceof SwitchElm;
                     break;
                 case TIME_PASS:
+                    break;
+                case AMB_TEMP_CHANGE:
                     break;
 
             }
@@ -751,6 +830,11 @@ public class CyclicDialog extends Dialog {
             case TIME_PASS:
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
                 label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Duration:</b>" + NumberFormat.getFormat("#0.0000").format(cp.duration) + " s<br>");
+                break;
+            case AMB_TEMP_CHANGE:
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Components: all</b></br>");
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Ambient temp.:</b>" + NumberFormat.getFormat("#0.0000").format(cp.newAmbTemp) + " s<br>");
+                label.setHTML(label.getHTML() + "&emsp;&emsp;<b>Boundary temp. set to ambient:</b>" + cp.boundaryTempChange + "<br>");
                 break;
         }
         center();

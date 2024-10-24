@@ -348,6 +348,7 @@ public class StartDialog extends Dialog {
                 }
                 sim.simulation1D.dt = dtValue / 1e3;
                 sim.simulation1D.startTemp = startTempValue;
+                // sim.simulation1D.setStartTemps();
                 sim.simulation1D.ambientTemperature = ambientTempValue;
                 sim.simulation1D.eastBoundary = Simulation1D.BorderCondition.values()[eastBoundary.getSelectedIndex()];
                 sim.simulation1D.westBoundary = Simulation1D.BorderCondition.values()[westBoundary.getSelectedIndex()];

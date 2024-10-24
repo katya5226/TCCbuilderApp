@@ -140,7 +140,8 @@ class SwitchElm extends ThermalControlElement {
             case 12:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 13:
-                return new EditInfo("Actuation input power (W/m³)", inputPower);
+                return new EditInfo("Actuation input power (W)", inputPower);
+                // return new EditInfo("Actuation input power (W/m³)", inputPower);
             default:
                 return null;
         }

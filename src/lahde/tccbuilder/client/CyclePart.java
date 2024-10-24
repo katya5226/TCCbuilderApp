@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
 
+import java.util.*;
 import java.util.Vector;
 import java.util.HashMap;
 import java.lang.Math;
@@ -37,7 +38,9 @@ public class CyclePart {
         TEMPERATURE_CHANGE,
         TOGGLE_THERMAL_CONTROL_ELEMENT,
         TIME_PASS,
-        LENGTH_CHANGE;
+        LENGTH_CHANGE,
+        AMB_TEMP_CHANGE,
+        HEAT_LOSS;
 
 
         public String toSpacedCamelCase() {
@@ -62,6 +65,7 @@ public class CyclePart {
     Vector<Integer> newIndexes;
     Vector<Integer> fieldIndexes;
     Vector<Double> heatInputs;
+    Vector<Double> heatLosses;
     boolean toggleTCE;
 
     Vector<ThermalControlElement> TCEs;
@@ -69,6 +73,8 @@ public class CyclePart {
     CirSim sim;
     double duration;
     double partTime;
+    double newAmbTemp;
+    boolean boundaryTempChange;
     CyclePart theCyclePart;
 
     public CyclePart(int index, CirSim sim) {
@@ -79,12 +85,15 @@ public class CyclePart {
         newTemperatures = new Vector<Double>();
         newLengths = new Vector<Double>();
         heatInputs = new Vector<Double>();
+        heatLosses = new Vector<Double>();
         newIndexes = new Vector<Integer>();
         fieldIndexes = new Vector<Integer>();
         changedProperties = new Vector<>();
         this.sim = sim;
         duration = 0.0;
         partTime = 0.0;
+        newAmbTemp = 0.0;
+        boundaryTempChange = false;
     }
 
     String shortenName(String name) {
@@ -136,6 +145,9 @@ public class CyclePart {
         } else if (!heatInputs.isEmpty()) {
             for (Double heatInput : heatInputs)
                 flexTable.setText(row, column++, heatInput.toString() + " W/m³");
+        } else if (!heatLosses.isEmpty()) {
+            for (Double heatLoss : heatLosses)
+                flexTable.setText(row, column++, heatLoss.toString() + " W/m³/K");
         } else if (!changedProperties.isEmpty()) {
             flexTable.removeAllRows();
             for (int i = 0; i < changedProperties.size(); i++) {
@@ -160,7 +172,11 @@ public class CyclePart {
         titlePanel.addStyleName("justify-between");
         titlePanel.addStyleName("align-v-center");
         contentPanel.add(titlePanel);
-        contentPanel.add(new HTMLPanel(duration + "s"));
+        contentPanel.add(new HTMLPanel(duration + " s"));
+        if (partType == CyclePart.PartType.AMB_TEMP_CHANGE) {
+            contentPanel.add(new HTMLPanel("Ambient temperature: " + newAmbTemp + " K"));
+            contentPanel.add(new HTMLPanel("Boundary temperatures set to ambient: " + boundaryTempChange));
+        }
         Button button = new Button("x");
         button.addClickHandler(new ClickHandler() {
             @Override
@@ -228,6 +244,12 @@ public class CyclePart {
             case LENGTH_CHANGE:
                 lengthChange();
                 break;
+            case AMB_TEMP_CHANGE:
+                ambTempChange();
+                break;
+            case HEAT_LOSS:
+                heatLoss();
+                break;
             default:
                 break;
         }
@@ -235,6 +257,7 @@ public class CyclePart {
 
     void heatInput() {
         for (int i = 0; i < TCEs.size(); i++) {
+            TCEs.get(i).volumeHeatGeneration = heatInputs.get(i);
             for (ControlVolume cv : TCEs.get(i).cvs) {
                 // cv.qGenerated = heatInputs.get(i);
                 cv.constQgen = heatInputs.get(i);
@@ -369,8 +392,11 @@ public class CyclePart {
             for (int i = 0; i < TCEs.size(); i++) {
                 TCEs.get(i).setNewLength(newLengths.get(i));
             }
+            double t = sim.simulation1D.time;
+            sim.removeZeroLengthElements();
             sim.simulation1D.heatCircuit.buildTCC();
             sim.reorderByIndex();
+            sim.simulation1D.time = t;
         }
     }
 
@@ -379,6 +405,23 @@ public class CyclePart {
             ThermalControlElement thermalControlElement = TCEs.get(i);
             SwitchElm switchElm = (SwitchElm) thermalControlElement;
             switchElm.toggle();
+        }
+    }
+
+    void ambTempChange() {
+        sim.simulation1D.heatCircuit.ambientTemperature = newAmbTemp;
+        if (boundaryTempChange) {
+            sim.simulation1D.heatCircuit.temperatureWest = newAmbTemp;
+            sim.simulation1D.heatCircuit.temperatureEast = newAmbTemp;
+        }
+    }
+
+    void heatLoss() {
+        for (int i = 0; i < TCEs.size(); i++) {
+            TCEs.get(i).hTransv = heatLosses.get(i);
+            for (ControlVolume cv : TCEs.get(i).cvs) {
+                cv.hTransv = heatLosses.get(i);
+            }
         }
     }
 
@@ -391,6 +434,12 @@ public class CyclePart {
                 for (ThermalControlElement tce : TCEs) {
                     report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Heat input: ";
                     report += String.valueOf(heatInputs.get(TCEs.indexOf(tce))) + " W/m³\n";
+                }
+                break;
+            case HEAT_LOSS:
+                for (ThermalControlElement tce : TCEs) {
+                    report += sim.simulation1D.simTCEs.indexOf(tce) + " " + tce.name + "\t" + "Heat loss to ambient: ";
+                    report += String.valueOf(heatLosses.get(TCEs.indexOf(tce))) + " W/m³/K\n";
                 }
                 break;
             case MECHANIC_DISPLACEMENT:
@@ -451,6 +500,13 @@ public class CyclePart {
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                report += String.valueOf(newAmbTemp) + " K\t";
+                report += String.valueOf(sim.simulation1D.heatCircuit.temperatureWest) + " K\t";
+                report += String.valueOf(sim.simulation1D.heatCircuit.temperatureEast) + " K\n";
+                break;
         }
         report += "\n";
         return report;
@@ -469,6 +525,11 @@ public class CyclePart {
             case HEAT_INPUT:
                 dump += heatInputs.size() + " ";
                 for (Double d : heatInputs)
+                    dump += d + " ";
+                break;
+            case HEAT_LOSS:
+                dump += heatLosses.size() + " ";
+                for (Double d : heatLosses)
                     dump += d + " ";
                 break;
             case MECHANIC_DISPLACEMENT:
@@ -513,6 +574,13 @@ public class CyclePart {
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
                 break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                int bT = boundaryTempChange ? 1 : 0;
+                dump += newAmbTemp + " ";
+                dump += bT + " ";
+                break;
         }
         return dump;
     }
@@ -542,6 +610,13 @@ public class CyclePart {
                 heatInputs.clear();
                 for (int i = 0; i < numHeatInputs; i++) {
                     heatInputs.add(Double.parseDouble(st.nextToken()));
+                }
+                break;
+            case HEAT_LOSS:
+                int numHeatLosses = Integer.parseInt(st.nextToken());
+                heatLosses.clear();
+                for (int i = 0; i < numHeatLosses; i++) {
+                    heatLosses.add(Double.parseDouble(st.nextToken()));
                 }
                 break;
             case MECHANIC_DISPLACEMENT:
@@ -596,6 +671,13 @@ public class CyclePart {
                 }
                 break;
             case TOGGLE_THERMAL_CONTROL_ELEMENT:
+                break;
+            case TIME_PASS:
+                break;
+            case AMB_TEMP_CHANGE:
+                newAmbTemp = Double.parseDouble(st.nextToken());
+                int bT = Integer.parseInt(st.nextToken());
+                boundaryTempChange = (bT == 1)? true : false;
                 break;
         }
     }
