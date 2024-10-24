@@ -141,13 +141,27 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
 
     public void buildThermalControlElement() {
         double newDX = length / numCvs;
+        boolean newCVs = false;
+        Vector<Double> currentTemps = new Vector<Double>();
+        if (numCvs != cvs.size()) {
+            newCVs = true;
+        }
+        else {
+            for (ControlVolume cv : cvs) {
+                currentTemps.add(cv.temperature);
+            }
+        }
         cvs.clear();
         for (int i = 0; i < numCvs; i++) {
+            // if (newCVs || cvs.isEmpty()) cvs.add(new ControlVolume(i));
             cvs.add(new ControlVolume(i));
             cvs.get(i).parent = this;
             cvs.get(i).material = material;
             cvs.get(i).dx = newDX;
-
+            if(!newCVs) {
+                cvs.get(i).temperature = currentTemps.get(i);
+                cvs.get(i).temperatureOld = currentTemps.get(i);
+            }
             if (constRho != -1) {
                 cvs.get(i).constRho = constRho;
             }
@@ -168,6 +182,13 @@ public class ThermalControlElement extends CircuitElm implements Comparable<Ther
         for (ControlVolume cv : cvs) {
             cv.temperature = startTemp;
             cv.temperatureOld = startTemp;
+        }
+    }
+
+    public void setTemperatures(Vector<Double> temps) {
+        for (int i = 0; i < cvs.size(); i++) {
+            cvs.get(i).temperature = temps.get(i);
+            cvs.get(i).temperatureOld = temps.get(i);
         }
     }
 

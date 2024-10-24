@@ -224,7 +224,8 @@ class RegulatorElm extends ThermalControlElement {
             case 17:
                 return new EditInfo("Heat loss rate to the ambient (W/(m³K))", hTransv);
             case 18:
-                return new EditInfo("Actuation input power (W/m³)", inputPower);
+                return new EditInfo("Actuation input power (W)", inputPower);
+                // return new EditInfo("Actuation input power (W/m³)", inputPower);
             default:
                 return null;
         }
