@@ -12,6 +12,8 @@ Researchers around the world are kindly invited to contribute to the project, wh
 
 Live version of the app is available at  https://app.tccbuilder.org.
 
+HOW TO CITE: The app is presented in the research article TCCbuilder: An open-source tool for the analysis of thermal switches, thermal diodes, thermal regulators, and thermal control circuits. DOI: 10.1016/j.isci.2024.111263.
+
 
 ## Licence
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
