@@ -46,6 +46,7 @@ public class AboutBox extends Dialog {
         aboutText = "The original code was forked from the project CircuitJS1 (Copyright (C) Paul Falstad and Iain Sharp, https://github.com/pfalstad/circuitjs1).\n" +
                 "TCCBuilder is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License.\n";
         aboutText += "Version 1.2.0";
+	aboutText += "\n CITE: https://doi.org/10.1016/j.isci.2024.111263";
         label = new Label();
         setText("About");
         label.setText(aboutText);
