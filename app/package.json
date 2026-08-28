@@ -1,20 +1,19 @@
 {
-  "name": "Circuit JS1",
+  "name": "TCCbuilder",
   "version": "0.0.1",
-  "description": "Interactive Circuit Simulator",
+  "description": "Thermal control circuit builder",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/sharpie7/circuitjs1",
+  "repository": "https://github.com/katya5226/TCCbuilderApp",
   "keywords": [
-    "eda",
-    "electronics",
-    "circuits",
-    "education"
+    "thermalmanagement",
+    "heattransfer",
+    "thermacontrolelements"
   ],
-  "author": "Iain Sharp, Paul Falstad",
+  "author": "Katja Vozel",
   "devDependencies": {
-    "electron": ">=9.3.1"
+    "electron": "^44.0.0"
   }
 }
